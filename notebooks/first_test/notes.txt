@@ -1,6 +1,0 @@
-conda env
-installiert: jupyterlab, plotly, pandas
-
-zur Darstellung von plotly im notebook: 
-- conda install ipywidgets
-- conda install -c conda-forge -c plotly jupyter-dash 
