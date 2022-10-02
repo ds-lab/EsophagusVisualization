@@ -1,0 +1,15 @@
+matplotlib>=3.6.0rc2
+opencv-python-headless
+dash
+dash-extensions
+numpy
+pandas
+plotly
+pyqt5
+pyqtwebengine
+scikit-image
+scipy
+shapely
+waitress
+kthread
+pyinstaller

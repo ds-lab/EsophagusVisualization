@@ -1,0 +1,4 @@
+Disclaimer:
+Diese Software ist ein Prototyp, der im Rahmen einer Masterarbeit entstanden ist. 
+Die Korrektheit der generierten Daten kann nicht garantiert werden. 
+Treffen Sie keine medizinischen Entscheidungen auf Basis der Ausgaben dieser Software! 
