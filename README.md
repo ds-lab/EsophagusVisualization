@@ -1,11 +1,13 @@
 # Ösophagus-Visualisierung
-Diese Software (Prototyp) generiert eine 3D-Visualisierung der Speiseröhre, welche zur Unterstützung der Diagnose von Achalasie dient. Als Ausgangsdaten werden hierfür die Daten einer Manometriemessung (exportiert aus der 'Laborie stationary measurement & analysis software' der Firma 
-        Medical Measurement Systems B.V.), ein frontales Breischluck-Röntgenbild und Endoskopieaufnahmen verwendet.
+Diese Software (Prototyp) generiert eine 3D-Visualisierung der Speiseröhre, welche zur Unterstützung der Diagnose von Achalasie dient. Als Ausgangsdaten werden hierfür die Daten einer Manometriemessung (exportiert aus der 'Laborie stationary measurement & analysis software' der Firma Medical Measurement Systems B.V.), ein frontales Breischluck-Röntgenbild und Endoskopieaufnahmen verwendet.
 
 
-## Installation (mit Conda-Environment)
+## Installation
+Environment erstellen:
 - conda create -n "esophagus-visualization" python=3.9.7 ipython
 - conda activate esophagus-visualization
+
+Requirements installieren:
 - pip install -r requirements.txt
 
 Starten mit:
@@ -21,7 +23,7 @@ Anschließend:
 Der neue Ordner 'dist' beinhaltet nun die Exe-Datei 'main.exe' und Python mit allen nötigen Dependencies.
 
 ## Konfiguration
-In der Datei 'config.py' können Werte angepasst werden.
+In der Datei 'config.py' können Konfigurationswerte angepasst werden.
 
 ## Notizen
 - erstellt mit Python-Version 3.9.7
