@@ -61,20 +61,21 @@ class FileSelectionWindow(QMainWindow):
         csv button callback
         """
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path, "CSV (*.csv *.CSV)")
-        error = False
-        try:
-            df = pd.read_csv(filename, skiprows=config.csv_skiprows, header=0, index_col=0)
-            df = df.drop(config.csv_drop_columns, axis=1)
-            matrix = df.to_numpy()
-            matrix = matrix.T  # sensors in axis 0
-            self.pressure_matrix = np.flipud(matrix)  # sensors from top to bottom
-        except KeyError:
-            error = True
-        if error or self.pressure_matrix.shape[1] < 1:
-            self.ui.csv_textfield.setText("")
-            QMessageBox.critical(self, "Ungültige Datei", "Fehler: Die Datei hat nicht das erwartete Format")
-        else:
-            self.ui.csv_textfield.setText(filename)
+        if len(filename) > 0:
+            error = False
+            try:
+                df = pd.read_csv(filename, skiprows=config.csv_skiprows, header=0, index_col=0)
+                df = df.drop(config.csv_drop_columns, axis=1)
+                matrix = df.to_numpy()
+                matrix = matrix.T  # sensors in axis 0
+                self.pressure_matrix = np.flipud(matrix)  # sensors from top to bottom
+            except KeyError:
+                error = True
+            if error or self.pressure_matrix.shape[1] < 1:
+                self.ui.csv_textfield.setText("")
+                QMessageBox.critical(self, "Ungültige Datei", "Fehler: Die Datei hat nicht das erwartete Format")
+            else:
+                self.ui.csv_textfield.setText(filename)
         self.check_button_activate()
         self.default_path = os.path.dirname(filename)
 
