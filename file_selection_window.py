@@ -33,7 +33,7 @@ class FileSelectionWindow(QMainWindow):
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
-        self.check_button_activate()
+        self.__check_button_activate()
 
     def __menu_button_clicked(self):
         """
@@ -76,7 +76,7 @@ class FileSelectionWindow(QMainWindow):
                 QMessageBox.critical(self, "Ungültige Datei", "Fehler: Die Datei hat nicht das erwartete Format")
             else:
                 self.ui.csv_textfield.setText(filename)
-        self.check_button_activate()
+        self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
     def __xray_button_clicked(self):
@@ -86,7 +86,7 @@ class FileSelectionWindow(QMainWindow):
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
         self.ui.xray_textfield.setText(filename)
-        self.check_button_activate()
+        self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
     def __endoscopy_button_clicked(self):
@@ -112,7 +112,7 @@ class FileSelectionWindow(QMainWindow):
             self.endoscopy_image_positions = positions
             self.endoscopy_filenames = filenames
 
-    def check_button_activate(self):
+    def __check_button_activate(self):
         """
         activates visualization button if necessary files are selected
         """

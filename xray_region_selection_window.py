@@ -51,7 +51,7 @@ class XrayRegionSelectionWindow(QMainWindow):
             self.selector.verts = self.polygon
         else:
             self.selector.verts = [(0, 0)]
-            self.reset_selector()
+            self.__reset_selector()
 
     def __onselect(self, polygon):
         """
@@ -64,7 +64,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         """
         reset-button callback
         """
-        self.reset_selector()
+        self.__reset_selector()
 
     def __apply_button_clicked(self):
         """
@@ -85,7 +85,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         else:
             QMessageBox.critical(self, "Fehler", "Bitte die Form des Ösophagus als Polygon einzeichnen")
 
-    def reset_selector(self):
+    def __reset_selector(self):
         """
         starts the selection of a new polygon
         """

@@ -84,7 +84,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         polygon = image_polygon_detection.calculate_endoscopy_polygon(image)
 
         self.selector.verts = [(0, 0)]
-        self.reset_selector()
+        self.__reset_selector()
 
         if len(polygon) > 0:
             self.selector.verts = polygon
@@ -101,7 +101,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         """
         callback of reset-button
         """
-        self.reset_selector()
+        self.__reset_selector()
 
     def __apply_button_clicked(self):
         """
@@ -126,7 +126,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         else:
             QMessageBox.critical(self, "Fehler", "Bitte den Querschnitt des Ösophagus als Polygon einzeichnen")
 
-    def reset_selector(self):
+    def __reset_selector(self):
         """
         starts a new polygon selection
         """
