@@ -22,7 +22,7 @@ class FileSelectionWindow(QMainWindow):
         """
         super().__init__()
         self.ui = uic.loadUi("ui-files/file_selection_window_design.ui", self)
-        self.master_window = master_window
+        self.master_window: MasterWindow = master_window
         self.default_path = str(Path.home())
         self.endoscopy_filenames = []
         self.endoscopy_image_positions = []

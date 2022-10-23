@@ -36,14 +36,14 @@ class XrayRegionSelectionWindow(QMainWindow):
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
-        self.ax = self.figure_canvas.figure.subplots()
+        self.plot_ax = self.figure_canvas.figure.subplots()
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
-        self.selector = PolygonSelector(self.ax, self.__onselect, useblit=True, props=dict(color='red'))
+        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color='red'))
 
         self.xray_image = io.imread(self.visualization_data.xray_filename)
 
-        self.ax.imshow(self.xray_image)
-        self.ax.axis('off')
+        self.plot_ax.imshow(self.xray_image)
+        self.plot_ax.axis('off')
 
         self.polygon = image_polygon_detection.calculate_xray_polygon(self.xray_image)
 

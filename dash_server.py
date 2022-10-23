@@ -10,8 +10,8 @@ from visualization_data import VisualizationData
 class DashServer:
     """Represents the dash server that is needed for the visualization"""
 
-    __button_text_start = 'Animation starten'
-    __button_text_stop = 'Animation anhalten'
+    button_text_start = 'Animation starten'
+    button_text_stop = 'Animation anhalten'
 
     def __init__(self, visualization_data: VisualizationData):
         """
@@ -130,9 +130,9 @@ class DashServer:
         interval_new_state = not disabled
         slider_new_value = no_update
         if interval_new_state:
-            button_text = DashServer.__button_text_start
+            button_text = DashServer.button_text_start
         else:
-            button_text = DashServer.__button_text_stop
+            button_text = DashServer.button_text_stop
             if value == self.visualization_data.figure_creator.get_number_of_frames() - 1:
                 slider_new_value = 0
         return interval_new_state, button_text, slider_new_value
@@ -146,7 +146,7 @@ class DashServer:
         """
         new_value = value + int(config.csv_values_per_second / config.animation_frames_per_second)
         if new_value >= self.visualization_data.figure_creator.get_number_of_frames() - 1:
-            return self.visualization_data.figure_creator.get_number_of_frames() - 1, DashServer.__button_text_start, True
+            return self.visualization_data.figure_creator.get_number_of_frames() - 1, DashServer.button_text_start, True
         else:
             return new_value, no_update, no_update
 

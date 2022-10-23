@@ -43,10 +43,10 @@ class PositionSelectionWindow(QMainWindow):
         self.ui.gridLayout.addWidget(self.figure_canvas)
 
         self.xray_image = io.imread(self.visualization_data.xray_filename)
-        self.ax = self.figure_canvas.figure.subplots()
+        self.plot_ax = self.figure_canvas.figure.subplots()
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
-        self.ax.imshow(self.xray_image)
-        self.ax.axis('off')
+        self.plot_ax.imshow(self.xray_image)
+        self.plot_ax.axis('off')
         self.figure_canvas.mpl_connect("button_press_event", self.__on_left_click)
 
         self.active_paint_index = None  # None=none, 0=first sensor, 1=second sensor, 2=endoscopy
@@ -60,9 +60,9 @@ class PositionSelectionWindow(QMainWindow):
         :param event:
         """
         if event.xdata and event.ydata and self.active_paint_index is not None:
-            self.ax.clear()
-            self.ax.imshow(self.xray_image)
-            self.ax.axis('off')
+            self.plot_ax.clear()
+            self.plot_ax.imshow(self.xray_image)
+            self.plot_ax.axis('off')
             if self.active_paint_index == 0:
                 self.first_sensor_pos = event.ydata
             elif self.active_paint_index == 1:
@@ -70,11 +70,11 @@ class PositionSelectionWindow(QMainWindow):
             elif self.active_paint_index == 2:
                 self.endoscopy_pos = event.ydata
             if self.first_sensor_pos:
-                self.ax.axhline(self.first_sensor_pos, color='green')
+                self.plot_ax.axhline(self.first_sensor_pos, color='green')
             if self.second_sensor_pos:
-                self.ax.axhline(self.second_sensor_pos, color='blue')
+                self.plot_ax.axhline(self.second_sensor_pos, color='blue')
             if self.endoscopy_pos:
-                self.ax.axhline(self.endoscopy_pos, color='red')
+                self.plot_ax.axhline(self.endoscopy_pos, color='red')
             self.figure_canvas.figure.canvas.draw()
 
     def __apply_button_clicked(self):

@@ -38,7 +38,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
-        self.ax = self.figure_canvas.figure.subplots()
+        self.plot_ax = self.figure_canvas.figure.subplots()
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
 
         self.endoscopy_images = [io.imread(filename) for filename in visualization_data.endoscopy_filenames]
@@ -76,10 +76,10 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         loads the given image
         :param image: the image to load
         """
-        self.ax.clear()
-        self.ax.imshow(image)
-        self.ax.axis('off')
-        self.selector = PolygonSelector(self.ax, self.__onselect, useblit=True, props=dict(color='red'))
+        self.plot_ax.clear()
+        self.plot_ax.imshow(image)
+        self.plot_ax.axis('off')
+        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color='red'))
 
         polygon = image_polygon_detection.calculate_endoscopy_polygon(image)
 
