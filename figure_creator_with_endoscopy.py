@@ -53,6 +53,13 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         endoscopy_image_indexes = FigureCreatorWithEndoscopy.__calculate_endoscopy_indexes(
             visualization_data.endoscopy_image_positions_cm, visualization_data.endoscopy_start_pos - offset_top, sensor_path,
             esophagus_full_length_px, esophagus_full_length_cm)
+        print(visualization_data.endoscopy_image_positions_cm)
+        print(visualization_data.endoscopy_start_pos)
+        print(offset_top)
+        print(sensor_path)
+        print(esophagus_full_length_px)
+        print(esophagus_full_length_cm)
+        print(endoscopy_image_indexes)
         # remove outliers
         indexes_to_remove = [i for i, v in enumerate(endoscopy_image_indexes) if v is None]
         for i in indexes_to_remove:
@@ -157,7 +164,7 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         # find index of sensor_length that corresponds to start_index
         start_iterator = 0
         for i in range(len(sensor_path)):
-            if sensor_path[i][1] == start_index:
+            if sensor_path[i][0] == start_index:
                 start_iterator = i
                 break
         # iterate over sensor_path from start_iterator to find requested index
@@ -167,5 +174,5 @@ class FigureCreatorWithEndoscopy(FigureCreator):
                 current_length += np.sqrt((sensor_path[i][0] - sensor_path[i+1][0]) ** 2 + (sensor_path[i][1] -
                                                                                             sensor_path[i+1][1]) ** 2)
             if current_length >= length_px:
-                return sensor_path[i][1]
+                return sensor_path[i][0]
         return None
