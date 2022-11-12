@@ -8,7 +8,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('D:\\Anaconda\\envs\\esophagus-visualization\\Lib\\site-packages\\dash_extensions', 'dash_extensions'), ('ui-files', 'ui-files'), ('config.py', '.')],
+    datas=[('D:\\Anaconda\\envs\\esophagus-visualization\\Lib\\site-packages\\dash_extensions', 'dash_extensions'), ('ui-files', 'ui-files'), ('config.py', '.'), ('disclaimer.txt', '.'), ('README.md', '.')],
     hiddenimports=['PyQt5.QtWebEngineWidgets'],
     hookspath=[],
     hooksconfig={},

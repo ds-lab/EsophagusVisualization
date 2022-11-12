@@ -69,7 +69,7 @@ class FileSelectionWindow(QMainWindow):
                 matrix = df.to_numpy()
                 matrix = matrix.T  # sensors in axis 0
                 self.pressure_matrix = np.flipud(matrix)  # sensors from top to bottom
-            except KeyError:
+            except:
                 error = True
             if error or self.pressure_matrix.shape[1] < 1:
                 self.ui.csv_textfield.setText("")

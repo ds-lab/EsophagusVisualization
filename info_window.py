@@ -38,7 +38,7 @@ class InfoWindow(QDialog):
         self.ui.textEdit.setHtml(text)
 
     def show_position_selection_info(self):
-        text = """In diesem Fenster werden für die Berechnung der 3D-Darstellung notwendige Position in das Röntenbild 
+        text = """In diesem Fenster werden für die Berechnung der 3D-Darstellung notwendige Positionen in das Röntenbild 
         eingetragen. <br><br>Es sind dabei die Positionen von zwei beliebigen Sensoren der Manometriemessung 
         erforderlich. <br>Diese können aus der 'Laborie'-Software entnommen werden. <br>Für eine gute Präzision 
         sollten die Sensoren möglichst weit auseinander liegen, also etwa ein Sensor im Bereich des oberen Sphinkters 
