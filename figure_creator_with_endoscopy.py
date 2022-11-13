@@ -53,13 +53,6 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         endoscopy_image_indexes = FigureCreatorWithEndoscopy.__calculate_endoscopy_indexes(
             visualization_data.endoscopy_image_positions_cm, visualization_data.endoscopy_start_pos - offset_top, sensor_path,
             esophagus_full_length_px, esophagus_full_length_cm)
-        print(visualization_data.endoscopy_image_positions_cm)
-        print(visualization_data.endoscopy_start_pos)
-        print(offset_top)
-        print(sensor_path)
-        print(esophagus_full_length_px)
-        print(esophagus_full_length_cm)
-        print(endoscopy_image_indexes)
         # remove outliers
         indexes_to_remove = [i for i, v in enumerate(endoscopy_image_indexes) if v is None]
         for i in indexes_to_remove:
