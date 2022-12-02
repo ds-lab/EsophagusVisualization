@@ -38,54 +38,70 @@ class DashServer:
         self.dash_app.layout = html.Div([
             dcc.Interval(id='refresh-graph-interval', disabled=True,
                          interval=1000 / config.animation_frames_per_second),
-            dcc.Store(id='store', data=visualization_data.figure_creator.get_surfacecolor_list()),
+            dcc.Store(id='color-store', data=visualization_data.figure_creator.get_surfacecolor_list()),
+            dcc.Store(id='tubular-metric-store', data=visualization_data.figure_creator.get_metrics()[0]),
+            dcc.Store(id='sphincter-metric-store', data=visualization_data.figure_creator.get_metrics()[1]),
             dcc.Graph(
                 id='3d-figure',
                 figure=visualization_data.figure_creator.get_figure(),
                 config={'modeBarButtonsToRemove': ['toImage', 'resetCameraLastSave3d'], 'displaylogo': False},
-                style={'height': 'calc(100% - 50px)'}
+                style={'height': 'calc(100% - 60px)'}
             ),
             html.Div([
-                html.Div(
-                    html.Button('Animation starten', id='play-button', n_clicks=0),
-                    style={'min-width': '130px', 'vertical-align': 'top', 'display': 'inline-block'}),
-                html.Div(
-                    dcc.Slider(
-                        min=0,
-                        max=visualization_data.figure_creator.get_number_of_frames() - 1,
-                        step=1,
-                        value=0,
-                        marks=None,
-                        id='time-slider',
-                        updatemode='drag'
+                html.Div([
+                    html.Div(
+                        html.Button('Animation starten', id='play-button', n_clicks=0),
+                        style={'min-width': '130px', 'vertical-align': 'top', 'display': 'inline-block'}),
+                    html.Div(
+                        dcc.Slider(
+                            min=0,
+                            max=visualization_data.figure_creator.get_number_of_frames() - 1,
+                            step=1,
+                            value=0,
+                            marks=None,
+                            id='time-slider',
+                            updatemode='drag'
+                        ),
+                        style={'vertical-align': 'top', 'flex': '1 0 auto', 'display': 'inline-block'}
                     ),
-                    style={'vertical-align': 'top', 'flex': '1 0 auto', 'display': 'inline-block'}
-                ),
+                    html.Div(
+                        id='time-field', children=' Zeitpunkt: 0.00s',
+                        style={'min-width': '170px', 'vertical-align': 'top', 'display': 'inline-block'}
+                    )
+                ], style={'min-height': '40px', 'display': 'flex', 'flex-direction': 'row'}),
                 html.Div(
-                    id='time-field', children=' Zeitpunkt: 0.00s',
-                    style={'min-width': '170px', 'vertical-align': 'top', 'display': 'inline-block'}
+                    id='metrics',
+                    children="Metriken: tubulärer Abschnitt (" + str(config.length_tubular_part_cm) +
+                             "cm) [Volumen*Druck]: " + str(round(visualization_data.figure_creator.get_metrics()[0][0], 2)) +
+                             "; unterer Sphinkter (" + str(visualization_data.sphincter_length_cm) +
+                             "cm) [Volumen/Druck]: " + str(round(visualization_data.figure_creator.get_metrics()[1][0], 5))
                 )
-            ], style={'min-height': '50px', 'display': 'flex', 'flex-direction': 'row'})
+            ])
 
         ], style={'height': 'calc(100vh - 20px)'})
 
         self.dash_app.clientside_callback(
             """
-            function(time, figure, colors) {
+            function(time, figure, colors, tubular_metric, sphincter_metric) {
                 var expandedColors = [];
                 for (var i = 0; i < colors[time].length; i++) {
                     expandedColors[i] = new Array(""" + str(config.figure_number_of_angles) + """).fill(colors[time][i]);
                     }
                     new_figure = {...figure};
                     new_figure.data[0].surfacecolor = expandedColors;
-                    return [new_figure, "Zeitpunkt: " + (time/20).toFixed(2) + "s"];
+                    return [new_figure, "Zeitpunkt: " + (time/20).toFixed(2) + "s", "Metriken: tubulärer Abschnitt (""" +
+            str(config.length_tubular_part_cm) + """cm) [Volumen*Druck]: " + tubular_metric[time].toFixed(2) + "; unterer Sphinkter (""" +
+            str(visualization_data.sphincter_length_cm) + """cm) [Volumen/Druck]: " + sphincter_metric[time].toFixed(5)];
                 }
                 """,
             [Output('3d-figure', 'figure'),
-             Output('time-field', 'children')],
+             Output('time-field', 'children'),
+             Output('metrics', 'children')],
             Input('time-slider', 'value'),
             [State('3d-figure', 'figure'),
-             State("store", "data")]
+             State("color-store", "data"),
+             State("tubular-metric-store", "data"),
+             State("sphincter-metric-store", "data")]
         )
 
         self.dash_app.callback([Output('refresh-graph-interval', 'disabled'),

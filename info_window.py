@@ -43,7 +43,9 @@ class InfoWindow(QDialog):
         erforderlich. <br>Diese können aus der 'Laborie'-Software entnommen werden. <br>Für eine gute Präzision 
         sollten die Sensoren möglichst weit auseinander liegen, also etwa ein Sensor im Bereich des oberen Sphinkters 
         und einer im Bereich des unteren. <br><br>Nach einem Klick auf die jeweilige Schaltfläche kann die Position 
-        in der Graphik per Mausklick eingetragen werden. <br><br>Wenn beim Start der Software auch Endoskopiebilder 
+        in der Graphik per Mausklick eingetragen werden. <br><br>Für die Berechnung der Metriken wird die ungefähre 
+        Position des Übergangs zwischen tubulärem Abschnitt und dem unteren Sphinkter sowie die Länge des Sphinkters 
+        (ablesbar in der Laborie-Software) benötigt.<br><br>Wenn beim Start der Software auch Endoskopiebilder 
         angegeben wurden, ist außerdem noch das Eintragen der Position '0cm' (bezogen auf die Positionsangaben 
         in den Dateinamen) in der Graphik nötig."""
         self.ui.textEdit.setHtml(text)
@@ -67,5 +69,7 @@ class InfoWindow(QDialog):
         des Ösophagus in Zentimetern ablesen. Weicht diese stark von der zu erwartenden Größe ab, so deutet dies auf 
         falsch oder ungenau eingetragene Positionen der Sensoren hin.<br><br>
         Durch einen Klick auf 'Animation starten' lässt sich der zeitliche Verlauf der Druckwerte animiert 
-        darstellen. <br>Über die Zeitleiste kann der Zeitpunkt außerdem manuell gewählt werden."""
+        darstellen. <br>Über die Zeitleiste kann der Zeitpunkt außerdem manuell gewählt werden. <br><br>
+        Unten werden die berechneten Metriken für den tubulären Abschnitt (Volumen*Druck) und den unteren Sphinkter 
+        (Volumen/Druck) im Zeitverlauf angezeigt."""
         self.ui.textEdit.setHtml(text)

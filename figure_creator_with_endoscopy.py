@@ -113,6 +113,10 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
                                                   '3D-Ansicht aus Röntgen-, Endoskopie- und Manometriedaten')
 
+        # calculate metrics
+        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
+                                                       len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
+
     def get_figure(self):
         return self.figure
 
@@ -121,6 +125,9 @@ class FigureCreatorWithEndoscopy(FigureCreator):
 
     def get_number_of_frames(self):
         return self.number_of_frames
+
+    def get_metrics(self):
+        return self.metrics
 
     @staticmethod
     def __calculate_endoscopy_indexes(endoscopy_image_positions_cm, start_index, sensor_path, esophagus_full_length_px,
@@ -136,36 +143,8 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         """
         endoscopy_image_indexes = []
         for position in endoscopy_image_positions_cm:
-            endoscopy_image_indexes.append(FigureCreatorWithEndoscopy.__calculate_index_by_startindex_and_cm_position(
+            endoscopy_image_indexes.append(FigureCreator.calculate_index_by_startindex_and_cm_position(
                 start_index, position, sensor_path, esophagus_full_length_px, esophagus_full_length_cm))
         return endoscopy_image_indexes
 
-    @staticmethod
-    def __calculate_index_by_startindex_and_cm_position(start_index, position_cm, sensor_path, esophagus_full_length_px,
-                                                        esophagus_full_length_cm):
-        """
-        calculates an index by going up from a given start
-        :param start_index: start index
-        :param position_cm: way in cm
-        :param sensor_path: estimated path
-        :param esophagus_full_length_px: length in pixels
-        :param esophagus_full_length_cm: length in cm
-        :return: index
-        """
-        length_fraction = position_cm / esophagus_full_length_cm
-        length_px = esophagus_full_length_px * length_fraction
-        # find index of sensor_length that corresponds to start_index
-        start_iterator = 0
-        for i in range(len(sensor_path)):
-            if sensor_path[i][0] == start_index:
-                start_iterator = i
-                break
-        # iterate over sensor_path from start_iterator to find requested index
-        current_length = 0
-        for i in range(start_iterator, -1, -1):
-            if i < start_iterator:
-                current_length += np.sqrt((sensor_path[i][0] - sensor_path[i+1][0]) ** 2 + (sensor_path[i][1] -
-                                                                                            sensor_path[i+1][1]) ** 2)
-            if current_length >= length_px:
-                return sensor_path[i][0]
-        return None
+

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Ösophagus Visualisierung"
-#define MyAppVersion "0.1"
+#define MyAppVersion "0.1.1"
 ;#define MyAppPublisher ""
 #define MyAppExeName "ÖsophagusVisualisierung.exe"
 

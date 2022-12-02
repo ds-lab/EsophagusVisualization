@@ -30,6 +30,7 @@ class PositionSelectionWindow(QMainWindow):
         self.ui.apply_button.clicked.connect(self.__apply_button_clicked)
         self.ui.first_sensor_button.clicked.connect(self.__first_sensor_button_clicked)
         self.ui.second_sensor_button.clicked.connect(self.__second_sensor_button_clicked)
+        self.ui.sphinkter_button.clicked.connect(self.__sphincter_button_clicked)
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -49,10 +50,11 @@ class PositionSelectionWindow(QMainWindow):
         self.plot_ax.axis('off')
         self.figure_canvas.mpl_connect("button_press_event", self.__on_left_click)
 
-        self.active_paint_index = None  # None=none, 0=first sensor, 1=second sensor, 2=endoscopy
+        self.active_paint_index = None  # None=none, 0=first sensor, 1=second sensor, 2=endoscopy, 3=sphincter
         self.first_sensor_pos = None
         self.second_sensor_pos = None
         self.endoscopy_pos = None
+        self.sphincter_upper_pos = None
 
     def __on_left_click(self, event):
         """
@@ -69,12 +71,16 @@ class PositionSelectionWindow(QMainWindow):
                 self.second_sensor_pos = event.ydata
             elif self.active_paint_index == 2:
                 self.endoscopy_pos = event.ydata
+            elif self.active_paint_index == 3:
+                self.sphincter_upper_pos = event.ydata
             if self.first_sensor_pos:
                 self.plot_ax.axhline(self.first_sensor_pos, color='green')
             if self.second_sensor_pos:
                 self.plot_ax.axhline(self.second_sensor_pos, color='blue')
             if self.endoscopy_pos:
                 self.plot_ax.axhline(self.endoscopy_pos, color='red')
+            if self.sphincter_upper_pos:
+                self.plot_ax.axhline(self.sphincter_upper_pos, color='yellow')
             self.figure_canvas.figure.canvas.draw()
 
     def __apply_button_clicked(self):
@@ -97,6 +103,8 @@ class PositionSelectionWindow(QMainWindow):
                             self.visualization_data.first_sensor_index = self.ui.second_combobox.currentIndex()
                             self.visualization_data.second_sensor_pos = int(self.first_sensor_pos - offset)
                             self.visualization_data.second_sensor_index = self.ui.first_combobox.currentIndex()
+                        self.visualization_data.sphincter_upper_pos = int(self.sphincter_upper_pos - offset)
+                        self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
                         if len(self.visualization_data.endoscopy_filenames) > 0:
                             self.visualization_data.endoscopy_start_pos = int(self.endoscopy_pos - offset)
                             endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
@@ -134,12 +142,15 @@ class PositionSelectionWindow(QMainWindow):
     def __endoscopy_button_clicked(self):
         self.active_paint_index = 2
 
+    def __sphincter_button_clicked(self):
+        self.active_paint_index = 3
+
     def __are_necessary_positions_set(self):
         """
         checks if all necessary positions are set
         :return: True or False
         """
-        return self.first_sensor_pos and self.second_sensor_pos \
+        return self.first_sensor_pos and self.second_sensor_pos and self.sphincter_upper_pos \
             and (self.endoscopy_pos or len(self.visualization_data.endoscopy_filenames) == 0)
 
     def __is_sensor_order_correct(self):
@@ -161,6 +172,7 @@ class PositionSelectionWindow(QMainWindow):
         poly_y_max = max([point[1] for point in self.visualization_data.xray_polygon])
         return self.first_sensor_pos < poly_y_min or self.first_sensor_pos > poly_y_max \
             or self.second_sensor_pos < poly_y_min or self.second_sensor_pos > poly_y_max \
+            or self.sphincter_upper_pos < poly_y_min or self.sphincter_upper_pos > poly_y_max \
             or (len(self.visualization_data.endoscopy_filenames) > 0 and (self.endoscopy_pos < poly_y_min
                 or self.endoscopy_pos > poly_y_max))
 

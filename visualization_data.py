@@ -27,6 +27,8 @@ class VisualizationData:
         self._second_sensor_pos = None
         self._second_sensor_index = None
         self._endoscopy_start_pos = None
+        self._sphincter_upper_pos = None
+        self._sphincter_length_cm = None
 
     @property
     def xray_filename(self):
@@ -147,3 +149,19 @@ class VisualizationData:
     @second_sensor_index.setter
     def second_sensor_index(self, value):
         self._second_sensor_index = value
+
+    @property
+    def sphincter_upper_pos(self):
+        return self._sphincter_upper_pos
+
+    @sphincter_upper_pos.setter
+    def sphincter_upper_pos(self, value):
+        self._sphincter_upper_pos = value
+
+    @property
+    def sphincter_length_cm(self):
+        return self._sphincter_length_cm
+
+    @sphincter_length_cm.setter
+    def sphincter_length_cm(self, value):
+        self._sphincter_length_cm = value

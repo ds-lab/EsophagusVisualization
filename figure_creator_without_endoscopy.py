@@ -45,6 +45,10 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
                                                   '3D-Ansicht aus Röntgen- und Manometriedaten')
 
+        # calculate metrics
+        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
+                                                       len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
+
     def get_figure(self):
         return self.figure
 
@@ -53,3 +57,6 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
 
     def get_number_of_frames(self):
         return self.number_of_frames
+
+    def get_metrics(self):
+        return self.metrics
