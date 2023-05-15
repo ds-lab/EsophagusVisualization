@@ -11,7 +11,7 @@ Requirements installieren:
 - pip install -r requirements.txt
 
 Starten mit:
-- python main.py
+- python .\3drekonstruktionspeiseroehre\main.py
 
 ## Exe-Datei erstellen
 Zuerst in der Datei 'main.spec' den Pfad zum Ordner 'dash_extensions' im Conda-Environment anpassen. 

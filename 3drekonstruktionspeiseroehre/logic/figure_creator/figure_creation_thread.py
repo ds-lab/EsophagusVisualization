@@ -1,10 +1,10 @@
 import cv2
 from PyQt5.QtCore import QThread, pyqtSignal
 import numpy as np
-from figure_creator import FigureCreator
-from figure_creator_without_endoscopy import FigureCreatorWithoutEndoscopy
-from figure_creator_with_endoscopy import FigureCreatorWithEndoscopy
-from visualization_data import VisualizationData
+from logic.figure_creator.figure_creator import FigureCreator
+from logic.figure_creator.figure_creator_without_endoscopy import FigureCreatorWithoutEndoscopy
+from logic.figure_creator.figure_creator_with_endoscopy import FigureCreatorWithEndoscopy
+from logic.visualization_data import VisualizationData
 
 
 class FigureCreationThread(QThread):

@@ -4,7 +4,7 @@ import numpy as np
 import shapely.geometry
 from skimage import graph
 import config
-from visualization_data import VisualizationData
+from logic.visualization_data import VisualizationData
 
 
 class FigureCreator(ABC):

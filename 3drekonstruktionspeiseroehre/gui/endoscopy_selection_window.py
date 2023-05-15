@@ -6,11 +6,11 @@ from PyQt5 import QtWidgets, uic
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
-from master_window import MasterWindow
-from info_window import InfoWindow
-from visualization_data import VisualizationData
-from visualization_window import VisualizationWindow
-import image_polygon_detection
+from gui.master_window import MasterWindow
+from gui.info_window import InfoWindow
+from logic.visualization_data import VisualizationData
+from gui.visualization_window import VisualizationWindow
+import logic.image_polygon_detection as image_polygon_detection
 
 
 class EndoscopySelectionWindow(QtWidgets.QMainWindow):
@@ -23,7 +23,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         :param visualization_data: VisualizationData
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/endoscopy_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/endoscopy_selection_window_design.ui", self)
         self.master_window = master_window
 
         self.visualization_data = visualization_data

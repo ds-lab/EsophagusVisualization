@@ -1,7 +1,7 @@
 import numpy as np
 import config
-from figure_creator import FigureCreator
-from visualization_data import VisualizationData
+from logic.figure_creator.figure_creator import FigureCreator
+from logic.visualization_data import VisualizationData
 
 
 class FigureCreatorWithoutEndoscopy(FigureCreator):

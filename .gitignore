@@ -5,3 +5,5 @@ __pycache__
 installer
 dist
 build
+.vscode
+/3drekonstruktionspeiseroehre.egg-info

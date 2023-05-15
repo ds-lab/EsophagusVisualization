@@ -3,11 +3,11 @@ from PyQt5.QtWidgets import QMessageBox, QMainWindow, QAction
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from skimage import io
-from endoscopy_selection_window import EndoscopySelectionWindow
-from master_window import MasterWindow
-from info_window import InfoWindow
-from visualization_data import VisualizationData
-from visualization_window import VisualizationWindow
+from gui.endoscopy_selection_window import EndoscopySelectionWindow
+from gui.master_window import MasterWindow
+from gui.info_window import InfoWindow
+from logic.visualization_data import VisualizationData
+from gui.visualization_window import VisualizationWindow
 
 
 class PositionSelectionWindow(QMainWindow):
@@ -20,7 +20,7 @@ class PositionSelectionWindow(QMainWindow):
         :param visualization_data: VisualizationData
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.visualization_data = visualization_data
         sensor_names = ["P" + str(22 - i) for i in range(22)]

@@ -2,10 +2,10 @@ from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction
 from PyQt5.QtCore import QUrl
 from PyQt5 import uic
 from dash_server import DashServer
-from figure_creation_thread import FigureCreationThread
-from master_window import MasterWindow
-from info_window import InfoWindow
-from visualization_data import VisualizationData
+from logic.figure_creator.figure_creation_thread import FigureCreationThread
+from gui.master_window import MasterWindow
+from gui.info_window import InfoWindow
+from logic.visualization_data import VisualizationData
 
 
 class VisualizationWindow(QMainWindow):
@@ -18,7 +18,7 @@ class VisualizationWindow(QMainWindow):
         :param visualization_data: VisualizationData
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/visualization_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/visualization_window_design.ui", self)
         self.master_window = master_window
         self.visualization_data = visualization_data
         menu_button = QAction("Info", self)
