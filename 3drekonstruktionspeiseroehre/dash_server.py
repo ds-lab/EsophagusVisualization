@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 from dash_extensions.enrich import Input, Output, State, DashProxy, MultiplexerTransform, html, dcc, no_update
 from kthread import KThread
 import config
-from visualization_data import VisualizationData
+from logic.visualization_data import VisualizationData
 
 
 class DashServer:

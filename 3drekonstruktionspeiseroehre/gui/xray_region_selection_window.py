@@ -6,11 +6,11 @@ from PyQt5 import uic
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
-from master_window import MasterWindow
-from info_window import InfoWindow
-from position_selection_window import PositionSelectionWindow
-from visualization_data import VisualizationData
-import image_polygon_detection
+from gui.master_window import MasterWindow
+from gui.info_window import InfoWindow
+from gui.position_selection_window import PositionSelectionWindow
+from logic.visualization_data import VisualizationData
+import logic.image_polygon_detection as image_polygon_detection
 
 
 class XrayRegionSelectionWindow(QMainWindow):
@@ -23,7 +23,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         :param visualization_data: VisualizationData
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/xray_region_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/xray_region_selection_window_design.ui", self)
         self.master_window = master_window
         self.master_window.maximize()
         self.visualization_data = visualization_data

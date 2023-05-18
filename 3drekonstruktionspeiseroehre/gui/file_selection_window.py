@@ -6,10 +6,10 @@ import pandas as pd
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QAction
 from PyQt5 import uic
 import config
-from master_window import MasterWindow
-from info_window import InfoWindow
-from visualization_data import VisualizationData
-from xray_region_selection_window import XrayRegionSelectionWindow
+from gui.master_window import MasterWindow
+from gui.info_window import InfoWindow
+from logic.visualization_data import VisualizationData
+from gui.xray_region_selection_window import XrayRegionSelectionWindow
 
 
 class FileSelectionWindow(QMainWindow):
@@ -21,7 +21,7 @@ class FileSelectionWindow(QMainWindow):
         :param master_window: the MasterWindow in which the next window will be displayed
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/file_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
         self.default_path = str(Path.home())
         self.endoscopy_filenames = []

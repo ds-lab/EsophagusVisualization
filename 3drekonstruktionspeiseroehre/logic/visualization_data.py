@@ -1,5 +1,3 @@
-
-
 class VisualizationData:
     """Data class for values needed in many steps"""
 

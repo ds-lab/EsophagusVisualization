@@ -3,8 +3,8 @@ from shapely.geometry import LineString
 import numpy as np
 from scipy.interpolate import interp1d
 import config
-from figure_creator import FigureCreator
-from visualization_data import VisualizationData
+from logic.figure_creator.figure_creator import FigureCreator
+from logic.visualization_data import VisualizationData
 
 
 class FigureCreatorWithEndoscopy(FigureCreator):
