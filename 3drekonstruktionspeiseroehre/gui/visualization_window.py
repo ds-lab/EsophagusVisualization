@@ -1,4 +1,6 @@
-from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction
+import pickle
+import shutil
+from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog
 from PyQt5.QtCore import QUrl
 from PyQt5 import uic
 from dash_server import DashServer
@@ -24,6 +26,9 @@ class VisualizationWindow(QMainWindow):
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
+        menu_button_2 = QAction("Download", self)
+        menu_button_2.triggered.connect(self.__download_file)
+        self.ui.menubar.addAction(menu_button_2)
 
         self.dash_server = None
         self.progress_dialog = QProgressDialog("Visualisierung wird erstellt", None, 0, 100, None)
@@ -72,5 +77,15 @@ class VisualizationWindow(QMainWindow):
         url.setPort(self.dash_server.get_port())
         self.ui.webView.load(url)
 
-
+    def __download_file(self):
+        """
+        Download button callback
+        """
+        # Prompt the user to choose a destination path
+        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "Pickle Files (*.pickle)")
+    
+        # Save the visualization_data object as a pickle file
+        with open(destination_file_path, 'wb') as file:
+            pickle.dump(self.visualization_data, file)
+        
 

@@ -1,8 +1,7 @@
 import socket
-import flask
 import waitress
 from PyQt5.QtWidgets import QMessageBox
-from dash_extensions.enrich import Input, Output, State, DashProxy, MultiplexerTransform, html, dcc, no_update, ctx
+from dash_extensions.enrich import Input, Output, State, DashProxy, MultiplexerTransform, html, dcc, no_update
 from kthread import KThread
 import config
 from logic.visualization_data import VisualizationData
@@ -42,9 +41,7 @@ class DashServer:
             dcc.Store(id='color-store', data=visualization_data.figure_creator.get_surfacecolor_list()),
             dcc.Store(id='tubular-metric-store', data=visualization_data.figure_creator.get_metrics()[0]),
             dcc.Store(id='sphincter-metric-store', data=visualization_data.figure_creator.get_metrics()[1]),
-            html.Div(
-                html.A(html.Button('Download', id='download-button'), id='download', download='file.txt')),
-            #dcc.Download(id="download"),
+           
             dcc.Graph(
                 id='3d-figure',
                 figure=visualization_data.figure_creator.get_figure(),
@@ -120,23 +117,7 @@ class DashServer:
                                 Output('refresh-graph-interval', 'disabled')],
                                [Input('refresh-graph-interval', 'n_intervals')],
                                [State('time-slider', 'value')])(self.__interval_action_callback)
-        
-        # TODO: callback for download
 
-        
-        @self.dash_app.callback(Output("download", "href"),
-                               Input("download-button", "n_clicks"))
-        def download_file(n_clicks):
-            if n_clicks is None:
-                return no_update
-            
-            file_path = '3drekonstruktionspeiseroehre/ui-files/info_window_design.ui'  # Path to the file you want to download
-            return f'/download?file_path={file_path}'
-
-        @self.dash_app.server.route('/download')
-        def serve_file():
-            file_path = flask.request.args.get('file_path', '')
-            return flask.send_file(file_path, as_attachment=True)
 
         self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
         self.thread = KThread(target=self.server.run)
@@ -173,18 +154,6 @@ class DashServer:
             if value == self.visualization_data.figure_creator.get_number_of_frames() - 1:
                 slider_new_value = 0
         return interval_new_state, button_text, slider_new_value
-    
-    def __download_button_clicked_callback(self, n_clicks):
-        """
-        callback of the download button
-        :param n_clicks: number of clicks
-        :param disabled: disabled state of refresh-graph-interval
-        :param value: time-slider value
-        :return: new interval state, new button text, new slider value
-        """
-        if ctx.triggered_id == 'download_button':
-            with open('sample.txt', 'w') as creating_file: 
-                return dcc.send_file(creating_file)
 
     def __interval_action_callback(self, n_intervals, value):
         """
