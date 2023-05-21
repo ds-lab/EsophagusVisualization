@@ -1,6 +1,8 @@
 import os
+import pickle
 import re
 from pathlib import Path
+from gui.visualization_window import VisualizationWindow
 import numpy as np
 import pandas as pd
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QAction
@@ -26,6 +28,7 @@ class FileSelectionWindow(QMainWindow):
         self.default_path = str(Path.home())
         self.endoscopy_filenames = []
         self.endoscopy_image_positions = []
+        self.ui.import_button.clicked.connect(self.__import_button_clicked)
         self.ui.visualization_button.clicked.connect(self.__visualization_button_clicked)
         self.ui.csv_button.clicked.connect(self.__csv_button_clicked)
         self.ui.xray_button.clicked.connect(self.__xray_button_clicked)
@@ -47,13 +50,23 @@ class FileSelectionWindow(QMainWindow):
         """
         visualization button callback
         """
-        visualization_data = VisualizationData()
-        visualization_data.xray_filename = self.ui.xray_textfield.text()
-        visualization_data.pressure_matrix = self.pressure_matrix
-        visualization_data.endoscopy_filenames = self.endoscopy_filenames
-        visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
-        xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data)
-        self.master_window.switch_to(xray_selection_window)
+        if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield.text()) > 0:
+            visualization_data = VisualizationData()
+            visualization_data.xray_filename = self.ui.xray_textfield.text()
+            visualization_data.pressure_matrix = self.pressure_matrix
+            visualization_data.endoscopy_filenames = self.endoscopy_filenames
+            visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
+            xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data)
+            self.master_window.switch_to(xray_selection_window)
+        elif len(self.ui.import_textfield.text()) > 0:
+            # Open the pickle file in binary mode for reading
+            with open(self.ui.import_textfield.text(), 'rb') as file:
+                # Load the VisualizationData object from import file
+                visualization_data =  pickle.load(file)
+            visualization_window = VisualizationWindow(self.master_window, visualization_data)
+            self.master_window.switch_to(visualization_window)
+            self.close()
+
         self.close()
 
     def __csv_button_clicked(self):
@@ -112,11 +125,21 @@ class FileSelectionWindow(QMainWindow):
             self.endoscopy_image_positions = positions
             self.endoscopy_filenames = filenames
 
+    def __import_button_clicked(self):
+        """
+        x-ray button callback
+        """
+        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
+                                                  "exportierte Datei (*.pickle)")
+        self.ui.import_textfield.setText(filename)
+        self.__check_button_activate()
+        self.default_path = os.path.dirname(filename)
+
     def __check_button_activate(self):
         """
         activates visualization button if necessary files are selected
         """
-        if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield.text()) > 0:
+        if (len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield.text()) > 0) or len(self.ui.import_textfield.text()) > 0:
             self.ui.visualization_button.setDisabled(False)
         else:
             self.ui.visualization_button.setDisabled(True)
