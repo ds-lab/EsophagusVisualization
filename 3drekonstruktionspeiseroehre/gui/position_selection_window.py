@@ -90,14 +90,17 @@ class PositionSelectionWindow(QMainWindow):
         """
         apply-button callback
         """
+        # füge alle visualization Data der Bilder zu all_visualization hinzu
         self.all_visualization.append(self.visualization_data)
+        # falls es nächste Fenster gibt, gehe zu nächstem Fenster
         if self.next_window:
             self.master_window.switch_to(self.next_window)
+        # wenn nicht, dann erzeuge Visualisierung
         else:
-            self.__apply_button_clicked_backup()
+            self.__create_visualization()
 
 
-    def __apply_button_clicked_backup(self):
+    def __create_visualization(self):
         """
         apply-button callback
         """
