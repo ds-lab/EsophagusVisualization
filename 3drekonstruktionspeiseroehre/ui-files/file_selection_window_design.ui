@@ -157,7 +157,7 @@
        <item row="4" column="0">
        <widget class="QGroupBox" name="groupBox_2">
         <property name="title">
-         <string>Röntgenbild 3 sek auswählen (optional) </string>
+         <string>Röntgenbild 5 sek auswählen (optional) </string>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="0">
