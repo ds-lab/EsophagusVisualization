@@ -19,15 +19,18 @@ class ShowMoreWindows(QMainWindow):
         for visualization in visualization_list:
 
             xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization)
-            # self.master_window.switch_to(xray_selection_window)
             w_list.append(xray_selection_window)
 
 
         for i,w in enumerate(w_list):
             if i == len(w_list)-1:
                 next_window = None
+                w.all_visualization = w_list[i-1].all_visualization
+            elif i == 0:
+                next_window = w_list[i+1]
             else:
                 next_window = w_list[i+1]
+                w.all_visualization = w_list[i - 1].all_visualization
             w.next_window = next_window
 
         self.master_window.switch_to(w_list[0])

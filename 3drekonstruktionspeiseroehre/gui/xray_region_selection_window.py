@@ -17,6 +17,7 @@ class XrayRegionSelectionWindow(QMainWindow):
     """Window where the user selects the shape of the esophagus on the x-ray image"""
 
     next_window = None
+    all_visualization = []
 
     def __init__(self, master_window: MasterWindow, visualization):
         """
@@ -82,7 +83,8 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.visualization_data.xray_image_height = self.xray_image.shape[0]
                 self.visualization_data.xray_image_width = self.xray_image.shape[1]
                 position_selection_window = PositionSelectionWindow(self.master_window, self.visualization_data,
-                                                                    self.next_window)
+                                                                    self.next_window, self.all_visualization)
+                self.all_visualization = position_selection_window.all_visualization
                 self.master_window.switch_to(position_selection_window)
                 self.close()
             else:

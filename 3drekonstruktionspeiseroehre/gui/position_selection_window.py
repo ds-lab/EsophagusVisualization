@@ -13,18 +13,18 @@ from gui.visualization_window import VisualizationWindow
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    next_window = None
-
-    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData, next_window):
+    def __init__(self, master_window: MasterWindow, visualization, next_window, all_visualization):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
         :param visualization_data: VisualizationData
         """
+
         super().__init__()
         self.ui = uic.loadUi("ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
-        self.visualization_data = visualization_data
+        self.visualization_data = visualization
+        self.all_visualization = all_visualization
         self.next_window = next_window
         sensor_names = ["P" + str(22 - i) for i in range(22)]
         self.ui.first_combobox.addItems(sensor_names)
@@ -90,7 +90,7 @@ class PositionSelectionWindow(QMainWindow):
         """
         apply-button callback
         """
-        print('apply position selection')
+        self.all_visualization.append(self.visualization_data)
         if self.next_window:
             self.master_window.switch_to(self.next_window)
         else:
@@ -101,6 +101,8 @@ class PositionSelectionWindow(QMainWindow):
         """
         apply-button callback
         """
+        all_visualization = self.all_visualization
+
         if self.__are_necessary_positions_set():
             if self.ui.first_combobox.currentIndex() != self.ui.second_combobox.currentIndex():
                 if self.__is_sensor_order_correct():
