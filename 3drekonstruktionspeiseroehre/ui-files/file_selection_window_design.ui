@@ -32,13 +32,7 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
       </property>
-      <item row="3" column="0">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
+
       <item row="2" column="0">
        <widget class="QLabel" name="label">
         <property name="minimumSize">
@@ -79,7 +73,7 @@
         </layout>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="1" column="0">
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
          <string>Manometriedatei auswählen (im CSV-Format)</string>
@@ -106,23 +100,23 @@
         </layout>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="2" column="0">
        <widget class="QGroupBox" name="groupBox_2">
         <property name="title">
-         <string>Röntgenbild auswählen</string>
+         <string>Röntgenbild 1 sek auswählen</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="0">
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
-            <widget class="QLineEdit" name="xray_textfield">
+            <widget class="QLineEdit" name="xray_textfield1">
              <property name="enabled">
               <bool>false</bool>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="xray_button">
+            <widget class="QPushButton" name="xray_button1">
              <property name="text">
               <string>Datei auswählen</string>
              </property>
@@ -133,7 +127,61 @@
         </layout>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="3" column="0">
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>Röntgenbild 2 sek auswählen (optional)</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLineEdit" name="xray_textfield2">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="xray_button2">
+             <property name="text">
+              <string>Datei auswählen</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+       <item row="4" column="0">
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>Röntgenbild 3 sek auswählen (optional) </string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLineEdit" name="xray_textfield5">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="xray_button5">
+             <property name="text">
+              <string>Datei auswählen</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="5" column="0">
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
          <string>Endoskopiebilder auswählen (optional)</string>
@@ -160,20 +208,14 @@
         </layout>
        </widget>
       </item>
-      <item row="7" column="0">
+      <item row="6" column="0">
        <widget class="QPushButton" name="visualization_button">
         <property name="text">
          <string>Visualisierung generieren</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
+
      </layout>
     </item>
    </layout>

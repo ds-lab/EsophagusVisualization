@@ -23,7 +23,7 @@ class FileSelectionWindow(QMainWindow):
         :param master_window: the MasterWindow in which the next window will be displayed
         """
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
+        self.ui = uic.loadUi("ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
         self.default_path = str(Path.home())
         self.endoscopy_filenames = []
@@ -31,7 +31,9 @@ class FileSelectionWindow(QMainWindow):
         self.ui.import_button.clicked.connect(self.__import_button_clicked)
         self.ui.visualization_button.clicked.connect(self.__visualization_button_clicked)
         self.ui.csv_button.clicked.connect(self.__csv_button_clicked)
-        self.ui.xray_button.clicked.connect(self.__xray_button_clicked)
+        self.ui.xray_button1.clicked.connect(self.__xray_button_clicked1)
+        self.ui.xray_button2.clicked.connect(self.__xray_button_clicked2)
+        self.ui.xray_button5.clicked.connect(self.__xray_button_clicked5)
         self.ui.endoscopy_button.clicked.connect(self.__endoscopy_button_clicked)
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -50,9 +52,9 @@ class FileSelectionWindow(QMainWindow):
         """
         visualization button callback
         """
-        if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield.text()) > 0:
+        if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield1.text()) > 0:
             visualization_data = VisualizationData()
-            visualization_data.xray_filename = self.ui.xray_textfield.text()
+            visualization_data.xray_filename = self.ui.xray_textfield1.text()
             visualization_data.pressure_matrix = self.pressure_matrix
             visualization_data.endoscopy_filenames = self.endoscopy_filenames
             visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
@@ -92,13 +94,39 @@ class FileSelectionWindow(QMainWindow):
         self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
-    def __xray_button_clicked(self):
+    def __xray_button_clicked1(self):
         """
         x-ray button callback
         """
+        ' todo: enable to select more than one file'
+        print('hier select')
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
-        self.ui.xray_textfield.setText(filename)
+        self.ui.xray_textfield1.setText(filename)
+        self.__check_button_activate()
+        self.default_path = os.path.dirname(filename)
+
+    def __xray_button_clicked2(self):
+        """
+        x-ray button callback
+        """
+        ' todo: enable to select more than one file'
+        print('hier select')
+        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
+                                                  "Bilder (*.jpg *.JPG *.png *.PNG)")
+        self.ui.xray_textfield2.setText(filename)
+        self.__check_button_activate()
+        self.default_path = os.path.dirname(filename)
+
+    def __xray_button_clicked5(self):
+        """
+        x-ray button callback
+        """
+        ' todo: enable to select more than one file'
+        print('hier select')
+        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
+                                                  "Bilder (*.jpg *.JPG *.png *.PNG)")
+        self.ui.xray_textfield5.setText(filename)
         self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
@@ -139,7 +167,9 @@ class FileSelectionWindow(QMainWindow):
         """
         activates visualization button if necessary files are selected
         """
-        if (len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield.text()) > 0) or len(self.ui.import_textfield.text()) > 0:
+        if len(self.ui.csv_textfield.text()) > 0 and (len(self.ui.xray_textfield1.text()) > 0 or
+                                                      len(self.ui.xray_textfield2.text()) > 0 or
+                                                      len(self.ui.xray_textfield5.text()) > 0):
             self.ui.visualization_button.setDisabled(False)
         else:
             self.ui.visualization_button.setDisabled(True)
