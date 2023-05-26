@@ -13,7 +13,9 @@ from gui.visualization_window import VisualizationWindow
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData):
+    next_window = None
+
+    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData, next_window):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -23,6 +25,7 @@ class PositionSelectionWindow(QMainWindow):
         self.ui = uic.loadUi("ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.visualization_data = visualization_data
+        self.next_window = next_window
         sensor_names = ["P" + str(22 - i) for i in range(22)]
         self.ui.first_combobox.addItems(sensor_names)
         self.ui.second_combobox.addItems(sensor_names)
@@ -83,8 +86,18 @@ class PositionSelectionWindow(QMainWindow):
                 self.plot_ax.axhline(self.sphincter_upper_pos, color='yellow')
             self.figure_canvas.figure.canvas.draw()
 
-
     def __apply_button_clicked(self):
+        """
+        apply-button callback
+        """
+        print('apply position selection')
+        if self.next_window:
+            self.master_window.switch_to(self.next_window)
+        else:
+            self.__apply_button_clicked_backup()
+
+
+    def __apply_button_clicked_backup(self):
         """
         apply-button callback
         """

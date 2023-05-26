@@ -16,12 +16,15 @@ import logic.image_polygon_detection as image_polygon_detection
 class XrayRegionSelectionWindow(QMainWindow):
     """Window where the user selects the shape of the esophagus on the x-ray image"""
 
+    next_window = None
+
     def __init__(self, master_window: MasterWindow, visualization):
         """
         init XrayRegionSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
         :param visualization_data: VisualizationData
         """
+
         super().__init__()
         self.ui = uic.loadUi("ui-files/xray_region_selection_window_design.ui", self)
         self.master_window = master_window
@@ -78,7 +81,8 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.visualization_data.xray_polygon = np.array(self.polygon, dtype=int)
                 self.visualization_data.xray_image_height = self.xray_image.shape[0]
                 self.visualization_data.xray_image_width = self.xray_image.shape[1]
-                position_selection_window = PositionSelectionWindow(self.master_window, self.visualization_data)
+                position_selection_window = PositionSelectionWindow(self.master_window, self.visualization_data,
+                                                                    self.next_window)
                 self.master_window.switch_to(position_selection_window)
                 self.close()
             else:

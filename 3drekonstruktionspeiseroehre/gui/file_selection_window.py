@@ -65,7 +65,7 @@ class FileSelectionWindow(QMainWindow):
 
             visualization_list.append(visualization_data)
 
-        elif len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield2.text()) > 0:
+        if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield2.text()) > 0:
             visualization_data2 = VisualizationData()
             visualization_data2.xray_filename = self.ui.xray_textfield2.text()
             visualization_data2.pressure_matrix = self.pressure_matrix
@@ -74,7 +74,7 @@ class FileSelectionWindow(QMainWindow):
 
             visualization_list.append(visualization_data2)
 
-        elif len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield5.text()) > 0:
+        if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield5.text()) > 0:
             visualization_data5 = VisualizationData()
             visualization_data5.xray_filename = self.ui.xray_textfield5.text()
             visualization_data5.pressure_matrix = self.pressure_matrix
