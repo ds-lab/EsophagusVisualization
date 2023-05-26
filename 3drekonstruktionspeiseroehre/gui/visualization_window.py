@@ -87,7 +87,7 @@ class VisualizationWindow(QMainWindow):
         Download button callback
         """
         # Prompt the user to choose a destination path
-        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "Pickle Files (*.pickle)")
+        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "Pickle Files (*.achalsie)")
     
         # Save the visualization_data object as a pickle file
         with open(destination_file_path, 'wb') as file:
