@@ -41,6 +41,7 @@ class DashServer:
             dcc.Store(id='color-store', data=visualization_data.figure_creator.get_surfacecolor_list()),
             dcc.Store(id='tubular-metric-store', data=visualization_data.figure_creator.get_metrics()[0]),
             dcc.Store(id='sphincter-metric-store', data=visualization_data.figure_creator.get_metrics()[1]),
+           
             dcc.Graph(
                 id='3d-figure',
                 figure=visualization_data.figure_creator.get_figure(),
@@ -117,6 +118,7 @@ class DashServer:
                                [Input('refresh-graph-interval', 'n_intervals')],
                                [State('time-slider', 'value')])(self.__interval_action_callback)
 
+
         self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
         self.thread = KThread(target=self.server.run)
         self.thread.start()
@@ -166,3 +168,4 @@ class DashServer:
         else:
             return new_value, no_update, no_update
 
+    
