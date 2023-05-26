@@ -11,7 +11,8 @@ import config
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from logic.visualization_data import VisualizationData
-from gui.xray_region_selection_window import XrayRegionSelectionWindow
+
+from gui.more_files import ShowMoreWindows
 
 
 class FileSelectionWindow(QMainWindow):
@@ -52,22 +53,46 @@ class FileSelectionWindow(QMainWindow):
         """
         visualization button callback
         """
+
+        visualization_list = []
+
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield1.text()) > 0:
             visualization_data = VisualizationData()
             visualization_data.xray_filename = self.ui.xray_textfield1.text()
             visualization_data.pressure_matrix = self.pressure_matrix
             visualization_data.endoscopy_filenames = self.endoscopy_filenames
             visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
-            xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data)
-            self.master_window.switch_to(xray_selection_window)
+
+            visualization_list.append(visualization_data)
+
+        elif len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield2.text()) > 0:
+            visualization_data2 = VisualizationData()
+            visualization_data2.xray_filename = self.ui.xray_textfield2.text()
+            visualization_data2.pressure_matrix = self.pressure_matrix
+            visualization_data2.endoscopy_filenames = self.endoscopy_filenames
+            visualization_data2.endoscopy_image_positions_cm = self.endoscopy_image_positions
+
+            visualization_list.append(visualization_data2)
+
+        elif len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield5.text()) > 0:
+            visualization_data5 = VisualizationData()
+            visualization_data5.xray_filename = self.ui.xray_textfield5.text()
+            visualization_data5.pressure_matrix = self.pressure_matrix
+            visualization_data5.endoscopy_filenames = self.endoscopy_filenames
+            visualization_data5.endoscopy_image_positions_cm = self.endoscopy_image_positions
+
+            visualization_list.append(visualization_data5)
+
         elif len(self.ui.import_textfield.text()) > 0:
             # Open the pickle file in binary mode for reading
             with open(self.ui.import_textfield.text(), 'rb') as file:
                 # Load the VisualizationData object from import file
-                visualization_data =  pickle.load(file)
+                visualization_data = pickle.load(file)
             visualization_window = VisualizationWindow(self.master_window, visualization_data)
             self.master_window.switch_to(visualization_window)
             self.close()
+
+        ShowMoreWindows(self.master_window, visualization_list)
 
         self.close()
 
@@ -98,8 +123,6 @@ class FileSelectionWindow(QMainWindow):
         """
         x-ray button callback
         """
-        ' todo: enable to select more than one file'
-        print('hier select')
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
         self.ui.xray_textfield1.setText(filename)
@@ -110,8 +133,6 @@ class FileSelectionWindow(QMainWindow):
         """
         x-ray button callback
         """
-        ' todo: enable to select more than one file'
-        print('hier select')
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
         self.ui.xray_textfield2.setText(filename)
@@ -122,8 +143,6 @@ class FileSelectionWindow(QMainWindow):
         """
         x-ray button callback
         """
-        ' todo: enable to select more than one file'
-        print('hier select')
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
         self.ui.xray_textfield5.setText(filename)

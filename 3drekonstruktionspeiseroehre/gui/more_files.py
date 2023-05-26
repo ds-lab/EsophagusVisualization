@@ -1,0 +1,21 @@
+from PyQt5.QtWidgets import QMainWindow, QAction
+from gui.master_window import MasterWindow
+from gui.xray_region_selection_window import XrayRegionSelectionWindow
+
+
+class ShowMoreWindows(QMainWindow):
+
+    def __init__(self, master_window: MasterWindow, visualization_list):
+        """
+        init FileSelectionWindow
+        :param master_window: the MasterWindow in which the next window will be displayed
+        """
+        super().__init__()
+
+        self.master_window: MasterWindow = master_window
+
+        for visualization in visualization_list:
+
+            xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization)
+            self.master_window.switch_to(xray_selection_window)
+

@@ -83,6 +83,7 @@ class PositionSelectionWindow(QMainWindow):
                 self.plot_ax.axhline(self.sphincter_upper_pos, color='yellow')
             self.figure_canvas.figure.canvas.draw()
 
+
     def __apply_button_clicked(self):
         """
         apply-button callback
