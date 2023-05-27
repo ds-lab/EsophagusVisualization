@@ -30,7 +30,7 @@ class DashServer:
             except:
                 pass
         if not socket_bound:
-            self.server_socket .close()
+            self.server_socket.close()
             QMessageBox.critical(None, "Fehler", "Keiner der in der Konfiguration angegebenen Ports ist verfügbar")
             return
 
@@ -41,7 +41,7 @@ class DashServer:
             dcc.Store(id='color-store', data=visualization_data.figure_creator.get_surfacecolor_list()),
             dcc.Store(id='tubular-metric-store', data=visualization_data.figure_creator.get_metrics()[0]),
             dcc.Store(id='sphincter-metric-store', data=visualization_data.figure_creator.get_metrics()[1]),
-           
+
             dcc.Graph(
                 id='3d-figure',
                 figure=visualization_data.figure_creator.get_figure(),
@@ -52,7 +52,8 @@ class DashServer:
                 html.Div([
                     html.Div(
                         html.Button('Animation starten', id='play-button', n_clicks=0),
-                        style={'min-width': '130px', 'vertical-align': 'top', 'display': 'inline-block'}),
+                        style={'min-width': '130px', 'vertical-align': 'top', 'display': 'inline-block'}
+                    ),
                     html.Div(
                         dcc.Slider(
                             min=0,
@@ -66,17 +67,39 @@ class DashServer:
                         style={'vertical-align': 'top', 'flex': '1 0 auto', 'display': 'inline-block'}
                     ),
                     html.Div(
-                        id='time-field', children=' Zeitpunkt: 0.00s',
+                        id='time-field',
+                        children=' Zeitpunkt: 0.00s',
                         style={'min-width': '170px', 'vertical-align': 'top', 'display': 'inline-block'}
-                    )
+                    ),
                 ], style={'min-height': '40px', 'display': 'flex', 'flex-direction': 'row'}),
                 html.Div(
                     id='metrics',
                     children="Metriken: tubulärer Abschnitt (" + str(config.length_tubular_part_cm) +
-                             "cm) [Volumen*Druck]: " + str(round(visualization_data.figure_creator.get_metrics()[0][0], 2)) +
+                             "cm) [Volumen*Druck]: " + str(
+                        round(visualization_data.figure_creator.get_metrics()[0][0], 2)) +
                              "; unterer Sphinkter (" + str(visualization_data.sphincter_length_cm) +
-                             "cm) [Volumen/Druck]: " + str(round(visualization_data.figure_creator.get_metrics()[1][0], 5))
-                )
+                             "cm) [Volumen/Druck]: " + str(
+                        round(visualization_data.figure_creator.get_metrics()[1][0], 5))
+                ),
+                html.Div(
+                    children="Wähle Breischluckbild:",
+                    style={'font-weight': 'bold'}
+                ),
+                html.Div([
+                    html.Div(
+                        dcc.RadioItems(
+                            id='radio-buttons',
+                            options=[
+                                {'label': '1s', 'value': '1'},
+                                {'label': '2s', 'value': '2'},
+                                {'label': '5s', 'value': '5'}
+                            ],
+                            value='1',
+                            labelStyle={'display': 'inline-block', 'padding': '5px'}
+                        ),
+                        style={'vertical-align': 'top', 'display': 'inline-block'}
+                    ),
+                ])
             ])
 
         ], style={'height': 'calc(100vh - 20px)'})
@@ -117,7 +140,6 @@ class DashServer:
                                 Output('refresh-graph-interval', 'disabled')],
                                [Input('refresh-graph-interval', 'n_intervals')],
                                [State('time-slider', 'value')])(self.__interval_action_callback)
-
 
         self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
         self.thread = KThread(target=self.server.run)
@@ -167,5 +189,3 @@ class DashServer:
             return self.visualization_data.figure_creator.get_number_of_frames() - 1, DashServer.button_text_start, True
         else:
             return new_value, no_update, no_update
-
-    
