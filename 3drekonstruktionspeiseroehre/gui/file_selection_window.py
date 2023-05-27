@@ -13,6 +13,7 @@ from gui.info_window import InfoWindow
 from logic.visualization_data import VisualizationData
 
 from gui.more_files import ShowMoreWindows
+from xray_region_selection_window import XrayRegionSelectionWindow
 
 
 class FileSelectionWindow(QMainWindow):
@@ -55,6 +56,7 @@ class FileSelectionWindow(QMainWindow):
         """
 
         visualization_list = []
+        visualization_dict = {}
 
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield1.text()) > 0:
             visualization_data = VisualizationData()
@@ -62,8 +64,13 @@ class FileSelectionWindow(QMainWindow):
             visualization_data.pressure_matrix = self.pressure_matrix
             visualization_data.endoscopy_filenames = self.endoscopy_filenames
             visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
-
-            visualization_list.append(visualization_data)
+            # nur erstes Bild eingeben, andere beiden Bilder nicht
+            if len(self.ui.xray_textfield2.text()) == 0 and len(self.ui.xray_textfield5.text()) == 0:
+                xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data)
+                self.master_window.switch_to(xray_selection_window)
+            else:
+                visualization_dict[1] = visualization_data
+                visualization_list.append(visualization_data)
 
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield2.text()) > 0:
             visualization_data2 = VisualizationData()
@@ -71,8 +78,18 @@ class FileSelectionWindow(QMainWindow):
             visualization_data2.pressure_matrix = self.pressure_matrix
             visualization_data2.endoscopy_filenames = self.endoscopy_filenames
             visualization_data2.endoscopy_image_positions_cm = self.endoscopy_image_positions
-
-            visualization_list.append(visualization_data2)
+            # nur zweites Bild eingeben, andere beiden Bilder nicht
+            if len(self.ui.xray_textfield1.text()) == 0 and len(self.ui.xray_textfield2.text()) > 0 and \
+                    len(self.ui.xray_textfield5.text()) == 0:
+                xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data2)
+                self.master_window.switch_to(xray_selection_window)
+            else:
+                visualization_dict[2] = visualization_data2
+                visualization_list.append(visualization_data2)
+                # erstes und zweites Bild eingegeben, drittes Bild nicht
+                if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield1.text()) > 0 and \
+                        len(self.ui.xray_textfield2.text()) > 0 and len(self.ui.xray_textfield5.text()) == 0:
+                    ShowMoreWindows(self.master_window, visualization_list)
 
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield5.text()) > 0:
             visualization_data5 = VisualizationData()
@@ -80,8 +97,15 @@ class FileSelectionWindow(QMainWindow):
             visualization_data5.pressure_matrix = self.pressure_matrix
             visualization_data5.endoscopy_filenames = self.endoscopy_filenames
             visualization_data5.endoscopy_image_positions_cm = self.endoscopy_image_positions
-
-            visualization_list.append(visualization_data5)
+            # nur drittes Bild eingeben, andere beiden Bilder nicht
+            if len(self.ui.xray_textfield1.text()) == 0 and len(self.ui.xray_textfield2.text()) == 0 and \
+                    len(self.ui.xray_textfield5.text()) > 0:
+                xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data5)
+                self.master_window.switch_to(xray_selection_window)
+            else:
+                visualization_dict[5] = visualization_data5
+                visualization_list.append(visualization_data5)
+                ShowMoreWindows(self.master_window, visualization_list)
 
         elif len(self.ui.import_textfield.text()) > 0:
             # Open the pickle file in binary mode for reading
@@ -91,8 +115,6 @@ class FileSelectionWindow(QMainWindow):
             visualization_window = VisualizationWindow(self.master_window, visualization_data)
             self.master_window.switch_to(visualization_window)
             self.close()
-
-        ShowMoreWindows(self.master_window, visualization_list)
 
         self.close()
 
