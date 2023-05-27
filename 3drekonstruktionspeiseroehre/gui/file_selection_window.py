@@ -208,9 +208,10 @@ class FileSelectionWindow(QMainWindow):
         """
         activates visualization button if necessary files are selected
         """
-        if len(self.ui.csv_textfield.text()) > 0 and (len(self.ui.xray_textfield1.text()) > 0 or
-                                                      len(self.ui.xray_textfield2.text()) > 0 or
-                                                      len(self.ui.xray_textfield5.text()) > 0):
+        if (len(self.ui.csv_textfield.text()) > 0 and (len(self.ui.xray_textfield1.text()) > 0 or
+                                                       len(self.ui.xray_textfield2.text()) > 0 or
+                                                       len(self.ui.xray_textfield5.text()) > 0) or
+                len(self.ui.import_textfield.text()) > 0):
             self.ui.visualization_button.setDisabled(False)
         else:
             self.ui.visualization_button.setDisabled(True)
