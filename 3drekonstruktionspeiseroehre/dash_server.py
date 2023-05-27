@@ -5,6 +5,7 @@ from dash_extensions.enrich import Input, Output, State, DashProxy, MultiplexerT
 from kthread import KThread
 import config
 from logic.visualization_data import VisualizationData
+import plotly.graph_objects as go
 
 
 class DashServer:
@@ -19,6 +20,7 @@ class DashServer:
         :param visualization_data: VisualizationData
         """
         self.visualization_data = visualization_data
+        self.figure = self.visualization_data.figure_creator.get_figure()
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_bound = False
         for port in range(config.dash_port_range[0], config.dash_port_range[1] + 1):
@@ -105,6 +107,8 @@ class DashServer:
              State("sphincter-metric-store", "data")]
         )
 
+        self.dash_app.callback(Output('3d-figure', 'figure'),Input('3d-figure','figure'))(self.__get_current_figure_callback)
+
         self.dash_app.callback([Output('refresh-graph-interval', 'disabled'),
                                 Output('play-button', 'children'),
                                 Output('time-slider', 'value')],
@@ -167,5 +171,15 @@ class DashServer:
             return self.visualization_data.figure_creator.get_number_of_frames() - 1, DashServer.button_text_start, True
         else:
             return new_value, no_update, no_update
+        
+    
+    def __get_current_figure_callback(self,figure):
+        """
+        callback to update self.figure
+        :param figure: dict from Graph object
+        :return: figure unchanged (without return the figure does not update again)
+        """
+        self.figure = go.Figure(figure)
+        return self.figure
 
     

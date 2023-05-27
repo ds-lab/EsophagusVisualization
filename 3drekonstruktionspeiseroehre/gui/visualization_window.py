@@ -1,5 +1,4 @@
 import pickle
-import shutil
 from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog
 from PyQt5.QtCore import QUrl
 from PyQt5 import uic
@@ -101,7 +100,7 @@ class VisualizationWindow(QMainWindow):
         # Prompt the user to choose a destination path
         destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "HTML Files (*.html)")
         # Get Figure
-        figure = self.visualization_data.figure_creator.get_figure()
+        figure = self.dash_server.figure
         # Write the figure to a html file
         figure.write_html(destination_file_path)
         
