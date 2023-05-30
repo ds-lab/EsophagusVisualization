@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
+ <class>FileSelection</class>
  <widget class="QMainWindow" name="FileSelection">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>694</width>
-    <height>392</height>
+    <height>442</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,54 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
       </property>
+      <item row="3" column="0">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>66</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;oder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string>Import einer erstellten 3D Rekonstruktion</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QLineEdit" name="import_textfield">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="import_button">
+             <property name="text">
+              <string>Datei auswählen</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="4" column="0">
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
          <string>Manometriedatei auswählen (im CSV-Format)</string>
@@ -59,7 +106,7 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="5" column="0">
        <widget class="QGroupBox" name="groupBox_2">
         <property name="title">
          <string>Röntgenbild auswählen</string>
@@ -86,7 +133,7 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item row="6" column="0">
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
          <string>Endoskopiebilder auswählen (optional)</string>
@@ -113,10 +160,17 @@
         </layout>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="7" column="0">
        <widget class="QPushButton" name="visualization_button">
         <property name="text">
          <string>Visualisierung generieren</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>

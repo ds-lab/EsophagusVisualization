@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction
+import pickle
+from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog
 from PyQt5.QtCore import QUrl
 from PyQt5 import uic
 from dash_server import DashServer
@@ -20,10 +21,18 @@ class VisualizationWindow(QMainWindow):
         super().__init__()
         self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/visualization_window_design.ui", self)
         self.master_window = master_window
+        # Maximize window to show the whole 3d reconstruction (necessary if visualization_data is imported)
+        self.master_window.maximize()
         self.visualization_data = visualization_data
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
+        menu_button_2 = QAction("Download für Import", self)
+        menu_button_2.triggered.connect(self.__download_object_file)
+        self.ui.menubar.addAction(menu_button_2)
+        menu_button_3 = QAction("Download für Darstellung", self)
+        menu_button_3.triggered.connect(self.__download_html_file)
+        self.ui.menubar.addAction(menu_button_3)
 
         self.dash_server = None
         self.progress_dialog = QProgressDialog("Visualisierung wird erstellt", None, 0, 100, None)
@@ -72,5 +81,27 @@ class VisualizationWindow(QMainWindow):
         url.setPort(self.dash_server.get_port())
         self.ui.webView.load(url)
 
+    def __download_object_file(self):
+        """
+        Download button callback
+        """
+        # Prompt the user to choose a destination path
+        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "Pickle Files (*.achalsie)")
+    
+        # Save the visualization_data object as a pickle file
+        with open(destination_file_path, 'wb') as file:
+            pickle.dump(self.visualization_data, file)
 
+
+    def __download_html_file(self):
+        """
+        Download button callback
+        """
+        # Prompt the user to choose a destination path
+        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "HTML Files (*.html)")
+        # Get Figure
+        figure = self.dash_server.figure
+        # Write the figure to a html file
+        figure.write_html(destination_file_path)
+        
 
