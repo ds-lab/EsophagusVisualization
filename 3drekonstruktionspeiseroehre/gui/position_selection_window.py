@@ -7,13 +7,14 @@ from gui.endoscopy_selection_window import EndoscopySelectionWindow
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from logic.visualization_data import VisualizationData
+from logic.patient_data import PatientData
 from gui.visualization_window import VisualizationWindow
 
 
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData):
+    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData, patient_data: PatientData):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -22,6 +23,7 @@ class PositionSelectionWindow(QMainWindow):
         super().__init__()
         self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
+        self.patient_data = patient_data
         self.visualization_data = visualization_data
         sensor_names = ["P" + str(22 - i) for i in range(22)]
         self.ui.first_combobox.addItems(sensor_names)
@@ -112,7 +114,8 @@ class PositionSelectionWindow(QMainWindow):
                             self.master_window.switch_to(endoscopy_selection_window)
                             self.close()
                         else:
-                            visualization_window = VisualizationWindow(self.master_window, self.visualization_data)
+                            self.patient_data.visualization_data_list.append(self.visualization_data)
+                            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                             self.master_window.switch_to(visualization_window)
                             self.close()
                     else:

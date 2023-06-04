@@ -10,13 +10,14 @@ from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from gui.position_selection_window import PositionSelectionWindow
 from logic.visualization_data import VisualizationData
+from logic.patient_data import PatientData
 import logic.image_polygon_detection as image_polygon_detection
 
 
 class XrayRegionSelectionWindow(QMainWindow):
     """Window where the user selects the shape of the esophagus on the x-ray image"""
 
-    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData):
+    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData, patient_data: PatientData):
         """
         init XrayRegionSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
@@ -25,6 +26,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         super().__init__()
         self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/xray_region_selection_window_design.ui", self)
         self.master_window = master_window
+        self.patient_data = patient_data
         self.master_window.maximize()
         self.visualization_data = visualization_data
         self.polygon = []
@@ -77,7 +79,7 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.visualization_data.xray_polygon = np.array(self.polygon, dtype=int)
                 self.visualization_data.xray_image_height = self.xray_image.shape[0]
                 self.visualization_data.xray_image_width = self.xray_image.shape[1]
-                position_selection_window = PositionSelectionWindow(self.master_window, self.visualization_data)
+                position_selection_window = PositionSelectionWindow(self.master_window, self.visualization_data, self.patient_data)
                 self.master_window.switch_to(position_selection_window)
                 self.close()
             else:

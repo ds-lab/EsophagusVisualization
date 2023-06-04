@@ -9,6 +9,7 @@ from matplotlib.widgets import PolygonSelector
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from logic.visualization_data import VisualizationData
+from logic.patient_data import PatientData
 from gui.visualization_window import VisualizationWindow
 import logic.image_polygon_detection as image_polygon_detection
 
@@ -16,7 +17,7 @@ import logic.image_polygon_detection as image_polygon_detection
 class EndoscopySelectionWindow(QtWidgets.QMainWindow):
     """Window where the user selects the profiles on the endoscopy images"""
 
-    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData):
+    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData, patient_data: PatientData):
         """
         init EndoscopySelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -25,6 +26,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         super().__init__()
         self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/endoscopy_selection_window_design.ui", self)
         self.master_window = master_window
+        self.patient_data = patient_data
 
         self.visualization_data = visualization_data
         self.current_image_index = 0
@@ -114,7 +116,8 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
                 if self.__is_last_image():
                     self.ui.apply_button.setDisabled(True)
                     self.visualization_data.endoscopy_polygons = self.polygon_list
-                    visualization_window = VisualizationWindow(self.master_window, self.visualization_data)
+                    self.patient_data.visualization_data_list.append(self.visualization_data)
+                    visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                     self.master_window.switch_to(visualization_window)
                     self.close()
                 else:

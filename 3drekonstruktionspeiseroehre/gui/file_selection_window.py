@@ -2,7 +2,7 @@ import os
 import pickle
 import re
 from pathlib import Path
-from gui.visualization_window import VisualizationWindow
+import gui.visualization_window
 import numpy as np
 import pandas as pd
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QAction
@@ -11,13 +11,14 @@ import config
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from logic.visualization_data import VisualizationData
+from logic.patient_data import PatientData
 from gui.xray_region_selection_window import XrayRegionSelectionWindow
 
 
 class FileSelectionWindow(QMainWindow):
     """Window where the user selects the needed files"""
 
-    def __init__(self, master_window: MasterWindow):
+    def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
         """
         init FileSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -25,6 +26,7 @@ class FileSelectionWindow(QMainWindow):
         super().__init__()
         self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
+        self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
         self.endoscopy_filenames = []
         self.endoscopy_image_positions = []
@@ -56,14 +58,14 @@ class FileSelectionWindow(QMainWindow):
             visualization_data.pressure_matrix = self.pressure_matrix
             visualization_data.endoscopy_filenames = self.endoscopy_filenames
             visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
-            xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data)
+            xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data, self.patient_data)
             self.master_window.switch_to(xray_selection_window)
         elif len(self.ui.import_textfield.text()) > 0:
             # Open the pickle file in binary mode for reading
             with open(self.ui.import_textfield.text(), 'rb') as file:
                 # Load the VisualizationData object from import file
-                visualization_data =  pickle.load(file)
-            visualization_window = VisualizationWindow(self.master_window, visualization_data)
+                self.patient_data =  pickle.load(file)
+            visualization_window = gui.visualization_window.VisualizationWindow(self.master_window, self.patient_data)
             self.master_window.switch_to(visualization_window)
             self.close()
 
