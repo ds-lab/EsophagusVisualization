@@ -1,6 +1,7 @@
 import multiprocessing
 import pickle
 import shutil
+from multiprocessing.pool import ThreadPool
 
 import cv2
 from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog
@@ -75,14 +76,19 @@ class VisualizationWindow(QMainWindow):
         if self.progress_dialog:
             self.progress_dialog.setValue(val)
 
+
     def __start_visualization(self):
         """
         callback of the figure creation thread
         :param figure_creator: FigureCreator
         """
 
-        for v, visualization in enumerate(self.all_visualization):
-            self.all_visualization[v].figure_creator = self.run(visualization)
+        pool = ThreadPool(len(self.all_visualization))
+        pool_output = pool.map(run, self.all_visualization)
+
+        for i in range(len(self.all_visualization)):
+            self.all_visualization[i].figure_creator = pool_output[i]
+
         self.dash_server = DashServer(self.all_visualization)
         url = QUrl()
         url.setScheme("http")
@@ -113,7 +119,7 @@ class VisualizationWindow(QMainWindow):
         # Write the figure to a html file
         figure.write_html(destination_file_path)
 
-    def run(self, visualization_data):
+def run(visualization_data):
         """
         to be run as thread
         starts figure creation
