@@ -20,7 +20,7 @@ class XrayRegionSelectionWindow(QMainWindow):
     next_window = None
     all_visualization = []
 
-    def __init__(self, master_window: MasterWindow, visualization):
+    def __init__(self, master_window: MasterWindow, visualization, n):
         """
         init XrayRegionSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
@@ -32,6 +32,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         self.master_window = master_window
         self.master_window.maximize()
         self.visualization_data = visualization
+        self.n = n
         self.polygon = []
 
         self.figure_canvas = FigureCanvasQTAgg(Figure())
@@ -85,7 +86,7 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.visualization_data.xray_image_width = self.xray_image.shape[1]
                 # übergebe all_visualization vom vorherigen Fenster
                 position_selection_window = PositionSelectionWindow(self.master_window, self.visualization_data,
-                                                                    self.next_window, self.all_visualization)
+                                                                    self.next_window, self.all_visualization, self.n)
                 # speichere all_visualization vom nächsten Fenster
                 self.all_visualization = position_selection_window.all_visualization
                 self.master_window.switch_to(position_selection_window)

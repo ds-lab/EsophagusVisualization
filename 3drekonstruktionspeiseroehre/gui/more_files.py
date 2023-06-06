@@ -19,8 +19,8 @@ class ShowMoreWindows(QMainWindow):
         # w_dict = {}
 
         # erzeuge alle Fenster aller Eingabedaten und speicher diese
-        for visualization in visualization_list:
-            xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization)
+        for n, visualization in enumerate(visualization_list):
+            xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization, n)
             w_list.append(xray_selection_window)
 
         # keys = visualization_dict.keys()

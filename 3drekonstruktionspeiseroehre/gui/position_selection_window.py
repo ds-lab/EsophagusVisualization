@@ -13,7 +13,7 @@ from gui.visualization_window import VisualizationWindow
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    def __init__(self, master_window: MasterWindow, visualization, next_window, all_visualization):
+    def __init__(self, master_window: MasterWindow, visualization, next_window, all_visualization, n):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -25,6 +25,7 @@ class PositionSelectionWindow(QMainWindow):
         self.master_window = master_window
         self.visualization_data = visualization
         self.all_visualization = all_visualization
+        self.n = n
         self.next_window = next_window
         sensor_names = ["P" + str(22 - i) for i in range(22)]
         self.ui.first_combobox.addItems(sensor_names)
@@ -140,7 +141,7 @@ class PositionSelectionWindow(QMainWindow):
         apply-button callback
         """
         all_visualization = self.all_visualization
-        visualization_window = VisualizationWindow(self.master_window, all_visualization)
+        visualization_window = VisualizationWindow(self.master_window, all_visualization, self.n)
         self.master_window.switch_to(visualization_window)
         self.close()
 
