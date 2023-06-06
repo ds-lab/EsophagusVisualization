@@ -7,6 +7,7 @@ import config
 from logic.visualization_data import VisualizationData
 
 
+
 class DashServer:
     """Represents the dash server that is needed for the visualization"""
 

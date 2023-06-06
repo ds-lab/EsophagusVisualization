@@ -13,7 +13,7 @@ from logic.visualization_data import VisualizationData
 class VisualizationWindow(QMainWindow):
     """The window that shows the visualization"""
 
-    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData):
+    def __init__(self, master_window: MasterWindow, all_visualization):
         """
         init VisualizationWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -24,7 +24,7 @@ class VisualizationWindow(QMainWindow):
         self.master_window = master_window
         # Maximize window to show the whole 3d reconstruction (necessary if visualization_data is imported)
         self.master_window.maximize()
-        self.visualization_data = visualization_data
+        self.all_visualization = all_visualization
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -34,12 +34,16 @@ class VisualizationWindow(QMainWindow):
         menu_button_3 = QAction("Download für Darstellung", self)
         menu_button_3.triggered.connect(self.__download_html_file)
         self.ui.menubar.addAction(menu_button_3)
+        # set native menu bar flag as false to see MenuBar on Mac
+        self.ui.menubar.setNativeMenuBar(False)
 
         self.dash_server = None
         self.progress_dialog = QProgressDialog("Visualisierung wird erstellt", None, 0, 100, None)
         self.progress_dialog.setWindowTitle("Fortschritt")
         self.progress_dialog.show()
-        self.thread = FigureCreationThread(self.visualization_data)
+        self.thread = FigureCreationThread(self.all_visualization[0])
+        self.thread2 = FigureCreationThread(self.all_visualization[1])
+        self.thread5 = FigureCreationThread(self.all_visualization[2])
         self.thread.progress_value.connect(self.__set_progress)
         self.thread.return_value.connect(self.__start_visualization)
         self.thread.start()
@@ -74,8 +78,8 @@ class VisualizationWindow(QMainWindow):
         callback of the figure creation thread
         :param figure_creator: FigureCreator
         """
-        self.visualization_data.figure_creator = figure_creator
-        self.dash_server = DashServer(self.visualization_data)
+        self.all_visualization[0].figure_creator = figure_creator
+        self.dash_server = DashServer(self.all_visualization[0])
         url = QUrl()
         url.setScheme("http")
         url.setHost("127.0.0.1")
@@ -91,7 +95,7 @@ class VisualizationWindow(QMainWindow):
     
         # Save the visualization_data object as a pickle file
         with open(destination_file_path, 'wb') as file:
-            pickle.dump(self.visualization_data, file)
+            pickle.dump(self.all_visualization[0], file)
 
 
     def __download_html_file(self):
@@ -101,7 +105,7 @@ class VisualizationWindow(QMainWindow):
         # Prompt the user to choose a destination path
         destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "HTML Files (*.html)")
         # Get Figure
-        figure = self.visualization_data.figure_creator.get_figure()
+        figure = self.all_visualization[0].figure_creator.get_figure()
         # Write the figure to a html file
         figure.write_html(destination_file_path)
         

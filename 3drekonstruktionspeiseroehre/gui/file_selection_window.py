@@ -13,7 +13,7 @@ from gui.info_window import InfoWindow
 from logic.visualization_data import VisualizationData
 
 from gui.more_files import ShowMoreWindows
-from xray_region_selection_window import XrayRegionSelectionWindow
+from gui.xray_region_selection_window import XrayRegionSelectionWindow
 
 
 class FileSelectionWindow(QMainWindow):
@@ -59,18 +59,18 @@ class FileSelectionWindow(QMainWindow):
         visualization_dict = {}
 
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield1.text()) > 0:
-            visualization_data = VisualizationData()
-            visualization_data.xray_filename = self.ui.xray_textfield1.text()
-            visualization_data.pressure_matrix = self.pressure_matrix
-            visualization_data.endoscopy_filenames = self.endoscopy_filenames
-            visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
+            visualization_data1 = VisualizationData()
+            visualization_data1.xray_filename = self.ui.xray_textfield1.text()
+            visualization_data1.pressure_matrix = self.pressure_matrix
+            visualization_data1.endoscopy_filenames = self.endoscopy_filenames
+            visualization_data1.endoscopy_image_positions_cm = self.endoscopy_image_positions
             # nur erstes Bild eingeben, andere beiden Bilder nicht
             if len(self.ui.xray_textfield2.text()) == 0 and len(self.ui.xray_textfield5.text()) == 0:
-                xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data)
+                xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data1)
                 self.master_window.switch_to(xray_selection_window)
             else:
-                visualization_dict[1] = visualization_data
-                visualization_list.append(visualization_data)
+                visualization_dict[1] = visualization_data1
+                visualization_list.append(visualization_data1)
 
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield2.text()) > 0:
             visualization_data2 = VisualizationData()
@@ -90,6 +90,7 @@ class FileSelectionWindow(QMainWindow):
                 if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield1.text()) > 0 and \
                         len(self.ui.xray_textfield2.text()) > 0 and len(self.ui.xray_textfield5.text()) == 0:
                     ShowMoreWindows(self.master_window, visualization_list)
+                    #ShowMoreWindows(self.master_window, visualization_dict)
 
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield5.text()) > 0:
             visualization_data5 = VisualizationData()
@@ -103,9 +104,10 @@ class FileSelectionWindow(QMainWindow):
                 xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data5)
                 self.master_window.switch_to(xray_selection_window)
             else:
-                visualization_dict[5] = visualization_data5
+                visualization_dict[3] = visualization_data5
                 visualization_list.append(visualization_data5)
                 ShowMoreWindows(self.master_window, visualization_list)
+                #ShowMoreWindows(self.master_window, visualization_dict)
 
         elif len(self.ui.import_textfield.text()) > 0:
             # Open the pickle file in binary mode for reading

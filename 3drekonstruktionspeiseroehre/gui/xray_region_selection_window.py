@@ -12,6 +12,7 @@ from gui.position_selection_window import PositionSelectionWindow
 from logic.visualization_data import VisualizationData
 import logic.image_polygon_detection as image_polygon_detection
 
+#ToDo: Linien sollen schräg eingezeichnet werden können
 
 class XrayRegionSelectionWindow(QMainWindow):
     """Window where the user selects the shape of the esophagus on the x-ray image"""
