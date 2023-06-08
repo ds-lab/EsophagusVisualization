@@ -20,8 +20,12 @@ class ShowMoreWindows(QMainWindow):
 
         # erzeuge alle Fenster aller Eingabedaten und speicher diese
         for n, visualization in enumerate(visualization_list):
-            xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization, n)
-            w_list.append(xray_selection_window)
+            # visualization ist None, wenn kein Bild an der Stelle n eingegeben wurde
+            if visualization is not None:
+                xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization, n)
+                w_list.append(xray_selection_window)
+            else:
+                w_list.append(None)
 
         # keys = visualization_dict.keys()
         # w_dict = {x: XrayRegionSelectionWindow(self.master_window,visualization_dict[x]) for x in keys}
@@ -33,7 +37,7 @@ class ShowMoreWindows(QMainWindow):
             if i == 0:
                 next_window = w_list[i+1]
                 w.all_visualization = []
-            # falls letztes Fenster, setze kein nächstes Fenster
+            # falls letztes Fenster, dann setze kein nächstes Fenster
             elif i == len(w_list)-1:
                 next_window = None
                 w.all_visualization = w_list[i-1].all_visualization # wenn i==1/2 -> w_list[0/1].all_visualization

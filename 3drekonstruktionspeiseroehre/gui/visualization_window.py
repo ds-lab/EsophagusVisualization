@@ -96,6 +96,7 @@ class VisualizationWindow(QMainWindow):
         url.setPort(self.dash_server.get_port())
         self.ui.webView.load(url)
 
+
     def __download_object_file(self):
         """
         Download button callback

@@ -25,6 +25,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         init XrayRegionSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
         :param visualization_data: VisualizationData
+        :param n: ??
         """
 
         super().__init__()
