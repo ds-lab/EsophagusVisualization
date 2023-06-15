@@ -101,7 +101,11 @@ class DashServer:
                         ),
                         style={'vertical-align': 'top', 'display': 'inline-block'}
                     ),
-                ])
+                ]),
+                html.Div(
+                    id="description",
+                    children=[]
+                )
             ])
 
         ], style={'height': 'calc(100vh - 20px)'})
@@ -140,7 +144,8 @@ class DashServer:
                                 Output('3d-figure', 'figure'),
                                 Output('time-slider', 'max'),
                                 Output('metrics', 'children'),
-                                Output('sphincter_length', 'value')],
+                                Output('sphincter_length', 'value'),
+                                Output('description', 'children')],
                                [Input('radio-buttons', 'value')]
                                )(self.__switch_visualization_callback)
 
@@ -187,12 +192,13 @@ class DashServer:
         time_slider = self.all_visualization[value].figure_creator.get_number_of_frames() - 1
         metrics = f"Metriken: tubulärer Abschnitt ({config.length_tubular_part_cm} cm) " \
                   f"[Volumen*Druck]: ({round(self.all_visualization[value].figure_creator.get_metrics()[0][0], 2)}); " \
-                  f"unterer Sphinkter ({(self.all_visualization[value].sphincter_length_cm)} cm) " \
+                  f"unterer Sphinkter ({self.all_visualization[value].sphincter_length_cm} cm) " \
                   f"[Volumen/Druck]: ({round(self.all_visualization[value].figure_creator.get_metrics()[1][0], 5)})"
         sphincter_length = self.all_visualization[value].sphincter_length_cm
+        description = f"Bild: {self.all_visualization[value].xray_filename} ausgewählt"
 
         return True, 'Animation starten', 0, color_store, tubular_metric_store, sphincter_metric_store, figure, \
-            time_slider, metrics, sphincter_length
+            time_slider, metrics, sphincter_length, description
 
     def __play_button_clicked_callback(self, n_clicks, disabled, value, value_radio):
         """
