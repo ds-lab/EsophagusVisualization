@@ -78,7 +78,8 @@ class DashServer:
                              "cm) [Volumen*Druck]: " + str(round(visualization_data.figure_creator.get_metrics()[0][0], 2)) +
                              "; unterer Sphinkter (" + str(visualization_data.sphincter_length_cm) +
                              "cm) [Volumen/Druck]: " + str(round(visualization_data.figure_creator.get_metrics()[1][0], 5))
-                )
+                ),
+                html.Div(html.H4(children=self.visualization_data._xray_filename.split("/")[-1])),
             ])
 
         ], style={'height': 'calc(100vh - 20px)'})

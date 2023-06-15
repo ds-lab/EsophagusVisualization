@@ -132,7 +132,7 @@ class FileSelectionWindow(QMainWindow):
         x-ray button callback
         """
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
-                                                  "exportierte Datei (*.achalsie)")
+                                                  "exportierte Datei (*.achalasie)")
         self.ui.import_textfield.setText(filename)
         self.__check_button_activate()
         self.default_path = os.path.dirname(filename)

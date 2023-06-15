@@ -110,11 +110,11 @@ class PositionSelectionWindow(QMainWindow):
                         if len(self.visualization_data.endoscopy_filenames) > 0:
                             self.visualization_data.endoscopy_start_pos = int(self.endoscopy_pos - offset)
                             endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
-                                                                                  self.visualization_data)
+                                                                                  self.visualization_data, self.patient_data)
                             self.master_window.switch_to(endoscopy_selection_window)
                             self.close()
                         else:
-                            self.patient_data.visualization_data_list.append(self.visualization_data)
+                            self.patient_data.add_visualization(self.visualization_data._xray_filename, self.visualization_data)
                             visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                             self.master_window.switch_to(visualization_window)
                             self.close()

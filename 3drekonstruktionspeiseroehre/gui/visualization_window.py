@@ -28,7 +28,7 @@ class VisualizationWindow(QMainWindow):
         # Maximize window to show the whole 3d reconstruction (necessary if visualization_data is imported)
         self.master_window.maximize()
         self.patient_data = patient_data
-        self.visualization_data_list = self.patient_data.visualization_data_list
+        self.visualization_data_dict = self.patient_data.visualization_data_dict
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -58,8 +58,8 @@ class VisualizationWindow(QMainWindow):
         self.progress_dialog.show()
 
         # Thread per visualzation data object
-        self.thread = [None] * len(self.visualization_data_list)
-        for i, visualization_data in enumerate(self.visualization_data_list):
+        self.thread = [None] * len(self.patient_data.visualization_data_dict)
+        for i, (name, visualization_data) in enumerate(self.patient_data.visualization_data_dict.items()):
             self.thread[i] = FigureCreationThread(visualization_data)
             self.thread[i].progress_value.connect(self.__set_progress)
             self.thread[i].return_value.connect(
@@ -130,7 +130,7 @@ class VisualizationWindow(QMainWindow):
         Download button callback
         """
         # Prompt the user to choose a destination path
-        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "Pickle Files (*.achalsie)")
+        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "Pickle Files (*.achalasie)")
     
         # Save the visualization_data object as a pickle file
         with open(destination_file_path, 'wb') as file:
