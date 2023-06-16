@@ -28,6 +28,7 @@ class FileSelectionWindow(QMainWindow):
         self.master_window: MasterWindow = master_window
         self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
+        self.import_filenames = []
         self.endoscopy_filenames = []
         self.endoscopy_image_positions = []
         self.ui.import_button.clicked.connect(self.__import_button_clicked)
@@ -62,9 +63,10 @@ class FileSelectionWindow(QMainWindow):
             self.master_window.switch_to(xray_selection_window)
         elif len(self.ui.import_textfield.text()) > 0:
             # Open the pickle file in binary mode for reading
-            with open(self.ui.import_textfield.text(), 'rb') as file:
-                # Load the VisualizationData object from import file
-                self.patient_data =  pickle.load(file)
+            for import_filename in self.import_filenames:
+                with open(import_filename, 'rb') as file:
+                    # Load the VisualizationData object from import file
+                    self.patient_data.add_visualization(import_filename.split("/")[-1], pickle.load(file))
             visualization_window = gui.visualization_window.VisualizationWindow(self.master_window, self.patient_data)
             self.master_window.switch_to(visualization_window)
             self.close()
@@ -129,13 +131,13 @@ class FileSelectionWindow(QMainWindow):
 
     def __import_button_clicked(self):
         """
-        x-ray button callback
+        import button callback
         """
-        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
-                                                  "exportierte Datei (*.achalasie)")
-        self.ui.import_textfield.setText(filename)
+        filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
+                                                  "exportierte Dateien (*.achalasie)")
+        self.ui.import_textfield.setText(str(len(filenames)) + " Dateien ausgewählt")
+        self.import_filenames = filenames
         self.__check_button_activate()
-        self.default_path = os.path.dirname(filename)
 
     def __check_button_activate(self):
         """

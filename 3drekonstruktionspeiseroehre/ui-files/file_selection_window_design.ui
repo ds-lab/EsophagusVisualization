@@ -55,7 +55,7 @@
       <item row="0" column="0">
        <widget class="QGroupBox" name="groupBox_4">
         <property name="title">
-         <string>Import einer erstellten 3D Rekonstruktion</string>
+         <string>Import einer oder mehrerer erstellter 3D Rekonstruktionen</string>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
@@ -70,7 +70,7 @@
            <item>
             <widget class="QPushButton" name="import_button">
              <property name="text">
-              <string>Datei auswählen</string>
+              <string>Dateien auswählen</string>
              </property>
             </widget>
            </item>
