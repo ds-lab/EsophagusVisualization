@@ -38,9 +38,14 @@ class VisualizationWindow(QMainWindow):
         menu_button_3 = QAction("Download für Darstellung", self)
         menu_button_3.triggered.connect(self.__download_html_file)
         self.ui.menubar.addAction(menu_button_3)
-        menu_button_4 = QAction("Weitere Rekonstruktion für diesen Patienten erstellen", self)
+        menu_button_4 = QAction("Weitere Rekonstruktion einfügen", self)
         menu_button_4.triggered.connect(self.__extend_patient_data)
+        menu_button_4.setToolTip("Zurück zur Datei-Auswahl (bisherige Rekonstruktionen bleiben bestehen)")
         self.ui.menubar.addAction(menu_button_4)
+        menu_button_5 = QAction("Reset", self)
+        menu_button_5.triggered.connect(self.__reset_patient_data)
+        menu_button_5.setToolTip("Zurück zur Datei-Auswahl (bisherige Rekonstruktionen werden entfernt)")
+        self.ui.menubar.addAction(menu_button_5)
 
         # Create a grid layout for visualizations
         self.visualization_layout = QGridLayout()
@@ -176,6 +181,15 @@ class VisualizationWindow(QMainWindow):
 
 
     def __extend_patient_data(self):
+        file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
+        self.master_window.switch_to(file_selection_window)
+        for dash_server in self.dash_servers:
+            dash_server.stop()
+        for web_view in self.web_views:
+            web_view.close()
+
+    def __reset_patient_data(self):
+        self.patient_data.visualization_data_dict = {}
         file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
         self.master_window.switch_to(file_selection_window)
         for dash_server in self.dash_servers:
