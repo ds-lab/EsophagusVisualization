@@ -33,7 +33,7 @@ class VisualizationWindow(QMainWindow):
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
         menu_button_2 = QAction("Download für Import", self)
-        menu_button_2.triggered.connect(self.__download_object_file)
+        menu_button_2.triggered.connect(self.__download_object_files)
         self.ui.menubar.addAction(menu_button_2)
         menu_button_3 = QAction("Download für Darstellung", self)
         menu_button_3.triggered.connect(self.__download_html_file)
@@ -86,11 +86,8 @@ class VisualizationWindow(QMainWindow):
         for web_view in self.web_views:
             web_view.close()
 
-        for thread in self.thread:
-            thread.quit()
-            thread.wait()
-
         event.accept()
+        
 
     def __set_progress(self, val):
         """
@@ -124,20 +121,33 @@ class VisualizationWindow(QMainWindow):
         # Save the DashServer and QWebEngineView instances for cleanup later
         self.dash_servers.append(dash_server)
         self.web_views.append(web_view)
-
-    def __download_object_file(self):
-        """
-        Download button callback
-        """
-        # Prompt the user to choose a destination path
-        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "Pickle Files (*.achalasie)")
     
-        # Save the visualization_data object as a pickle file
-        with open(destination_file_path, 'wb') as file:
-            pickle.dump(self.patient_data, file)
-        
-        # Inform the user that the export is complete
-        QMessageBox.information(self, "Export erfolgreich", f"Die Datei wurde erfolgreich exportiert in {destination_file_path}.")
+    def __download_object_files(self):
+        """
+        Download button callback to save multiple VisualizationData objects as pickle files
+        """
+        # Prompt the user to choose a destination directory
+        destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        # Windows uses backslashes 
+        destination_directory = destination_directory.replace('/', '\\')
+
+        if destination_directory:
+            # Iterate over each VisualizationData object in the visualization_data_dict
+            for name, visualization_data in self.patient_data.visualization_data_dict.items():
+                # Generate a file name for each pickle file
+                file_name = f"{name.split('.')[0]}.achalasie"
+                # Construct the file path by joining the destination directory and the file name
+                file_path = os.path.join(str(destination_directory), file_name)
+
+                # Save the VisualizationData object as a pickle file
+                with open(file_path, 'wb') as file:
+                    pickle.dump(visualization_data, file)
+
+            # Inform the user that the export is complete
+            QMessageBox.information(
+                self, "Export erfolgreich",
+                f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
+            )
 
 
     def __download_html_file(self):
@@ -168,5 +178,9 @@ class VisualizationWindow(QMainWindow):
     def __extend_patient_data(self):
         file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
         self.master_window.switch_to(file_selection_window)
+        for dash_server in self.dash_servers:
+            dash_server.stop()
+        for web_view in self.web_views:
+            web_view.close()
         
 
