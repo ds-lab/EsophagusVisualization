@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 from dash_extensions.enrich import Input, Output, State, DashProxy, MultiplexerTransform, html, dcc, no_update
 from kthread import KThread
 import config
+import os
 from logic.visualization_data import VisualizationData
 
 
@@ -19,7 +20,21 @@ class DashServer:
         :param visualization_data: VisualizationData
         """
         self.all_visualization = all_visualization.copy()
-        print(self.all_visualization)
+
+        radio_text1 = os.path.splitext(os.path.basename(self.all_visualization[0].xray_filename))[0]
+        print(radio_text1)
+        if len(self.all_visualization) > 1:
+            radio_text2 = os.path.splitext(os.path.basename(self.all_visualization[1].xray_filename))[0]
+        else:
+            radio_text2 = "--"
+        print(radio_text2)
+        if len(self.all_visualization) > 2:
+            radio_text3 = os.path.splitext(os.path.basename(self.all_visualization[2].xray_filename))[0]
+        else:
+            radio_text3 = "--"
+        print(radio_text3)
+
+
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_bound = False
         for port in range(config.dash_port_range[0], config.dash_port_range[1] + 1):
@@ -92,9 +107,9 @@ class DashServer:
                         dcc.RadioItems(
                             id='radio-buttons',
                             options=[
-                                {'label': '1s', 'value': '0'},
-                                {'label': '2s', 'value': '1'},
-                                {'label': '5s', 'value': '2'}
+                                {'label': radio_text1, 'value': '0'},
+                                {'label': radio_text2, 'value': '1'},
+                                {'label': radio_text3, 'value': '2'}
                             ],
                             value='0',
                             labelStyle={'display': 'inline-block', 'padding': '5px'}
