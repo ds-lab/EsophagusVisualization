@@ -30,23 +30,56 @@ class ShowMoreWindows(QMainWindow):
         # keys = visualization_dict.keys()
         # w_dict = {x: XrayRegionSelectionWindow(self.master_window,visualization_dict[x]) for x in keys}
 
-        #print(w_dict)
+
+        # # setze für jedes Fenster das nächste Fenster
+        # for i, w in enumerate(w_list):
+        #     # falls das erste Fenster, dann initialisiere all_visualization mit leerer Liste
+        #     if i == 0:
+        #         next_window = w_list[i+1]
+        #         w.all_visualization = []
+        #     # falls letztes Fenster, dann setze kein nächstes Fenster
+        #     elif i == len(w_list)-1:
+        #         next_window = None
+        #         w.all_visualization = w_list[i-1].all_visualization
+        #     # falls in der Mitte, nächstes Fenster erzeugen
+        #     # hole Daten (all_visualisation) vom vorherigen Fenster
+        #     else:
+        #         next_window = w_list[i+1]
+        #     w.all_visualization = w_list[i - 1].all_visualization
+        #     w.next_window = next_window
+
         # setze für jedes Fenster das nächste Fenster
         for i, w in enumerate(w_list):
             # falls das erste Fenster, dann initialisiere all_visualization mit leerer Liste
-            if i == 0:
-                next_window = w_list[i+1]
-                w.all_visualization = []
-            # falls letztes Fenster, dann setze kein nächstes Fenster
-            elif i == len(w_list)-1:
+            if i == 0 and w is not None:
+                # erstes Fenster ist auch letztes Fenster
+                if w_list[1] is None and w_list[2] is None:
+                    next_window = None
+                    w.all_visualization = []
+                # es gibt ein erstes Fenster und ein zweites Fenster -> nächstes Fenster erzeugen
+                elif w_list[1] is not None:
+                    next_window = w_list[1]
+                    w.all_visualization = []
+                #elif w_list[2] is not None:
+                #    next_window = w_list[2]
+                #    w.all_visualization = []
+            # zweites Fenster
+            if i == 1 and w is not None:
+                # zweites Fenster ist auch letztes Fenster
+                if w_list[2] is None:
+                    next_window = None
+                    w.all_visualization = w_list[0].all_visualization
+                # es gibt ein zweites Fenster und ein drittes Fenster -> nächstes Fenster erzeugen
+                elif w_list[2] is not None:
+                    next_window = w_list[2]
+                    w.all_visualization = w_list[0].all_visualization
+            # drittes Fenster
+            if i == 2 and w is not None:
                 next_window = None
-                w.all_visualization = w_list[i-1].all_visualization # wenn i==1/2 -> w_list[0/1].all_visualization
-        #     # falls in der Mitte, nächstes Fenster erzeugen
-        #     # hole Daten (all_visualisation) vom vorherigen Fenster
-            else:
-                next_window = w_list[i+1]
-            w.all_visualization = w_list[i - 1].all_visualization
+            w.all_visualization = w_list[i-1].all_visualization
             w.next_window = next_window
+
+
 
         # for i, w in enumerate(w_dict):
         #     # falls das erste Fenster, dann initialisiere all_visualization mit leerer Liste

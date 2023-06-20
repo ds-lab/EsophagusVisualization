@@ -21,7 +21,7 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("/Users/Alicia/PycharmProjects/3drekonstruktionspeiseroehre/3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.visualization_data = visualization
         self.all_visualization = all_visualization

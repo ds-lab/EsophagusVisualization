@@ -25,7 +25,7 @@ class FileSelectionWindow(QMainWindow):
         :param master_window: the MasterWindow in which the next window will be displayed
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/file_selection_window_design.ui", self)
+        self.ui = uic.loadUi("/Users/Alicia/PycharmProjects/3drekonstruktionspeiseroehre/3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
         self.default_path = str(Path.home())
         self.endoscopy_filenames = []
@@ -70,12 +70,10 @@ class FileSelectionWindow(QMainWindow):
                 #self.master_window.switch_to(xray_selection_window)
                 visualization_list = [visualization_data1, None, None]
                 ShowMoreWindows(self.master_window, visualization_list)
-                #print("nur erstes Bild eingeben, andere beiden Bilder nicht: ", visualization_list)
             # erstes Bild eingegeben, mindestens noch ein weiteres
             else:
                 visualization_dict[1] = visualization_data1
                 visualization_list.append(visualization_data1)
-                print("nur erstes Bild eingeben, andere beiden Bilder noch nicht (nach append): ", visualization_list)
         else:
             visualization_list.append(None)
 
