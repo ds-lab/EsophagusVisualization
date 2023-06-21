@@ -76,7 +76,6 @@ class VisualizationWindow(QMainWindow):
         if self.progress_dialog:
             self.progress_dialog.setValue(val)
 
-
     def __start_visualization(self):
         """
         callback of the figure creation thread
@@ -90,12 +89,12 @@ class VisualizationWindow(QMainWindow):
             self.all_visualization[i].figure_creator = pool_output[i]
 
         self.dash_server = DashServer(self.all_visualization)
+        self.dash_server.update_radio_buttons()
         url = QUrl()
         url.setScheme("http")
         url.setHost("127.0.0.1")
         url.setPort(self.dash_server.get_port())
         self.ui.webView.load(url)
-
 
     def __download_object_file(self):
         """
@@ -103,11 +102,10 @@ class VisualizationWindow(QMainWindow):
         """
         # Prompt the user to choose a destination path
         destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "Pickle Files (*.pickle)")
-    
+
         # Save the visualization_data object as a pickle file
         with open(destination_file_path, 'wb') as file:
             pickle.dump(self.all_visualization[self.n], file)
-
 
     def __download_html_file(self):
         """
@@ -120,19 +118,19 @@ class VisualizationWindow(QMainWindow):
         # Write the figure to a html file
         figure.write_html(destination_file_path)
 
+
 def run(visualization_data):
-        """
+    """
         to be run as thread
         starts figure creation
         """
-        mask = np.zeros((visualization_data.xray_image_height, visualization_data.xray_image_width))
-        cv2.drawContours(mask, [np.array(visualization_data.xray_polygon)], -1, 1, -1)
-        visualization_data.xray_mask = mask
+    mask = np.zeros((visualization_data.xray_image_height, visualization_data.xray_image_width))
+    cv2.drawContours(mask, [np.array(visualization_data.xray_polygon)], -1, 1, -1)
+    visualization_data.xray_mask = mask
 
-        if visualization_data.endoscopy_polygons is not None:
-            figure_creator = FigureCreatorWithEndoscopy(visualization_data)
-        else:
-            figure_creator = FigureCreatorWithoutEndoscopy(visualization_data)
+    if visualization_data.endoscopy_polygons is not None:
+        figure_creator = FigureCreatorWithEndoscopy(visualization_data)
+    else:
+        figure_creator = FigureCreatorWithoutEndoscopy(visualization_data)
 
-        return figure_creator
-
+    return figure_creator

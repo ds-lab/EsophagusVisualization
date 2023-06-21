@@ -21,19 +21,18 @@ class DashServer:
         """
         self.all_visualization = all_visualization.copy()
 
-        radio_text1 = os.path.splitext(os.path.basename(self.all_visualization[0].xray_filename))[0]
-        print(radio_text1)
-        if len(self.all_visualization) > 1:
-            radio_text2 = os.path.splitext(os.path.basename(self.all_visualization[1].xray_filename))[0]
-        else:
-            radio_text2 = "--"
-        print(radio_text2)
-        if len(self.all_visualization) > 2:
-            radio_text3 = os.path.splitext(os.path.basename(self.all_visualization[2].xray_filename))[0]
-        else:
-            radio_text3 = "--"
-        print(radio_text3)
-
+        # radio_text1 = os.path.splitext(os.path.basename(self.all_visualization[0].xray_filename))[0]
+        # print(radio_text1)
+        # if len(self.all_visualization) > 1:
+        #     radio_text2 = os.path.splitext(os.path.basename(self.all_visualization[1].xray_filename))[0]
+        # else:
+        #     radio_text2 = "--"
+        # print(radio_text2)
+        # if len(self.all_visualization) > 2:
+        #     radio_text3 = os.path.splitext(os.path.basename(self.all_visualization[2].xray_filename))[0]
+        # else:
+        #     radio_text3 = "--"
+        # print(radio_text3)
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_bound = False
@@ -74,7 +73,7 @@ class DashServer:
                     html.Div(
                         dcc.Slider(
                             min=0,
-                            max=self.all_visualization[0].figure_creator.get_number_of_frames() - 1,
+                            max=self.all_visualization[0].figure_creator.get_number_of_frames() - 1 if self.all_visualization[0].figure_creator.get_number_of_frames() > 0 else 0,
                             step=1,
                             value=0,
                             marks=None,
@@ -102,21 +101,20 @@ class DashServer:
                     children="Wähle Breischluckbild:",
                     style={'font-weight': 'bold'}
                 ),
-                html.Div([
-                    html.Div(
-                        dcc.RadioItems(
-                            id='radio-buttons',
-                            options=[
-                                {'label': radio_text1, 'value': '0'},
-                                {'label': radio_text2, 'value': '1'},
-                                {'label': radio_text3, 'value': '2'}
-                            ],
-                            value='0',
-                            labelStyle={'display': 'inline-block', 'padding': '5px'}
+                html.Div(
+                    id='radio-buttons-container',
+                    children=[
+                        html.Div(
+                            dcc.RadioItems(
+                                id='radio-buttons',
+                                options=[],
+                                value='0',
+                                labelStyle={'display': 'inline-block', 'padding': '5px'}
+                            ),
+                            style={'vertical-align': 'top', 'display': 'inline-block'}
                         ),
-                        style={'vertical-align': 'top', 'display': 'inline-block'}
-                    ),
-                ]),
+                    ]
+                ),
                 html.Div(
                     id="description",
                     children=[]
@@ -182,6 +180,27 @@ class DashServer:
         self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
         self.thread = KThread(target=self.server.run)
         self.thread.start()
+        #self.update_radio_buttons()
+
+    def update_radio_buttons(self):
+        print("update radio buttons")
+        radio_options = [
+            {'label': os.path.splitext(os.path.basename(vis.xray_filename))[0], 'value': str(i)}
+            for i, vis in enumerate(self.all_visualization)
+        ]
+        self.dash_app.layout['radio-buttons-container'] = {
+            'children': [
+                html.Div(
+                    dcc.RadioItems(
+                        id='radio-buttons',
+                        options=radio_options,
+                        value='0',
+                        labelStyle={'display': 'inline-block', 'padding': '5px'}
+                    ),
+                    style={'vertical-align': 'top', 'display': 'inline-block'}
+                ),
+            ]
+        }
 
     def stop(self):
         """
@@ -244,6 +263,7 @@ class DashServer:
         value_radio = int(value_radio)
         new_value = value + int(config.csv_values_per_second / config.animation_frames_per_second)
         if new_value >= self.all_visualization[value_radio].figure_creator.get_number_of_frames() - 1:
-            return self.all_visualization[value_radio].figure_creator.get_number_of_frames() - 1, DashServer.button_text_start, True
+            return self.all_visualization[
+                       value_radio].figure_creator.get_number_of_frames() - 1, DashServer.button_text_start, True
         else:
             return new_value, no_update, no_update
