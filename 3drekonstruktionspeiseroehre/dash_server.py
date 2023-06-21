@@ -101,20 +101,20 @@ class DashServer:
                     children="Wähle Breischluckbild:",
                     style={'font-weight': 'bold'}
                 ),
-                html.Div(
-                    id='radio-buttons-container',
-                    children=[
-                        html.Div(
-                            dcc.RadioItems(
-                                id='radio-buttons',
-                                options=[],
-                                value='0',
-                                labelStyle={'display': 'inline-block', 'padding': '5px'}
-                            ),
-                            style={'vertical-align': 'top', 'display': 'inline-block'}
+                html.Div(children=[
+                    html.Div(
+                        dcc.RadioItems(
+                            id='radio-buttons',
+                            options=[
+                                {'label': os.path.splitext(os.path.basename(vis.xray_filename))[0], 'value': str(i)}
+                                for i, vis in enumerate(self.all_visualization)
+                            ],
+                            value='0',
+                            labelStyle={'display': 'inline-block', 'padding': '5px'}
                         ),
-                    ]
-                ),
+                        style={'vertical-align': 'top', 'display': 'inline-block'}
+                    ),
+                ]),
                 html.Div(
                     id="description",
                     children=[]
@@ -182,25 +182,25 @@ class DashServer:
         self.thread.start()
         #self.update_radio_buttons()
 
-    def update_radio_buttons(self):
-        print("update radio buttons")
-        radio_options = [
-            {'label': os.path.splitext(os.path.basename(vis.xray_filename))[0], 'value': str(i)}
-            for i, vis in enumerate(self.all_visualization)
-        ]
-        self.dash_app.layout['radio-buttons-container'] = {
-            'children': [
-                html.Div(
-                    dcc.RadioItems(
-                        id='radio-buttons',
-                        options=radio_options,
-                        value='0',
-                        labelStyle={'display': 'inline-block', 'padding': '5px'}
-                    ),
-                    style={'vertical-align': 'top', 'display': 'inline-block'}
-                ),
-            ]
-        }
+    # def update_radio_buttons(self):
+    #     print("update radio buttons")
+    #     radio_options = [
+    #         {'label': os.path.splitext(os.path.basename(vis.xray_filename))[0], 'value': str(i)}
+    #         for i, vis in enumerate(self.all_visualization)
+    #     ]
+    #     self.dash_app.layout['radio-buttons-container'] = {
+    #         'children': [
+    #             html.Div(
+    #                 dcc.RadioItems(
+    #                     id='radio-buttons',
+    #                     options=radio_options,
+    #                     value='0',
+    #                     labelStyle={'display': 'inline-block', 'padding': '5px'}
+    #                 ),
+    #                 style={'vertical-align': 'top', 'display': 'inline-block'}
+    #             ),
+    #         ]
+    #     }
 
     def stop(self):
         """
