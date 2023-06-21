@@ -89,7 +89,6 @@ class VisualizationWindow(QMainWindow):
             self.all_visualization[i].figure_creator = pool_output[i]
 
         self.dash_server = DashServer(self.all_visualization)
-        #self.dash_server.update_radio_buttons()
         url = QUrl()
         url.setScheme("http")
         url.setHost("127.0.0.1")
