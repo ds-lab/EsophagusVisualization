@@ -1,9 +1,10 @@
 import pickle
 import zipfile
 import os
-from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog, QGridLayout, QWidget, QMessageBox
+from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog, QGridLayout, QWidget, QMessageBox, QVBoxLayout, QLabel, QSizePolicy
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QFont
 from PyQt5 import uic
 from dash_server import DashServer
 from logic.figure_creator.figure_creation_thread import FigureCreationThread
@@ -29,6 +30,7 @@ class VisualizationWindow(QMainWindow):
         self.master_window.maximize()
         self.patient_data = patient_data
         self.visualization_data_dict = self.patient_data.visualization_data_dict
+
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -68,7 +70,7 @@ class VisualizationWindow(QMainWindow):
             self.thread[i] = FigureCreationThread(visualization_data)
             self.thread[i].progress_value.connect(self.__set_progress)
             self.thread[i].return_value.connect(
-                lambda figure_creator, viz_data=visualization_data: self.__start_visualization(figure_creator, viz_data)
+                lambda figure_creator, viz_data=visualization_data, viz_name=name: self.__start_visualization(figure_creator, viz_data, viz_name)
             )
             self.thread[i].start()
 
@@ -102,11 +104,12 @@ class VisualizationWindow(QMainWindow):
         if self.progress_dialog:
             self.progress_dialog.setValue(val)
 
-    def __start_visualization(self, figure_creator, visualization_data):
+    def __start_visualization(self, figure_creator, visualization_data, viz_name):
         """
         callback of the figure creation thread
         :param figure_creator: FigureCreator
         :param visualization_data: VisualizationData
+        :param viz_name: Name of the visualization
         """
         visualization_data.figure_creator = figure_creator
         dash_server = DashServer(visualization_data)
@@ -115,13 +118,25 @@ class VisualizationWindow(QMainWindow):
         url.setHost("127.0.0.1")
         url.setPort(dash_server.get_port())
 
+        # Create a new QVBoxLayout for each visualization
+        vbox = QVBoxLayout()
+
+        # Add the label with the visualization name to the QVBoxLayout
+        label = QLabel(viz_name)
+        label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        label.setFont(QFont('Arial', 14))
+        vbox.addWidget(label)
+
         # Create a new QWebEngineView for each visualization
         web_view = QWebEngineView()
         web_view.load(url)
 
-        # Add the QWebEngineView to the visualization layout
+        # Add the QWebEngineView to the QVBoxLayout
+        vbox.addWidget(web_view)
+
+        # Add the QVBoxLayout to the visualization layout
         column = len(self.web_views)
-        self.visualization_layout.addWidget(web_view, 0, column)
+        self.visualization_layout.addLayout(vbox, 0, column)
 
         # Save the DashServer and QWebEngineView instances for cleanup later
         self.dash_servers.append(dash_server)

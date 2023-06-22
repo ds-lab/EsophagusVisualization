@@ -114,7 +114,7 @@ class PositionSelectionWindow(QMainWindow):
                             self.master_window.switch_to(endoscopy_selection_window)
                             self.close()
                         else:
-                            self.patient_data.add_visualization(self.visualization_data._xray_filename, self.visualization_data)
+                            self.patient_data.add_visualization(self.visualization_data.xray_filename.split("/")[-3] + "-" + self.visualization_data.xray_filename.split("/")[-1], self.visualization_data)
                             visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                             self.master_window.switch_to(visualization_window)
                             self.close()
