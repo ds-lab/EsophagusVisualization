@@ -5,6 +5,7 @@ class VisualizationData:
         """
         init VisualizationData
         """
+        self._reconstruction_name = None
         self._xray_filename = None
         self._endoscopy_filenames = None
 
@@ -27,6 +28,14 @@ class VisualizationData:
         self._endoscopy_start_pos = None
         self._sphincter_upper_pos = None
         self._sphincter_length_cm = None
+
+    @property
+    def reconstruction_name(self):
+        return self._reconstruction_name
+
+    @reconstruction_name.setter
+    def reconstruction_name(self, value):
+        self._reconstruction_name = value
 
     @property
     def xray_filename(self):

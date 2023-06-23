@@ -56,6 +56,15 @@ class FileSelectionWindow(QMainWindow):
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield.text()) > 0:
             visualization_data = VisualizationData()
             visualization_data.xray_filename = self.ui.xray_textfield.text()
+
+            if len(self.ui.visualization_namefield.text()) > 0:
+                visualization_data.reconstruction_name = self.ui.visualization_namefield.text()
+                if self.ui.visualization_namefield.text() in self.patient_data.visualization_data_dict.keys():
+                    QMessageBox.critical(self, "Rekonstruktionsname nicht eindeutig","Fehler: Rekonstruktionsnamen müssen eindeutig sein.")
+                    return
+            else:
+                visualization_data.reconstruction_name = visualization_data.xray_filename.split("/")[-3] + "-" + visualization_data.xray_filename.split("/")[-1]
+
             visualization_data.pressure_matrix = self.pressure_matrix
             visualization_data.endoscopy_filenames = self.endoscopy_filenames
             visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
@@ -66,7 +75,7 @@ class FileSelectionWindow(QMainWindow):
             for import_filename in self.import_filenames:
                 with open(import_filename, 'rb') as file:
                     # Load the VisualizationData object from import file
-                    self.patient_data.add_visualization(import_filename.split("/")[-1], pickle.load(file))
+                    self.patient_data.add_visualization(import_filename.split("/")[-1].split(".")[0], pickle.load(file))
             visualization_window = gui.visualization_window.VisualizationWindow(self.master_window, self.patient_data)
             self.master_window.switch_to(visualization_window)
             self.close()

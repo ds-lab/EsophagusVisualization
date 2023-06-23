@@ -116,7 +116,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
                 if self.__is_last_image():
                     self.ui.apply_button.setDisabled(True)
                     self.visualization_data.endoscopy_polygons = self.polygon_list
-                    self.patient_data.add_visualization(self.visualization_data._xray_filename, self.visualization_data)
+                    self.patient_data.add_visualization(self.visualization_data.reconstruction_name, self.visualization_data)
                     visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                     self.master_window.switch_to(visualization_window)
                     self.close()

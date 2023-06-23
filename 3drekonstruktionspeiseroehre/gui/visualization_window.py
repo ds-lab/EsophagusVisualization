@@ -122,6 +122,8 @@ class VisualizationWindow(QMainWindow):
         vbox = QVBoxLayout()
 
         # Add the label with the visualization name to the QVBoxLayout
+        if "." in viz_name:
+            viz_name = viz_name.split(".")[0]
         label = QLabel(viz_name)
         label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         label.setFont(QFont('Arial', 14))
