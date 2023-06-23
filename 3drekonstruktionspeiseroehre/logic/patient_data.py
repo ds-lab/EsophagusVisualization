@@ -11,7 +11,10 @@ class PatientData:
     def number_of_visualizations(self) -> int:
         return len(self.visualization_data_dict)
 
-    def add_visualization(self, name: str, visualization_data: VisualizationData):
+    def add_visualization(self, name: str, visualization_data: VisualizationData) -> None:
         self.visualization_data_dict[name] = visualization_data
+
+    def remove_visualization(self, name) -> None:
+        del self.visualization_data_dict[name]
 
         

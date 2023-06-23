@@ -63,7 +63,7 @@ class FileSelectionWindow(QMainWindow):
                     QMessageBox.critical(self, "Rekonstruktionsname nicht eindeutig","Fehler: Rekonstruktionsnamen müssen eindeutig sein.")
                     return
             else:
-                visualization_data.reconstruction_name = visualization_data.xray_filename.split("/")[-3] + "-" + visualization_data.xray_filename.split("/")[-1]
+                visualization_data.reconstruction_name = visualization_data.xray_filename.split("/")[-3] + "-" + visualization_data.xray_filename.split("/")[-1].split(".")[0]
 
             visualization_data.pressure_matrix = self.pressure_matrix
             visualization_data.endoscopy_filenames = self.endoscopy_filenames

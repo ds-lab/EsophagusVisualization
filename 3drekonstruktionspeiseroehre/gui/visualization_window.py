@@ -1,7 +1,7 @@
 import pickle
 import zipfile
 import os
-from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog, QGridLayout, QWidget, QMessageBox, QVBoxLayout, QLabel, QSizePolicy
+from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog, QGridLayout, QWidget, QMessageBox, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy,QPushButton, QStyle
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QFont
@@ -104,12 +104,12 @@ class VisualizationWindow(QMainWindow):
         if self.progress_dialog:
             self.progress_dialog.setValue(val)
 
-    def __start_visualization(self, figure_creator, visualization_data, viz_name):
+    def __start_visualization(self, figure_creator, visualization_data, visualization_name):
         """
         callback of the figure creation thread
         :param figure_creator: FigureCreator
         :param visualization_data: VisualizationData
-        :param viz_name: Name of the visualization
+        :param visualization_name: Name of the visualization
         """
         visualization_data.figure_creator = figure_creator
         dash_server = DashServer(visualization_data)
@@ -122,12 +122,20 @@ class VisualizationWindow(QMainWindow):
         vbox = QVBoxLayout()
 
         # Add the label with the visualization name to the QVBoxLayout
-        if "." in viz_name:
-            viz_name = viz_name.split(".")[0]
-        label = QLabel(viz_name)
+        if "." in visualization_name:
+            visualization_name = visualization_name.split(".")[0]
+        label = QLabel(visualization_name)
         label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         label.setFont(QFont('Arial', 14))
         vbox.addWidget(label)
+
+        # Create a button with a trash can icon
+        button = QPushButton()
+        button.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_TitleBarCloseButton')))
+        button.setFixedSize(20, 20)
+        button.clicked.connect(lambda _, viz_name=visualization_name, layout=vbox: self.__delete_visualization(viz_name, layout)) # Connect the button's clicked signal to the delete visualization method
+        vbox.addWidget(button)
+
 
         # Create a new QWebEngineView for each visualization
         web_view = QWebEngineView()
@@ -214,4 +222,24 @@ class VisualizationWindow(QMainWindow):
         for web_view in self.web_views:
             web_view.close()
         
+    def __delete_visualization(self, visualization_name, hbox):
+        # Remove the visualization layout from the visualization widget
+        self.visualization_layout.removeItem(hbox)
+
+        # Find the corresponding web_view and dash_server instances
+        web_view = hbox.itemAt(2).widget()  # Assuming the web_view is at index 2 in the QHBoxLayout
+        dash_server = next((server for server in self.dash_servers if server.get_port() == web_view.url().port()), None)
+
+        if dash_server:
+            dash_server.stop()  # Stop the DashServer
+
+        self.web_views.remove(web_view)  # Remove the QWebEngineView from the list
+        self.dash_servers.remove(dash_server)
+
+        # Clean up the layout
+        for i in reversed(range(hbox.count())):
+            hbox.itemAt(i).widget().setParent(None)
+        
+        # Clean patient_data
+        self.patient_data.remove_visualization(visualization_name)
 
