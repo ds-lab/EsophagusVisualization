@@ -1,7 +1,7 @@
 import pickle
 import zipfile
 import os
-from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog, QGridLayout, QWidget, QMessageBox, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy,QPushButton, QStyle
+from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog, QGridLayout, QWidget, QMessageBox, QVBoxLayout, QLabel, QSizePolicy,QPushButton, QStyle
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QFont
@@ -12,6 +12,7 @@ from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 import gui.file_selection_window 
 from logic.patient_data import PatientData
+from gui.drag_and_drop import *
 
 
 class VisualizationWindow(QMainWindow):
@@ -50,11 +51,7 @@ class VisualizationWindow(QMainWindow):
         self.ui.menubar.addAction(menu_button_5)
 
         # Create a grid layout for visualizations
-        self.visualization_layout = QGridLayout()
-        self.visualization_layout.setSpacing(5)
-        self.visualization_widget = QWidget()
-        self.visualization_widget.setLayout(self.visualization_layout)
-        self.setCentralWidget(self.visualization_widget)
+        self.visualization_layout = DragWidget(orientation=Qt.Orientation.Horizontal)
 
 
         self.dash_servers = []  # List to store DashServer instances for cleanup
@@ -73,6 +70,11 @@ class VisualizationWindow(QMainWindow):
                 lambda figure_creator, viz_data=visualization_data, viz_name=name: self.__start_visualization(figure_creator, viz_data, viz_name)
             )
             self.thread[i].start()
+
+
+
+        self.setCentralWidget(self.visualization_layout)
+
 
     def __menu_button_clicked(self):
         """
@@ -140,13 +142,13 @@ class VisualizationWindow(QMainWindow):
         # Create a new QWebEngineView for each visualization
         web_view = QWebEngineView()
         web_view.load(url)
-
-        # Add the QWebEngineView to the QVBoxLayout
         vbox.addWidget(web_view)
 
         # Add the QVBoxLayout to the visualization layout
-        column = len(self.web_views)
-        self.visualization_layout.addLayout(vbox, 0, column)
+        item = DragItem()
+        item.setLayout(vbox)
+        self.visualization_layout.add_item(item)
+        
 
         # Save the DashServer and QWebEngineView instances for cleanup later
         self.dash_servers.append(dash_server)
@@ -222,12 +224,12 @@ class VisualizationWindow(QMainWindow):
         for web_view in self.web_views:
             web_view.close()
         
-    def __delete_visualization(self, visualization_name, hbox):
+    def __delete_visualization(self, visualization_name, viz_item):
         # Remove the visualization layout from the visualization widget
-        self.visualization_layout.removeItem(hbox)
+        self.visualization_layout.removeItem(viz_item)
 
         # Find the corresponding web_view and dash_server instances
-        web_view = hbox.itemAt(2).widget()  # Assuming the web_view is at index 2 in the QHBoxLayout
+        web_view = viz_item.itemAt(2).widget()  # Assuming the web_view is at index 2 in the QHBoxLayout
         dash_server = next((server for server in self.dash_servers if server.get_port() == web_view.url().port()), None)
 
         if dash_server:
@@ -237,8 +239,8 @@ class VisualizationWindow(QMainWindow):
         self.dash_servers.remove(dash_server)
 
         # Clean up the layout
-        for i in reversed(range(hbox.count())):
-            hbox.itemAt(i).widget().setParent(None)
+        for i in reversed(range(viz_item.count())):
+            viz_item.itemAt(i).widget().setParent(None)
         
         # Clean patient_data
         self.patient_data.remove_visualization(visualization_name)
