@@ -71,8 +71,6 @@ class VisualizationWindow(QMainWindow):
             )
             self.thread[i].start()
 
-
-
         self.setCentralWidget(self.visualization_layout)
 
 
@@ -122,8 +120,10 @@ class VisualizationWindow(QMainWindow):
 
         # Create a new QVBoxLayout for each visualization
         vbox = QVBoxLayout()
+        # Create DragItem to make vboxes drag and droppable
+        item = DragItem()
 
-        # Add the label with the visualization name to the QVBoxLayout
+        # Add the label with the visualization name to the vbox
         if "." in visualization_name:
             visualization_name = visualization_name.split(".")[0]
         label = QLabel(visualization_name)
@@ -131,11 +131,11 @@ class VisualizationWindow(QMainWindow):
         label.setFont(QFont('Arial', 14))
         vbox.addWidget(label)
 
-        # Create a button with a trash can icon
+        # Create a button with a trash can icon to remove the visualization
         button = QPushButton()
         button.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_TitleBarCloseButton')))
         button.setFixedSize(20, 20)
-        button.clicked.connect(lambda _, viz_name=visualization_name, layout=vbox: self.__delete_visualization(viz_name, layout)) # Connect the button's clicked signal to the delete visualization method
+        button.clicked.connect(lambda _, viz_name=visualization_name, item=item: self.__delete_visualization(viz_name, item)) # Connect the button's clicked signal to the delete visualization method
         vbox.addWidget(button)
 
 
@@ -144,8 +144,7 @@ class VisualizationWindow(QMainWindow):
         web_view.load(url)
         vbox.addWidget(web_view)
 
-        # Add the QVBoxLayout to the visualization layout
-        item = DragItem()
+        # Set vbox as the DragItem's layout and add it to the visualization layout
         item.setLayout(vbox)
         self.visualization_layout.add_item(item)
         
@@ -154,6 +153,7 @@ class VisualizationWindow(QMainWindow):
         self.dash_servers.append(dash_server)
         self.web_views.append(web_view)
     
+
     def __download_object_files(self):
         """
         Download button callback to save multiple VisualizationData objects as pickle files
@@ -215,6 +215,7 @@ class VisualizationWindow(QMainWindow):
         for web_view in self.web_views:
             web_view.close()
 
+
     def __reset_patient_data(self):
         self.patient_data.visualization_data_dict = {}
         file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
@@ -224,12 +225,13 @@ class VisualizationWindow(QMainWindow):
         for web_view in self.web_views:
             web_view.close()
         
+
     def __delete_visualization(self, visualization_name, viz_item):
         # Remove the item from the layout
         self.visualization_layout.removeItem(viz_item)
 
         # Find the corresponding web_view and dash_server instances
-        web_view = viz_item.itemAt(2).widget()  # Assuming the web_view is at index 2 in the QHBoxLayout
+        web_view = viz_item.layout().itemAt(2).widget()  # Assuming the web_view is at index 2 in the QHBoxLayout
         dash_server = next((server for server in self.dash_servers if server.get_port() == web_view.url().port()), None)
 
         if dash_server:
@@ -239,8 +241,8 @@ class VisualizationWindow(QMainWindow):
         self.dash_servers.remove(dash_server)
 
         # Clean up the layout
-        for i in reversed(range(viz_item.count())):
-            viz_item.itemAt(i).widget().setParent(None)
+        for i in reversed(range(viz_item.layout().count())):
+            viz_item.layout().itemAt(i).widget().setParent(None)
         
         # Clean patient_data
         self.patient_data.remove_visualization(visualization_name)

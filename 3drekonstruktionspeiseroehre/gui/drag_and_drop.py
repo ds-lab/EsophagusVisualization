@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QApplication, QHBoxLayout, QWidget, QLabel, QMainWin
 from PyQt5.QtCore import Qt, QMimeData, pyqtSignal
 from PyQt5.QtGui import QDrag, QPixmap
 
-#https://www.pythonguis.com/faq/pyqt-drag-drop-widgets/
+# Improved version of -> https://www.pythonguis.com/faq/pyqt-drag-drop-widgets/
 
 class DragItem(QWidget):
 
@@ -12,7 +12,6 @@ class DragItem(QWidget):
     def mouseMoveEvent(self, e):
 
         if e.buttons() == Qt.LeftButton:
-            self.raise_()
             drag = QDrag(self)
             mime = QMimeData()
             drag.setMimeData(mime)
@@ -46,6 +45,7 @@ class DragWidget(QWidget):
         e.accept()
 
     def dropEvent(self, e):
+        # Get Position and currently dragged DragItem
         pos = e.pos()
         widget = e.source()
 
@@ -53,6 +53,7 @@ class DragWidget(QWidget):
             # Get the widget at each index in turn.
             w = self.blayout.itemAt(n).widget()
             if n == self.blayout.count()-1:
+                    # Drop item to the very right
                     self.blayout.insertWidget(n, widget)
             if self.orientation == Qt.Orientation.Vertical:
                 # Drag drop vertically.
@@ -69,6 +70,7 @@ class DragWidget(QWidget):
                     continue
                 drop_here = pos.x() < w.x() + w.size().width() // 2
             if drop_here:
+                # Drop item left of the current widget
                 self.blayout.insertWidget(n-1, widget)
                 break
 
