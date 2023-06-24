@@ -25,7 +25,7 @@ class FileSelectionWindow(QMainWindow):
         :param master_window: the MasterWindow in which the next window will be displayed
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/file_selection_window_design.ui", self)
+        self.ui = uic.loadUi("/Users/Alicia/PycharmProjects/3drekonstruktionspeiseroehre_flex/3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
         self.default_path = str(Path.home())
         self.endoscopy_filenames = []
@@ -35,7 +35,11 @@ class FileSelectionWindow(QMainWindow):
         self.ui.csv_button.clicked.connect(self.__csv_button_clicked)
         self.ui.xray_button1.clicked.connect(self.__xray_button_clicked1)
         self.ui.xray_button2.clicked.connect(self.__xray_button_clicked2)
+        self.ui.xray_button3.clicked.connect(self.__xray_button_clicked3)
+        self.ui.xray_button4.clicked.connect(self.__xray_button_clicked4)
         self.ui.xray_button5.clicked.connect(self.__xray_button_clicked5)
+        self.ui.xray_button6.clicked.connect(self.__xray_button_clicked6)
+        self.ui.xray_button7.clicked.connect(self.__xray_button_clicked7)
         self.ui.endoscopy_button.clicked.connect(self.__endoscopy_button_clicked)
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -181,7 +185,47 @@ class FileSelectionWindow(QMainWindow):
         self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
+    def __xray_button_clicked3(self):
+        """
+        x-ray button callback
+        """
+        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
+                                                  "Bilder (*.jpg *.JPG *.png *.PNG)")
+        self.ui.xray_textfield5.setText(filename)
+        self.__check_button_activate()
+        self.default_path = os.path.dirname(filename)
+
+    def __xray_button_clicked4(self):
+        """
+        x-ray button callback
+        """
+        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
+                                                  "Bilder (*.jpg *.JPG *.png *.PNG)")
+        self.ui.xray_textfield5.setText(filename)
+        self.__check_button_activate()
+        self.default_path = os.path.dirname(filename)
+
     def __xray_button_clicked5(self):
+        """
+        x-ray button callback
+        """
+        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
+                                                  "Bilder (*.jpg *.JPG *.png *.PNG)")
+        self.ui.xray_textfield5.setText(filename)
+        self.__check_button_activate()
+        self.default_path = os.path.dirname(filename)
+
+    def __xray_button_clicked6(self):
+        """
+        x-ray button callback
+        """
+        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
+                                                  "Bilder (*.jpg *.JPG *.png *.PNG)")
+        self.ui.xray_textfield5.setText(filename)
+        self.__check_button_activate()
+        self.default_path = os.path.dirname(filename)
+
+    def __xray_button_clicked7(self):
         """
         x-ray button callback
         """

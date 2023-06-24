@@ -23,7 +23,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         :param visualization_data: VisualizationData
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/endoscopy_selection_window_design.ui", self)
+        self.ui = uic.loadUi("/Users/Alicia/PycharmProjects/3drekonstruktionspeiseroehre_flex/3drekonstruktionspeiseroehre/ui-files/endoscopy_selection_window_design.ui", self)
         self.master_window = master_window
 
         self.visualization_data = visualization_data
