@@ -8,10 +8,6 @@ class DragItem(QWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #self.setContentsMargins(25, 5, 25, 5)
-        #self.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        #self.setStyleSheet("border: 1px solid black;")
-
 
     def mouseMoveEvent(self, e):
 
@@ -21,6 +17,7 @@ class DragItem(QWidget):
             mime = QMimeData()
             drag.setMimeData(mime)
 
+            # Show item while dragging
             pixmap = QPixmap(self.size())
             self.render(pixmap)
             drag.setPixmap(pixmap)
@@ -55,8 +52,14 @@ class DragWidget(QWidget):
         for n in range(self.blayout.count()):
             # Get the widget at each index in turn.
             w = self.blayout.itemAt(n).widget()
+            if n == self.blayout.count()-1:
+                    self.blayout.insertWidget(n, widget)
             if self.orientation == Qt.Orientation.Vertical:
                 # Drag drop vertically.
+                if pos.y() > w.y():
+                    # Check if pos.y() is greater than the current widget's y-coordinate.
+                    # If so, move to the next widget.
+                    continue
                 drop_here = pos.y() < w.y() + w.size().height() // 2
             else:
                 # Drag drop horizontally.
@@ -65,14 +68,9 @@ class DragWidget(QWidget):
                     # If so, move to the next widget.
                     continue
                 drop_here = pos.x() < w.x() + w.size().width() // 2
-                # print(pos.x(), w.x() + w.size().width() // 2,w.x(), w.size().width() )
-
             if drop_here:
                 self.blayout.insertWidget(n-1, widget)
                 break
-            # TODO: move element to last position
-            if n == self.blayout.count()-1:
-                self.blayout.insertWidget(n, widget)
 
         e.accept()
 

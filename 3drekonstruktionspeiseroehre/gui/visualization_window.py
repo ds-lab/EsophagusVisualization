@@ -225,7 +225,7 @@ class VisualizationWindow(QMainWindow):
             web_view.close()
         
     def __delete_visualization(self, visualization_name, viz_item):
-        # Remove the visualization layout from the visualization widget
+        # Remove the item from the layout
         self.visualization_layout.removeItem(viz_item)
 
         # Find the corresponding web_view and dash_server instances
