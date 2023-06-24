@@ -59,77 +59,71 @@ class FileSelectionWindow(QMainWindow):
         visualization button callback
         """
 
-        visualization_list = []
-        visualization_dict = {}
+        visualization_list = [None, None, None, None, None, None, None]
 
         if len(self.ui.csv_textfield.text()) > 0 and (
                 len(self.ui.xray_textfield1.text()) > 0 or len(self.ui.xray_textfield2.text()) > 0 or
-                len(self.ui.xray_textfield5.text()) > 0):
+                len(self.ui.xray_textfield3.text()) > 0 or len(self.ui.xray_textfield4.text()) > 0 or
+                len(self.ui.xray_textfield5.text()) > 0 or len(self.ui.xray_textfield6.text()) > 0 or
+                len(self.ui.xray_textfield7.text()) > 0):
 
-            if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield1.text()) > 0:
+            if len(self.ui.xray_textfield1.text()) > 0:
                 visualization_data1 = VisualizationData()
                 visualization_data1.xray_filename = self.ui.xray_textfield1.text()
                 visualization_data1.pressure_matrix = self.pressure_matrix
                 visualization_data1.endoscopy_filenames = self.endoscopy_filenames
                 visualization_data1.endoscopy_image_positions_cm = self.endoscopy_image_positions
-                # nur erstes Bild eingeben, andere beiden Bilder nicht
-                if len(self.ui.xray_textfield2.text()) == 0 and len(self.ui.xray_textfield5.text()) == 0:
-                    # xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data1)
-                    # self.master_window.switch_to(xray_selection_window)
-                    visualization_list = [visualization_data1, None, None]
-                    # ShowMoreWindows(self.master_window, visualization_list)
-                # erstes Bild eingegeben, mindestens noch ein weiteres
-                else:
-                    visualization_dict[1] = visualization_data1
-                    visualization_list.append(visualization_data1)
-            else:
-                visualization_list.append(None)
+                visualization_list[0] = visualization_data1
 
-            if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield2.text()) > 0:
+            if len(self.ui.xray_textfield2.text()) > 0:
                 visualization_data2 = VisualizationData()
                 visualization_data2.xray_filename = self.ui.xray_textfield2.text()
                 visualization_data2.pressure_matrix = self.pressure_matrix
                 visualization_data2.endoscopy_filenames = self.endoscopy_filenames
                 visualization_data2.endoscopy_image_positions_cm = self.endoscopy_image_positions
-                # nur zweites Bild eingegeben, andere beiden Bilder nicht
-                if len(self.ui.xray_textfield1.text()) == 0 and len(self.ui.xray_textfield5.text()) == 0:
-                    # xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data2)
-                    # self.master_window.switch_to(xray_selection_window)
-                    visualization_list = [None, visualization_data2, None]
-                    # ShowMoreWindows(self.master_window, visualization_list)
-                else:
-                    visualization_dict[2] = visualization_data2
-                    visualization_list.append(visualization_data2)
-                    # erstes und zweites Bild eingegeben, drittes Bild nicht
-                    if len(self.ui.xray_textfield1.text()) > 0 and len(self.ui.xray_textfield5.text()) == 0:
-                        visualization_list.append(None)
-                        # ShowMoreWindows(self.master_window, visualization_list)
-                        # ShowMoreWindows(self.master_window, visualization_dict)
+                visualization_list[1] = visualization_data2
 
-            if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield5.text()) > 0:
+            if len(self.ui.xray_textfield3.text()) > 0:
+                visualization_data3 = VisualizationData()
+                visualization_data3.xray_filename = self.ui.xray_textfield3.text()
+                visualization_data3.pressure_matrix = self.pressure_matrix
+                visualization_data3.endoscopy_filenames = self.endoscopy_filenames
+                visualization_data3.endoscopy_image_positions_cm = self.endoscopy_image_positions
+                visualization_list[2] = visualization_data3
+
+            if len(self.ui.xray_textfield4.text()) > 0:
+                visualization_data4 = VisualizationData()
+                visualization_data4.xray_filename = self.ui.xray_textfield4.text()
+                visualization_data4.pressure_matrix = self.pressure_matrix
+                visualization_data4.endoscopy_filenames = self.endoscopy_filenames
+                visualization_data4.endoscopy_image_positions_cm = self.endoscopy_image_positions
+                visualization_list[3] = visualization_data4
+
+            if len(self.ui.xray_textfield5.text()) > 0:
                 visualization_data5 = VisualizationData()
                 visualization_data5.xray_filename = self.ui.xray_textfield5.text()
                 visualization_data5.pressure_matrix = self.pressure_matrix
                 visualization_data5.endoscopy_filenames = self.endoscopy_filenames
                 visualization_data5.endoscopy_image_positions_cm = self.endoscopy_image_positions
-                # nur drittes Bild eingeben, andere beiden Bilder nicht
-                if len(self.ui.xray_textfield1.text()) == 0 and len(self.ui.xray_textfield2.text()) == 0:
-                    # xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data5)
-                    # self.master_window.switch_to(xray_selection_window)
-                    visualization_list = [None, None, visualization_data5]
-                    # ShowMoreWindows(self.master_window, visualization_list)
-                # erstes und drittes Bild eingegeben, zweites Bild nicht
-                elif len(self.ui.xray_textfield1.text()) > 0 and len(self.ui.xray_textfield2.text()) == 0:
-                    visualization_list = [visualization_data1, None, visualization_data5]
-                    # ShowMoreWindows(self.master_window, visualization_list)
-                else:
-                    visualization_dict[3] = visualization_data5
-                    visualization_list.append(visualization_data5)
-                    # ShowMoreWindows(self.master_window, visualization_list)
-                    # ShowMoreWindows(self.master_window, visualization_dict)
+                visualization_list[4] = visualization_data5
+
+            if len(self.ui.xray_textfield6.text()) > 0:
+                visualization_data6 = VisualizationData()
+                visualization_data6.xray_filename = self.ui.xray_textfield6.text()
+                visualization_data6.pressure_matrix = self.pressure_matrix
+                visualization_data6.endoscopy_filenames = self.endoscopy_filenames
+                visualization_data6.endoscopy_image_positions_cm = self.endoscopy_image_positions
+                visualization_list[5] = visualization_data6
+
+            if len(self.ui.xray_textfield7.text()) > 0:
+                visualization_data7 = VisualizationData()
+                visualization_data7.xray_filename = self.ui.xray_textfield7.text()
+                visualization_data7.pressure_matrix = self.pressure_matrix
+                visualization_data7.endoscopy_filenames = self.endoscopy_filenames
+                visualization_data7.endoscopy_image_positions_cm = self.endoscopy_image_positions
+                visualization_list[6] = visualization_data7
 
             ShowMoreWindows(self.master_window, visualization_list)
-
 
         elif len(self.ui.import_textfield.text()) > 0:
             # Open the pickle file in binary mode for reading
@@ -191,7 +185,7 @@ class FileSelectionWindow(QMainWindow):
         """
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
-        self.ui.xray_textfield5.setText(filename)
+        self.ui.xray_textfield3.setText(filename)
         self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
@@ -201,7 +195,7 @@ class FileSelectionWindow(QMainWindow):
         """
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
-        self.ui.xray_textfield5.setText(filename)
+        self.ui.xray_textfield4.setText(filename)
         self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
@@ -221,7 +215,7 @@ class FileSelectionWindow(QMainWindow):
         """
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
-        self.ui.xray_textfield5.setText(filename)
+        self.ui.xray_textfield6.setText(filename)
         self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
@@ -231,7 +225,7 @@ class FileSelectionWindow(QMainWindow):
         """
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
-        self.ui.xray_textfield5.setText(filename)
+        self.ui.xray_textfield7.setText(filename)
         self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
