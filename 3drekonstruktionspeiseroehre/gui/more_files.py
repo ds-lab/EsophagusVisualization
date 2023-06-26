@@ -83,7 +83,7 @@ class ShowMoreWindows(QMainWindow):
                     w.all_visualization = []
                 w.next_window = next_window
 
-        # not_none = (el for el in w_list if el is not None)
+        # not_none = (e for e in w_list if e is not None)
         # value = next(not_none, None)
         # if value is not None:
         if w_list[0] is not None:
@@ -92,6 +92,14 @@ class ShowMoreWindows(QMainWindow):
             self.master_window.switch_to((w_list[1]))
         elif w_list[2] is not None:
             self.master_window.switch_to((w_list[2]))
+        elif w_list[3] is not None:
+            self.master_window.switch_to((w_list[3]))
+        elif w_list[4] is not None:
+            self.master_window.switch_to((w_list[4]))
+        elif w_list[5] is not None:
+            self.master_window.switch_to((w_list[5]))
+        elif w_list[6] is not None:
+            self.master_window.switch_to((w_list[6]))
         else:
             print("is None")
 
