@@ -43,11 +43,9 @@ class VisualizationWindow(QMainWindow):
         self.ui.menubar.addAction(menu_button_3)
         menu_button_4 = QAction("Weitere Rekonstruktion einfügen", self)
         menu_button_4.triggered.connect(self.__extend_patient_data)
-        menu_button_4.setToolTip("Zurück zur Datei-Auswahl (bisherige Rekonstruktionen bleiben bestehen)")
         self.ui.menubar.addAction(menu_button_4)
         menu_button_5 = QAction("Reset", self)
         menu_button_5.triggered.connect(self.__reset_patient_data)
-        menu_button_5.setToolTip("Zurück zur Datei-Auswahl (bisherige Rekonstruktionen werden entfernt)")
         self.ui.menubar.addAction(menu_button_5)
 
         # Create a DragWidget to layout the visualizations
