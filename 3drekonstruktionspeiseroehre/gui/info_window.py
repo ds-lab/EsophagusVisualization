@@ -24,7 +24,10 @@ class InfoWindow(QDialog):
         Position dieser Aufnahme im Ösophagus ausgehend von einer in einem späteren Schritt einzutragenden 
         Position 0 an (von unten nach oben). <br>Bei den Endoskopiebildern ist außerdem darauf zu achten, dass diese 
         so angefertigt wurden, dass bezüglich der Drehung die linke Seite der Aufnahme der linken Seite auf dem 
-        Röntgenbild entspricht (rechte Seite analog)."""
+        Röntgenbild entspricht (rechte Seite analog). <br> Wenn erwünscht kann einer Rekonstruktion ein eindeutiger 
+        Namen zugewiesen werden, welcher auch für den Export verwendet wird.
+        <br><br> Es ist ebenfalls möglich ein oder mehrere zuvor exportierte Rekonstruktionen zu importieren.
+        """
         self.ui.textEdit.setHtml(text)
 
     def show_xray_region_selection_info(self):
@@ -71,5 +74,9 @@ class InfoWindow(QDialog):
         Durch einen Klick auf 'Animation starten' lässt sich der zeitliche Verlauf der Druckwerte animiert 
         darstellen. <br>Über die Zeitleiste kann der Zeitpunkt außerdem manuell gewählt werden. <br><br>
         Unten werden die berechneten Metriken für den tubulären Abschnitt (Volumen*Druck) und den unteren Sphinkter 
-        (Volumen/Druck) im Zeitverlauf angezeigt."""
+        (Volumen/Druck) im Zeitverlauf angezeigt.
+        <br><br> Werden mehrere Rekonstruktionen angezeigt, so können diese umsortiert werden durch das Gedrückthalten des linken Mauszeigers und dem Ziehen an die gewünschte Stelle.
+        <br><br> Download: Es gibt zwei verschiedene Arten des Downloads. Zum einen können die 3D Visualisierungen als html Dateien exportiert werden. Dies ermöglicht die Betrachtung der Rekonsturktionen im Browser und macht diese einbindbar in Powerpoint.
+        Zum anderen ermöglicht der 'Download für Import' den Export von '.achalasie' Dateien. Dieser Export ermöglicht, dass die Rekonstruktionen nochmals bequem und unverändert in diesem Programm geöffnet werden können.
+        """
         self.ui.textEdit.setHtml(text)

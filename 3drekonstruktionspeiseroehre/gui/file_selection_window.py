@@ -58,11 +58,13 @@ class FileSelectionWindow(QMainWindow):
             visualization_data.xray_filename = self.ui.xray_textfield.text()
 
             if len(self.ui.visualization_namefield.text()) > 0:
+                # Add name if user chooses to name the reconstruction
                 visualization_data.reconstruction_name = self.ui.visualization_namefield.text()
                 if self.ui.visualization_namefield.text() in self.patient_data.visualization_data_dict.keys():
                     QMessageBox.critical(self, "Rekonstruktionsname nicht eindeutig","Fehler: Rekonstruktionsnamen müssen eindeutig sein.")
                     return
             else:
+                # No name was specifiied by user -> use pseudonym and xray filename
                 visualization_data.reconstruction_name = visualization_data.xray_filename.split("/")[-3] + "-" + visualization_data.xray_filename.split("/")[-1].split(".")[0]
 
             visualization_data.pressure_matrix = self.pressure_matrix
@@ -70,12 +72,15 @@ class FileSelectionWindow(QMainWindow):
             visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
             xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data, self.patient_data)
             self.master_window.switch_to(xray_selection_window)
+
         elif len(self.ui.import_textfield.text()) > 0:
-            # Open the pickle file in binary mode for reading
+            # Iterate over *.achalasie files
             for import_filename in self.import_filenames:
+                 # Open the pickle file in binary mode for reading
                 with open(import_filename, 'rb') as file:
-                    # Load the VisualizationData object from import file
+                    # Load the VisualizationData object from import file and add it to patient_data
                     self.patient_data.add_visualization(import_filename.split("/")[-1].split(".")[0], pickle.load(file))
+
             visualization_window = gui.visualization_window.VisualizationWindow(self.master_window, self.patient_data)
             self.master_window.switch_to(visualization_window)
             self.close()

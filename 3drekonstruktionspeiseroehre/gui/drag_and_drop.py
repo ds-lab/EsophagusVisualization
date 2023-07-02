@@ -5,6 +5,7 @@ from PyQt5.QtGui import QDrag, QPixmap
 # Improved version of -> https://www.pythonguis.com/faq/pyqt-drag-drop-widgets/
 
 class DragItem(QWidget):
+    # Item/ Widget that is draggable
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,12 +27,13 @@ class DragItem(QWidget):
 
 
 class DragWidget(QWidget):
+    # Container/Widget that holds several DragItems and accepts drag and drop actions
 
     def __init__(self, *args, orientation=Qt.Orientation.Horizontal, **kwargs):
         super().__init__()
         self.setAcceptDrops(True)
 
-        # Store the orientation for drag checks later.
+        # Store the layout orientation for drag checks later.
         self.orientation = orientation
 
         if self.orientation == Qt.Orientation.Vertical:
@@ -50,25 +52,33 @@ class DragWidget(QWidget):
         widget = e.source()
 
         for n in range(self.blayout.count()):
-            # Get the widget at each index in turn.
+            # Get the widget at each index
             w = self.blayout.itemAt(n).widget()
+
             if n == self.blayout.count()-1:
-                    # Drop item to the very right
+                    # DragItem (widget) is being dragged beyond the last element of DragWidget -> Drop item to the very right or bottom
                     self.blayout.insertWidget(n, widget)
+
             if self.orientation == Qt.Orientation.Vertical:
                 # Drag drop vertically.
                 if pos.y() > w.y():
                     # Check if pos.y() is greater than the current widget's y-coordinate.
                     # If so, move to the next widget.
                     continue
+
+                # Drop position found
                 drop_here = pos.y() < w.y() + w.size().height() // 2
+
             else:
                 # Drag drop horizontally.
                 if pos.x() > w.x():
                     # Check if pos.x() is greater than the current widget's x-coordinate.
                     # If so, move to the next widget.
                     continue
+                
+                # Drop position found
                 drop_here = pos.x() < w.x() + w.size().width() // 2
+
             if drop_here:
                 # Drop item left of the current widget
                 self.blayout.insertWidget(n-1, widget)

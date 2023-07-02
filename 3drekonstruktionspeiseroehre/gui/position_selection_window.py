@@ -114,6 +114,7 @@ class PositionSelectionWindow(QMainWindow):
                             self.master_window.switch_to(endoscopy_selection_window)
                             self.close()
                         else:
+                            # Add new visualization to patient_data
                             self.patient_data.add_visualization(self.visualization_data.reconstruction_name, self.visualization_data)
                             visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                             self.master_window.switch_to(visualization_window)

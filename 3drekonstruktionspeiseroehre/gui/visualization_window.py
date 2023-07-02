@@ -50,7 +50,7 @@ class VisualizationWindow(QMainWindow):
         menu_button_5.setToolTip("Zurück zur Datei-Auswahl (bisherige Rekonstruktionen werden entfernt)")
         self.ui.menubar.addAction(menu_button_5)
 
-        # Create a grid layout for visualizations
+        # Create a DragWidget to layout the visualizations
         self.visualization_layout = DragWidget(orientation=Qt.Orientation.Horizontal)
 
 
@@ -131,13 +131,12 @@ class VisualizationWindow(QMainWindow):
         label.setFont(QFont('Arial', 14))
         vbox.addWidget(label)
 
-        # Create a button with a trash can icon to remove the visualization
+        # Create a button with a trash can icon that triggers the removal of the visualization
         button = QPushButton()
         button.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_TitleBarCloseButton')))
         button.setFixedSize(20, 20)
         button.clicked.connect(lambda _, viz_name=visualization_name, item=item: self.__delete_visualization(viz_name, item)) # Connect the button's clicked signal to the delete visualization method
         vbox.addWidget(button)
-
 
         # Create a new QWebEngineView for each visualization
         web_view = QWebEngineView()
@@ -147,7 +146,6 @@ class VisualizationWindow(QMainWindow):
         # Set vbox as the DragItem's layout and add it to the visualization layout
         item.setLayout(vbox)
         self.visualization_layout.add_item(item)
-        
 
         # Save the DashServer and QWebEngineView instances for cleanup later
         self.dash_servers.append(dash_server)
@@ -158,6 +156,7 @@ class VisualizationWindow(QMainWindow):
         """
         Download button callback to save multiple VisualizationData objects as pickle files
         """
+
         # Prompt the user to choose a destination directory
         destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
         # Windows uses backslashes 
@@ -171,7 +170,7 @@ class VisualizationWindow(QMainWindow):
                 # Construct the file path by joining the destination directory and the file name
                 file_path = os.path.join(str(destination_directory), file_name)
 
-                # Save the VisualizationData object as a pickle file
+                # Save the VisualizationData object as a pickle file (*.achalasie)
                 with open(file_path, 'wb') as file:
                     pickle.dump(visualization_data, file)
 
@@ -208,8 +207,11 @@ class VisualizationWindow(QMainWindow):
 
 
     def __extend_patient_data(self):
+        # Open File selection window
         file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
         self.master_window.switch_to(file_selection_window)
+
+        # Stop all threads
         for dash_server in self.dash_servers:
             dash_server.stop()
         for web_view in self.web_views:
@@ -217,9 +219,14 @@ class VisualizationWindow(QMainWindow):
 
 
     def __reset_patient_data(self):
+        # Empty the patient data object
         self.patient_data.visualization_data_dict = {}
+
+        # Open file selection window
         file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
         self.master_window.switch_to(file_selection_window)
+
+        # Stop all threads
         for dash_server in self.dash_servers:
             dash_server.stop()
         for web_view in self.web_views:
