@@ -27,7 +27,7 @@ class VisualizationWindow(QMainWindow):
         :param visualization_data: VisualizationData
         """
         super().__init__()
-        self.ui = uic.loadUi("/Users/Alicia/PycharmProjects/3drekonstruktionspeiseroehre_flex/3drekonstruktionspeiseroehre/ui-files/visualization_window_design.ui", self)
+        self.ui = uic.loadUi("ui-files/visualization_window_design.ui", self)
         self.master_window = master_window
         # Maximize window to show the whole 3d reconstruction (necessary if visualization_data is imported)
         self.master_window.maximize()
