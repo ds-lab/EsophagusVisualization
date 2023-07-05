@@ -6,6 +6,7 @@ from kthread import KThread
 import config
 import os
 from logic.visualization_data import VisualizationData
+import plotly.graph_objects as go
 
 
 class DashServer:
@@ -148,6 +149,8 @@ class DashServer:
              State('sphincter_length', 'value')]
         )
 
+        self.dash_app.callback(Output('3d-figure', 'figure'),Input('3d-figure','figure'))(self.__get_current_figure_callback)
+
         self.dash_app.callback([Output('refresh-graph-interval', 'disabled'),
                                 Output('play-button', 'children'),
                                 Output('time-slider', 'value'),
@@ -246,3 +249,15 @@ class DashServer:
                        value_radio].figure_creator.get_number_of_frames() - 1, DashServer.button_text_start, True
         else:
             return new_value, no_update, no_update
+        
+    
+    def __get_current_figure_callback(self,figure):
+        """
+        callback to update self.figure
+        :param figure: dict from Graph object
+        :return: figure unchanged (without return the figure does not update again)
+        """
+        self.figure = go.Figure(figure)
+        return self.figure
+
+    
