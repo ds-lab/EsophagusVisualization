@@ -32,13 +32,7 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
       </property>
-      <item row="3" column="0">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
+
       <item row="2" column="0">
        <widget class="QLabel" name="label">
         <property name="minimumSize">
@@ -79,7 +73,7 @@
         </layout>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="1" column="0">
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
          <string>Manometriedatei auswählen (im CSV-Format)</string>
@@ -106,34 +100,7 @@
         </layout>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QGroupBox" name="groupBox_2">
-        <property name="title">
-         <string>Röntgenbild auswählen</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QLineEdit" name="xray_textfield">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="xray_button">
-             <property name="text">
-              <string>Datei auswählen</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="6" column="0">
+      <item row="2" column="0">
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
          <string>Endoskopiebilder auswählen (optional)</string>
@@ -160,20 +127,41 @@
         </layout>
        </widget>
       </item>
-      <item row="7" column="0">
+      <item row="4" column="0">
        <widget class="QPushButton" name="visualization_button">
         <property name="text">
          <string>Visualisierung generieren</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+     <item row="3" column="0">
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string>Import einer oder mehrerer Breischluckbilder</string>
         </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QLineEdit" name="xray_textfield_all">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="xray_button_all">
+             <property name="text">
+              <string>Dateien auswählen</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </widget>
       </item>
+
      </layout>
     </item>
    </layout>

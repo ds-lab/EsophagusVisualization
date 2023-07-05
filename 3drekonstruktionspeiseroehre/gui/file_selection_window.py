@@ -11,6 +11,8 @@ import config
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from logic.visualization_data import VisualizationData
+
+from gui.more_files import ShowMoreWindows
 from gui.xray_region_selection_window import XrayRegionSelectionWindow
 
 
@@ -23,15 +25,16 @@ class FileSelectionWindow(QMainWindow):
         :param master_window: the MasterWindow in which the next window will be displayed
         """
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
+        self.ui = uic.loadUi("ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
         self.default_path = str(Path.home())
         self.endoscopy_filenames = []
+        self.xray_filenames = []
         self.endoscopy_image_positions = []
         self.ui.import_button.clicked.connect(self.__import_button_clicked)
         self.ui.visualization_button.clicked.connect(self.__visualization_button_clicked)
         self.ui.csv_button.clicked.connect(self.__csv_button_clicked)
-        self.ui.xray_button.clicked.connect(self.__xray_button_clicked)
+        self.ui.xray_button_all.clicked.connect(self.__xray_button_clicked_all)
         self.ui.endoscopy_button.clicked.connect(self.__endoscopy_button_clicked)
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -50,19 +53,24 @@ class FileSelectionWindow(QMainWindow):
         """
         visualization button callback
         """
-        if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield.text()) > 0:
-            visualization_data = VisualizationData()
-            visualization_data.xray_filename = self.ui.xray_textfield.text()
-            visualization_data.pressure_matrix = self.pressure_matrix
-            visualization_data.endoscopy_filenames = self.endoscopy_filenames
-            visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
-            xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization_data)
-            self.master_window.switch_to(xray_selection_window)
+        visualization_list = []
+
+        if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield_all.text()) > 0:
+            for xray_filename in self.xray_filenames:
+                visualization_data = VisualizationData()
+                visualization_data.xray_filename = xray_filename
+                visualization_data.pressure_matrix = self.pressure_matrix
+                visualization_data.endoscopy_filenames = self.endoscopy_filenames
+                visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
+                visualization_list.append(visualization_data)
+            print(visualization_list)
+            ShowMoreWindows(self.master_window, visualization_list)
+
         elif len(self.ui.import_textfield.text()) > 0:
             # Open the pickle file in binary mode for reading
             with open(self.ui.import_textfield.text(), 'rb') as file:
                 # Load the VisualizationData object from import file
-                visualization_data =  pickle.load(file)
+                visualization_data = pickle.load(file)
             visualization_window = VisualizationWindow(self.master_window, visualization_data)
             self.master_window.switch_to(visualization_window)
             self.close()
@@ -92,16 +100,17 @@ class FileSelectionWindow(QMainWindow):
         self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
-    def __xray_button_clicked(self):
+
+    def __xray_button_clicked_all(self):
         """
         x-ray button callback
         """
-        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
+        filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
-        self.ui.xray_textfield.setText(filename)
+        self.ui.xray_textfield_all.setText(str(len(filenames)) + " Dateien ausgewählt")
+        self.xray_filenames = filenames
         self.__check_button_activate()
-        self.default_path = os.path.dirname(filename)
-
+        #self.default_path = os.path.dirname(filenames)
     def __endoscopy_button_clicked(self):
         """
         endoscopy button callback
@@ -139,7 +148,8 @@ class FileSelectionWindow(QMainWindow):
         """
         activates visualization button if necessary files are selected
         """
-        if (len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield.text()) > 0) or len(self.ui.import_textfield.text()) > 0:
+        if (len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield_all.text()) > 0 or
+                len(self.ui.import_textfield.text()) > 0):
             self.ui.visualization_button.setDisabled(False)
         else:
             self.ui.visualization_button.setDisabled(True)
