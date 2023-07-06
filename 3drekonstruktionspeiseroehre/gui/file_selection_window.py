@@ -11,6 +11,7 @@ import config
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from logic.visualization_data import VisualizationData
+from logic.visit_data import VisitData
 from logic.patient_data import PatientData
 
 from gui.more_files import ShowMoreWindows
@@ -26,7 +27,7 @@ class FileSelectionWindow(QMainWindow):
         :param master_window: the MasterWindow in which the next window will be displayed
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/file_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
         self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
@@ -56,8 +57,8 @@ class FileSelectionWindow(QMainWindow):
         """
         visualization button callback
         """
-        visualization_list = []
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield.text()) > 0:
+            visit = VisitData()
             for xray_filename in self.xray_filenames:
                 visualization_data = VisualizationData()
                 visualization_data.xray_filename = xray_filename
@@ -75,9 +76,8 @@ class FileSelectionWindow(QMainWindow):
                 visualization_data.pressure_matrix = self.pressure_matrix
                 visualization_data.endoscopy_filenames = self.endoscopy_filenames
                 visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
-                visualization_list.append(visualization_data)
-            ShowMoreWindows(self.master_window, visualization_list, self.patient_data)
-            self.master_window.switch_to(xray_selection_window)
+                visit.add_visualization(visualization_data)
+            ShowMoreWindows(self.master_window, visit, self.patient_data)
 
         elif len(self.ui.import_textfield.text()) > 0:
             # Iterate over *.achalasie files
@@ -126,7 +126,9 @@ class FileSelectionWindow(QMainWindow):
         self.ui.xray_textfield_all.setText(str(len(filenames)) + " Dateien ausgewählt")
         self.xray_filenames = filenames
         self.__check_button_activate()
-        #self.default_path = os.path.dirname(filenames)
+        self.default_path = os.path.dirname(filenames[0])
+
+
     def __endoscopy_button_clicked(self):
         """
         endoscopy button callback
