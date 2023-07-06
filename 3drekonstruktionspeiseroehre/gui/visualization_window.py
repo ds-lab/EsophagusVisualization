@@ -198,7 +198,7 @@ class VisualizationWindow(QMainWindow):
             with zipfile.ZipFile(destination_file_path, 'w') as zip_file:
                 # Iterate over each visualization and export its HTML
                 for i, dash_server in enumerate(self.dash_servers):
-                    figure = dash_server.figure
+                    figure = dash_server.visit_figures[dash_server.selected_figure_index]
                     # Generate a unique file name for each HTML file
                     html_file_name = f"figure_{i}.html"
                     # Write the figure to an HTML file
@@ -249,9 +249,10 @@ class VisualizationWindow(QMainWindow):
 
         if dash_server:
             dash_server.stop()  # Stop the DashServer
+            self.dash_servers.remove(dash_server)
 
         self.web_views.remove(web_view)  # Remove the QWebEngineView from the list
-        self.dash_servers.remove(dash_server)
+        
 
         # Clean up the layout
         for i in reversed(range(visit_item.layout().count())):

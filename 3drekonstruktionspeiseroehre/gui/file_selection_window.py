@@ -87,7 +87,7 @@ class FileSelectionWindow(QMainWindow):
                  # Open the pickle file in binary mode for reading
                 with open(import_filename, 'rb') as file:
                     # Load the VisualizationData object from import file and add it to patient_data
-                    self.patient_data.add_visualization(import_filename.split("/")[-1].split(".")[0], pickle.load(file))
+                    self.patient_data.add_visit(import_filename.split("/")[-1].split(".")[0], pickle.load(file))
 
             visualization_window = gui.visualization_window.VisualizationWindow(self.master_window, self.patient_data)
             self.master_window.switch_to(visualization_window)
@@ -125,10 +125,11 @@ class FileSelectionWindow(QMainWindow):
         """
         filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
-        self.ui.xray_textfield_all.setText(str(len(filenames)) + " Dateien ausgewählt")
-        self.xray_filenames = filenames
-        self.__check_button_activate()
-        self.default_path = os.path.dirname(filenames[0])
+        if len(filenames) > 0:
+            self.ui.xray_textfield_all.setText(str(len(filenames)) + " Dateien ausgewählt")
+            self.xray_filenames = filenames
+            self.__check_button_activate()
+            self.default_path = os.path.dirname(filenames[0])
 
 
     def __endoscopy_button_clicked(self):
@@ -160,9 +161,10 @@ class FileSelectionWindow(QMainWindow):
         """
         filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
                                                   "exportierte Dateien (*.achalasie)")
-        self.ui.import_textfield.setText(str(len(filenames)) + " Dateien ausgewählt")
-        self.import_filenames = filenames
-        self.__check_button_activate()
+        if len(filenames) > 0:
+            self.ui.import_textfield.setText(str(len(filenames)) + " Dateien ausgewählt")
+            self.import_filenames = filenames
+            self.__check_button_activate()
 
     def __check_button_activate(self):
         """

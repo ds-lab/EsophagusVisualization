@@ -27,14 +27,9 @@ class ShowMoreWindows(QMainWindow):
 
         # Initialize a linked list of Xray windows
         for i, w in enumerate(w_list):
-            # First window
-            if i == 0:
-                w.next_window = w_list[i+1]
-                w.all_visualization = []
             # Last window -> no next window
-            elif i == len(w_list)-1:
+            if i == len(w_list)-1:
                 w.next_window = None
-
             else:
                 w.next_window = w_list[i+1]
 
