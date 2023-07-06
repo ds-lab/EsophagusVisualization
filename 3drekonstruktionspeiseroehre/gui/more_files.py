@@ -1,11 +1,13 @@
 from PyQt5.QtWidgets import QMainWindow, QAction
 from gui.master_window import MasterWindow
 from gui.xray_region_selection_window import XrayRegionSelectionWindow
+from logic.visit_data import VisitData
+from logic.patient_data import PatientData
 
 
 class ShowMoreWindows(QMainWindow):
 
-    def __init__(self, master_window: MasterWindow, visualization_list):
+    def __init__(self, master_window: MasterWindow, visit: VisitData, patient_data: PatientData):
         """
         init FileSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -13,35 +15,30 @@ class ShowMoreWindows(QMainWindow):
         super().__init__()
 
         self.master_window: MasterWindow = master_window
+        self.patient_data: PatientData = patient_data
+        self.visit: VisitData = visit
 
         w_list = []
 
         # erzeuge alle Fenster aller Eingabedaten und speicher diese
-        for n, visualization in enumerate(visualization_list):
-            # visualization ist None, wenn kein Bild an der Stelle n eingegeben wurde
-            if visualization is not None:
-                xray_selection_window = XrayRegionSelectionWindow(self.master_window, visualization, n)
-                w_list.append(xray_selection_window)
-            else:
-                w_list.append(None)
+        for n, visualization in enumerate(visit.visualization_data_list):
+            xray_selection_window = XrayRegionSelectionWindow(self.master_window, self.patient_data, self.visit, n)
+            w_list.append(xray_selection_window)
 
-        # setze für jedes Fenster das nächste Fenster
+        # Initialize a linked list of Xray windows
         for i, w in enumerate(w_list):
-            # falls das erste Fenster, dann initialisiere all_visualization mit leerer Liste
+            # First window
             if i == 0:
-                next_window = w_list[i+1]
+                w.next_window = w_list[i+1]
                 w.all_visualization = []
-            # falls letztes Fenster, dann setze kein nächstes Fenster
+            # Last window -> no next window
             elif i == len(w_list)-1:
-                next_window = None
-                w.all_visualization = w_list[i-1].all_visualization
-            # falls in der Mitte, nächstes Fenster erzeugen
-            # hole Daten (all_visualisation) vom vorherigen Fenster
-            else:
-                next_window = w_list[i+1]
-            w.all_visualization = w_list[i - 1].all_visualization
-            w.next_window = next_window
+                w.next_window = None
 
+            else:
+                w.next_window = w_list[i+1]
+
+        # Start with the first XraySelectionWindow
         self.master_window.switch_to(w_list[0])
 
 

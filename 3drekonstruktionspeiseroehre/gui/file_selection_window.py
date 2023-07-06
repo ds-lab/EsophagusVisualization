@@ -57,7 +57,7 @@ class FileSelectionWindow(QMainWindow):
         """
         visualization button callback
         """
-        if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield.text()) > 0:
+        if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield_all.text()) > 0:
             visit = VisitData()
             for xray_filename in self.xray_filenames:
                 visualization_data = VisualizationData()

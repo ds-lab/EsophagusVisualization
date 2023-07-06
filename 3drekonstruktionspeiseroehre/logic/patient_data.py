@@ -1,20 +1,20 @@
 from typing import List, Dict
-from logic.visualization_data import VisualizationData
+from logic.visit_data import VisitData
 
 class PatientData:
     def __init__(self):
         """
         init PatientData
         """
-        self.visualization_data_dict: Dict[str, VisualizationData] = {}
+        self.visit_data_dict: Dict[str, VisitData] = {}
 
     def number_of_visualizations(self) -> int:
-        return len(self.visualization_data_dict)
+        return len(self.visit_data_dict)
 
-    def add_visualization(self, name: str, visualization_data: VisualizationData) -> None:
-        self.visualization_data_dict[name] = visualization_data
+    def add_visualization(self, name: str, visit_data: VisitData) -> None:
+        self.visit_data_dict[name] = visit_data
 
     def remove_visualization(self, name) -> None:
-        del self.visualization_data_dict[name]
+        del self.visit_data_dict[name]
 
         
