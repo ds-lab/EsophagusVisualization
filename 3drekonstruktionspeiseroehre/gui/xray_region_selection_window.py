@@ -13,22 +13,29 @@ from logic.visualization_data import VisualizationData
 from logic.patient_data import PatientData
 import logic.image_polygon_detection as image_polygon_detection
 
+#ToDo: Linien sollen schräg eingezeichnet werden können
 
 class XrayRegionSelectionWindow(QMainWindow):
     """Window where the user selects the shape of the esophagus on the x-ray image"""
 
-    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData, patient_data: PatientData):
+    next_window = None
+    all_visualization = []
+
+    def __init__(self, master_window: MasterWindow, visualization, n, patient_data: PatientData):
         """
         init XrayRegionSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
         :param visualization_data: VisualizationData
+        :param n: ??
         """
+
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/xray_region_selection_window_design.ui", self)
+        self.ui = uic.loadUi("ui-files/xray_region_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
         self.master_window.maximize()
-        self.visualization_data = visualization_data
+        self.visualization_data = visualization
+        self.n = n
         self.polygon = []
 
         self.figure_canvas = FigureCanvasQTAgg(Figure())
@@ -72,6 +79,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         """
         apply-button callback
         """
+
         if len(self.polygon) > 2:
             shapely_poly = Polygon(self.polygon)
             if shapely_poly.is_valid:
@@ -79,7 +87,11 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.visualization_data.xray_polygon = np.array(self.polygon, dtype=int)
                 self.visualization_data.xray_image_height = self.xray_image.shape[0]
                 self.visualization_data.xray_image_width = self.xray_image.shape[1]
-                position_selection_window = PositionSelectionWindow(self.master_window, self.visualization_data, self.patient_data)
+                # übergebe all_visualization vom vorherigen Fenster
+                position_selection_window = PositionSelectionWindow(self.master_window, self.visualization_data,
+                                                                    self.next_window, self.all_visualization, self.n, self.patient_data)
+                # speichere all_visualization vom nächsten Fenster
+                self.all_visualization = position_selection_window.all_visualization
                 self.master_window.switch_to(position_selection_window)
                 self.close()
             else:

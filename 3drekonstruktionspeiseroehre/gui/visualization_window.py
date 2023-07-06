@@ -1,8 +1,14 @@
+import multiprocessing
 import pickle
 import zipfile
 import os
 from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog, QGridLayout, QWidget, QMessageBox, QVBoxLayout, QLabel, QSizePolicy,QPushButton, QStyle
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+import shutil
+from multiprocessing.pool import ThreadPool
+
+import cv2
+from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QFont
 from PyQt5 import uic
@@ -13,6 +19,10 @@ from gui.info_window import InfoWindow
 import gui.file_selection_window 
 from logic.patient_data import PatientData
 from gui.drag_and_drop import *
+from logic.figure_creator.figure_creator_with_endoscopy import FigureCreatorWithEndoscopy
+from logic.figure_creator.figure_creator_without_endoscopy import FigureCreatorWithoutEndoscopy
+from logic.visualization_data import VisualizationData
+import numpy as np
 
 
 class VisualizationWindow(QMainWindow):
@@ -25,7 +35,7 @@ class VisualizationWindow(QMainWindow):
         :param visualization_data: VisualizationData
         """
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/visualization_window_design.ui", self)
+        self.ui = uic.loadUi("ui-files/visualization_window_design.ui", self)
         self.master_window = master_window
         # Maximize window to show the whole 3d reconstruction (necessary if visualization_data is imported)
         self.master_window.maximize()
@@ -54,6 +64,8 @@ class VisualizationWindow(QMainWindow):
 
         self.dash_servers = []  # List to store DashServer instances for cleanup
         self.web_views = []  # List to store QWebView instances for cleanup
+        # set native menu bar flag as false to see MenuBar on Mac
+        self.ui.menubar.setNativeMenuBar(False)
 
         self.progress_dialog = QProgressDialog("Visualisierung wird erstellt", None, 0, 100, None)
         self.progress_dialog.setWindowTitle("Fortschritt")
@@ -252,3 +264,19 @@ class VisualizationWindow(QMainWindow):
         # Clean patient_data
         self.patient_data.remove_visualization(visualization_name)
 
+
+def run(visualization_data):
+    """
+        to be run as thread
+        starts figure creation
+        """
+    mask = np.zeros((visualization_data.xray_image_height, visualization_data.xray_image_width))
+    cv2.drawContours(mask, [np.array(visualization_data.xray_polygon)], -1, 1, -1)
+    visualization_data.xray_mask = mask
+
+    if visualization_data.endoscopy_polygons is not None:
+        figure_creator = FigureCreatorWithEndoscopy(visualization_data)
+    else:
+        figure_creator = FigureCreatorWithoutEndoscopy(visualization_data)
+
+    return figure_creator

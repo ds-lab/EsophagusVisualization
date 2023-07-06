@@ -106,24 +106,14 @@
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
             <widget class="QLineEdit" name="import_textfield">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
+      <item>
             <widget class="QPushButton" name="import_button">
              <property name="text">
               <string>Dateien auswählen</string>
              </property>
             </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
       </item>
-      <item row="6" column="0">
+      <item row="2" column="0">
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
          <string>Endoskopiebilder auswählen (optional)</string>
@@ -140,6 +130,33 @@
            </item>
            <item>
             <widget class="QPushButton" name="endoscopy_button">
+             <property name="text">
+              <string>Dateien auswählen</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     <item row="3" column="0">
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string>Auswahl eines oder mehrerer Breischluckbilder</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QLineEdit" name="xray_textfield_all">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="xray_button_all">
              <property name="text">
               <string>Dateien auswählen</string>
              </property>

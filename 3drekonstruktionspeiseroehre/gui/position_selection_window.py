@@ -14,17 +14,21 @@ from gui.visualization_window import VisualizationWindow
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData, patient_data: PatientData):
+    def __init__(self, master_window: MasterWindow, visualization, next_window, all_visualization, n, patient_data: PatientData):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
         :param visualization_data: VisualizationData
         """
+
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
-        self.visualization_data = visualization_data
+        self.visualization_data = visualization
+        self.all_visualization = all_visualization
+        self.n = n
+        self.next_window = next_window
         sensor_names = ["P" + str(22 - i) for i in range(22)]
         self.ui.first_combobox.addItems(sensor_names)
         self.ui.second_combobox.addItems(sensor_names)
@@ -128,6 +132,26 @@ class PositionSelectionWindow(QMainWindow):
                 QMessageBox.critical(self, "Fehler", "Bitte wählen Sie zwei unterschiedliche Sensoren aus")
         else:
             QMessageBox.critical(self, "Fehler", "Bitte tragen Sie alle benötigten Positionen in die Graphik ein")
+
+        # füge alle visualization Data der Bilder zu all_visualization hinzu
+        self.all_visualization.append(self.visualization_data)
+
+        # falls es nächste Fenster gibt, gehe zu nächstem Fenster
+        if self.next_window:
+            self.master_window.switch_to(self.next_window)
+        # wenn nicht, dann erzeuge Visualisierung
+        else:
+            self.__create_visualization()
+
+
+    def __create_visualization(self):
+        """
+        apply-button callback
+        """
+        all_visualization = self.all_visualization
+        visualization_window = VisualizationWindow(self.master_window, all_visualization, self.n)
+        self.master_window.switch_to(visualization_window)
+        self.close()
 
     def __menu_button_clicked(self):
         """
