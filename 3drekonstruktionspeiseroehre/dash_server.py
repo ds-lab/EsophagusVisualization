@@ -49,17 +49,22 @@ class DashServer:
             dcc.Store(id='color-store', data=self.visit.visualization_data_list[0].figure_creator.get_surfacecolor_list()),
             dcc.Store(id='tubular-metric-store', data=self.visit.visualization_data_list[0].figure_creator.get_metrics()[0]),
             dcc.Store(id='sphincter-metric-store', data=self.visit.visualization_data_list[0].figure_creator.get_metrics()[1]),
-           dcc.RadioItems(
-                id='figure-selector',
-                options=[{'label': f'Figure {i+1}', 'value': i} for i in range(len(self.visit_figures))],
-                value=0
-            ),
+
             dcc.Graph(
                 id='3d-figure',
                 figure=self.visit.visualization_data_list[0].figure_creator.get_figure(),
                 config={'modeBarButtonsToRemove': ['toImage', 'resetCameraLastSave3d'], 'displaylogo': False},
-                style={'height': 'calc(100% - 60px)'}
+                style={'height': 'calc(100vh - 110px)'}
             ),
+
+            dcc.RadioItems(
+                id='figure-selector',
+                options=[{'label':  f'Breischluck {i+1}  ', 'value': i} for i in range(len(self.visit_figures))],
+                value=0,
+                inline=True,
+                className="mb-1"
+            ),
+
             html.Div([
                 html.Div([
                     html.Div(
@@ -81,7 +86,7 @@ class DashServer:
                         id='time-field', children=' Zeitpunkt: 0.00s',
                         style={'min-width': '170px', 'vertical-align': 'top', 'display': 'inline-block'}
                     )
-                ], style={'min-height': '40px', 'display': 'flex', 'flex-direction': 'row'}),
+                ], style={'min-height': '30px', 'display': 'flex', 'flex-direction': 'row'}),
                 html.Div(
                     id='metrics',
                     children="Metriken: tubulärer Abschnitt (" + str(config.length_tubular_part_cm) +
@@ -91,7 +96,7 @@ class DashServer:
                 ),
             ])
 
-        ], style={'height': 'calc(100vh - 20px)'})
+        ], style={'height': '100vh'})
 
         self.dash_app.clientside_callback(
             """
