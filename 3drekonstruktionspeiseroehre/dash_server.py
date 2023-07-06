@@ -23,6 +23,7 @@ class DashServer:
         """
         self.visit = visit
         self.visit_figures = []
+        self.selected_figure_index = 0
         for visualization_data in self.visit.visualization_data_list:
             self.visit_figures.append(visualization_data.figure_creator.get_figure())
 
@@ -103,7 +104,7 @@ class DashServer:
                     new_figure.data[0].surfacecolor = expandedColors;
                     return [new_figure, "Zeitpunkt: " + (time/20).toFixed(2) + "s", "Metriken: tubulärer Abschnitt (""" +
             str(config.length_tubular_part_cm) + """cm) [Volumen*Druck]: " + tubular_metric[time].toFixed(2) + "; unterer Sphinkter (""" +
-            str(self.visit.visualization_data_list[0].sphincter_length_cm) + """cm) [Volumen/Druck]: " + sphincter_metric[time].toFixed(5)];
+            str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """cm) [Volumen/Druck]: " + sphincter_metric[time].toFixed(5)];
                 }
                 """,
             [Output('3d-figure', 'figure'),
@@ -113,7 +114,7 @@ class DashServer:
             [State('3d-figure', 'figure'),
              State("color-store", "data"),
              State("tubular-metric-store", "data"),
-             State("sphincter-metric-store", "data")]
+             State("sphincter-metric-store", "data"),]
         )
 
         self.dash_app.callback(Output('3d-figure', 'figure'),Input('3d-figure','figure'))(self.__get_current_figure_callback)
@@ -131,7 +132,13 @@ class DashServer:
                                [Input('refresh-graph-interval', 'n_intervals')],
                                [State('time-slider', 'value')])(self.__interval_action_callback)
         
-        self.dash_app.callback(Output('3d-figure', 'figure'),Input('figure-selector', 'value'))(self.__update_figure)
+        self.dash_app.callback([Output('3d-figure', 'figure'),
+                                Output('color-store','data'), 
+                                Output('tubular-metric-store','data'), 
+                                Output('sphincter-metric-store','data'),
+                                Output('time-slider', 'max'),
+                                Output('metrics', 'children')],
+                                Input('figure-selector', 'value'))(self.__update_figure)
 
 
         self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
@@ -166,7 +173,7 @@ class DashServer:
             button_text = DashServer.button_text_start
         else:
             button_text = DashServer.button_text_stop
-            if value == self.visit.visualization_data_list[0].figure_creator.get_number_of_frames() - 1:
+            if value == self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1:
                 slider_new_value = 0
         return interval_new_state, button_text, slider_new_value
 
@@ -178,8 +185,8 @@ class DashServer:
         :return: new slider value, new button text, new slider disabled state
         """
         new_value = value + int(config.csv_values_per_second / config.animation_frames_per_second)
-        if new_value >= self.visit.visualization_data_list[0].figure_creator.get_number_of_frames() - 1:
-            return self.visit.visualization_data_list[0].figure_creator.get_number_of_frames() - 1, DashServer.button_text_start, True
+        if new_value >= self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1:
+            return self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1, DashServer.button_text_start, True
         else:
             return new_value, no_update, no_update
         
@@ -195,7 +202,16 @@ class DashServer:
     
 
     def __update_figure(self,selected_figure):
+        self.selected_figure_index = selected_figure
         if selected_figure is not None:
-            return self.visit_figures[selected_figure]
+            return [self.visit_figures[selected_figure], 
+                    self.visit.visualization_data_list[selected_figure].figure_creator.get_surfacecolor_list(), 
+                    self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0], 
+                    self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1],
+                    self.visit.visualization_data_list[selected_figure].figure_creator.get_number_of_frames() - 1,
+                    "Metriken: tubulärer Abschnitt (" + str(config.length_tubular_part_cm) +
+                             "cm) [Volumen*Druck]: " + str(round(self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0][0], 2)) +
+                             "; unterer Sphinkter (" + str(self.visit.visualization_data_list[selected_figure].sphincter_length_cm) +
+                             "cm) [Volumen/Druck]: " + str(round(self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1][0], 5))]
         else:
             return None  # Handle an invalid selection gracefully
