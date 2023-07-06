@@ -58,25 +58,27 @@ class FileSelectionWindow(QMainWindow):
         visualization button callback
         """
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield_all.text()) > 0:
-            visit = VisitData()
+            if len(self.ui.visualization_namefield.text()) > 0:
+                    # Add name if user chooses to name the reconstruction
+                    name = self.ui.visualization_namefield.text()
+                    if self.ui.visualization_namefield.text() in self.patient_data.visit_data_dict.keys():
+                        QMessageBox.critical(self, "Rekonstruktionsname nicht eindeutig","Fehler: Rekonstruktionsnamen müssen eindeutig sein.")
+                        return
+            else:
+                    # No name was specifiied by user -> use pseudonym and xray filename
+                    name = self.xray_filenames[0].split("/")[-3] + "-" + self.xray_filenames[0].split("/")[-1].split(".")[0]
+
+            visit = VisitData(name)
             for xray_filename in self.xray_filenames:
                 visualization_data = VisualizationData()
                 visualization_data.xray_filename = xray_filename
 
-                if len(self.ui.visualization_namefield.text()) > 0:
-                    # Add name if user chooses to name the reconstruction
-                    visualization_data.reconstruction_name = self.ui.visualization_namefield.text()
-                    if self.ui.visualization_namefield.text() in self.patient_data.visualization_data_dict.keys():
-                        QMessageBox.critical(self, "Rekonstruktionsname nicht eindeutig","Fehler: Rekonstruktionsnamen müssen eindeutig sein.")
-                        return
-                else:
-                    # No name was specifiied by user -> use pseudonym and xray filename
-                    visualization_data.reconstruction_name = visualization_data.xray_filename.split("/")[-3] + "-" + visualization_data.xray_filename.split("/")[-1].split(".")[0]
 
                 visualization_data.pressure_matrix = self.pressure_matrix
                 visualization_data.endoscopy_filenames = self.endoscopy_filenames
                 visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
                 visit.add_visualization(visualization_data)
+
             ShowMoreWindows(self.master_window, visit, self.patient_data)
 
         elif len(self.ui.import_textfield.text()) > 0:

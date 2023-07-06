@@ -118,12 +118,7 @@ class PositionSelectionWindow(QMainWindow):
                                                                                   self.visualization_data, self.patient_data)
                             self.master_window.switch_to(endoscopy_selection_window)
                             self.close()
-                        else:
-                            # Add new visualization to patient_data
-                            self.patient_data.add_visualization(self.visualization_data.reconstruction_name, self.visualization_data)
-                            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
-                            self.master_window.switch_to(visualization_window)
-                            self.close()
+
                     else:
                         QMessageBox.critical(self, "Fehler", "Die Positionen müssen sich innerhalb des zuvor " +
                                              "markierten Umrisses des Ösophagus befinden")
@@ -134,25 +129,16 @@ class PositionSelectionWindow(QMainWindow):
         else:
             QMessageBox.critical(self, "Fehler", "Bitte tragen Sie alle benötigten Positionen in die Graphik ein")
 
-        # füge alle visualization Data der Bilder zu all_visualization hinzu
-        self.all_visualization.append(self.visualization_data)
-
         # If there are more visualizations in this visit continue with the next xray selection
         if self.next_window:
             self.master_window.switch_to(self.next_window)
         # Else show the visualization
         else:
-            self.__create_visualization()
-
-
-    def __create_visualization(self):
-        """
-        apply-button callback
-        """
-        all_visualization = self.all_visualization
-        visualization_window = VisualizationWindow(self.master_window, all_visualization, self.n)
-        self.master_window.switch_to(visualization_window)
-        self.close()
+            # Add new visualization to patient_data
+            self.patient_data.add_visit(self.visit.name, self.visit)
+            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
+            self.master_window.switch_to(visualization_window)
+            self.close()
 
     def __menu_button_clicked(self):
         """

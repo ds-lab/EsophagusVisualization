@@ -8,13 +8,13 @@ class PatientData:
         """
         self.visit_data_dict: Dict[str, VisitData] = {}
 
-    def number_of_visualizations(self) -> int:
+    def number_of_visits(self) -> int:
         return len(self.visit_data_dict)
 
-    def add_visualization(self, name: str, visit_data: VisitData) -> None:
+    def add_visit(self, name: str, visit_data: VisitData) -> None:
         self.visit_data_dict[name] = visit_data
 
-    def remove_visualization(self, name) -> None:
+    def remove_visit(self, name) -> None:
         del self.visit_data_dict[name]
 
         

@@ -2,11 +2,12 @@ from typing import List, Dict
 from logic.visualization_data import VisualizationData
 
 class VisitData:
-    def __init__(self):
+    def __init__(self, name):
         """
         init VisitData
         """
         self.visualization_data_list: List[VisualizationData] = []
+        self.name = name
 
     def number_of_visualizations(self) -> int:
         return len(self.visualization_data_list)
