@@ -1,11 +1,8 @@
-import multiprocessing
 import pickle
 import zipfile
 import os
 from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog, QGridLayout, QWidget, QMessageBox, QVBoxLayout, QLabel, QSizePolicy,QPushButton, QStyle
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-import shutil
-from multiprocessing.pool import ThreadPool
 
 import cv2
 from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog
@@ -19,10 +16,8 @@ from gui.info_window import InfoWindow
 import gui.file_selection_window 
 from logic.patient_data import PatientData
 from gui.drag_and_drop import *
-from logic.figure_creator.figure_creator_with_endoscopy import FigureCreatorWithEndoscopy
-from logic.figure_creator.figure_creator_without_endoscopy import FigureCreatorWithoutEndoscopy
 from logic.visualization_data import VisualizationData
-import numpy as np
+from logic.visit_data import VisitData
 
 
 class VisualizationWindow(QMainWindow):
@@ -40,7 +35,7 @@ class VisualizationWindow(QMainWindow):
         # Maximize window to show the whole 3d reconstruction (necessary if visualization_data is imported)
         self.master_window.maximize()
         self.patient_data = patient_data
-        self.visualization_data_dict = self.patient_data.visualization_data_dict
+        self.visits = self.patient_data.visit_data_dict
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -72,12 +67,12 @@ class VisualizationWindow(QMainWindow):
         self.progress_dialog.show()
 
         # Thread per visualzation data object
-        self.thread = [None] * len(self.patient_data.visualization_data_dict)
-        for i, (name, visualization_data) in enumerate(self.patient_data.visualization_data_dict.items()):
-            self.thread[i] = FigureCreationThread(visualization_data)
+        self.thread = [None] * len(self.visits)
+        for i, (name, visit_data) in enumerate(self.visits.items()):
+            self.thread[i] = FigureCreationThread(visit_data)
             self.thread[i].progress_value.connect(self.__set_progress)
             self.thread[i].return_value.connect(
-                lambda figure_creator, viz_data=visualization_data, viz_name=name: self.__start_visualization(figure_creator, viz_data, viz_name)
+                lambda visit: self.__start_visualization(visit)
             )
             self.thread[i].start()
 
@@ -114,15 +109,14 @@ class VisualizationWindow(QMainWindow):
         if self.progress_dialog:
             self.progress_dialog.setValue(val)
 
-    def __start_visualization(self, figure_creator, visualization_data, visualization_name):
+    def __start_visualization(self, visit: VisitData):
         """
         callback of the figure creation thread
         :param figure_creator: FigureCreator
-        :param visualization_data: VisualizationData
-        :param visualization_name: Name of the visualization
+        :param visit_data: VisualizationData
+        :param visit_name: Name of the visualization
         """
-        visualization_data.figure_creator = figure_creator
-        dash_server = DashServer(visualization_data)
+        dash_server = DashServer(visit)
         url = QUrl()
         url.setScheme("http")
         url.setHost("127.0.0.1")
@@ -134,9 +128,11 @@ class VisualizationWindow(QMainWindow):
         item = DragItem()
 
         # Add the label with the visualization name to the vbox
-        if "." in visualization_name:
-            visualization_name = visualization_name.split(".")[0]
-        label = QLabel(visualization_name)
+        if "." in visit.name:
+            visit_name = visit.name.split(".")[0]
+        else:
+            visit_name = visit.name
+        label = QLabel(visit_name)
         label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         label.setFont(QFont('Arial', 14))
         vbox.addWidget(label)
@@ -145,7 +141,7 @@ class VisualizationWindow(QMainWindow):
         button = QPushButton()
         button.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_TitleBarCloseButton')))
         button.setFixedSize(20, 20)
-        button.clicked.connect(lambda _, viz_name=visualization_name, item=item: self.__delete_visualization(viz_name, item)) # Connect the button's clicked signal to the delete visualization method
+        button.clicked.connect(lambda _, visit_name=visit_name, item=item: self.__delete_visualization(visit_name, item)) # Connect the button's clicked signal to the delete visualization method
         vbox.addWidget(button)
 
         # Create a new QWebEngineView for each visualization
@@ -173,8 +169,8 @@ class VisualizationWindow(QMainWindow):
         destination_directory = destination_directory.replace('/', '\\')
 
         if destination_directory:
-            # Iterate over each VisualizationData object in the visualization_data_dict
-            for name, visualization_data in self.patient_data.visualization_data_dict.items():
+            # Iterate over each VisualizationData object in the visit_data_dict
+            for name, visit_data in self.patient_data.visit_data_dict.items():
                 # Generate a file name for each pickle file
                 file_name = f"{name.split('.')[0]}.achalasie"
                 # Construct the file path by joining the destination directory and the file name
@@ -182,7 +178,7 @@ class VisualizationWindow(QMainWindow):
 
                 # Save the VisualizationData object as a pickle file (*.achalasie)
                 with open(file_path, 'wb') as file:
-                    pickle.dump(visualization_data, file)
+                    pickle.dump(visit_data, file)
 
             # Inform the user that the export is complete
             QMessageBox.information(
@@ -230,7 +226,7 @@ class VisualizationWindow(QMainWindow):
 
     def __reset_patient_data(self):
         # Empty the patient data object
-        self.patient_data.visualization_data_dict = {}
+        self.patient_data.visit_data_dict = {}
 
         # Open file selection window
         file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
@@ -243,12 +239,12 @@ class VisualizationWindow(QMainWindow):
             web_view.close()
         
 
-    def __delete_visualization(self, visualization_name, viz_item):
+    def __delete_visualization(self, visit_name, visit_item):
         # Remove the item from the layout
-        self.visualization_layout.removeItem(viz_item)
+        self.visualization_layout.removeItem(visit_item)
 
         # Find the corresponding web_view and dash_server instances
-        web_view = viz_item.layout().itemAt(2).widget()  # Assuming the web_view is at index 2 in the QHBoxLayout
+        web_view = visit_item.layout().itemAt(2).widget()  # Assuming the web_view is at index 2 in the QHBoxLayout
         dash_server = next((server for server in self.dash_servers if server.get_port() == web_view.url().port()), None)
 
         if dash_server:
@@ -258,25 +254,9 @@ class VisualizationWindow(QMainWindow):
         self.dash_servers.remove(dash_server)
 
         # Clean up the layout
-        for i in reversed(range(viz_item.layout().count())):
-            viz_item.layout().itemAt(i).widget().setParent(None)
+        for i in reversed(range(visit_item.layout().count())):
+            visit_item.layout().itemAt(i).widget().setParent(None)
         
         # Clean patient_data
-        self.patient_data.remove_visualization(visualization_name)
+        self.patient_data.remove_visit(visit_name)
 
-
-def run(visualization_data):
-    """
-        to be run as thread
-        starts figure creation
-        """
-    mask = np.zeros((visualization_data.xray_image_height, visualization_data.xray_image_width))
-    cv2.drawContours(mask, [np.array(visualization_data.xray_polygon)], -1, 1, -1)
-    visualization_data.xray_mask = mask
-
-    if visualization_data.endoscopy_polygons is not None:
-        figure_creator = FigureCreatorWithEndoscopy(visualization_data)
-    else:
-        figure_creator = FigureCreatorWithoutEndoscopy(visualization_data)
-
-    return figure_creator
