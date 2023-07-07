@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QWidget, QLabel, QMainWindow, QVBoxLayout
-from PyQt5.QtCore import Qt, QMimeData, pyqtSignal
+from PyQt5.QtCore import QMimeData, Qt, pyqtSignal
 from PyQt5.QtGui import QDrag, QPixmap
+from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMainWindow,
+                             QVBoxLayout, QWidget)
 
 # Improved version of -> https://www.pythonguis.com/faq/pyqt-drag-drop-widgets/
 

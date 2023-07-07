@@ -1,23 +1,22 @@
+import os
 import pickle
 import zipfile
-import os
-from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog, QGridLayout, QWidget, QMessageBox, QVBoxLayout, QLabel, QSizePolicy,QPushButton, QStyle
-from PyQt5.QtWebEngineWidgets import QWebEngineView
 
-import cv2
-from PyQt5.QtWidgets import QProgressDialog, QMainWindow, QAction, QFileDialog
+import gui.file_selection_window
+from dash_server import DashServer
+from gui.drag_and_drop import *
+from gui.info_window import InfoWindow
+from gui.master_window import MasterWindow
+from logic.figure_creator.figure_creation_thread import FigureCreationThread
+from logic.patient_data import PatientData
+from logic.visit_data import VisitData
+from PyQt5 import uic
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QFont
-from PyQt5 import uic
-from dash_server import DashServer
-from logic.figure_creator.figure_creation_thread import FigureCreationThread
-from gui.master_window import MasterWindow
-from gui.info_window import InfoWindow
-import gui.file_selection_window 
-from logic.patient_data import PatientData
-from gui.drag_and_drop import *
-from logic.visualization_data import VisualizationData
-from logic.visit_data import VisitData
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWidgets import (QAction, QFileDialog, QLabel, QMainWindow,
+                             QMessageBox, QProgressDialog, QPushButton,
+                             QSizePolicy, QStyle, QVBoxLayout)
 
 
 class VisualizationWindow(QMainWindow):
@@ -25,9 +24,11 @@ class VisualizationWindow(QMainWindow):
 
     def __init__(self, master_window: MasterWindow, patient_data: PatientData):
         """
-        init VisualizationWindow
-        :param master_window: the MasterWindow in which the next window will be displayed
-        :param visualization_data: VisualizationData
+        Initialize VisualizationWindow
+
+        Args:
+            master_window (MasterWindow): The MasterWindow in which the next window will be displayed
+            patient_data (PatientData): PatientData object
         """
         super().__init__()
         self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/visualization_window_design.ui", self)
@@ -81,7 +82,7 @@ class VisualizationWindow(QMainWindow):
 
     def __menu_button_clicked(self):
         """
-        info-button callback
+        Callback for the info-button
         """
         info_window = InfoWindow()
         info_window.show_visualization_info()
@@ -89,8 +90,7 @@ class VisualizationWindow(QMainWindow):
 
     def closeEvent(self, event):
         """
-        Closing-event callback
-        :param event:
+        Callback for the closing event
         """
         for dash_server in self.dash_servers:
             dash_server.stop()
@@ -103,18 +103,20 @@ class VisualizationWindow(QMainWindow):
 
     def __set_progress(self, val):
         """
-        progress bar callback
-        :param val: new progress value
+        Callback for the progress bar
+
+        Args:
+            val (int): New progress value
         """
         if self.progress_dialog:
             self.progress_dialog.setValue(val)
 
     def __start_visualization(self, visit: VisitData):
         """
-        callback of the figure creation thread
-        :param figure_creator: FigureCreator
-        :param visit_data: VisualizationData
-        :param visit_name: Name of the visualization
+        Callback of the figure creation thread
+
+        Args:
+            visit (VisitData): VisitData object
         """
         dash_server = DashServer(visit)
         url = QUrl()
@@ -160,8 +162,9 @@ class VisualizationWindow(QMainWindow):
 
     def __download_object_files(self):
         """
-        Download button callback to save multiple VisualizationData objects as pickle files
+        Callback for the download button to save multiple VisualizationData objects as pickle files
         """
+
 
         # Prompt the user to choose a destination directory
         destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
@@ -189,7 +192,7 @@ class VisualizationWindow(QMainWindow):
 
     def __download_html_file(self):
         """
-        Download button callback
+        Callback for the download button to store visible graphs as .html files with their current coloring
         """
         # Prompt the user to choose a destination path for the zip file
         destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "ZIP Files (*.zip)")
@@ -198,7 +201,7 @@ class VisualizationWindow(QMainWindow):
             with zipfile.ZipFile(destination_file_path, 'w') as zip_file:
                 # Iterate over each visualization and export its HTML
                 for i, dash_server in enumerate(self.dash_servers):
-                    figure = dash_server.visit_figures[dash_server.selected_figure_index]
+                    figure = dash_server.current_figure
                     # Generate a unique file name for each HTML file
                     html_file_name = f"figure_{i}.html"
                     # Write the figure to an HTML file
@@ -213,6 +216,9 @@ class VisualizationWindow(QMainWindow):
 
 
     def __extend_patient_data(self):
+        """
+        Callback for extending patient data
+        """
         # Open File selection window
         file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
         self.master_window.switch_to(file_selection_window)
@@ -225,6 +231,9 @@ class VisualizationWindow(QMainWindow):
 
 
     def __reset_patient_data(self):
+        """
+        Callback for resetting patient data
+        """
         # Empty the patient data object
         self.patient_data.visit_data_dict = {}
 
@@ -240,6 +249,14 @@ class VisualizationWindow(QMainWindow):
         
 
     def __delete_visualization(self, visit_name, visit_item):
+        """
+        Callback for deleting a visualization
+
+        Args:
+            visit_name (str): Name of the visit to delete
+            visit_item (DragItem): GUI item of the visit to delete
+        """
+
         # Remove the item from the layout
         self.visualization_layout.removeItem(visit_item)
 

@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
-import plotly.graph_objects as go
-import numpy as np
-import shapely.geometry
-from skimage import graph
+
 import config
+import numpy as np
+import plotly.graph_objects as go
+import shapely.geometry
 from logic.visualization_data import VisualizationData
+from skimage import graph
 
 
 class FigureCreator(ABC):

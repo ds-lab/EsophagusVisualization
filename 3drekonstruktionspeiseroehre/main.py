@@ -1,8 +1,9 @@
 import sys
-from PyQt5.QtWidgets import QApplication
+
 from gui.file_selection_window import FileSelectionWindow
-from PyQt5 import QtWidgets, QtCore
 from gui.master_window import MasterWindow
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QApplication
 
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)

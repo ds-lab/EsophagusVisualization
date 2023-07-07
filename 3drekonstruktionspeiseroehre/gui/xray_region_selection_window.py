@@ -1,18 +1,18 @@
+import logic.image_polygon_detection as image_polygon_detection
 import numpy as np
-from shapely.geometry import Polygon
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QAction
-from skimage import io
-from PyQt5 import uic
+from gui.info_window import InfoWindow
+from gui.master_window import MasterWindow
+from gui.position_selection_window import PositionSelectionWindow
+from logic.patient_data import PatientData
+from logic.visit_data import VisitData
+from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
-from gui.master_window import MasterWindow
-from gui.info_window import InfoWindow
-from gui.position_selection_window import PositionSelectionWindow
-from logic.visualization_data import VisualizationData
-from logic.patient_data import PatientData
-from logic.visit_data import VisitData
-import logic.image_polygon_detection as image_polygon_detection
+from PyQt5 import uic
+from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
+from shapely.geometry import Polygon
+from skimage import io
 
 #ToDo: Linien sollen schräg eingezeichnet werden können
 

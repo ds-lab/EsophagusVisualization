@@ -1,13 +1,16 @@
-import socket
-import waitress
-from PyQt5.QtWidgets import QMessageBox
-from dash_extensions.enrich import Input, Output, State, DashProxy, MultiplexerTransform, html, dcc, no_update
-from kthread import KThread
-import config
 import os
-from logic.visualization_data import VisualizationData
-from logic.visit_data import VisitData
+import socket
+
+import config
 import plotly.graph_objects as go
+import waitress
+from dash.exceptions import PreventUpdate
+from dash_extensions.enrich import (DashProxy, Input, MultiplexerTransform,
+                                    Output, State, dcc, html, no_update)
+from kthread import KThread
+from logic.visit_data import VisitData
+from logic.visualization_data import VisualizationData
+from PyQt5.QtWidgets import QMessageBox
 
 
 class DashServer:
@@ -18,14 +21,17 @@ class DashServer:
 
     def __init__(self, visit: VisitData):
         """
-        init DashServer
-        :param visit: VisitData
+        Initialize DashServer
+
+        Args:
+            visit (VisitData): VisitData object
         """
         self.visit = visit
         self.visit_figures = []
         self.selected_figure_index = 0
         for visualization_data in self.visit.visualization_data_list:
             self.visit_figures.append(visualization_data.figure_creator.get_figure())
+        self.current_figure = self.visit_figures[0]
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_bound = False
@@ -100,24 +106,27 @@ class DashServer:
 
         self.dash_app.clientside_callback(
             """
-            function(time, figure, colors, tubular_metric, sphincter_metric) {
+            function(time, index, figure, colors, tubular_metric, sphincter_metric) {
                 var expandedColors = [];
                 for (var i = 0; i < colors[time].length; i++) {
                     expandedColors[i] = new Array(""" + str(config.figure_number_of_angles) + """).fill(colors[time][i]);
                     }
                     new_figure = {...figure};
                     new_figure.data[0].surfacecolor = expandedColors;
-                    return [new_figure, "Zeitpunkt: " + (time/20).toFixed(2) + "s", "Metriken: tubulärer Abschnitt (""" +
-            str(config.length_tubular_part_cm) + """cm) [Volumen*Druck]: " + tubular_metric[time].toFixed(2) + "; unterer Sphinkter (""" +
-            str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """cm) [Volumen/Druck]: " + sphincter_metric[time].toFixed(5)];
+                    return [new_figure, 
+                            "Zeitpunkt: " + (time/20).toFixed(2) + "s", 
+                            "Metriken: tubulärer Abschnitt (""" + str(config.length_tubular_part_cm) + """cm) [Volumen*Druck]: " 
+                            + tubular_metric[time].toFixed(2) + "; unterer Sphinkter (""" +
+                            str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """cm) [Volumen/Druck]: " + sphincter_metric[time].toFixed(5)];
                 }
                 """,
             [Output('3d-figure', 'figure'),
              Output('time-field', 'children'),
              Output('metrics', 'children')],
-            Input('time-slider', 'value'),
-            [State('3d-figure', 'figure'),
-             State("color-store", "data"),
+            [Input('time-slider', 'value'),
+            Input('figure-selector', 'value'),
+            Input('3d-figure', 'figure')],
+            [State("color-store", "data"),
              State("tubular-metric-store", "data"),
              State("sphincter-metric-store", "data"),]
         )
@@ -166,11 +175,15 @@ class DashServer:
 
     def __play_button_clicked_callback(self, n_clicks, disabled, value):
         """
-        callback of the play button
-        :param n_clicks: number of clicks
-        :param disabled: disabled state of refresh-graph-interval
-        :param value: time-slider value
-        :return: new interval state, new button text, new slider value
+        Callback of the play button
+
+        Args:
+            n_clicks (int): Number of clicks
+            disabled (bool): Disabled state of refresh-graph-interval
+            value (int): Time-slider value
+
+        Returns:
+            tuple: New interval state, new button text, new slider value
         """
         interval_new_state = not disabled
         slider_new_value = no_update
@@ -184,10 +197,14 @@ class DashServer:
 
     def __interval_action_callback(self, n_intervals, value):
         """
-        callback of refresh-graph-interval
-        :param n_intervals: number of intervals
-        :param value: slider value
-        :return: new slider value, new button text, new slider disabled state
+        Callback of refresh-graph-interval
+
+        Args:
+            n_intervals (int): Number of intervals
+            value (int): Slider value
+
+        Returns:
+            tuple: New slider value, new button text, new slider disabled state
         """
         new_value = value + int(config.csv_values_per_second / config.animation_frames_per_second)
         if new_value >= self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1:
@@ -198,20 +215,34 @@ class DashServer:
     
     def __get_current_figure_callback(self,figure):
         """
-        callback to update self.figure
-        :param figure: dict from Graph object
-        :return: figure unchanged (without return the figure does not update again)
+        Callback to update self.current_figure
+
+        Args:
+            figure (dict): Dict from Graph object
+
+        Returns:
+            dict: Figure unchanged (without returning the figure, it won't update again)
         """
-        self.figure = go.Figure(figure)
-        return self.figure
+        self.current_figure = go.Figure(figure)
+        return self.current_figure
     
 
     def __update_figure(self,selected_figure):
+        """
+        Callback to update the figure and related components
+
+        Args:
+            selected_figure (int): Selected figure index
+
+        Returns:
+            list: Updated figure, color store, tubular metric store, sphincter metric store,
+                  maximum value of time slider, updated time slider value, metrics text
+        """
         self.selected_figure_index = selected_figure
         if selected_figure is not None:
             return [self.visit_figures[selected_figure], 
-                    self.visit.visualization_data_list[selected_figure].figure_creator.get_surfacecolor_list(), 
-                    self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0], 
+                    self.visit.visualization_data_list[selected_figure].figure_creator.get_surfacecolor_list(),
+                    self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0],
                     self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1],
                     self.visit.visualization_data_list[selected_figure].figure_creator.get_number_of_frames() - 1,
                     "Metriken: tubulärer Abschnitt (" + str(config.length_tubular_part_cm) +
@@ -219,4 +250,4 @@ class DashServer:
                              "; unterer Sphinkter (" + str(self.visit.visualization_data_list[selected_figure].sphincter_length_cm) +
                              "cm) [Volumen/Druck]: " + str(round(self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1][0], 5))]
         else:
-            return None  # Handle an invalid selection gracefully
+            raise PreventUpdate

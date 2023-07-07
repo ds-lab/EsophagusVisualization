@@ -1,15 +1,15 @@
-from PyQt5 import uic
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QAction
+from gui.endoscopy_selection_window import EndoscopySelectionWindow
+from gui.info_window import InfoWindow
+from gui.master_window import MasterWindow
+from gui.visualization_window import VisualizationWindow
+from logic.patient_data import PatientData
+from logic.visit_data import VisitData
+from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+from PyQt5 import uic
+from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
 from skimage import io
-from gui.endoscopy_selection_window import EndoscopySelectionWindow
-from gui.master_window import MasterWindow
-from gui.info_window import InfoWindow
-from logic.visualization_data import VisualizationData
-from logic.visit_data import VisitData
-from logic.patient_data import PatientData
-from gui.visualization_window import VisualizationWindow
 
 
 class PositionSelectionWindow(QMainWindow):

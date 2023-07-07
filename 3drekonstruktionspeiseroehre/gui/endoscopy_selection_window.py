@@ -1,17 +1,17 @@
+import logic.image_polygon_detection as image_polygon_detection
 import numpy as np
-from PyQt5.QtWidgets import QMessageBox, QAction
-from shapely.geometry import Polygon
-from skimage import io
-from PyQt5 import QtWidgets, uic
+from gui.info_window import InfoWindow
+from gui.master_window import MasterWindow
+from gui.visualization_window import VisualizationWindow
+from logic.patient_data import PatientData
+from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
-from gui.master_window import MasterWindow
-from gui.info_window import InfoWindow
-from logic.visualization_data import VisualizationData
-from logic.patient_data import PatientData
-from gui.visualization_window import VisualizationWindow
-import logic.image_polygon_detection as image_polygon_detection
+from PyQt5 import QtWidgets, uic
+from PyQt5.QtWidgets import QAction, QMessageBox
+from shapely.geometry import Polygon
+from skimage import io
 
 
 class EndoscopySelectionWindow(QtWidgets.QMainWindow):

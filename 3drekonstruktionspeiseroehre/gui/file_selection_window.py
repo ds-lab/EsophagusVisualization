@@ -2,20 +2,19 @@ import os
 import pickle
 import re
 from pathlib import Path
+
+import config
 import gui.visualization_window
 import numpy as np
 import pandas as pd
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QAction
-from PyQt5 import uic
-import config
-from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
-from logic.visualization_data import VisualizationData
-from logic.visit_data import VisitData
+from gui.master_window import MasterWindow
+from gui.xray_window_managment import ManageXrayWindows
 from logic.patient_data import PatientData
-
-from gui.more_files import ShowMoreWindows
-from gui.xray_region_selection_window import XrayRegionSelectionWindow
+from logic.visit_data import VisitData
+from logic.visualization_data import VisualizationData
+from PyQt5 import uic
+from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
 
 
 class FileSelectionWindow(QMainWindow):
@@ -79,7 +78,7 @@ class FileSelectionWindow(QMainWindow):
                 visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
                 visit.add_visualization(visualization_data)
 
-            ShowMoreWindows(self.master_window, visit, self.patient_data)
+            ManageXrayWindows(self.master_window, visit, self.patient_data)
 
         elif len(self.ui.import_textfield.text()) > 0:
             # Iterate over *.achalasie files
