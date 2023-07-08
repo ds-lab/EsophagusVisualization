@@ -2,32 +2,35 @@ import os
 import pickle
 import re
 from pathlib import Path
-from gui.visualization_window import VisualizationWindow
+
+import config
+import gui.visualization_window
 import numpy as np
 import pandas as pd
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QAction
-from PyQt5 import uic
-import config
-from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
+from gui.master_window import MasterWindow
+from gui.xray_window_managment import ManageXrayWindows
+from logic.patient_data import PatientData
+from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
-
-from gui.more_files import ShowMoreWindows
-from gui.xray_region_selection_window import XrayRegionSelectionWindow
+from PyQt5 import uic
+from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
 
 
 class FileSelectionWindow(QMainWindow):
     """Window where the user selects the needed files"""
 
-    def __init__(self, master_window: MasterWindow):
+    def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
         """
         init FileSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/file_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
+        self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
+        self.import_filenames = []
         self.endoscopy_filenames = []
         self.xray_filenames = []
         self.endoscopy_image_positions = []
@@ -53,25 +56,39 @@ class FileSelectionWindow(QMainWindow):
         """
         visualization button callback
         """
-        visualization_list = []
-
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield_all.text()) > 0:
+            if len(self.ui.visualization_namefield.text()) > 0:
+                    # Add name if user chooses to name the reconstruction
+                    name = self.ui.visualization_namefield.text()
+                    if self.ui.visualization_namefield.text() in self.patient_data.visit_data_dict.keys():
+                        QMessageBox.critical(self, "Rekonstruktionsname nicht eindeutig","Fehler: Rekonstruktionsnamen müssen eindeutig sein.")
+                        return
+            else:
+                    # No name was specifiied by user -> use pseudonym and xray filename
+                    name = self.xray_filenames[0].split("/")[-3] + "-" + self.xray_filenames[0].split("/")[-1].split(".")[0]
+
+            visit = VisitData(name)
             for xray_filename in self.xray_filenames:
                 visualization_data = VisualizationData()
                 visualization_data.xray_filename = xray_filename
+
+
                 visualization_data.pressure_matrix = self.pressure_matrix
                 visualization_data.endoscopy_filenames = self.endoscopy_filenames
                 visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
-                visualization_list.append(visualization_data)
-            print(visualization_list)
-            ShowMoreWindows(self.master_window, visualization_list)
+                visit.add_visualization(visualization_data)
+
+            ManageXrayWindows(self.master_window, visit, self.patient_data)
 
         elif len(self.ui.import_textfield.text()) > 0:
-            # Open the pickle file in binary mode for reading
-            with open(self.ui.import_textfield.text(), 'rb') as file:
-                # Load the VisualizationData object from import file
-                visualization_data = pickle.load(file)
-            visualization_window = VisualizationWindow(self.master_window, visualization_data)
+            # Iterate over *.achalasie files
+            for import_filename in self.import_filenames:
+                 # Open the pickle file in binary mode for reading
+                with open(import_filename, 'rb') as file:
+                    # Load the VisualizationData object from import file and add it to patient_data
+                    self.patient_data.add_visit(import_filename.split("/")[-1].split(".")[0], pickle.load(file))
+
+            visualization_window = gui.visualization_window.VisualizationWindow(self.master_window, self.patient_data)
             self.master_window.switch_to(visualization_window)
             self.close()
 
@@ -107,10 +124,13 @@ class FileSelectionWindow(QMainWindow):
         """
         filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
-        self.ui.xray_textfield_all.setText(str(len(filenames)) + " Dateien ausgewählt")
-        self.xray_filenames = filenames
-        self.__check_button_activate()
-        #self.default_path = os.path.dirname(filenames)
+        if len(filenames) > 0:
+            self.ui.xray_textfield_all.setText(str(len(filenames)) + " Dateien ausgewählt")
+            self.xray_filenames = filenames
+            self.__check_button_activate()
+            self.default_path = os.path.dirname(filenames[0])
+
+
     def __endoscopy_button_clicked(self):
         """
         endoscopy button callback
@@ -136,13 +156,14 @@ class FileSelectionWindow(QMainWindow):
 
     def __import_button_clicked(self):
         """
-        x-ray button callback
+        import button callback
         """
-        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path,
-                                                  "exportierte Datei (*.achalsie)")
-        self.ui.import_textfield.setText(filename)
-        self.__check_button_activate()
-        self.default_path = os.path.dirname(filename)
+        filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
+                                                  "exportierte Dateien (*.achalasie)")
+        if len(filenames) > 0:
+            self.ui.import_textfield.setText(str(len(filenames)) + " Dateien ausgewählt")
+            self.import_filenames = filenames
+            self.__check_button_activate()
 
     def __check_button_activate(self):
         """

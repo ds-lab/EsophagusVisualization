@@ -1,10 +1,10 @@
-import shapely.geometry
-from shapely.geometry import LineString
-import numpy as np
-from scipy.interpolate import interp1d
 import config
+import numpy as np
+import shapely.geometry
 from logic.figure_creator.figure_creator import FigureCreator
 from logic.visualization_data import VisualizationData
+from scipy.interpolate import interp1d
+from shapely.geometry import LineString
 
 
 class FigureCreatorWithEndoscopy(FigureCreator):

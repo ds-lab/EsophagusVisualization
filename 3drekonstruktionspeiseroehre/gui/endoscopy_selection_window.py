@@ -1,30 +1,32 @@
+import logic.image_polygon_detection as image_polygon_detection
 import numpy as np
-from PyQt5.QtWidgets import QMessageBox, QAction
-from shapely.geometry import Polygon
-from skimage import io
-from PyQt5 import QtWidgets, uic
+from gui.info_window import InfoWindow
+from gui.master_window import MasterWindow
+from gui.visualization_window import VisualizationWindow
+from logic.patient_data import PatientData
+from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
-from gui.master_window import MasterWindow
-from gui.info_window import InfoWindow
-from logic.visualization_data import VisualizationData
-from gui.visualization_window import VisualizationWindow
-import logic.image_polygon_detection as image_polygon_detection
+from PyQt5 import QtWidgets, uic
+from PyQt5.QtWidgets import QAction, QMessageBox
+from shapely.geometry import Polygon
+from skimage import io
 
 
 class EndoscopySelectionWindow(QtWidgets.QMainWindow):
     """Window where the user selects the profiles on the endoscopy images"""
 
-    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData):
+    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData, patient_data: PatientData):
         """
         init EndoscopySelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
         :param visualization_data: VisualizationData
         """
         super().__init__()
-        self.ui = uic.loadUi("ui-files/endoscopy_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/endoscopy_selection_window_design.ui", self)
         self.master_window = master_window
+        self.patient_data = patient_data
 
         self.visualization_data = visualization_data
         self.current_image_index = 0
@@ -114,9 +116,13 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
                 if self.__is_last_image():
                     self.ui.apply_button.setDisabled(True)
                     self.visualization_data.endoscopy_polygons = self.polygon_list
-                    visualization_window = VisualizationWindow(self.master_window, self.visualization_data)
+
+                    # Add new visualization to patient_data
+                    self.patient_data.add_visualization(self.visualization_data.reconstruction_name, self.visualization_data)
+                    visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                     self.master_window.switch_to(visualization_window)
                     self.close()
+                    
                 else:
                     self.current_image_index += 1
                     self.__load_image(self.endoscopy_images[self.current_image_index])

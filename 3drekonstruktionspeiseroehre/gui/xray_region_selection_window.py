@@ -1,16 +1,18 @@
+import logic.image_polygon_detection as image_polygon_detection
 import numpy as np
-from shapely.geometry import Polygon
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QAction
-from skimage import io
-from PyQt5 import uic
+from gui.info_window import InfoWindow
+from gui.master_window import MasterWindow
+from gui.position_selection_window import PositionSelectionWindow
+from logic.patient_data import PatientData
+from logic.visit_data import VisitData
+from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
-from gui.master_window import MasterWindow
-from gui.info_window import InfoWindow
-from gui.position_selection_window import PositionSelectionWindow
-from logic.visualization_data import VisualizationData
-import logic.image_polygon_detection as image_polygon_detection
+from PyQt5 import uic
+from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
+from shapely.geometry import Polygon
+from skimage import io
 
 #ToDo: Linien sollen schräg eingezeichnet werden können
 
@@ -20,7 +22,7 @@ class XrayRegionSelectionWindow(QMainWindow):
     next_window = None
     all_visualization = []
 
-    def __init__(self, master_window: MasterWindow, visualization, n):
+    def __init__(self, master_window: MasterWindow, patient_data: PatientData, visit: VisitData, n):
         """
         init XrayRegionSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
@@ -29,10 +31,12 @@ class XrayRegionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("ui-files/xray_region_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/xray_region_selection_window_design.ui", self)
         self.master_window = master_window
+        self.patient_data = patient_data
         self.master_window.maximize()
-        self.visualization_data = visualization
+        self.visit = visit
+        self.visualization_data = visit.visualization_data_list[n]
         self.n = n
         self.polygon = []
 
@@ -86,10 +90,7 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.visualization_data.xray_image_height = self.xray_image.shape[0]
                 self.visualization_data.xray_image_width = self.xray_image.shape[1]
                 # übergebe all_visualization vom vorherigen Fenster
-                position_selection_window = PositionSelectionWindow(self.master_window, self.visualization_data,
-                                                                    self.next_window, self.all_visualization, self.n)
-                # speichere all_visualization vom nächsten Fenster
-                self.all_visualization = position_selection_window.all_visualization
+                position_selection_window = PositionSelectionWindow(self.master_window, self.next_window, self.patient_data, self.visit, self.n)
                 self.master_window.switch_to(position_selection_window)
                 self.close()
             else:

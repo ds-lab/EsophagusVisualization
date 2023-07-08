@@ -1,19 +1,21 @@
-from PyQt5 import uic
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QAction
+from gui.endoscopy_selection_window import EndoscopySelectionWindow
+from gui.info_window import InfoWindow
+from gui.master_window import MasterWindow
+from gui.visualization_window import VisualizationWindow
+from logic.patient_data import PatientData
+from logic.visit_data import VisitData
+from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+from PyQt5 import uic
+from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
 from skimage import io
-from gui.endoscopy_selection_window import EndoscopySelectionWindow
-from gui.master_window import MasterWindow
-from gui.info_window import InfoWindow
-from logic.visualization_data import VisualizationData
-from gui.visualization_window import VisualizationWindow
 
 
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    def __init__(self, master_window: MasterWindow, visualization, next_window, all_visualization, n):
+    def __init__(self, master_window: MasterWindow, next_window, patient_data: PatientData, visit:VisitData, n:int):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -21,10 +23,11 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
-        self.visualization_data = visualization
-        self.all_visualization = all_visualization
+        self.patient_data = patient_data
+        self.visualization_data = visit.visualization_data_list[n]
+        self.visit = visit
         self.n = n
         self.next_window = next_window
         sensor_names = ["P" + str(22 - i) for i in range(22)]
@@ -112,9 +115,10 @@ class PositionSelectionWindow(QMainWindow):
                         if len(self.visualization_data.endoscopy_filenames) > 0:
                             self.visualization_data.endoscopy_start_pos = int(self.endoscopy_pos - offset)
                             endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
-                                                                                  self.visualization_data)
+                                                                                  self.visualization_data, self.patient_data)
                             self.master_window.switch_to(endoscopy_selection_window)
                             self.close()
+
                     else:
                         QMessageBox.critical(self, "Fehler", "Die Positionen müssen sich innerhalb des zuvor " +
                                              "markierten Umrisses des Ösophagus befinden")
@@ -125,25 +129,16 @@ class PositionSelectionWindow(QMainWindow):
         else:
             QMessageBox.critical(self, "Fehler", "Bitte tragen Sie alle benötigten Positionen in die Graphik ein")
 
-        # füge alle visualization Data der Bilder zu all_visualization hinzu
-        self.all_visualization.append(self.visualization_data)
-
-        # falls es nächste Fenster gibt, gehe zu nächstem Fenster
+        # If there are more visualizations in this visit continue with the next xray selection
         if self.next_window:
             self.master_window.switch_to(self.next_window)
-        # wenn nicht, dann erzeuge Visualisierung
+        # Else show the visualization
         else:
-            self.__create_visualization()
-
-
-    def __create_visualization(self):
-        """
-        apply-button callback
-        """
-        all_visualization = self.all_visualization
-        visualization_window = VisualizationWindow(self.master_window, all_visualization, self.n)
-        self.master_window.switch_to(visualization_window)
-        self.close()
+            # Add new visualization to patient_data
+            self.patient_data.add_visit(self.visit.name, self.visit)
+            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
+            self.master_window.switch_to(visualization_window)
+            self.close()
 
     def __menu_button_clicked(self):
         """
