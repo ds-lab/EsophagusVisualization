@@ -28,9 +28,11 @@ class DashServer:
         """
         self.visit = visit
         self.visit_figures = []
+        self.visit_figures_path = []
         self.selected_figure_index = 0
         for visualization_data in self.visit.visualization_data_list:
             self.visit_figures.append(visualization_data.figure_creator.get_figure())
+            self.visit_figures_path.append(visualization_data.xray_filename.split("/")[-1].split(".")[0])
         self.current_figure = self.visit_figures[0]
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -65,7 +67,7 @@ class DashServer:
 
             dcc.RadioItems(
                 id='figure-selector',
-                options=[{'label':  f'Breischluck {i+1}  ', 'value': i} for i in range(len(self.visit_figures))],
+                options=[{'label':  f'Breischluck {self.visit_figures_path[i]}  ', 'value': i} for i in range(len(self.visit_figures))],
                 value=0,
                 inline=True,
                 className="mb-1"
