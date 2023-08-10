@@ -75,6 +75,7 @@ class FigureCreator(ABC):
         :param offset_top: offset between the top the x-ray image and the shape of the esophagus
         :return: length in cm
         """
+        # TODO: umgang mit secondsensor anpassen
         first_sensor_cm = config.coords_sensors[visualization_data.first_sensor_index]
         second_sensor_cm = config.coords_sensors[visualization_data.second_sensor_index]
         length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, visualization_data.second_sensor_pos -
@@ -169,29 +170,48 @@ class FigureCreator(ABC):
         offset_bottom = 0
         top_offset_done = False
 
+        # TODO: wann sind mehr als 2 Punkte in der Ebene? 
         # calculate widths and center values
+        # Iterate over xray mask height vertically (y-axis)
         for i in range(visualization_data.xray_mask.shape[0]):
             left_index = 0
-            while visualization_data.xray_mask[i, left_index] == False and left_index < \
-                    visualization_data.xray_mask.shape[1] - 1:
-                left_index += 1
-            right_index = visualization_data.xray_mask.shape[1] - 1
-            while visualization_data.xray_mask[i, right_index] == False and right_index > 0:
-                right_index -= 1
-            width = right_index - left_index
-            if width >= 0:
-                widths.append(width)
-                centers.append(left_index + width/2)
-                top_offset_done = True
-            else:
-                if not top_offset_done:
-                    offset_top += 1
-                else:
-                    offset_bottom += 1
+            right_index = 0
+            width = []
+            center = []
 
-        # convert to numpy arrays
+            # Iterate over xray mask width horizontally (x-axis)
+            for j in range(visualization_data.xray_mask.shape[1]):
+                # Enter polygon
+                if (visualization_data.xray_mask[i, j] == True and visualization_data.xray_mask[i, j-1] == False) or (visualization_data.xray_mask[i, j] == True and j==0):
+                    left_index = j
+                # Exit polygon
+                elif (visualization_data.xray_mask[i, j-1] == True and visualization_data.xray_mask[i, j] == False):
+                    right_index = j-1
+                    width.append(right_index - left_index)
+                    center.append(left_index + width/2)
+                    top_offset_done = True
+                # Polygon is cut off at right side of the image
+                elif j == visualization_data.xray_mask.shape[1]-1 and visualization_data.xray_mask[i, j] == True:
+                    right_index = j
+                    width.append(right_index - left_index)
+                    center.append(left_index + width/2)
+                    top_offset_done = True
+                
+                # Calculate offsets if nothing else is todo
+                else:
+                    if top_offset_done:
+                        offset_bottom += 1
+                    else:
+                        offset_top += 1
+            
+            # Append to bigger list that will be returned finally
+            widths.append(width)
+            centers.append(center)
+
+        # Convert to numpy arrays
         widths = np.array(widths)
         centers = np.array(centers)
+
         return widths, centers, offset_top, offset_bottom
 
     @staticmethod
@@ -273,6 +293,7 @@ class FigureCreator(ABC):
         @param surfacecolor_list: list of surfacecolors for every frame
         @return: index
         """
+        # TODO: sphincter upper pos is now a list of 2 points 
         center_index_per_timestep = []
         for i in range(len(surfacecolor_list)):
             max_value_upper_pos = 0
