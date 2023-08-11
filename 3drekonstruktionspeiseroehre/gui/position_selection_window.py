@@ -23,7 +23,7 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
         self.visualization_data = visit.visualization_data_list[n]
@@ -60,6 +60,7 @@ class PositionSelectionWindow(QMainWindow):
         self.active_paint_index = None  # None=none, 0=first sensor, 1=second sensor, 2=endoscopy, 3=sphincter
         self.first_sensor_pos = None
         self.second_sensor_pos = None
+        self.second_sensor_pos_2 = None
         self.endoscopy_pos = None
         self.sphincter_upper_pos = None
         self.sphincter_upper_pos_2 = None
@@ -77,7 +78,10 @@ class PositionSelectionWindow(QMainWindow):
             if self.active_paint_index == 0:
                 self.first_sensor_pos = event.ydata
             elif self.active_paint_index == 1:
-                self.second_sensor_pos = event.ydata
+                if self.second_sensor_pos:
+                    self.second_sensor_pos_2 = (event.xdata, event.ydata)
+                else:
+                    self.second_sensor_pos = (event.xdata, event.ydata)
             elif self.active_paint_index == 2:
                 self.endoscopy_pos = event.ydata
             elif self.active_paint_index == 3:
@@ -89,7 +93,7 @@ class PositionSelectionWindow(QMainWindow):
             if self.first_sensor_pos:
                 self.plot_ax.axhline(self.first_sensor_pos, color='green')
             if self.second_sensor_pos:
-                self.plot_ax.axhline(self.second_sensor_pos, color='blue')
+                self.plot_ax.axline(self.second_sensor_pos, self.second_sensor_pos_2, color='blue')
             if self.endoscopy_pos:
                 self.plot_ax.axhline(self.endoscopy_pos, color='red')
             if self.sphincter_upper_pos:
