@@ -17,6 +17,7 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         """
         self.number_of_frames = visualization_data.pressure_matrix.shape[1]
         widths, centers, offset_top, offset_bottom = FigureCreator.calculate_widths_and_centers_and_offsets(visualization_data)
+        # TODO Uebergabeparameter centers[0] und centers[centers.shape[0]-1] anpassen
         sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data, offset_top,
                                                                               offset_bottom, centers[0],
                                                                               centers[centers.shape[0]-1])

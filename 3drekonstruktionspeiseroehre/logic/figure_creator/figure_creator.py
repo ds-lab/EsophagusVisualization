@@ -59,7 +59,7 @@ class FigureCreator(ABC):
         # TODO: handle end_index correctly, idea: handle full calculation and segment calc (used in calculate_esophagus_full_length_cm) differently by adding a full:boolean parameter
         path_length_px = 0
         for i in range(0, len(sensor_path)):
-            if i > 0 and sensor_path[i-1][1] >= start_index:
+            if i > 0 and sensor_path[i - 1][1] >= start_index:
                 # Add euklidean distance of the previous point and the current one
                 path_length_px += np.sqrt(
                     (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
@@ -81,7 +81,7 @@ class FigureCreator(ABC):
         # Map sensor indices to centimeter
         first_sensor_cm = config.coords_sensors[visualization_data.first_sensor_index]
         second_sensor_cm = config.coords_sensors[visualization_data.second_sensor_index]
-        
+
         # Calculate segement length to find out centimeter to pixel ratio
         length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, visualization_data.second_sensor_pos -
                                                                    offset_top, visualization_data.first_sensor_pos -
@@ -118,7 +118,7 @@ class FigureCreator(ABC):
         first_sensor_path_length_cm = first_sensor_path_length_px * px_to_cm_factor
         sensor_path_lengths_px = [(first_sensor_path_length_cm - (
                 config.coords_sensors[visualization_data.first_sensor_index] - coord)) / px_to_cm_factor for coord
-                                    in config.coords_sensors]
+                                  in config.coords_sensors]
 
         surfacecolor_list = []
         for frame_number in range(pressure_matrix.shape[1]):
@@ -157,9 +157,9 @@ class FigureCreator(ABC):
                         pressure_current_sensor = pressure_matrix[current_sensor_index, frame_number]
                         pressure_next_sensor = pressure_matrix[current_sensor_index + 1, frame_number]
                         pressure = pressure_current_sensor + (pressure_next_sensor - pressure_current_sensor) * (
-                                   (current_path_length_px - sensor_path_lengths_px[current_sensor_index]) / (
-                                    sensor_path_lengths_px[current_sensor_index + 1] -
-                                    sensor_path_lengths_px[current_sensor_index]))
+                                (current_path_length_px - sensor_path_lengths_px[current_sensor_index]) / (
+                                sensor_path_lengths_px[current_sensor_index + 1] -
+                                sensor_path_lengths_px[current_sensor_index]))
                         surfacecolor.append(pressure)
             surfacecolor_list.append(surfacecolor)
         return surfacecolor_list
@@ -183,35 +183,35 @@ class FigureCreator(ABC):
         # Iterate over xray mask height vertically (y-axis)
         for i in range(visualization_data.xray_mask.shape[0]):
             left_index = 0
-            right_index = 0
             width = []
             center = []
 
             # Iterate over xray mask width horizontally (x-axis)
             for j in range(visualization_data.xray_mask.shape[1]):
                 # Enter polygon
-                if (visualization_data.xray_mask[i, j] == True and visualization_data.xray_mask[i, j-1] == False) or (visualization_data.xray_mask[i, j] == True and j==0):
+                if (visualization_data.xray_mask[i, j] is True and visualization_data.xray_mask[i, j - 1] is False) or (
+                        visualization_data.xray_mask[i, j] is True and j == 0):
                     left_index = j
                 # Exit polygon
-                elif (visualization_data.xray_mask[i, j-1] == True and visualization_data.xray_mask[i, j] == False):
-                    right_index = j-1
+                elif visualization_data.xray_mask[i, j - 1] is True and visualization_data.xray_mask[i, j] is False:
+                    right_index = j - 1
                     width.append(right_index - left_index)
-                    center.append(left_index + width/2)
+                    center.append(left_index + width / 2)
                     top_offset_done = True
                 # Polygon is cut off at right side of the image
-                elif j == visualization_data.xray_mask.shape[1]-1 and visualization_data.xray_mask[i, j] == True:
+                elif j == visualization_data.xray_mask.shape[1] - 1 and visualization_data.xray_mask[i, j] is True:
                     right_index = j
                     width.append(right_index - left_index)
-                    center.append(left_index + width/2)
+                    center.append(left_index + width / 2)
                     top_offset_done = True
-                
+
                 # Calculate offsets if nothing else is todo
                 else:
                     if top_offset_done:
                         offset_bottom += 1
                     else:
                         offset_top += 1
-            
+
             # Append to bigger list that will be returned finally
             widths.append(width)
             centers.append(center)
@@ -246,7 +246,8 @@ class FigureCreator(ABC):
         return figure
 
     @staticmethod
-    def calculate_shortest_path_through_esophagus(visualization_data, offset_top, offset_bottom, center_top, center_bottom):
+    def calculate_shortest_path_through_esophagus(visualization_data, offset_top, offset_bottom, center_top,
+                                                  center_bottom):
         """
         estimates the course of the manometry catheter in the esophagus
         :param visualization_data: VisualizationData
@@ -258,12 +259,13 @@ class FigureCreator(ABC):
         """
         # TODO: handle centers (list of lists) correctly
         array = visualization_data.xray_mask[offset_top:-offset_bottom]
-        # Replace zeros with 1000 for cost calculation of SP
+        # Replace zeros with 1000 for cost calculation of shortest path
+        # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
         costs = np.where(array, 1, 1000)
         # TODO: end is not that easily calculate-able because it is not always the most south point
         # idea: let user choose esophagus exit in GUI, get the centers of the same y and find the element with the closest x in that list OR just use the annotated point ?
         path, cost = graph.route_through_array(costs, start=(0, int(center_top)),
-                                               end=(array.shape[0]-1, int(center_bottom)), fully_connected=True)
+                                               end=(array.shape[0] - 1, int(center_bottom)), fully_connected=True)
         return path
 
     @staticmethod

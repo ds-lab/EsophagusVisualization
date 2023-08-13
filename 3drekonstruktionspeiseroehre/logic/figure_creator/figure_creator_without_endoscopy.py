@@ -18,6 +18,7 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         widths, centers, offset_top, offset_bottom = FigureCreator.calculate_widths_and_centers_and_offsets(
             visualization_data)
         # Calculate a path through the esophagus along the xray image
+        # TODO Uebergabeparameter centers[0] und centers[centers.shape[0]-1] anpassen
         sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data, offset_top,
                                                                               offset_bottom, centers[0],
                                                                               centers[centers.shape[0] - 1])
