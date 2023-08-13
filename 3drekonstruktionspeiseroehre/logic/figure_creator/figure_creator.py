@@ -56,11 +56,14 @@ class FigureCreator(ABC):
         :param end_index: height to end
         :return: length in pixels
         """
+        # TODO: handle end_index correctly, idea: handle full calculation and segment calc (used in calculate_esophagus_full_length_cm) differently by adding a full:boolean parameter
         path_length_px = 0
         for i in range(0, len(sensor_path)):
             if i > 0 and sensor_path[i-1][1] >= start_index:
+                # Add euklidean distance of the previous point and the current one
                 path_length_px += np.sqrt(
                     (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
+            # TODO: only check for this if a segment length has to be calculated (if not full:)
             if sensor_path[i][1] == end_index:
                 break
         return path_length_px
@@ -75,13 +78,18 @@ class FigureCreator(ABC):
         :param offset_top: offset between the top the x-ray image and the shape of the esophagus
         :return: length in cm
         """
-        # TODO: umgang mit secondsensor anpassen
+        # Map sensor indices to centimeter
         first_sensor_cm = config.coords_sensors[visualization_data.first_sensor_index]
         second_sensor_cm = config.coords_sensors[visualization_data.second_sensor_index]
+        
+        # Calculate segement length to find out centimeter to pixel ratio
         length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, visualization_data.second_sensor_pos -
                                                                    offset_top, visualization_data.first_sensor_pos -
                                                                    offset_top)
         length_cm = first_sensor_cm - second_sensor_cm
+
+        # Calculate centimeter length using ratio and full pixel length
+        # Idea: also return ratio here
         return length_cm * (esophagus_full_length_px / length_pixel)
 
     @staticmethod
@@ -248,8 +256,12 @@ class FigureCreator(ABC):
         :param center_bottom: center coordinate at the bottom of the esophagus
         :return: path as list of coordinates
         """
+        # TODO: handle centers (list of lists) correctly
         array = visualization_data.xray_mask[offset_top:-offset_bottom]
+        # Replace zeros with 1000 for cost calculation of SP
         costs = np.where(array, 1, 1000)
+        # TODO: end is not that easily calculate-able because it is not always the most south point
+        # idea: let user choose esophagus exit in GUI, get the centers of the same y and find the element with the closest x in that list OR just use the annotated point ?
         path, cost = graph.route_through_array(costs, start=(0, int(center_top)),
                                                end=(array.shape[0]-1, int(center_bottom)), fully_connected=True)
         return path
