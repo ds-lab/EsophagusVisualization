@@ -99,7 +99,7 @@ class PositionSelectionWindow(QMainWindow):
             if self.endoscopy_pos:
                 self.plot_ax.axhline(self.endoscopy_pos, color='red')
             if self.sphincter_upper_pos:
-                self.plot_ax.axline(self.sphincter_upper_pos, self.sphincter_upper_pos_2, color='yellow')
+                self.plot_ax.axline(xy1= self.sphincter_upper_pos, xy2=self.sphincter_upper_pos_2, color='yellow')
             if self.esophagus_exit_pos:
                 point = Circle(self.esophagus_exit_pos, 4.0, color='pink')
                 self.plot_ax.add_patch(point)
@@ -127,6 +127,7 @@ class PositionSelectionWindow(QMainWindow):
                             self.visualization_data.second_sensor_pos = int(self.first_sensor_pos - offset)
                             self.visualization_data.second_sensor_index = self.ui.first_combobox.currentIndex()
                         self.visualization_data.sphincter_upper_pos = [(int(self.sphincter_upper_pos[0]),int(self.sphincter_upper_pos[1] - offset)),(int(self.sphincter_upper_pos_2[0]),int(self.sphincter_upper_pos_2[1] - offset))]
+                        self.visualization_data.esophagus_exit_pos = (int(self.esophagus_exit_pos[0]),int(self.esophagus_exit_pos[1] - offset))
                         self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
                         if len(self.visualization_data.endoscopy_filenames) > 0:
                             self.visualization_data.endoscopy_start_pos = int(self.endoscopy_pos - offset)
@@ -185,7 +186,7 @@ class PositionSelectionWindow(QMainWindow):
         checks if all necessary positions are set
         :return: True or False
         """
-        return self.first_sensor_pos and self.second_sensor_pos and self.sphincter_upper_pos \
+        return self.first_sensor_pos and self.second_sensor_pos and self.sphincter_upper_pos and self.esophagus_exit_pos \
             and (self.endoscopy_pos or len(self.visualization_data.endoscopy_filenames) == 0)
 
     def __is_sensor_order_correct(self):
@@ -207,7 +208,6 @@ class PositionSelectionWindow(QMainWindow):
         poly_y_max = max([point[1] for point in self.visualization_data.xray_polygon])
         return self.first_sensor_pos < poly_y_min or self.first_sensor_pos > poly_y_max \
             or self.second_sensor_pos < poly_y_min or self.second_sensor_pos > poly_y_max \
-            or self.sphincter_upper_pos < poly_y_min or self.sphincter_upper_pos > poly_y_max \
             or (len(self.visualization_data.endoscopy_filenames) > 0 and (self.endoscopy_pos < poly_y_min
                 or self.endoscopy_pos > poly_y_max))
 

@@ -48,23 +48,23 @@ class FigureCreator(ABC):
         pass
 
     @staticmethod
-    def calculate_esophagus_length_px(sensor_path, start_index, end_index):
+    def calculate_esophagus_length_px(sensor_path, start_index: int, end_index: tuple):
         """
         calculates the length of the sensor path inside the given part of the esophagus
         :param sensor_path: estimated path of the sensor catheter as list of coordinates
         :param start_index: height to start
-        :param end_index: height to end
+        :param end_index: endpoint of esophagus
         :return: length in pixels
         """
-        # TODO: handle end_index correctly, idea: handle full calculation and segment calc (used in calculate_esophagus_full_length_cm) differently by adding a full:boolean parameter
         path_length_px = 0
         for i in range(0, len(sensor_path)):
-            if i > 0 and sensor_path[i - 1][1] >= start_index:
-                # Add euklidean distance of the previous point and the current one
+            if i > 0 and sensor_path[i - 1][0] >= start_index:
+                # Add euklidean distance of the previous point and the current one, [0] corresponds to the y-axis
                 path_length_px += np.sqrt(
                     (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
-            # TODO: only check for this if a segment length has to be calculated (if not full:)
-            if sensor_path[i][1] == end_index:
+            
+            # Stop calculating length at endpoint
+            if sensor_path[i][1] == end_index[1] and sensor_path[i][0] == end_index[0]:
                 break
         return path_length_px
 
@@ -82,14 +82,16 @@ class FigureCreator(ABC):
         first_sensor_cm = config.coords_sensors[visualization_data.first_sensor_index]
         second_sensor_cm = config.coords_sensors[visualization_data.second_sensor_index]
 
+        # Find the first point on the sensor_path that matches the y-value of the first sensor position
+        endpoint = next((point for point in sensor_path if int(point[0]) == int(visualization_data.first_sensor_pos - offset_top)), None)
+
         # Calculate segement length to find out centimeter to pixel ratio
         length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, visualization_data.second_sensor_pos -
-                                                                   offset_top, visualization_data.first_sensor_pos -
-                                                                   offset_top)
+                                                                   offset_top, endpoint)
+        
         length_cm = first_sensor_cm - second_sensor_cm
 
         # Calculate centimeter length using ratio and full pixel length
-        # Idea: also return ratio here
         return length_cm * (esophagus_full_length_px / length_pixel)
 
     @staticmethod
@@ -170,7 +172,7 @@ class FigureCreator(ABC):
         calculates the widths (width of the esophagus shape for every height on the x-ray image),
         the centers (analogue to widths) and the offsets (area of the images outside the shape of the esophagus)
         :param visualization_data: VisualizationData
-        :return: widths and centers as numpy arrays and offsets as int
+        :return: widths and centers as lists of lists and offsets as int
         """
         widths = []
         centers = []
@@ -178,8 +180,6 @@ class FigureCreator(ABC):
         offset_bottom = 0
         top_offset_done = False
 
-        # TODO: wann sind mehr als 2 Punkte in der Ebene? 
-        # calculate widths and center values
         # Iterate over xray mask height vertically (y-axis)
         for i in range(visualization_data.xray_mask.shape[0]):
             left_index = 0
@@ -189,36 +189,37 @@ class FigureCreator(ABC):
             # Iterate over xray mask width horizontally (x-axis)
             for j in range(visualization_data.xray_mask.shape[1]):
                 # Enter polygon
-                if (visualization_data.xray_mask[i, j] is True and visualization_data.xray_mask[i, j - 1] is False) or (
-                        visualization_data.xray_mask[i, j] is True and j == 0):
+                if (visualization_data.xray_mask[i, j] == True and visualization_data.xray_mask[i, j - 1] == False) or (
+                        visualization_data.xray_mask[i, j] == True and j == 0):
                     left_index = j
                 # Exit polygon
-                elif visualization_data.xray_mask[i, j - 1] is True and visualization_data.xray_mask[i, j] is False:
+                elif visualization_data.xray_mask[i, j - 1] == True and visualization_data.xray_mask[i, j] == False:
                     right_index = j - 1
                     width.append(right_index - left_index)
-                    center.append(left_index + width / 2)
+                    center.append(left_index + (right_index - left_index) / 2)
                     top_offset_done = True
                 # Polygon is cut off at right side of the image
-                elif j == visualization_data.xray_mask.shape[1] - 1 and visualization_data.xray_mask[i, j] is True:
+                elif j == visualization_data.xray_mask.shape[1] - 1 and visualization_data.xray_mask[i, j] == True:
                     right_index = j
                     width.append(right_index - left_index)
-                    center.append(left_index + width / 2)
+                    center.append(left_index + (right_index - left_index) / 2)
                     top_offset_done = True
-
-                # Calculate offsets if nothing else is todo
+                    
+            # Calculate offsets
+            if len(width) == 0:
+                if top_offset_done:
+                    offset_bottom += 1
                 else:
-                    if top_offset_done:
-                        offset_bottom += 1
-                    else:
-                        offset_top += 1
+                    offset_top += 1
+                continue
 
             # Append to bigger list that will be returned finally
             widths.append(width)
             centers.append(center)
 
         # Convert to numpy arrays
-        widths = np.array(widths)
-        centers = np.array(centers)
+        #widths = np.array(widths)
+        #centers = np.array(centers)
 
         return widths, centers, offset_top, offset_bottom
 
@@ -246,8 +247,7 @@ class FigureCreator(ABC):
         return figure
 
     @staticmethod
-    def calculate_shortest_path_through_esophagus(visualization_data, offset_top, offset_bottom, center_top,
-                                                  center_bottom):
+    def calculate_shortest_path_through_esophagus(visualization_data, offset_top, offset_bottom, center_top):
         """
         estimates the course of the manometry catheter in the esophagus
         :param visualization_data: VisualizationData
@@ -257,15 +257,17 @@ class FigureCreator(ABC):
         :param center_bottom: center coordinate at the bottom of the esophagus
         :return: path as list of coordinates
         """
-        # TODO: handle centers (list of lists) correctly
+        # Cut off offsets from xray mask
         array = visualization_data.xray_mask[offset_top:-offset_bottom]
         # Replace zeros with 1000 for cost calculation of shortest path
         # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
         costs = np.where(array, 1, 1000)
-        # TODO: end is not that easily calculate-able because it is not always the most south point
-        # idea: let user choose esophagus exit in GUI, get the centers of the same y and find the element with the closest x in that list OR just use the annotated point ?
-        path, cost = graph.route_through_array(costs, start=(0, int(center_top)),
-                                               end=(array.shape[0] - 1, int(center_bottom)), fully_connected=True)
+
+        # Use annotated endpoint as end of shortest path
+        endpoint = visualization_data.esophagus_exit_pos
+        # Calculate shortest path
+        path, cost = graph.route_through_array(costs, start=(0, int(center_top[0])),
+                                               end=(endpoint[1],endpoint[0]), fully_connected=True)
         return path
 
     @staticmethod

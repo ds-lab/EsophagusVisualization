@@ -17,18 +17,20 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         # Extract information necessary for reconstruction and metrics from input
         widths, centers, offset_top, offset_bottom = FigureCreator.calculate_widths_and_centers_and_offsets(
             visualization_data)
+
         # Calculate a path through the esophagus along the xray image
-        # TODO Uebergabeparameter centers[0] und centers[centers.shape[0]-1] anpassen
         sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data, offset_top,
-                                                                              offset_bottom, centers[0],
-                                                                              centers[centers.shape[0] - 1])
+                                                                              offset_bottom, centers[0])
         
-        esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(sensor_path, 0, centers.shape[0] - 1)
+        esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(sensor_path, 0, visualization_data.esophagus_exit_pos)
+
         esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(sensor_path,
                                                                                     esophagus_full_length_px,
                                                                                     visualization_data, offset_top)
 
-        # Calculate shape without endoscopy data by approximating profile as circle
+ 
+
+        # Calculate shape without endoscopy data by approximating profile as circles
         # TODO: handle list of lists widths and centers
 
         # Get array of 50 equi-spaced values between 0 and 2pi
