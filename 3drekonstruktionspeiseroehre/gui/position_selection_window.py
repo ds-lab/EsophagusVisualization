@@ -7,6 +7,7 @@ from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+from matplotlib.pyplot import Circle
 from PyQt5 import uic
 from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
 from skimage import io
@@ -23,7 +24,7 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
         self.visualization_data = visit.visualization_data_list[n]
@@ -38,6 +39,7 @@ class PositionSelectionWindow(QMainWindow):
         self.ui.first_sensor_button.clicked.connect(self.__first_sensor_button_clicked)
         self.ui.second_sensor_button.clicked.connect(self.__second_sensor_button_clicked)
         self.ui.sphinkter_button.clicked.connect(self.__sphincter_button_clicked)
+        self.ui.eso_exit_button.clicked.connect(self.__eso_exit_button_clicked)
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -64,6 +66,7 @@ class PositionSelectionWindow(QMainWindow):
         self.endoscopy_pos = None
         self.sphincter_upper_pos = None
         self.sphincter_upper_pos_2 = None
+        self.esophagus_exit_pos = None
 
     def __on_left_click(self, event):
         """
@@ -78,10 +81,7 @@ class PositionSelectionWindow(QMainWindow):
             if self.active_paint_index == 0:
                 self.first_sensor_pos = event.ydata
             elif self.active_paint_index == 1:
-                if self.second_sensor_pos:
-                    self.second_sensor_pos_2 = (event.xdata, event.ydata)
-                else:
-                    self.second_sensor_pos = (event.xdata, event.ydata)
+                self.second_sensor_pos = event.ydata
             elif self.active_paint_index == 2:
                 self.endoscopy_pos = event.ydata
             elif self.active_paint_index == 3:
@@ -89,15 +89,20 @@ class PositionSelectionWindow(QMainWindow):
                     self.sphincter_upper_pos_2 = (event.xdata, event.ydata)
                 else:
                     self.sphincter_upper_pos = (event.xdata, event.ydata)
-                
+            elif self.active_paint_index == 4:
+                self.esophagus_exit_pos = (event.xdata, event.ydata)
+
             if self.first_sensor_pos:
                 self.plot_ax.axhline(self.first_sensor_pos, color='green')
             if self.second_sensor_pos:
-                self.plot_ax.axline(self.second_sensor_pos, self.second_sensor_pos_2, color='blue')
+                self.plot_ax.axhline(self.second_sensor_pos, color='blue')
             if self.endoscopy_pos:
                 self.plot_ax.axhline(self.endoscopy_pos, color='red')
             if self.sphincter_upper_pos:
                 self.plot_ax.axline(self.sphincter_upper_pos, self.sphincter_upper_pos_2, color='yellow')
+            if self.esophagus_exit_pos:
+                point = Circle(self.esophagus_exit_pos, 4.0, color='pink')
+                self.plot_ax.add_patch(point)
             self.figure_canvas.figure.canvas.draw()
 
     def __apply_button_clicked(self):
@@ -170,6 +175,10 @@ class PositionSelectionWindow(QMainWindow):
 
     def __sphincter_button_clicked(self):
         self.active_paint_index = 3
+
+    def __eso_exit_button_clicked(self):
+            self.active_paint_index = 4
+    
 
     def __are_necessary_positions_set(self):
         """
