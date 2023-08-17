@@ -98,8 +98,8 @@ class PositionSelectionWindow(QMainWindow):
                 self.plot_ax.axhline(self.second_sensor_pos, color='blue')
             if self.endoscopy_pos:
                 self.plot_ax.axhline(self.endoscopy_pos, color='red')
-            if self.sphincter_upper_pos:
-                self.plot_ax.axline(xy1= self.sphincter_upper_pos, xy2=self.sphincter_upper_pos_2, color='yellow')
+            if self.sphincter_upper_pos and self.sphincter_upper_pos_2:
+                self.plot_ax.axline(self.sphincter_upper_pos, self.sphincter_upper_pos_2, color='yellow')
             if self.esophagus_exit_pos:
                 point = Circle(self.esophagus_exit_pos, 4.0, color='pink')
                 self.plot_ax.add_patch(point)
