@@ -4,7 +4,7 @@
 dash_port_range = (50000, 50100)  # the dash server tries to use a port inside this range
 
 # visualization: (these values can be lowered to run the animation on slower hardware)
-figure_number_of_angles = 50  # number of angles used to calculate the profile of the figure
+figure_number_of_angles = 100  # number of angles used to calculate the profile of the figure
 animation_frames_per_second = 5  # (should be a divisor of csv_values_per_second)
 
 # metrics:

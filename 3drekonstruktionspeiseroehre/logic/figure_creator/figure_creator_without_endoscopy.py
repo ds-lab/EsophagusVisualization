@@ -36,14 +36,23 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         # Get array of 50 equi-spaced values between 0 and 2pi
         angles = np.linspace(0, 2 * np.pi, config.figure_number_of_angles)
 
-        # Theta == array of a number of width.shape[0], each row containing the angles list
-        #  V == array of a number of angles columns, each column containing 0 to widths.shape[0]
-        # TODO: currently x and y assume one circle shape -> idea loop over widths/centers and += x and y to get correct values
-        # TODO: get a better understanding on what input xyz should be for plotly's Surface figure
-        theta, v = np.meshgrid(angles, range(widths.shape[0]))
-        x = np.cos(theta) * (widths/2)[:, np.newaxis] + centers[:, np.newaxis]
-        y = np.sin(theta) * (widths/2)[:, np.newaxis]
-        z = v
+        # Initialize lists to store the calculated x, y, and z values
+        x = []
+        y = []
+        z = []
+
+        # Iterate over each position
+        for i in range(len(widths)):
+                for w, c in zip(widths[i], centers[i]):
+                        x.append(np.cos(angles) * (w / 2) + c)
+                        y.append(np.sin(angles) * (w / 2))
+                        z.append([i] * len(angles))
+
+        # Convert the lists of values to arrays
+        x = np.array(x)
+        y = np.array(y)
+        #theta, v = np.meshgrid(angles, range(7))
+        z = np.array(z)
 
         # Shift axes to start at zero and scale to cm
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
@@ -52,18 +61,20 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         z = z * px_to_cm_factor
 
         # calculate colors
-        self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
-                                                                           esophagus_full_length_px,
-                                                                           esophagus_full_length_cm, offset_top)
+        # self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
+        #                                                                    esophagus_full_length_px,
+        #                                                                    esophagus_full_length_cm, offset_top)
 
+        self.surfacecolor_list = []
         # create figure
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
                                                   '3D-Ansicht aus Röntgen- und Manometriedaten')
 
         # calculate metrics
         # TODO: todo correct centers usage
-        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
-                                                       len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
+        # self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
+        #                                                len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
+        self.metrics = [0],[0]
 
     def get_figure(self):
         return self.figure

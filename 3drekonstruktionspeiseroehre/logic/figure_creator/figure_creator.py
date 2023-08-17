@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 import config
 import numpy as np
 import plotly.graph_objects as go
+import plotly.express as px
 import shapely.geometry
 from logic.visualization_data import VisualizationData
 from skimage import graph
@@ -235,10 +236,11 @@ class FigureCreator(ABC):
         :return: plotly figure
         """
         # calculate colormatrix for first frame, the others will be done by javascript
-        first_surfacecolor = np.tile(np.array([surfacecolor_list[0]]).transpose(), (1, config.figure_number_of_angles))
-        figure = go.Figure(data=[
-            go.Surface(x=x, y=y, z=z, surfacecolor=first_surfacecolor, colorscale=config.colorscale, cmin=config.cmin,
-                       cmax=config.cmax)])
+        #first_surfacecolor = np.tile(np.array([surfacecolor_list[0]]).transpose(), (1, config.figure_number_of_angles))
+        # figure = go.Figure(data=[go.Surface(x=x, y=y, z=z)])
+        colors = z
+        data = {"x": x.flatten(), "y": y.flatten(), "z": z.flatten(), "colors": colors.flatten()}
+        figure = px.scatter_3d(data, x="x", y="y", z="z", color="colors", color_continuous_scale=config.colorscale, range_color=(config.cmin,config.cmax))
         figure.update_layout(scene=dict(aspectmode='data'), uirevision='constant',
                              title=title, title_x=0, title_y=1,
                              margin=dict(l=20, r=20, t=30, b=20), hovermode=False)
