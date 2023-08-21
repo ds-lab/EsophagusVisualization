@@ -14,13 +14,13 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         """
         # Frames of the pressure (Manometrie) animation
         self.number_of_frames = visualization_data.pressure_matrix.shape[1]
-        # Extract information necessary for reconstruction and metrics from input
-        widths, centers, offset_top, offset_bottom = FigureCreator.calculate_widths_and_centers_and_offsets(
-            visualization_data)
 
         # Calculate a path through the esophagus along the xray image
-        sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data, offset_top,
-                                                                              offset_bottom, centers[0])
+        sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data)
+
+        # Extract information necessary for reconstruction and metrics from input
+        widths, centers, slopes, offset_top = FigureCreator.calculate_widths_centers_slope_offset(
+            visualization_data, sensor_path)
         
         esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(sensor_path, 0, visualization_data.esophagus_exit_pos)
 
@@ -28,11 +28,8 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
                                                                                     esophagus_full_length_px,
                                                                                     visualization_data, offset_top)
 
- 
 
         # Calculate shape without endoscopy data by approximating profile as circles
-        # TODO: handle list of lists widths and centers
-
         # Get array of 50 equi-spaced values between 0 and 2pi
         angles = np.linspace(0, 2 * np.pi, config.figure_number_of_angles)
 
@@ -43,16 +40,25 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
 
         # Iterate over each position
         for i in range(len(widths)):
-                for w, c in zip(widths[i], centers[i]):
-                        x.append(np.cos(angles) * (w / 2) + c)
-                        y.append(np.sin(angles) * (w / 2))
-                        z.append([i] * len(angles))
+            x.append(np.cos(angles) * (widths[i] / 2) + centers[i][1])
+            y.append(np.sin(angles) * (widths[i] / 2))
+            z.append([i] * len(angles))
 
         # Convert the lists of values to arrays
         x = np.array(x)
         y = np.array(y)
-        #theta, v = np.meshgrid(angles, range(7))
         z = np.array(z)
+
+        # Iteriere über jede Position
+        for i in range(len(widths)):
+            # Wende die Y-Achsen-Rotation auf die Koordinaten an (y-Werte bleiben unverändert)
+            rotated_coordinates = np.dot(
+                np.array([[np.cos(slopes[i]), 0, np.sin(slopes[i])],
+                        [0, 1, 0],
+                        [-np.sin(slopes[i]), 0, np.cos(slopes[i])]]), np.array([x[i], y, z[i]]))
+            
+            # Aktualisierte x- und z-Koordinaten speichern
+            x[i], _, z[i] = rotated_coordinates
 
         # Shift axes to start at zero and scale to cm
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px

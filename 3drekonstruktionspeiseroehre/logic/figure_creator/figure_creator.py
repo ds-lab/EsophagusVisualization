@@ -168,7 +168,7 @@ class FigureCreator(ABC):
         return surfacecolor_list
 
     @staticmethod
-    def calculate_widths_and_centers_and_offsets(visualization_data):
+    def calculate_widths_centers_slope_offset(visualization_data, sensor_path):
         """
         calculates the widths (width of the esophagus shape for every height on the x-ray image),
         the centers (analogue to widths) and the offsets (area of the images outside the shape of the esophagus)
@@ -177,52 +177,60 @@ class FigureCreator(ABC):
         """
         widths = []
         centers = []
-        offset_top = 0
-        offset_bottom = 0
-        top_offset_done = False
+        offset_top = sensor_path[0][0] # y-value of first point in path
 
-        # Iterate over xray mask height vertically (y-axis)
-        for i in range(visualization_data.xray_mask.shape[0]):
-            left_index = 0
-            width = []
-            center = []
+        for i in range(len(sensor_path)-1):
+            current_point = sensor_path[i]
+            next_point = sensor_path[i+1]
 
-            # Iterate over xray mask width horizontally (x-axis)
-            for j in range(visualization_data.xray_mask.shape[1]):
-                # Enter polygon
-                if (visualization_data.xray_mask[i, j] == True and visualization_data.xray_mask[i, j - 1] == False) or (
-                        visualization_data.xray_mask[i, j] == True and j == 0):
-                    left_index = j
-                # Exit polygon
-                elif visualization_data.xray_mask[i, j - 1] == True and visualization_data.xray_mask[i, j] == False:
-                    right_index = j - 1
-                    width.append(right_index - left_index)
-                    center.append(left_index + (right_index - left_index) / 2)
-                    top_offset_done = True
-                # Polygon is cut off at right side of the image
-                elif j == visualization_data.xray_mask.shape[1] - 1 and visualization_data.xray_mask[i, j] == True:
-                    right_index = j
-                    width.append(right_index - left_index)
-                    center.append(left_index + (right_index - left_index) / 2)
-                    top_offset_done = True
-                    
-            # Calculate offsets
-            if len(width) == 0:
-                if top_offset_done:
-                    offset_bottom += 1
+            # Calculate Perpendicular 
+            if (next_point[0] - current_point[0]) != 0:
+                m = (next_point[1] - current_point[1]) / (next_point[0] - current_point[0])
+                if m != 0:
+                    perpendicular_slope = -1 / m
                 else:
-                    offset_top += 1
+                    perpendicular_slope = -1 / 0.0001
+            else:
+                perpendicular_slope = 0
+            perpendicular_b = current_point[1] - perpendicular_slope * current_point[0]
+            perpendicular_x_values = np.linspace(current_point[0], next_point[0], num=100)
+            perpendicular_y_values = perpendicular_slope * perpendicular_x_values + perpendicular_b
+
+            perpendicular_points = [(int(y), int(x)) for y, x in zip(perpendicular_y_values, perpendicular_x_values)]
+
+            boundary_points = []  # Store points where the line intersects with boundaries
+    
+            # Iterate over points between point1 and point2
+            for point_along_line in perpendicular_points:
+                # Check that point is within image
+                if  point_along_line[0]>0 and point_along_line[0] < visualization_data.xray_mask.shape[0] and point_along_line[1]<visualization_data.xray_mask.shape[1]:
+                    if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 1:
+                        boundary_points.append(point_along_line)
+            
+            # Check if there are at least 2 boundary points
+            if len(boundary_points) < 2:
                 continue
 
-            # Append to bigger list that will be returned finally
+            # Step 2: Calculate Width
+            # Calculate the distance between two boundary points
+            width = np.linalg.norm(np.array(boundary_points[0]) - np.array(boundary_points[-1]))
+            
+            # Step 3: Calculate Center
+            # Calculate the midpoint between two boundary points
+            center = (np.array(boundary_points[0]) + np.array(boundary_points[-1])) / 2
+            
+            # Store the calculated width and center
             widths.append(width)
             centers.append(center)
 
-        # Convert to numpy arrays
-        #widths = np.array(widths)
-        #centers = np.array(centers)
+        # Calculate slope angles for every center
+        slopes = []
+        for i in range(len(centers)-1):
+            current_center = centers[i]
+            next_center = centers[i+1]
+            slopes.append((next_center[0] - current_center[0]) / (next_center[1] - current_center[1]))
 
-        return widths, centers, offset_top, offset_bottom
+        return widths, centers, slopes, offset_top
 
     @staticmethod
     def create_figure(x, y, z, surfacecolor_list, title):
@@ -249,7 +257,7 @@ class FigureCreator(ABC):
         return figure
 
     @staticmethod
-    def calculate_shortest_path_through_esophagus(visualization_data, offset_top, offset_bottom, center_top):
+    def calculate_shortest_path_through_esophagus(visualization_data):
         """
         estimates the course of the manometry catheter in the esophagus
         :param visualization_data: VisualizationData
@@ -260,15 +268,33 @@ class FigureCreator(ABC):
         :return: path as list of coordinates
         """
         # Cut off offsets from xray mask
-        array = visualization_data.xray_mask[offset_top:-offset_bottom]
+        array = visualization_data.xray_mask
         # Replace zeros with 1000 for cost calculation of shortest path
         # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
         costs = np.where(array, 1, 1000)
 
+        start_top = None
+        end_top = None
+        found_top = False
+
+
+        # Search startpoint
+        for i in range(visualization_data.xray_mask.shape[0]):
+            # Iterate over xray mask width horizontally (x-axis)
+            for j in range(visualization_data.xray_mask.shape[1]):
+                if visualization_data.xray_mask[i, j] == True:
+                    if not start_top:
+                        start_top = (i,j)
+                    end_top = (i,j)
+                    found_top = True
+            if found_top:
+                startpoint = (end_top[0], (end_top[1]-start_top[1])/2)
+                break        
+
         # Use annotated endpoint as end of shortest path
         endpoint = visualization_data.esophagus_exit_pos
         # Calculate shortest path
-        path, cost = graph.route_through_array(costs, start=(0, int(center_top[0])),
+        path, cost = graph.route_through_array(costs, start=startpoint,
                                                end=(endpoint[1],endpoint[0]), fully_connected=True)
         return path
 
