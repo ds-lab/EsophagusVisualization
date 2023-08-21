@@ -1,3 +1,4 @@
+from math import atan
 import config
 import numpy as np
 from logic.figure_creator.figure_creator import FigureCreator
@@ -49,16 +50,17 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         y = np.array(y)
         z = np.array(z)
 
-        # Iteriere über jede Position
-        for i in range(len(widths)):
-            # Wende die Y-Achsen-Rotation auf die Koordinaten an (y-Werte bleiben unverändert)
-            rotated_coordinates = np.dot(
-                np.array([[np.cos(slopes[i]), 0, np.sin(slopes[i])],
-                        [0, 1, 0],
-                        [-np.sin(slopes[i]), 0, np.cos(slopes[i])]]), np.array([x[i], y, z[i]]))
+        # # Apply rotation matrix
+        # for i in range(len(slopes)):
+        #     slope_in_rad = atan(slopes[i])
+        #     # Rotate around y-axis according to slopes
+        #     rotated_coordinates = np.matmul(
+        #         np.array([[np.cos(slope_in_rad), 0, np.sin(slope_in_rad)],
+        #                 [0, 1, 0],
+        #                 [-np.sin(slope_in_rad), 0, np.cos(slope_in_rad)]]), np.array([x[i], [0]* len(x[i]), z[i]]))
             
-            # Aktualisierte x- und z-Koordinaten speichern
-            x[i], _, z[i] = rotated_coordinates
+        #     # Rotated x and z coordinates
+        #     x[i], _, z[i] = rotated_coordinates
 
         # Shift axes to start at zero and scale to cm
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px

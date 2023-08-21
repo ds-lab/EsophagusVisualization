@@ -192,9 +192,14 @@ class FigureCreator(ABC):
                     perpendicular_slope = -1 / 0.0001
             else:
                 perpendicular_slope = 0
-            perpendicular_b = current_point[1] - perpendicular_slope * current_point[0]
-            perpendicular_x_values = np.linspace(current_point[0], next_point[0], num=100)
-            perpendicular_y_values = perpendicular_slope * perpendicular_x_values + perpendicular_b
+
+            # Calculate the two points for the perpendicular line
+            mid_point = (current_point[0] + next_point[0]) / 2, (current_point[1] + next_point[1]) / 2
+            # Calculate the step size for generating points
+            step_size = 200 / 2  # Divide by 2 since you're calculating points on both sides
+            # Generate 200 points along the perpendicular line
+            perpendicular_x_values = np.linspace(mid_point[0] - step_size, mid_point[0] + step_size, num=200)
+            perpendicular_y_values = perpendicular_slope * (perpendicular_x_values - mid_point[0]) + mid_point[1]
 
             perpendicular_points = [(int(y), int(x)) for y, x in zip(perpendicular_y_values, perpendicular_x_values)]
 
@@ -229,7 +234,6 @@ class FigureCreator(ABC):
             current_center = centers[i]
             next_center = centers[i+1]
             slopes.append((next_center[0] - current_center[0]) / (next_center[1] - current_center[1]))
-
         return widths, centers, slopes, offset_top
 
     @staticmethod
