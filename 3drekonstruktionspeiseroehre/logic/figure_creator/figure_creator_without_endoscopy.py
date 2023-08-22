@@ -50,17 +50,19 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         y = np.array(y)
         z = np.array(z)
 
-        # # Apply rotation matrix
-        # for i in range(len(slopes)):
-        #     slope_in_rad = atan(slopes[i])
-        #     # Rotate around y-axis according to slopes
-        #     rotated_coordinates = np.matmul(
-        #         np.array([[np.cos(slope_in_rad), 0, np.sin(slope_in_rad)],
-        #                 [0, 1, 0],
-        #                 [-np.sin(slope_in_rad), 0, np.cos(slope_in_rad)]]), np.array([x[i], [0]* len(x[i]), z[i]]))
+        # Apply rotation matrix
+        for i in range(len(z)):
+            slope_in_rad = atan(slopes[i])
+            # Rotate around y-axis according to slopes
+            rotated_coordinates = np.matmul(
+                np.array([[np.cos(slope_in_rad), 0, np.sin(slope_in_rad)],
+                        [0, 1, 0],
+                        [-np.sin(slope_in_rad), 0, np.cos(slope_in_rad)]]), np.array([x[i]-centers[i][1], y[i], z[i]-i]))
             
-        #     # Rotated x and z coordinates
-        #     x[i], _, z[i] = rotated_coordinates
+            # Rotated x and z coordinates
+            x[i], _, z[i] = rotated_coordinates
+            x[i] += centers[i][1]
+            z[i] += i
 
         # Shift axes to start at zero and scale to cm
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
