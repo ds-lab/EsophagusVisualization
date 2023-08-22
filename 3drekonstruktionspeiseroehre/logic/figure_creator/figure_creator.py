@@ -184,33 +184,34 @@ class FigureCreator(ABC):
         offset_top = sensor_path[0][0] # y-value of first point in path
 
         num_points_for_polyfit = 60
-        eps = 0.01
 
+        ####
         # Create a figure and axis FOR DEBUGGING
-        fig, ax = plt.subplots()
+        # fig, ax = plt.subplots()
 
-        # Invert y-axis to have positive y downwards FOR DEBUGGING
-        ax.invert_yaxis()
-        # plot xray FOR DEBUGGING
-        coordinates = [(row_idx, col_idx) for row_idx, row in enumerate(visualization_data.xray_mask) for col_idx, value in enumerate(row) if value == 1]
-        x_values, y_values = zip(*coordinates)
-        ax.scatter(y_values, x_values)
+        # # Invert y-axis to have positive y downwards FOR DEBUGGING
+        # ax.invert_yaxis()
+        # # plot xray FOR DEBUGGING
+        # coordinates = [(row_idx, col_idx) for row_idx, row in enumerate(visualization_data.xray_mask) for col_idx, value in enumerate(row) if value == 1]
+        # x_values, y_values = zip(*coordinates)
+        # ax.scatter(y_values, x_values)
 
-        # plot shortest path FOR DEBUGGING
-        x_values = [point[1] for point in sensor_path] # in sensor path stehen die x werte an index 1
-        y_values = [point[0] for point in sensor_path]
-        ax.plot(x_values,y_values, color="red")
-        plt.savefig("path.png")
+        # # plot shortest path FOR DEBUGGING
+        # x_values = [point[1] for point in sensor_path] # in sensor path stehen die x werte an index 1
+        # y_values = [point[0] for point in sensor_path]
+        # ax.plot(x_values,y_values, color="red")
+        #plt.savefig("path.png")
+        ####
 
         for i in range(len(sensor_path)-1):
             # Create slope_points that are used to calculate linear regression (slope)
             if i < num_points_for_polyfit //2:
                 # Before we have num_points_for_polyfit point available skip to the part where we have enough to calcuate the slope
-                point = sensor_path[num_points_for_polyfit//2]
+                point = sensor_path[i]
                 slope_points = sensor_path[0 : num_points_for_polyfit-1]
             elif i + num_points_for_polyfit // 2 > len(sensor_path) - 1:
                 # At the end we don't have enough points to calculate the slope, use the last point where it was possible
-                point = sensor_path[len(sensor_path) - 1 - num_points_for_polyfit // 2]
+                point = sensor_path[i]
                 slope_points = sensor_path[len(sensor_path) - num_points_for_polyfit : len(sensor_path) - 1]
             else:
                 # Get surrounding points
@@ -225,13 +226,12 @@ class FigureCreator(ABC):
             # Calculate linear regression to get slope of esophagus segment
             model = LinearRegression()
             model.fit(x,y)
-            slopes.append(model.coef_[0]) # TODO: oder perpendicular slope
-
-            if model.coef_[0] < 0:
-                eps = -eps
-
             # Calculate perpendicular slope, use epsilon to avoid divisions by zero or values close to zero
-            perpendicular_slope = -1 / model.coef_[0]
+            if model.coef_[0] == 0:
+                perpendicular_slope = -1 / (model.coef_[0] + 0.0001)
+            else:
+                perpendicular_slope = -1 / model.coef_[0]
+            slopes.append(perpendicular_slope)
 
             line_length = visualization_data.xray_mask.shape[1]
             # Calculate equidistant points between two points on perpendicular (equidistant to avoid skipping points later)
@@ -245,6 +245,11 @@ class FigureCreator(ABC):
                 # If the points used for the lin reg are inline along the y axis (slope is very high/steep)
                 perpendicular_start = (point[0] , point[1] - line_length)
                 perpendicular_end = (point[0], point[1] + line_length)
+
+            if model.coef_[0] > -0.0001 and model.coef_[0] < 0.0001:
+                # If the points used for the lin reg are inline along the x axis (slope is zero)
+                perpendicular_start = (point[0] - line_length , point[1])
+                perpendicular_end = (point[0]+ line_length, point[1] )
 
             y1,x1 = int(perpendicular_start[0]), int(perpendicular_start[1])
             y2,x2 = int(perpendicular_end[0]), int(perpendicular_end[1])
@@ -261,13 +266,14 @@ class FigureCreator(ABC):
         
             # Move left and right from the current point along the perpendicular to find the boundaries
             for j in range(len(perpendicular_points) // 2 - 5):
+                # TODO: für die Lücken -> maybe weil der sensor_path an der Grenze lang läuft werden die boundaries hier komisch, siehe geplottete centers die an der Grenze entlang laufen
                 # Move "left" until boundary is found
                 if boundary_1 is None:
                     point_along_line = perpendicular_points[index-j]
                     # Check that point is within image
                     if point_along_line[0] >= 0 and point_along_line[1] >= 0 and point_along_line[0] < visualization_data.xray_mask.shape[0] and point_along_line[1]<visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0 and boundary_1 is None:
-                            boundary_1 = perpendicular_points[index-j + 1]
+                            boundary_1 = perpendicular_points[index-j]
                     
                 # Move "right" until boundary is found
                 if boundary_2 is None:
@@ -275,12 +281,15 @@ class FigureCreator(ABC):
                     # Check that point is within image
                     if point_along_line[0] >= 0 and point_along_line[1] >= 0 and point_along_line[0] < visualization_data.xray_mask.shape[0] and point_along_line[1]<visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
-                            boundary_2 = perpendicular_points[index+j -1]
+                            boundary_2 = perpendicular_points[index+j]
 
-            # FOR DEBUGGING
-            if boundary_1 is not None and boundary_2 is not None:
-                plt.plot([boundary_1[1], boundary_2[1]],[boundary_1[0], boundary_2[0]], color="red")
             
+            #### FOR DEBUGGING
+            if boundary_1 is not None and boundary_2 is not None:
+                #plt.plot([boundary_1[1], boundary_2[1]],[boundary_1[0], boundary_2[0]], color="red")
+                pass
+            ####
+
             # Check if there are at least 2 boundary points 
             if boundary_1 is None or boundary_2 is None:
                 plt.plot(perpendicular_x_values,perpendicular_y_values, color="green") # FOR DEBUGGING
@@ -298,7 +307,11 @@ class FigureCreator(ABC):
             # Store the calculated width and center
             widths.append(width)
             centers.append(center)
-        plt.savefig("perp_points.png") # FOR DEBUGGING
+        #### FOR DEBUGGING
+        #plt.savefig("perp_points.png") 
+        #plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="green")
+        #plt.savefig("centers.png")
+        ####
             
         return widths, centers, slopes, offset_top
 

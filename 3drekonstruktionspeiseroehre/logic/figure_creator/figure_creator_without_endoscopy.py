@@ -41,9 +41,9 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
 
         # Iterate over each position
         for i in range(len(widths)):
-            x.append(np.cos(angles) * (widths[i] / 2) + centers[i][1])
+            x.append(np.cos(angles) * (widths[i] / 2))
             y.append(np.sin(angles) * (widths[i] / 2))
-            z.append([i] * len(angles))
+            z.append([0] * len(angles))
 
         # Convert the lists of values to arrays
         x = np.array(x)
@@ -55,20 +55,20 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
             slope_in_rad = atan(slopes[i])
             # Rotate around y-axis according to slopes
             rotated_coordinates = np.matmul(
-                np.array([[np.cos(slope_in_rad), 0, np.sin(slope_in_rad)],
+                np.array([[np.cos(slope_in_rad), 0, -np.sin(slope_in_rad)],
                         [0, 1, 0],
-                        [-np.sin(slope_in_rad), 0, np.cos(slope_in_rad)]]), np.array([x[i]-centers[i][1], y[i], z[i]-i]))
+                        [np.sin(slope_in_rad), 0, np.cos(slope_in_rad)]]), np.array([x[i], y[i], z[i]]))
             
             # Rotated x and z coordinates
             x[i], _, z[i] = rotated_coordinates
             x[i] += centers[i][1]
-            z[i] += i
+            z[i] += centers[i][0]
 
         # Shift axes to start at zero and scale to cm
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
         x = (x - x.min()) * px_to_cm_factor
         y = (y - y.min()) * px_to_cm_factor
-        z = z * px_to_cm_factor
+        z = z * px_to_cm_factor  
 
         # calculate colors
         # self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
@@ -82,6 +82,7 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
 
         # calculate metrics
         # TODO: todo correct centers usage
+        # TODO: manchmal sind lücken in der 3d ansicht -> damit richtig umgehen -> schwellenwert für kreisgröße oder so
         # self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
         #                                                len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
         self.metrics = [0],[0]
