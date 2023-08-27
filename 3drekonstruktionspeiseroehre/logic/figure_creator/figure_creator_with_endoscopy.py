@@ -5,6 +5,7 @@ from logic.figure_creator.figure_creator import FigureCreator
 from logic.visualization_data import VisualizationData
 from scipy.interpolate import interp1d
 from shapely.geometry import LineString
+from math import atan
 
 
 class FigureCreatorWithEndoscopy(FigureCreator):
@@ -15,18 +16,26 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         initFigureCreatorWithEndoscopy
         :param visualization_data: VisualizationData
         """
+        # Frames of the pressure (Manometrie) animation
         self.number_of_frames = visualization_data.pressure_matrix.shape[1]
-        widths, centers, offset_top, offset_bottom = FigureCreator.calculate_widths_and_centers_and_offsets(visualization_data)
-        # TODO Uebergabeparameter centers[0] und centers[centers.shape[0]-1] anpassen
-        sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data, offset_top,
-                                                                              offset_bottom, centers[0],
-                                                                              centers[centers.shape[0]-1])
-        angles = np.linspace(0, 2 * np.pi, config.figure_number_of_angles)
-        esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(sensor_path, 0, centers.shape[0] - 1)
-        esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(sensor_path, esophagus_full_length_px,
+        # Calculate a path through the esophagus along the xray image
+        sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data)
+
+        # Extract information necessary for reconstruction and metrics from input
+        widths, centers, slopes, offset_top = FigureCreator.calculate_widths_centers_slope_offset(
+            visualization_data, sensor_path)
+        
+        esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(sensor_path, 0, visualization_data.esophagus_exit_pos)
+
+        esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(sensor_path,
+                                                                                    esophagus_full_length_px,
                                                                                     visualization_data, offset_top)
 
-        # shape with endoscopy data
+        # Calculate shape with endoscopy data
+        # Get array of n equi-spaced values between 0 and 2pi
+        angles = np.linspace(0, 2 * np.pi, config.figure_number_of_angles)
+
+        # Calculates distance to endoscopy screenshot centroid for each angle
         distances_from_centroid = []
         for polygon in visualization_data.endoscopy_polygons:
             shapely_poly = shapely.geometry.Polygon(polygon)
@@ -50,19 +59,21 @@ class FigureCreatorWithEndoscopy(FigureCreator):
                 current_polygon_distances_from_centroid.append(distance)
             distances_from_centroid.append(current_polygon_distances_from_centroid)
 
-        # transform endoscopy position information
+        # Transform endoscopy position information
+        # TODO: update endoscopy_start_pos to not only be a y-value 
         endoscopy_image_indexes = FigureCreatorWithEndoscopy.__calculate_endoscopy_indexes(
             visualization_data.endoscopy_image_positions_cm, visualization_data.endoscopy_start_pos - offset_top, sensor_path,
             esophagus_full_length_px, esophagus_full_length_cm)
-        # remove outliers
+        
+        # Remove outliers
         indexes_to_remove = [i for i, v in enumerate(endoscopy_image_indexes) if v is None]
         for i in indexes_to_remove:
             distances_from_centroid[i] = None
         endoscopy_image_indexes = [i for i in endoscopy_image_indexes if i is not None]
         distances_from_centroid = [i for i in distances_from_centroid if i is not None]
 
-        # interpolation
-        interpolated_radius = np.empty((widths.shape[0], config.figure_number_of_angles))
+        # Interpolation
+        interpolated_radius = np.empty((len(widths), config.figure_number_of_angles))
         for i in range(config.figure_number_of_angles):
 
             x_for_interpolation = endoscopy_image_indexes.copy()
@@ -70,17 +81,27 @@ class FigureCreatorWithEndoscopy(FigureCreator):
             if 0 not in x_for_interpolation:
                 x_for_interpolation.append(0)
                 y_for_interpolation.append(distances_from_centroid[0][i])
-            if widths.shape[0] - 1 not in x_for_interpolation:
-                x_for_interpolation.append(widths.shape[0] - 1)
+            if len(widths) - 1 not in x_for_interpolation:
+                x_for_interpolation.append(len(widths) - 1)
                 y_for_interpolation.append(distances_from_centroid[len(distances_from_centroid)-1][i])
             interpolation_function = interp1d(x_for_interpolation, y_for_interpolation, kind='linear')
-            interpolated_radius[:, i] = [interpolation_function(index) for index in range(widths.shape[0])]
+            interpolated_radius[:, i] = [interpolation_function(index) for index in range(len(widths))]
 
-        theta, v = np.meshgrid(angles, range(widths.shape[0]))
+        # Initialize lists to store the calculated x, y, and z values
+        x = []
+        y = []
+        z = []
 
-        x = np.cos(theta) * interpolated_radius
-        y = np.sin(theta) * interpolated_radius
-        z = v
+        # Iterate over each position
+        for i in range(len(widths)):
+            x.append(np.cos(angles) * interpolated_radius[i])
+            y.append(np.sin(angles) * interpolated_radius[i])
+            z.append([0] * len(angles))
+
+        # Convert the lists of values to arrays
+        x = np.array(x)
+        y = np.array(y)
+        z = np.array(z)
 
         # shift the center to zero and apply scale information from xray
         for i in range(z.shape[0]):
@@ -96,8 +117,19 @@ class FigureCreatorWithEndoscopy(FigureCreator):
             y[i] = (y[i] - (min_y + (height / 2))) * (
                 (widths[i] / width) if width > 0 else 1)  # same factor as for x
 
-        # shift x according to information from xray
-        x = x + centers[:, np.newaxis]
+        # Apply rotation matrix
+        for i in range(len(z)):
+            slope_in_rad = atan(slopes[i])
+            # Rotate around y-axis according to slopes
+            rotated_coordinates = np.matmul(
+                np.array([[np.cos(slope_in_rad), 0, -np.sin(slope_in_rad)],
+                        [0, 1, 0],
+                        [np.sin(slope_in_rad), 0, np.cos(slope_in_rad)]]), np.array([x[i], y[i], z[i]]))
+            
+            # Rotated x and z coordinates
+            x[i], _, z[i] = rotated_coordinates
+            x[i] += centers[i][1]
+            z[i] += centers[i][0]
 
         # shift axes to start at zero and scale to cm
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
@@ -106,18 +138,20 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         z = z * px_to_cm_factor
 
         # calculate colors
-        self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
-                                                                           esophagus_full_length_px,
-                                                                           esophagus_full_length_cm, offset_top)
+        # self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
+        #                                                                    esophagus_full_length_px,
+        #                                                                    esophagus_full_length_cm, offset_top)
 
+        self.surfacecolor_list = []
         # create figure
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
                                                   '3D-Ansicht aus Röntgen-, Endoskopie- und Manometriedaten')
 
         # calculate metrics
-        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
-                                                       len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
-
+        # self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
+        #                                                len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
+        self.metrics = [0],[0]
+        
     def get_figure(self):
         return self.figure
 

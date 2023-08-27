@@ -129,13 +129,24 @@ class PositionSelectionWindow(QMainWindow):
                         self.visualization_data.sphincter_upper_pos = [(int(self.sphincter_upper_pos[0]),int(self.sphincter_upper_pos[1] - offset)),(int(self.sphincter_upper_pos_2[0]),int(self.sphincter_upper_pos_2[1] - offset))]
                         self.visualization_data.esophagus_exit_pos = (int(self.esophagus_exit_pos[0]),int(self.esophagus_exit_pos[1] - offset))
                         self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
-                        if len(self.visualization_data.endoscopy_filenames) > 0:
-                            self.visualization_data.endoscopy_start_pos = int(self.endoscopy_pos - offset)
-                            endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
-                                                                                  self.visualization_data, self.patient_data)
-                            self.master_window.switch_to(endoscopy_selection_window)
+                        
+                        # If there are more visualizations in this visit continue with the next xray selection
+                        if self.next_window:
+                            self.master_window.switch_to(self.next_window)
+                        # Handle Endoscopy annotation
+                        elif len(self.visualization_data.endoscopy_filenames) > 0:
+                                            self.visualization_data.endoscopy_start_pos = int(self.endoscopy_pos - offset)
+                                            endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
+                                                                                                self.patient_data, self.visit)
+                                            self.master_window.switch_to(endoscopy_selection_window)
+                                            self.close()
+                        # Else show the visualization
+                        else:
+                            # Add new visualization to patient_data
+                            self.patient_data.add_visit(self.visit.name, self.visit)
+                            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
+                            self.master_window.switch_to(visualization_window)
                             self.close()
-
                     else:
                         QMessageBox.critical(self, "Fehler", "Die Positionen müssen sich innerhalb des zuvor " +
                                              "markierten Umrisses des Ösophagus befinden")
@@ -146,16 +157,7 @@ class PositionSelectionWindow(QMainWindow):
         else:
             QMessageBox.critical(self, "Fehler", "Bitte tragen Sie alle benötigten Positionen in die Graphik ein")
 
-        # If there are more visualizations in this visit continue with the next xray selection
-        if self.next_window:
-            self.master_window.switch_to(self.next_window)
-        # Else show the visualization
-        else:
-            # Add new visualization to patient_data
-            self.patient_data.add_visit(self.visit.name, self.visit)
-            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
-            self.master_window.switch_to(visualization_window)
-            self.close()
+
 
     def __menu_button_clicked(self):
         """
