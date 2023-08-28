@@ -66,7 +66,7 @@ class FigureCreator(ABC):
                 # Add euklidean distance of the previous point and the current one, [0] corresponds to the y-axis
                 path_length_px += np.sqrt(
                     (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
-            
+
             # Stop calculating length at endpoint
             if sensor_path[i][1] == end_index[1] and sensor_path[i][0] == end_index[0]:
                 break
@@ -87,12 +87,14 @@ class FigureCreator(ABC):
         second_sensor_cm = config.coords_sensors[visualization_data.second_sensor_index]
 
         # Find the first point on the sensor_path that matches the y-value of the first sensor position
-        endpoint = next((point for point in sensor_path if int(point[0]) == int(visualization_data.first_sensor_pos - offset_top)), None)
+        endpoint = next(
+            (point for point in sensor_path if int(point[0]) == int(visualization_data.first_sensor_pos - offset_top)),
+            None)
 
         # Calculate segement length to find out centimeter to pixel ratio
         length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, visualization_data.second_sensor_pos -
                                                                    offset_top, endpoint)
-        
+
         length_cm = first_sensor_cm - second_sensor_cm
 
         # Calculate centimeter length using ratio and full pixel length
@@ -183,7 +185,7 @@ class FigureCreator(ABC):
         widths = []
         centers = []
         slopes = []
-        offset_top = sensor_path[0][0] # y-value of first point in path
+        offset_top = sensor_path[0][0]  # y-value of first point in path
 
         num_points_for_polyfit = 60
 
@@ -202,32 +204,32 @@ class FigureCreator(ABC):
         # x_values = [point[1] for point in sensor_path] # in sensor path stehen die x werte an index 1
         # y_values = [point[0] for point in sensor_path]
         # ax.plot(x_values,y_values, color="red")
-        #plt.savefig("path.png")
+        # plt.savefig("path.png")
         ####
 
         for i in range(len(sensor_path)):
             # Create slope_points that are used to calculate linear regression (slope)
-            if i < num_points_for_polyfit //2:
+            if i < num_points_for_polyfit // 2:
                 # Before we have num_points_for_polyfit point available skip to the part where we have enough to calcuate the slope
                 point = sensor_path[i]
-                slope_points = sensor_path[0 : num_points_for_polyfit-1]
+                slope_points = sensor_path[0: num_points_for_polyfit - 1]
             elif i + num_points_for_polyfit // 2 > len(sensor_path) - 1:
                 # At the end we don't have enough points to calculate the slope, use the last point where it was possible
                 point = sensor_path[i]
-                slope_points = sensor_path[len(sensor_path) - num_points_for_polyfit : len(sensor_path) - 1]
+                slope_points = sensor_path[len(sensor_path) - num_points_for_polyfit: len(sensor_path) - 1]
             else:
                 # Get surrounding points
                 point = sensor_path[i]
-                slope_points = sensor_path[i-num_points_for_polyfit//2 : i+num_points_for_polyfit//2 - 1]
-            
+                slope_points = sensor_path[i - num_points_for_polyfit // 2: i + num_points_for_polyfit // 2 - 1]
+
             # x and y coords of slope_points
             x = np.array([p[1] for p in slope_points]).reshape(-1, 1)
             # Edit x so x-values aren't the same (sklearn can't handle that)
-            x = np.array([x+ i * 0.00001 for i, x in enumerate(x)])
+            x = np.array([x + i * 0.00001 for i, x in enumerate(x)])
             y = np.array([p[0] for p in slope_points])
             # Calculate linear regression to get slope of esophagus segment
             model = LinearRegression()
-            model.fit(x,y)
+            model.fit(x, y)
             # Calculate perpendicular slope, use epsilon to avoid divisions by zero or values close to zero
             if model.coef_[0] == 0:
                 perpendicular_slope = -1 / (model.coef_[0] + 0.0001)
@@ -238,23 +240,24 @@ class FigureCreator(ABC):
             line_length = visualization_data.xray_mask.shape[1]
             # Calculate equidistant points between two points on perpendicular (equidistant to avoid skipping points later)
             # new_y                        y     + m               * (new_x - x)
-            perpendicular_start_y=  point[0] + perpendicular_slope * (0 - point[1]) # TODO: fix 
-            perpendicular_end_y = point[0] + perpendicular_slope * (visualization_data.xray_mask.shape[1] - 1 - point[1])
+            perpendicular_start_y = point[0] + perpendicular_slope * (0 - point[1])  # TODO: fix
+            perpendicular_end_y = point[0] + perpendicular_slope * (
+                        visualization_data.xray_mask.shape[1] - 1 - point[1])
             perpendicular_start = (perpendicular_start_y, 0)
-            perpendicular_end = (perpendicular_end_y, visualization_data.xray_mask.shape[1]-1)
+            perpendicular_end = (perpendicular_end_y, visualization_data.xray_mask.shape[1] - 1)
 
             if model.coef_[0] > 1000 or model.coef_[0] < -1000:
                 # If the points used for the lin reg are inline along the y axis (slope is very high/steep)
-                perpendicular_start = (point[0] , point[1] - line_length)
+                perpendicular_start = (point[0], point[1] - line_length)
                 perpendicular_end = (point[0], point[1] + line_length)
 
             if model.coef_[0] > -0.0001 and model.coef_[0] < 0.0001:
                 # If the points used for the lin reg are inline along the x axis (slope is zero)
-                perpendicular_start = (point[0] - line_length , point[1])
-                perpendicular_end = (point[0]+ line_length, point[1] )
+                perpendicular_start = (point[0] - line_length, point[1])
+                perpendicular_end = (point[0] + line_length, point[1])
 
-            y1,x1 = int(perpendicular_start[0]), int(perpendicular_start[1])
-            y2,x2 = int(perpendicular_end[0]), int(perpendicular_end[1])
+            y1, x1 = int(perpendicular_start[0]), int(perpendicular_start[1])
+            y2, x2 = int(perpendicular_end[0]), int(perpendicular_end[1])
             num_points = max(abs(x2 - x1), abs(y2 - y1)) + 1
             perpendicular_x_values = np.linspace(x1, x2, num_points, dtype=int)
             perpendicular_y_values = np.linspace(y1, y2, num_points, dtype=int)
@@ -262,59 +265,79 @@ class FigureCreator(ABC):
 
             # Find index of current point / its closest equal in perpendicular
             _, index = spatial.KDTree(np.array(perpendicular_points)).query(np.array(point))
-        
+
+            index_l = index
+            index_r = index
+            point_along_line = perpendicular_points[index]
+
+            while visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
+                index_l = index_l - 1
+                point_along_line = perpendicular_points[index_l]
+                if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 1:
+                    index = index_l
+                    break
+                index_r = index_r - 1
+                point_along_line = perpendicular_points[index_r]
+                if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 1:
+                    index = index_r
+                    break
+
             boundary_1 = None
             boundary_2 = None
-        
+
             # Move left and right from the current point along the perpendicular to find the boundaries
             for j in range(len(perpendicular_points) // 2 - 5):
                 # TODO: für die Lücken -> maybe weil der sensor_path an der Grenze lang läuft werden die boundaries hier komisch, siehe geplottete centers die an der Grenze entlang laufen
                 # Move "left" until boundary is found
                 if boundary_1 is None:
-                    point_along_line = perpendicular_points[index-j]
+                    point_along_line = perpendicular_points[index - j]
                     # Check that point is within image
-                    if point_along_line[0] >= 0 and point_along_line[1] >= 0 and point_along_line[0] < visualization_data.xray_mask.shape[0] and point_along_line[1]<visualization_data.xray_mask.shape[1]:
-                        if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0 and boundary_1 is None:
-                            boundary_1 = perpendicular_points[index-j]
-                    
+                    if point_along_line[0] >= 0 and point_along_line[1] >= 0 and point_along_line[0] < \
+                            visualization_data.xray_mask.shape[0] and point_along_line[1] < \
+                            visualization_data.xray_mask.shape[1]:
+                        if visualization_data.xray_mask[point_along_line[0]][
+                            point_along_line[1]] == 0 and boundary_1 is None:
+                            boundary_1 = perpendicular_points[index - j]
+
                 # Move "right" until boundary is found
                 if boundary_2 is None:
-                    point_along_line = perpendicular_points[index+j]
+                    point_along_line = perpendicular_points[index + j]
                     # Check that point is within image
-                    if point_along_line[0] >= 0 and point_along_line[1] >= 0 and point_along_line[0] < visualization_data.xray_mask.shape[0] and point_along_line[1]<visualization_data.xray_mask.shape[1]:
+                    if point_along_line[0] >= 0 and point_along_line[1] >= 0 and point_along_line[0] < \
+                            visualization_data.xray_mask.shape[0] and point_along_line[1] < \
+                            visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
-                            boundary_2 = perpendicular_points[index+j]
+                            boundary_2 = perpendicular_points[index + j]
 
-            
             #### FOR DEBUGGING
             if boundary_1 is not None and boundary_2 is not None:
-                #plt.plot([boundary_1[1], boundary_2[1]],[boundary_1[0], boundary_2[0]], color="red")
+                # plt.plot([boundary_1[1], boundary_2[1]],[boundary_1[0], boundary_2[0]], color="red")
                 pass
             ####
 
             # Check if there are at least 2 boundary points 
             if boundary_1 is None or boundary_2 is None:
-                plt.plot(perpendicular_x_values,perpendicular_y_values, color="green") # FOR DEBUGGING
+                plt.plot(perpendicular_x_values, perpendicular_y_values, color="green")  # FOR DEBUGGING
                 plt.savefig("perp_points.png")
                 break
             # Step 2: Calculate Width
             # Calculate the distance between two boundary points
             width = np.linalg.norm(np.array(boundary_1) - np.array(boundary_2))
-            
+
             # Step 3: Calculate Center
             # Calculate the midpoint between two boundary points
             center = (np.array(boundary_1) + np.array(boundary_2)) / 2
             center = (int(center[0]), int(center[1]))
-            
+
             # Store the calculated width and center
             widths.append(width)
             centers.append(center)
         #### FOR DEBUGGING
-        #plt.savefig("perp_points.png") 
-        #plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="green")
-        #plt.savefig("centers.png")
+        # plt.savefig("perp_points.png")
+        # plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="green")
+        # plt.savefig("centers.png")
         ####
-            
+
         return widths, centers, slopes, offset_top
 
     @staticmethod
@@ -331,8 +354,8 @@ class FigureCreator(ABC):
         # calculate colormatrix for first frame, the others will be done by javascript
         first_surfacecolor = np.tile(np.array([surfacecolor_list[0]]).transpose(), (1, config.figure_number_of_angles))
 
-        #data = {"x": x.flatten(), "y": y.flatten(), "z": z.flatten(), "colors": first_surfacecolor.flatten()}
-        #figure = px.scatter_3d(data, x="x", y="y", z="z", color="colors", color_continuous_scale=config.colorscale, range_color=(config.cmin,config.cmax))
+        # data = {"x": x.flatten(), "y": y.flatten(), "z": z.flatten(), "colors": first_surfacecolor.flatten()}
+        # figure = px.scatter_3d(data, x="x", y="y", z="z", color="colors", color_continuous_scale=config.colorscale, range_color=(config.cmin,config.cmax))
         figure = go.Figure(data=[
             go.Surface(x=x, y=y, z=z, surfacecolor=first_surfacecolor, colorscale=config.colorscale, cmin=config.cmin,
                        cmax=config.cmax)])
@@ -365,7 +388,6 @@ class FigureCreator(ABC):
         end_top = None
         found_top = False
 
-
         # Search startpoint
         for i in range(visualization_data.xray_mask.shape[0]):
             # Iterate over xray mask width horizontally (x-axis)
@@ -377,13 +399,13 @@ class FigureCreator(ABC):
                     found_top = True
             if found_top:
                 startpoint = (start_top[0], (start_top[1] + end_top[1]) // 2)
-                break      
+                break
 
-        # Use annotated endpoint as end of shortest path
+                # Use annotated endpoint as end of shortest path
         endpoint = visualization_data.esophagus_exit_pos
         # Calculate shortest path
         path, cost = graph.route_through_array(costs, start=startpoint,
-                                               end=(endpoint[1],endpoint[0]), fully_connected=True)
+                                               end=(endpoint[1], endpoint[0]), fully_connected=True)
         return path
 
     @staticmethod
@@ -434,9 +456,9 @@ class FigureCreator(ABC):
             max_value_upper_pos = 0
             max_value_lower_pos = 0
             max_value = 0
-    
+
             for j in range(index, len(surfacecolor_list[0])):
-                
+
                 if surfacecolor_list[i][j] > max_value:
                     max_value_lower_pos = j
                     max_value_upper_pos = j
@@ -512,13 +534,14 @@ class FigureCreator(ABC):
         @param esophagus_full_length_px: length in pixels
         @return: tuple of two lists containing the metrics
         """
-        lower_sphincter_center = FigureCreator.calculate_lower_sphincter_center(visualization_data, surfacecolor_list, sensor_path)
+        lower_sphincter_center = FigureCreator.calculate_lower_sphincter_center(visualization_data, surfacecolor_list,
+                                                                                sensor_path)
         # Find upper and lower boundary for sphincter (index 0 = upper, index 1 = lower)
         lower_sphincter_boundary = FigureCreator.calculate_lower_sphincter_boundary(visualization_data,
                                                                                     lower_sphincter_center, sensor_path,
                                                                                     max_index, esophagus_full_length_cm,
                                                                                     esophagus_full_length_px)
-        
+
         tubular_part_upper_boundary = FigureCreator.calculate_index_by_startindex_and_cm_position(
             lower_sphincter_boundary[0], config.length_tubular_part_cm, sensor_path, esophagus_full_length_px,
             esophagus_full_length_cm)
@@ -533,7 +556,7 @@ class FigureCreator(ABC):
         for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
             # TODO: bisher war bei der Berechnung bei shapely_poly.area noch ein Faktor * px_as_cm, der aber eigentlich falsch ist an der Stelle, da x und y schon cm Werte sind, wie gehen wir damit um?
-            volume_slice = shapely_poly.area 
+            volume_slice = shapely_poly.area
             for j in range(len(surfacecolor_list)):
                 # Calculate metric for frame and height
                 metric_tubular[j] += volume_slice * surfacecolor_list[j][i]
@@ -542,7 +565,7 @@ class FigureCreator(ABC):
         metric_sphincter = np.zeros(len(surfacecolor_list))
         for i in range(lower_sphincter_boundary[0], lower_sphincter_boundary[1] + 1):
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
-            volume_slice = shapely_poly.area 
+            volume_slice = shapely_poly.area
             for j in range(len(surfacecolor_list)):
                 # Calculate metric for frame and height
                 metric_sphincter[j] += volume_slice / surfacecolor_list[j][i]
