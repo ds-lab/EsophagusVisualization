@@ -65,7 +65,6 @@ class PositionSelectionWindow(QMainWindow):
         self.second_sensor_pos_2 = None
         self.endoscopy_pos = None
         self.sphincter_upper_pos = None
-        self.sphincter_upper_pos_2 = None
         self.esophagus_exit_pos = None
 
     def __on_left_click(self, event):
@@ -85,10 +84,7 @@ class PositionSelectionWindow(QMainWindow):
             elif self.active_paint_index == 2:
                 self.endoscopy_pos = event.ydata
             elif self.active_paint_index == 3:
-                if self.sphincter_upper_pos:
-                    self.sphincter_upper_pos_2 = (event.xdata, event.ydata)
-                else:
-                    self.sphincter_upper_pos = (event.xdata, event.ydata)
+                self.sphincter_upper_pos = (event.xdata, event.ydata)
             elif self.active_paint_index == 4:
                 self.esophagus_exit_pos = (event.xdata, event.ydata)
 
@@ -98,8 +94,9 @@ class PositionSelectionWindow(QMainWindow):
                 self.plot_ax.axhline(self.second_sensor_pos, color='blue')
             if self.endoscopy_pos:
                 self.plot_ax.axhline(self.endoscopy_pos, color='red')
-            if self.sphincter_upper_pos and self.sphincter_upper_pos_2:
-                self.plot_ax.axline(self.sphincter_upper_pos, self.sphincter_upper_pos_2, color='yellow')
+            if self.sphincter_upper_pos:
+                point = Circle(self.sphincter_upper_pos, 4.0, color='yellow')
+                self.plot_ax.add_patch(point)
             if self.esophagus_exit_pos:
                 point = Circle(self.esophagus_exit_pos, 4.0, color='pink')
                 self.plot_ax.add_patch(point)
@@ -126,7 +123,7 @@ class PositionSelectionWindow(QMainWindow):
                             self.visualization_data.first_sensor_index = self.ui.second_combobox.currentIndex()
                             self.visualization_data.second_sensor_pos = int(self.first_sensor_pos - offset)
                             self.visualization_data.second_sensor_index = self.ui.first_combobox.currentIndex()
-                        self.visualization_data.sphincter_upper_pos = [(int(self.sphincter_upper_pos[0]),int(self.sphincter_upper_pos[1] - offset)),(int(self.sphincter_upper_pos_2[0]),int(self.sphincter_upper_pos_2[1] - offset))]
+                        self.visualization_data.sphincter_upper_pos = (int(self.sphincter_upper_pos[0]),int(self.sphincter_upper_pos[1] - offset))
                         self.visualization_data.esophagus_exit_pos = (int(self.esophagus_exit_pos[0]),int(self.esophagus_exit_pos[1] - offset))
                         self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
                         

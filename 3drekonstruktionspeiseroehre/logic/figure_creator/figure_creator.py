@@ -112,7 +112,7 @@ class FigureCreator(ABC):
         """
         pressure_matrix = visualization_data.pressure_matrix
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
-        # path length from top for first sensor
+        # Path length from top for first sensor
         first_sensor_path_length_px = 0
         for i in range(0, len(sensor_path)):
             if visualization_data.first_sensor_pos - offset_top == sensor_path[i][0]:
@@ -121,15 +121,17 @@ class FigureCreator(ABC):
                 first_sensor_path_length_px += np.sqrt(
                     (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
 
+        # Convert to cm
         first_sensor_path_length_cm = first_sensor_path_length_px * px_to_cm_factor
         sensor_path_lengths_px = [(first_sensor_path_length_cm - (
                 config.coords_sensors[visualization_data.first_sensor_index] - coord)) / px_to_cm_factor for coord
                                   in config.coords_sensors]
 
         surfacecolor_list = []
+        # Iterate over frames for animation
         for frame_number in range(pressure_matrix.shape[1]):
             surfacecolor = []
-            # find the sensor (from top) that is just before the regarded area
+            # Find the sensor (from top) that is just before the regarded area
             current_sensor_index = 0
             for i in range(len(config.coords_sensors) - 1):
                 if sensor_path_lengths_px[i] < 0 and sensor_path_lengths_px[i + 1] < 0:
@@ -137,7 +139,7 @@ class FigureCreator(ABC):
             current_path_length_px = 0
             is_before_first_sensor = 0 < sensor_path_lengths_px[0]
             is_after_last_sensor = False
-            for i in range(0, len(sensor_path)):
+            for i in range(len(sensor_path)):
                 if i > 0:
                     current_path_length_px += np.sqrt((sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 +
                                                       (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
@@ -203,7 +205,7 @@ class FigureCreator(ABC):
         #plt.savefig("path.png")
         ####
 
-        for i in range(len(sensor_path)-1):
+        for i in range(len(sensor_path)):
             # Create slope_points that are used to calculate linear regression (slope)
             if i < num_points_for_polyfit //2:
                 # Before we have num_points_for_polyfit point available skip to the part where we have enough to calcuate the slope
@@ -327,11 +329,14 @@ class FigureCreator(ABC):
         :return: plotly figure
         """
         # calculate colormatrix for first frame, the others will be done by javascript
-        #first_surfacecolor = np.tile(np.array([surfacecolor_list[0]]).transpose(), (1, config.figure_number_of_angles))
-        # figure = go.Figure(data=[go.Surface(x=x, y=y, z=z)])
-        colors = z
-        data = {"x": x.flatten(), "y": y.flatten(), "z": z.flatten(), "colors": colors.flatten()}
-        figure = px.scatter_3d(data, x="x", y="y", z="z", color="colors", color_continuous_scale=config.colorscale, range_color=(config.cmin,config.cmax))
+        first_surfacecolor = np.tile(np.array([surfacecolor_list[0]]).transpose(), (1, config.figure_number_of_angles))
+
+        #data = {"x": x.flatten(), "y": y.flatten(), "z": z.flatten(), "colors": first_surfacecolor.flatten()}
+        #figure = px.scatter_3d(data, x="x", y="y", z="z", color="colors", color_continuous_scale=config.colorscale, range_color=(config.cmin,config.cmax))
+        figure = go.Figure(data=[
+            go.Surface(x=x, y=y, z=z, surfacecolor=first_surfacecolor, colorscale=config.colorscale, cmin=config.cmin,
+                       cmax=config.cmax)])
+
         figure.update_layout(scene=dict(aspectmode='data'), uirevision='constant',
                              title=title, title_x=0, title_y=1,
                              margin=dict(l=20, r=20, t=30, b=20), hovermode=False)
@@ -386,8 +391,8 @@ class FigureCreator(ABC):
                                                       esophagus_full_length_cm):
         """
         calculates an index by going up from a given start
-        :param start_index: start index
-        :param position_cm: way in cm
+        :param start_index: start index / lower sphincter boundary (upper)
+        :param position_cm: way in cm (15cm)
         :param sensor_path: estimated path
         :param esophagus_full_length_px: length in pixels
         :param esophagus_full_length_cm: length in cm
@@ -413,20 +418,25 @@ class FigureCreator(ABC):
         return None
 
     @staticmethod
-    def calculate_lower_sphincter_center(visualization_data, surfacecolor_list):
+    def calculate_lower_sphincter_center(visualization_data, surfacecolor_list, sensor_path):
         """
         calculates the center position of the lower sphincter by searching for the maximum pressure
         @param visualization_data: VisualizationData
         @param surfacecolor_list: list of surfacecolors for every frame
         @return: index
         """
-        # TODO: sphincter upper pos is now a list of 2 points 
         center_index_per_timestep = []
+
+        # Find index of shincter_upper_pos in sensorpath
+        _, index = spatial.KDTree(np.array(sensor_path)).query(np.array(visualization_data.sphincter_upper_pos))
+
         for i in range(len(surfacecolor_list)):
             max_value_upper_pos = 0
             max_value_lower_pos = 0
             max_value = 0
-            for j in range(visualization_data.sphincter_upper_pos, len(surfacecolor_list[0])):
+    
+            for j in range(index, len(surfacecolor_list[0])):
+                
                 if surfacecolor_list[i][j] > max_value:
                     max_value_lower_pos = j
                     max_value_upper_pos = j
@@ -450,6 +460,7 @@ class FigureCreator(ABC):
         @return: tuple of upper and lower boundary index
         """
         cm_to_px_factor = esophagus_full_length_px / esophagus_full_length_cm
+        # Convert user defined sphincter length to px
         sphincter_length_px = visualization_data.sphincter_length_cm * cm_to_px_factor
 
         # find index of sensor_path that corresponds to lower_sphincter_center
@@ -459,9 +470,10 @@ class FigureCreator(ABC):
                 start_iterator = i
                 break
 
-        # upper border index
+        # Upper border index
         upper_border_index = 0
         current_length = 0
+        # Count down from start_iterator to 0
         for i in range(start_iterator, -1, -1):
             if i < start_iterator:
                 current_length += np.sqrt((sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
@@ -471,7 +483,7 @@ class FigureCreator(ABC):
                 upper_border_index = sensor_path[i][0]
                 break
 
-        # lower border index
+        # Lower border index
         lower_border_index = max_index
         current_length = 0
         for i in range(start_iterator, len(sensor_path)):
@@ -495,16 +507,18 @@ class FigureCreator(ABC):
         @param figure_y: y-values of the figure
         @param surfacecolor_list: list of surfacecolors for every frame
         @param sensor_path: estimated path
-        @param max_index: maximum index value at the bottom
+        @param max_index: maximum index value at the bottom (len(centers)-1))
         @param esophagus_full_length_cm: length in cm
         @param esophagus_full_length_px: length in pixels
         @return: tuple of two lists containing the metrics
         """
-        lower_sphincter_center = FigureCreator.calculate_lower_sphincter_center(visualization_data, surfacecolor_list)
+        lower_sphincter_center = FigureCreator.calculate_lower_sphincter_center(visualization_data, surfacecolor_list, sensor_path)
+        # Find upper and lower boundary for sphincter (index 0 = upper, index 1 = lower)
         lower_sphincter_boundary = FigureCreator.calculate_lower_sphincter_boundary(visualization_data,
                                                                                     lower_sphincter_center, sensor_path,
                                                                                     max_index, esophagus_full_length_cm,
                                                                                     esophagus_full_length_px)
+        
         tubular_part_upper_boundary = FigureCreator.calculate_index_by_startindex_and_cm_position(
             lower_sphincter_boundary[0], config.length_tubular_part_cm, sensor_path, esophagus_full_length_px,
             esophagus_full_length_cm)
@@ -513,20 +527,24 @@ class FigureCreator(ABC):
 
         px_as_cm = esophagus_full_length_cm / esophagus_full_length_px
 
-        # calculate tubular metric
+        # Calculate tubular metric between upper tubular boundary and upper lower sphincter boundary
+        # Length accoding to frames in surfacecolor_list
         metric_tubular = np.zeros(len(surfacecolor_list))
         for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
-            volume_slice = shapely_poly.area * px_as_cm
+            # TODO: bisher war bei der Berechnung bei shapely_poly.area noch ein Faktor * px_as_cm, der aber eigentlich falsch ist an der Stelle, da x und y schon cm Werte sind, wie gehen wir damit um?
+            volume_slice = shapely_poly.area 
             for j in range(len(surfacecolor_list)):
+                # Calculate metric for frame and height
                 metric_tubular[j] += volume_slice * surfacecolor_list[j][i]
 
-        # calculate sphincter metric
+        # Calculate sphincter metric between upper and lower lower sphincter boundary
         metric_sphincter = np.zeros(len(surfacecolor_list))
         for i in range(lower_sphincter_boundary[0], lower_sphincter_boundary[1] + 1):
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
-            volume_slice = shapely_poly.area * px_as_cm
+            volume_slice = shapely_poly.area 
             for j in range(len(surfacecolor_list)):
+                # Calculate metric for frame and height
                 metric_sphincter[j] += volume_slice / surfacecolor_list[j][i]
 
         return metric_tubular, metric_sphincter

@@ -18,7 +18,7 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
 
         # Calculate a path through the esophagus along the xray image
         sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data)
-
+      
         # Extract information necessary for reconstruction and metrics from input
         widths, centers, slopes, offset_top = FigureCreator.calculate_widths_centers_slope_offset(
             visualization_data, sensor_path)
@@ -71,11 +71,11 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         z = z * px_to_cm_factor  
 
         # calculate colors
-        # self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
-        #                                                                    esophagus_full_length_px,
-        #                                                                    esophagus_full_length_cm, offset_top)
+        self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
+                                                                           esophagus_full_length_px,
+                                                                           esophagus_full_length_cm, offset_top)
 
-        self.surfacecolor_list = []
+
         # create figure
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
                                                   '3D-Ansicht aus Röntgen- und Manometriedaten')
@@ -83,9 +83,8 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         # calculate metrics
         # TODO: todo correct centers usage
         # TODO: manchmal sind lücken in der 3d ansicht -> damit richtig umgehen -> schwellenwert für kreisgröße oder so
-        # self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
-        #                                                len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
-        self.metrics = [0],[0]
+        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
+                                                       len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
 
     def get_figure(self):
         return self.figure
