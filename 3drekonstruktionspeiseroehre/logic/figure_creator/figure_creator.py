@@ -187,7 +187,7 @@ class FigureCreator(ABC):
         slopes = []
         offset_top = sensor_path[0][0]  # y-value of first point in path
 
-        num_points_for_polyfit = 60
+        num_points_for_polyfit = 40
 
         ####
         # Create a figure and axis FOR DEBUGGING
@@ -230,11 +230,17 @@ class FigureCreator(ABC):
             # Calculate linear regression to get slope of esophagus segment
             model = LinearRegression()
             model.fit(x, y)
+            
             # Calculate perpendicular slope, use epsilon to avoid divisions by zero or values close to zero
             if model.coef_[0] == 0:
                 perpendicular_slope = -1 / (model.coef_[0] + 0.0001)
             else:
                 perpendicular_slope = -1 / model.coef_[0]
+
+            # If the esophagus shows a tight curve/bend, wrong slopes may be calculated (very steep perpendicular)-> in this case take the previous slope to skip the wrong one
+            if i > 1 and abs(perpendicular_slope)>30 and abs(perpendicular_slope / slopes[i-1]) > 50:
+                perpendicular_slope = slopes[i-1]
+
             slopes.append(perpendicular_slope)
 
             line_length = visualization_data.xray_mask.shape[1]
@@ -266,25 +272,26 @@ class FigureCreator(ABC):
             # Find index of current point / its closest equal in perpendicular
             _, index = spatial.KDTree(np.array(perpendicular_points)).query(np.array(point))
 
+            # Sometimes the index isn't completely correct due to rounding errors and can lie outside of the esophagus 
+            # Find 'correct' index by searching left and right along the perpendicular
             index_l = index
             index_r = index
             point_along_line = perpendicular_points[index]
 
-            while visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
+            while visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0 and index_r < len(perpendicular_points) and index_l > 0:
                 index_l = index_l - 1
                 point_along_line = perpendicular_points[index_l]
                 if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 1:
                     index = index_l
                     break
-                index_r = index_r - 1
+                index_r = index_r + 1
                 point_along_line = perpendicular_points[index_r]
                 if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 1:
                     index = index_r
                     break
-
+        
             boundary_1 = None
             boundary_2 = None
-
             # Move left and right from the current point along the perpendicular to find the boundaries
             for j in range(len(perpendicular_points) // 2 - 5):
                 # TODO: für die Lücken -> maybe weil der sensor_path an der Grenze lang läuft werden die boundaries hier komisch, siehe geplottete centers die an der Grenze entlang laufen
@@ -317,9 +324,8 @@ class FigureCreator(ABC):
 
             # Check if there are at least 2 boundary points 
             if boundary_1 is None or boundary_2 is None:
-                plt.plot(perpendicular_x_values, perpendicular_y_values, color="green")  # FOR DEBUGGING
-                plt.savefig("perp_points.png")
-                break
+                raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
+            
             # Step 2: Calculate Width
             # Calculate the distance between two boundary points
             width = np.linalg.norm(np.array(boundary_1) - np.array(boundary_2))
