@@ -29,7 +29,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/endoscopy_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
-        self.visit_data = visit
+        self.visit = visit
 
         self.current_image_index = 0
         self.current_polygon = []
@@ -120,9 +120,10 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
                     self.ui.apply_button.setDisabled(True)
                     
                     # Update the polygon for all visualization objects in visit
-                    for vis in self.visit_data.visualization_data_list:
+                    for vis in self.visit.visualization_data_list:
                         vis.endoscopy_polygons = self.polygon_list
 
+                    self.patient_data.add_visit(self.visit.name, self.visit)
                     visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                     self.master_window.switch_to(visualization_window)
                     self.close()

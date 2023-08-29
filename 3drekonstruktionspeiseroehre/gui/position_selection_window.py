@@ -24,7 +24,7 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("./ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
         self.visualization_data = visit.visualization_data_list[n]

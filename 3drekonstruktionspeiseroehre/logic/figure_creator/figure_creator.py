@@ -189,24 +189,6 @@ class FigureCreator(ABC):
 
         num_points_for_polyfit = 40
 
-        ####
-        # Create a figure and axis FOR DEBUGGING
-        # fig, ax = plt.subplots()
-
-        # # Invert y-axis to have positive y downwards FOR DEBUGGING
-        # ax.invert_yaxis()
-        # # plot xray FOR DEBUGGING
-        # coordinates = [(row_idx, col_idx) for row_idx, row in enumerate(visualization_data.xray_mask) for col_idx, value in enumerate(row) if value == 1]
-        # x_values, y_values = zip(*coordinates)
-        # ax.scatter(y_values, x_values)
-
-        # # plot shortest path FOR DEBUGGING
-        # x_values = [point[1] for point in sensor_path] # in sensor path stehen die x werte an index 1
-        # y_values = [point[0] for point in sensor_path]
-        # ax.plot(x_values,y_values, color="red")
-        # plt.savefig("path.png")
-        ####
-
         for i in range(len(sensor_path)):
             # Create slope_points that are used to calculate linear regression (slope)
             if i < num_points_for_polyfit // 2:
@@ -243,7 +225,7 @@ class FigureCreator(ABC):
 
             slopes.append(perpendicular_slope)
 
-            line_length = visualization_data.xray_mask.shape[1]
+            line_length = visualization_data.xray_mask.shape[1] * 2
             # Calculate equidistant points between two points on perpendicular (equidistant to avoid skipping points later)
             # new_y                        y     + m               * (new_x - x)
             perpendicular_start_y = point[0] + perpendicular_slope * (0 - point[1])  # TODO: fix
@@ -293,38 +275,42 @@ class FigureCreator(ABC):
             boundary_1 = None
             boundary_2 = None
             # Move left and right from the current point along the perpendicular to find the boundaries
-            for j in range(len(perpendicular_points) // 2 - 5):
+            for j in range(len(perpendicular_points)-1):
                 # TODO: für die Lücken -> maybe weil der sensor_path an der Grenze lang läuft werden die boundaries hier komisch, siehe geplottete centers die an der Grenze entlang laufen
                 # Move "left" until boundary is found
-                if boundary_1 is None:
+                if boundary_1 is None and (index - j) >= 0:
                     point_along_line = perpendicular_points[index - j]
                     # Check that point is within image
                     if point_along_line[0] >= 0 and point_along_line[1] >= 0 and point_along_line[0] < \
                             visualization_data.xray_mask.shape[0] and point_along_line[1] < \
                             visualization_data.xray_mask.shape[1]:
-                        if visualization_data.xray_mask[point_along_line[0]][
-                            point_along_line[1]] == 0 and boundary_1 is None:
-                            boundary_1 = perpendicular_points[index - j]
+                        if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
+                            boundary_1 = point_along_line
+                        # Esophagus touches left image edge
+                        elif point_along_line[0] == 0 or point_along_line[1] == 0:
+                            boundary_1 = point_along_line
 
                 # Move "right" until boundary is found
-                if boundary_2 is None:
+                if boundary_2 is None and (index + j) <= len(perpendicular_points)-1:
                     point_along_line = perpendicular_points[index + j]
                     # Check that point is within image
                     if point_along_line[0] >= 0 and point_along_line[1] >= 0 and point_along_line[0] < \
                             visualization_data.xray_mask.shape[0] and point_along_line[1] < \
                             visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
-                            boundary_2 = perpendicular_points[index + j]
-
-            #### FOR DEBUGGING
-            if boundary_1 is not None and boundary_2 is not None:
-                # plt.plot([boundary_1[1], boundary_2[1]],[boundary_1[0], boundary_2[0]], color="red")
-                pass
-            ####
+                            boundary_2 = point_along_line
+                        # Esophagus touches right image edge
+                        elif point_along_line[0] == visualization_data.xray_mask.shape[0]-1 or point_along_line[1] == visualization_data.xray_mask.shape[1]-1:
+                            boundary_2 = point_along_line
 
             # Check if there are at least 2 boundary points 
             if boundary_1 is None or boundary_2 is None:
-                raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
+                if i == 0:
+                    # In very few cases the top is extremely tilted so that only one boundary can be found, in this case "fake" this point by creating a small width
+                    boundary_1 = (perpendicular_points[index][0] - 1,perpendicular_points[index][1] - 1)
+                    boundary_2 = (perpendicular_points[index][0] + 1,perpendicular_points[index][1] + 1)
+                else:
+                    raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
             
             # Step 2: Calculate Width
             # Calculate the distance between two boundary points
@@ -338,11 +324,6 @@ class FigureCreator(ABC):
             # Store the calculated width and center
             widths.append(width)
             centers.append(center)
-        #### FOR DEBUGGING
-        # plt.savefig("perp_points.png")
-        # plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="green")
-        # plt.savefig("centers.png")
-        ####
 
         return widths, centers, slopes, offset_top
 
@@ -428,21 +409,16 @@ class FigureCreator(ABC):
         """
         length_fraction = position_cm / esophagus_full_length_cm
         length_px = esophagus_full_length_px * length_fraction
-        # find index of sensor_path that corresponds to start_index
-        start_iterator = 0
-        for i in range(len(sensor_path)):
-            if sensor_path[i][0] == start_index:
-                start_iterator = i
-                break
+
         # iterate over sensor_path from start_iterator to find requested index
         current_length = 0
-        for i in range(start_iterator, -1, -1):
-            if i < start_iterator:
+        for i in range(start_index, -1, -1):
+            if i < start_index:
                 current_length += np.sqrt((sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
                                                                                               sensor_path[i + 1][
                                                                                                   1]) ** 2)
             if current_length >= length_px:
-                return sensor_path[i][0]
+                return i
         return None
 
     @staticmethod
@@ -491,13 +467,8 @@ class FigureCreator(ABC):
         # Convert user defined sphincter length to px
         sphincter_length_px = visualization_data.sphincter_length_cm * cm_to_px_factor
 
-        # find index of sensor_path that corresponds to lower_sphincter_center
-        start_iterator = 0
-        for i in range(len(sensor_path)):
-            if sensor_path[i][0] == lower_sphincter_center:
-                start_iterator = i
-                break
-
+        start_iterator = lower_sphincter_center
+        
         # Upper border index
         upper_border_index = 0
         current_length = 0
@@ -508,7 +479,7 @@ class FigureCreator(ABC):
                                                                                               sensor_path[i + 1][
                                                                                                   1]) ** 2)
             if current_length >= sphincter_length_px / 2:
-                upper_border_index = sensor_path[i][0]
+                upper_border_index = i
                 break
 
         # Lower border index
@@ -520,7 +491,7 @@ class FigureCreator(ABC):
                                                                                               sensor_path[i - 1][
                                                                                                   1]) ** 2)
             if current_length >= sphincter_length_px / 2:
-                lower_border_index = sensor_path[i][0]
+                lower_border_index = i
                 break
 
         return upper_border_index, lower_border_index
@@ -540,9 +511,10 @@ class FigureCreator(ABC):
         @param esophagus_full_length_px: length in pixels
         @return: tuple of two lists containing the metrics
         """
+        # Find index of lower sphincter center
         lower_sphincter_center = FigureCreator.calculate_lower_sphincter_center(visualization_data, surfacecolor_list,
                                                                                 sensor_path)
-        # Find upper and lower boundary for sphincter (index 0 = upper, index 1 = lower)
+        # Find upper and lower boundary (index) for sphincter (index 0 = upper, index 1 = lower)
         lower_sphincter_boundary = FigureCreator.calculate_lower_sphincter_boundary(visualization_data,
                                                                                     lower_sphincter_center, sensor_path,
                                                                                     max_index, esophagus_full_length_cm,

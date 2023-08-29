@@ -1,3 +1,4 @@
+from scipy import spatial
 import config
 import numpy as np
 import shapely.geometry
@@ -60,9 +61,8 @@ class FigureCreatorWithEndoscopy(FigureCreator):
             distances_from_centroid.append(current_polygon_distances_from_centroid)
 
         # Transform endoscopy position information
-        # TODO: update endoscopy_start_pos to not only be a y-value 
         endoscopy_image_indexes = FigureCreatorWithEndoscopy.__calculate_endoscopy_indexes(
-            visualization_data.endoscopy_image_positions_cm, visualization_data.endoscopy_start_pos - offset_top, sensor_path,
+            visualization_data.endoscopy_image_positions_cm, visualization_data.endoscopy_start_pos, offset_top, sensor_path,
             esophagus_full_length_px, esophagus_full_length_cm)
         
         # Remove outliers
@@ -138,19 +138,18 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         z = z * px_to_cm_factor
 
         # calculate colors
-        # self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
-        #                                                                    esophagus_full_length_px,
-        #                                                                    esophagus_full_length_cm, offset_top)
+        self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
+                                                                           esophagus_full_length_px,
+                                                                           esophagus_full_length_cm, offset_top)
 
-        self.surfacecolor_list = []
+ 
         # create figure
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
                                                   '3D-Ansicht aus Röntgen-, Endoskopie- und Manometriedaten')
 
         # calculate metrics
-        # self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
-        #                                                len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
-        self.metrics = [0],[0]
+        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
+                                                       len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
         
     def get_figure(self):
         return self.figure
@@ -165,21 +164,24 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         return self.metrics
 
     @staticmethod
-    def __calculate_endoscopy_indexes(endoscopy_image_positions_cm, start_index, sensor_path, esophagus_full_length_px,
+    def __calculate_endoscopy_indexes(endoscopy_image_positions_cm, endoscopy_start_pos, offset_top, sensor_path, esophagus_full_length_px,
                                       esophagus_full_length_cm):
         """
         calculates the pixel positions of the endoscopy images
         :param endoscopy_image_positions_cm: the positions given by the filenames
-        :param start_index: start position
+        :param endoscopy_start_pos: start position
         :param sensor_path: estimated path
         :param esophagus_full_length_px: length in pixels
         :param esophagus_full_length_cm: length in cm
         :return: indexes
         """
         endoscopy_image_indexes = []
+        endoscopy_start_pos = (endoscopy_start_pos[0], endoscopy_start_pos[1] - offset_top)
+        # Find endoscopy start positiion in sensor_path
+        _, index = spatial.KDTree(np.array(sensor_path)).query(np.array(endoscopy_start_pos))
         for position in endoscopy_image_positions_cm:
             endoscopy_image_indexes.append(FigureCreator.calculate_index_by_startindex_and_cm_position(
-                start_index, position, sensor_path, esophagus_full_length_px, esophagus_full_length_cm))
+                index, position, sensor_path, esophagus_full_length_px, esophagus_full_length_cm))
         return endoscopy_image_indexes
 
 
