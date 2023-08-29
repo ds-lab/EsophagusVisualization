@@ -16,7 +16,7 @@ from skimage import io
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    def __init__(self, master_window: MasterWindow, next_window, patient_data: PatientData, visit:VisitData, n:int):
+    def __init__(self, master_window: MasterWindow, next_window, patient_data: PatientData, visit: VisitData, n: int):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -24,7 +24,7 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
         self.visualization_data = visit.visualization_data_list[n]
@@ -82,7 +82,7 @@ class PositionSelectionWindow(QMainWindow):
             elif self.active_paint_index == 1:
                 self.second_sensor_pos = event.ydata
             elif self.active_paint_index == 2:
-                self.endoscopy_pos = event.ydata
+                self.endoscopy_pos = (event.xdata, event.ydata)
             elif self.active_paint_index == 3:
                 self.sphincter_upper_pos = (event.xdata, event.ydata)
             elif self.active_paint_index == 4:
@@ -93,7 +93,8 @@ class PositionSelectionWindow(QMainWindow):
             if self.second_sensor_pos:
                 self.plot_ax.axhline(self.second_sensor_pos, color='blue')
             if self.endoscopy_pos:
-                self.plot_ax.axhline(self.endoscopy_pos, color='red')
+                point = Circle(self.endoscopy_pos, 4.0, color='red')
+                self.plot_ax.add_patch(point)
             if self.sphincter_upper_pos:
                 point = Circle(self.sphincter_upper_pos, 4.0, color='yellow')
                 self.plot_ax.add_patch(point)
@@ -123,20 +124,24 @@ class PositionSelectionWindow(QMainWindow):
                             self.visualization_data.first_sensor_index = self.ui.second_combobox.currentIndex()
                             self.visualization_data.second_sensor_pos = int(self.first_sensor_pos - offset)
                             self.visualization_data.second_sensor_index = self.ui.first_combobox.currentIndex()
-                        self.visualization_data.sphincter_upper_pos = (int(self.sphincter_upper_pos[0]),int(self.sphincter_upper_pos[1] - offset))
-                        self.visualization_data.esophagus_exit_pos = (int(self.esophagus_exit_pos[0]),int(self.esophagus_exit_pos[1] - offset))
+                        self.visualization_data.sphincter_upper_pos = (
+                            int(self.sphincter_upper_pos[0]), int(self.sphincter_upper_pos[1] - offset))
+                        self.visualization_data.esophagus_exit_pos = (
+                            int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1] - offset))
                         self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
-                        
+
                         # If there are more visualizations in this visit continue with the next xray selection
                         if self.next_window:
                             self.master_window.switch_to(self.next_window)
                         # Handle Endoscopy annotation
                         elif len(self.visualization_data.endoscopy_filenames) > 0:
-                                            self.visualization_data.endoscopy_start_pos = int(self.endoscopy_pos - offset)
-                                            endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
-                                                                                                self.patient_data, self.visit)
-                                            self.master_window.switch_to(endoscopy_selection_window)
-                                            self.close()
+                            # ToDo: richtige y-position für endoscopy_pos finden
+                            self.visualization_data.endoscopy_start_pos = \
+                                (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1] - offset))
+                            endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
+                                                                                  self.patient_data, self.visit)
+                            self.master_window.switch_to(endoscopy_selection_window)
+                            self.close()
                         # Else show the visualization
                         else:
                             # Add new visualization to patient_data
@@ -153,8 +158,6 @@ class PositionSelectionWindow(QMainWindow):
                 QMessageBox.critical(self, "Fehler", "Bitte wählen Sie zwei unterschiedliche Sensoren aus")
         else:
             QMessageBox.critical(self, "Fehler", "Bitte tragen Sie alle benötigten Positionen in die Graphik ein")
-
-
 
     def __menu_button_clicked(self):
         """
@@ -177,8 +180,7 @@ class PositionSelectionWindow(QMainWindow):
         self.active_paint_index = 3
 
     def __eso_exit_button_clicked(self):
-            self.active_paint_index = 4
-    
+        self.active_paint_index = 4
 
     def __are_necessary_positions_set(self):
         """
@@ -195,8 +197,8 @@ class PositionSelectionWindow(QMainWindow):
         """
         return (self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex()
                 and self.first_sensor_pos > self.second_sensor_pos) \
-               or (self.ui.first_combobox.currentIndex() < self.ui.second_combobox.currentIndex()
-                   and self.first_sensor_pos < self.second_sensor_pos)
+            or (self.ui.first_combobox.currentIndex() < self.ui.second_combobox.currentIndex()
+                and self.first_sensor_pos < self.second_sensor_pos)
 
     def __is_any_position_outside_polygon(self):
         """
@@ -205,8 +207,8 @@ class PositionSelectionWindow(QMainWindow):
         """
         poly_y_min = min([point[1] for point in self.visualization_data.xray_polygon])
         poly_y_max = max([point[1] for point in self.visualization_data.xray_polygon])
+        # ToDo: Check für endoscopy_pos anpassen
         return self.first_sensor_pos < poly_y_min or self.first_sensor_pos > poly_y_max \
             or self.second_sensor_pos < poly_y_min or self.second_sensor_pos > poly_y_max \
-            or (len(self.visualization_data.endoscopy_filenames) > 0 and (self.endoscopy_pos < poly_y_min
-                or self.endoscopy_pos > poly_y_max))
-
+            or (len(self.visualization_data.endoscopy_filenames) > 0 and (self.endoscopy_pos[1] < poly_y_min
+                                                                          or self.endoscopy_pos[1] > poly_y_max))
