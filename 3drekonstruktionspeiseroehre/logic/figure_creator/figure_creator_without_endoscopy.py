@@ -18,17 +18,17 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
 
         # Calculate a path through the esophagus along the xray image
         sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data)
-      
+
         # Extract information necessary for reconstruction and metrics from input
         widths, centers, slopes, offset_top = FigureCreator.calculate_widths_centers_slope_offset(
             visualization_data, sensor_path)
-        
-        esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(sensor_path, 0, visualization_data.esophagus_exit_pos)
+
+        esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(sensor_path, 0,
+                                                                               visualization_data.esophagus_exit_pos)
 
         esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(sensor_path,
                                                                                     esophagus_full_length_px,
                                                                                     visualization_data, offset_top)
-
 
         # Calculate shape without endoscopy data by approximating profile as circles
         # Get array of 50 equi-spaced values between 0 and 2pi
@@ -56,9 +56,9 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
             # Rotate around y-axis according to slopes
             rotated_coordinates = np.matmul(
                 np.array([[np.cos(slope_in_rad), 0, -np.sin(slope_in_rad)],
-                        [0, 1, 0],
-                        [np.sin(slope_in_rad), 0, np.cos(slope_in_rad)]]), np.array([x[i], y[i], z[i]]))
-            
+                          [0, 1, 0],
+                          [np.sin(slope_in_rad), 0, np.cos(slope_in_rad)]]), np.array([x[i], y[i], z[i]]))
+
             # Rotated x and z coordinates
             x[i], _, z[i] = rotated_coordinates
             x[i] += centers[i][1]
@@ -68,23 +68,26 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
         x = (x - x.min()) * px_to_cm_factor
         y = (y - y.min()) * px_to_cm_factor
-        z = z * px_to_cm_factor  
+        z = z * px_to_cm_factor
 
         # calculate colors
         self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
                                                                            esophagus_full_length_px,
                                                                            esophagus_full_length_cm, offset_top)
 
-
         # create figure
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
                                                   '3D-Ansicht aus Röntgen- und Manometriedaten')
+
+        self.esophagus_length_cm = FigureCreator.calculate_esophagus_full_length_cm(
+            sensor_path, esophagus_full_length_px, visualization_data, offset_top)
 
         # calculate metrics
         # TODO: todo correct centers usage
         # TODO: manchmal sind lücken in der 3d ansicht -> damit richtig umgehen -> schwellenwert für kreisgröße oder so
         self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
-                                                       len(centers)-1, esophagus_full_length_cm, esophagus_full_length_px)
+                                                       len(centers) - 1, esophagus_full_length_cm,
+                                                       esophagus_full_length_px)
 
     def get_figure(self):
         return self.figure
@@ -97,3 +100,6 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
 
     def get_metrics(self):
         return self.metrics
+
+    def get_esophagus_full_length_cm(self):
+        return self.esophagus_length_cm

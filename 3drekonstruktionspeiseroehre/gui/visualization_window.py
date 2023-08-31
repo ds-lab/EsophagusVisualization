@@ -1,6 +1,8 @@
+import csv
 import os
 import pickle
 import zipfile
+import numpy as np
 
 import gui.file_selection_window
 from dash_server import DashServer
@@ -31,7 +33,7 @@ class VisualizationWindow(QMainWindow):
             patient_data (PatientData): PatientData object
         """
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/visualization_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/visualization_window_design.ui", self)
         self.master_window = master_window
         # Maximize window to show the whole 3d reconstruction (necessary if visualization_data is imported)
         self.master_window.maximize()
@@ -47,6 +49,9 @@ class VisualizationWindow(QMainWindow):
         menu_button_3 = QAction("Download für Darstellung", self)
         menu_button_3.triggered.connect(self.__download_html_file)
         self.ui.menubar.addAction(menu_button_3)
+        menu_button_6 = QAction("CSV Metriken Download", self)
+        menu_button_6.triggered.connect(self.__download_csv_file)
+        self.ui.menubar.addAction(menu_button_6)
         menu_button_4 = QAction("Weitere Rekonstruktion einfügen", self)
         menu_button_4.triggered.connect(self.__extend_patient_data)
         self.ui.menubar.addAction(menu_button_4)
@@ -56,7 +61,6 @@ class VisualizationWindow(QMainWindow):
 
         # Create a DragWidget to layout the visualizations
         self.visualization_layout = DragWidget(orientation=Qt.Orientation.Horizontal)
-
 
         self.dash_servers = []  # List to store DashServer instances for cleanup
         self.web_views = []  # List to store QWebView instances for cleanup
@@ -79,7 +83,6 @@ class VisualizationWindow(QMainWindow):
 
         self.setCentralWidget(self.visualization_layout)
 
-
     def __menu_button_clicked(self):
         """
         Callback for the info-button
@@ -99,7 +102,6 @@ class VisualizationWindow(QMainWindow):
             web_view.close()
 
         event.accept()
-        
 
     def __set_progress(self, val):
         """
@@ -143,7 +145,8 @@ class VisualizationWindow(QMainWindow):
         button = QPushButton()
         button.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_TitleBarCloseButton')))
         button.setFixedSize(20, 20)
-        button.clicked.connect(lambda _, visit_name=visit_name, item=item: self.__delete_visualization(visit_name, item)) # Connect the button's clicked signal to the delete visualization method
+        button.clicked.connect(lambda _, visit_name=visit_name, item=item: self.__delete_visualization(visit_name,
+                                                                                                       item))  # Connect the button's clicked signal to the delete visualization method
         vbox.addWidget(button)
 
         # Create a new QWebEngineView for each visualization
@@ -158,13 +161,11 @@ class VisualizationWindow(QMainWindow):
         # Save the DashServer and QWebEngineView instances for cleanup later
         self.dash_servers.append(dash_server)
         self.web_views.append(web_view)
-    
 
     def __download_object_files(self):
         """
         Callback for the download button to save multiple VisualizationData objects as pickle files
         """
-
 
         # Prompt the user to choose a destination directory
         destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
@@ -189,14 +190,13 @@ class VisualizationWindow(QMainWindow):
                 f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
             )
 
-
     def __download_html_file(self):
         """
         Callback for the download button to store visible graphs as .html files with their current coloring
         """
         # Prompt the user to choose a destination path for the zip file
         destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "ZIP Files (*.zip)")
-        
+
         if destination_file_path:
             with zipfile.ZipFile(destination_file_path, 'w') as zip_file:
                 # Iterate over each visualization and export its HTML
@@ -214,6 +214,37 @@ class VisualizationWindow(QMainWindow):
         # Inform the user that the export is complete
         QMessageBox.information(self, "Export Complete", "HTML Dateien wurden erfolgreich als zip Datei exportiert.")
 
+    def __download_csv_file(self):
+
+        # Prompt the user to choose a destination path for the csv file
+        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "CSV Files (*.csv)")
+        print(destination_file_path)
+
+        if destination_file_path:
+            with open(destination_file_path, "w", newline="") as csv_file:
+                writer = csv.writer(csv_file)
+                writer.writerow(["Id", "Tubular Metric (Mean)", "Sphinkter Metric (Mean)", "Esophagus Length (cm)"])
+
+                # Todo: anpassen, dass Daten aus allen Thread heruntergeladen werden
+                for i, (name, visit_data) in enumerate(self.visits.items()):
+                    print(i)
+                    print(name)
+                    print(visit_data)
+
+                    if "." in name:
+                        visit_name = name.split(".")[0]
+                    else:
+                        visit_name = name
+
+                    tubular_metric = visit_data.visualization_data_list[i].figure_creator.get_metrics()[0]
+                    sphinkter_metric = visit_data.visualization_data_list[i].figure_creator.get_metrics()[1]
+                    esophagus_length = visit_data.visualization_data_list[i].figure_creator.get_esophagus_full_length_cm()
+
+                writer.writerow([visit_name, round(np.mean(tubular_metric),2), round(np.mean(sphinkter_metric),2), round(esophagus_length,2)])
+
+                # Inform the user that the export is complete
+        QMessageBox.information(self, "Export Complete",
+                                "csv Datei wurde erfolgreich exportiert.")
 
     def __extend_patient_data(self):
         """
@@ -228,7 +259,6 @@ class VisualizationWindow(QMainWindow):
             dash_server.stop()
         for web_view in self.web_views:
             web_view.close()
-
 
     def __reset_patient_data(self):
         """
@@ -246,7 +276,6 @@ class VisualizationWindow(QMainWindow):
             dash_server.stop()
         for web_view in self.web_views:
             web_view.close()
-        
 
     def __delete_visualization(self, visit_name, visit_item):
         """
@@ -269,12 +298,10 @@ class VisualizationWindow(QMainWindow):
             self.dash_servers.remove(dash_server)
 
         self.web_views.remove(web_view)  # Remove the QWebEngineView from the list
-        
 
         # Clean up the layout
         for i in reversed(range(visit_item.layout().count())):
             visit_item.layout().itemAt(i).widget().setParent(None)
-        
+
         # Clean patient_data
         self.patient_data.remove_visit(visit_name)
-

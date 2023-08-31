@@ -51,6 +51,13 @@ class FigureCreator(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_esophagus_full_length_cm(self):
+        """
+        returns the length of the esophagus in cm
+        """
+        pass
+
     @staticmethod
     def calculate_esophagus_length_px(sensor_path, start_index: int, end_index: tuple):
         """
@@ -212,7 +219,7 @@ class FigureCreator(ABC):
             # Calculate linear regression to get slope of esophagus segment
             model = LinearRegression()
             model.fit(x, y)
-            
+
             # Calculate perpendicular slope, use epsilon to avoid divisions by zero or values close to zero
             if model.coef_[0] == 0:
                 perpendicular_slope = -1 / (model.coef_[0] + 0.0001)
@@ -220,8 +227,8 @@ class FigureCreator(ABC):
                 perpendicular_slope = -1 / model.coef_[0]
 
             # If the esophagus shows a tight curve/bend, wrong slopes may be calculated (very steep perpendicular)-> in this case take the previous slope to skip the wrong one
-            if i > 1 and abs(perpendicular_slope)>30 and abs(perpendicular_slope / slopes[i-1]) > 50:
-                perpendicular_slope = slopes[i-1]
+            if i > 1 and abs(perpendicular_slope) > 30 and abs(perpendicular_slope / slopes[i - 1]) > 50:
+                perpendicular_slope = slopes[i - 1]
 
             slopes.append(perpendicular_slope)
 
@@ -230,7 +237,7 @@ class FigureCreator(ABC):
             # new_y                        y     + m               * (new_x - x)
             perpendicular_start_y = point[0] + perpendicular_slope * (0 - point[1])  # TODO: fix
             perpendicular_end_y = point[0] + perpendicular_slope * (
-                        visualization_data.xray_mask.shape[1] - 1 - point[1])
+                    visualization_data.xray_mask.shape[1] - 1 - point[1])
             perpendicular_start = (perpendicular_start_y, 0)
             perpendicular_end = (perpendicular_end_y, visualization_data.xray_mask.shape[1] - 1)
 
@@ -260,7 +267,8 @@ class FigureCreator(ABC):
             index_r = index
             point_along_line = perpendicular_points[index]
 
-            while visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0 and index_r < len(perpendicular_points) and index_l > 0:
+            while visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0 and index_r < len(
+                    perpendicular_points) and index_l > 0:
                 index_l = index_l - 1
                 point_along_line = perpendicular_points[index_l]
                 if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 1:
@@ -271,11 +279,11 @@ class FigureCreator(ABC):
                 if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 1:
                     index = index_r
                     break
-        
+
             boundary_1 = None
             boundary_2 = None
             # Move left and right from the current point along the perpendicular to find the boundaries
-            for j in range(len(perpendicular_points)-1):
+            for j in range(len(perpendicular_points) - 1):
                 # TODO: für die Lücken -> maybe weil der sensor_path an der Grenze lang läuft werden die boundaries hier komisch, siehe geplottete centers die an der Grenze entlang laufen
                 # Move "left" until boundary is found
                 if boundary_1 is None and (index - j) >= 0:
@@ -291,7 +299,7 @@ class FigureCreator(ABC):
                             boundary_1 = point_along_line
 
                 # Move "right" until boundary is found
-                if boundary_2 is None and (index + j) <= len(perpendicular_points)-1:
+                if boundary_2 is None and (index + j) <= len(perpendicular_points) - 1:
                     point_along_line = perpendicular_points[index + j]
                     # Check that point is within image
                     if point_along_line[0] >= 0 and point_along_line[1] >= 0 and point_along_line[0] < \
@@ -300,18 +308,19 @@ class FigureCreator(ABC):
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
                             boundary_2 = point_along_line
                         # Esophagus touches right image edge
-                        elif point_along_line[0] == visualization_data.xray_mask.shape[0]-1 or point_along_line[1] == visualization_data.xray_mask.shape[1]-1:
+                        elif point_along_line[0] == visualization_data.xray_mask.shape[0] - 1 or point_along_line[1] == \
+                                visualization_data.xray_mask.shape[1] - 1:
                             boundary_2 = point_along_line
 
             # Check if there are at least 2 boundary points 
             if boundary_1 is None or boundary_2 is None:
                 if i == 0:
                     # In very few cases the top is extremely tilted so that only one boundary can be found, in this case "fake" this point by creating a small width
-                    boundary_1 = (perpendicular_points[index][0] - 1,perpendicular_points[index][1] - 1)
-                    boundary_2 = (perpendicular_points[index][0] + 1,perpendicular_points[index][1] + 1)
+                    boundary_1 = (perpendicular_points[index][0] - 1, perpendicular_points[index][1] - 1)
+                    boundary_2 = (perpendicular_points[index][0] + 1, perpendicular_points[index][1] + 1)
                 else:
                     raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
-            
+
             # Step 2: Calculate Width
             # Calculate the distance between two boundary points
             width = np.linalg.norm(np.array(boundary_1) - np.array(boundary_2))
@@ -468,7 +477,7 @@ class FigureCreator(ABC):
         sphincter_length_px = visualization_data.sphincter_length_cm * cm_to_px_factor
 
         start_iterator = lower_sphincter_center
-        
+
         # Upper border index
         upper_border_index = 0
         current_length = 0
@@ -549,3 +558,6 @@ class FigureCreator(ABC):
                 metric_sphincter[j] += volume_slice / surfacecolor_list[j][i]
 
         return metric_tubular, metric_sphincter
+    # @staticmethod
+    # def save_metrics(surfacecolor_list, esophagus_full_length_cm, esophagus_full_length_px, metric_tubular, metric_sphincter):
+    #    max_pressure =
