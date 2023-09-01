@@ -218,7 +218,6 @@ class VisualizationWindow(QMainWindow):
 
         # Prompt the user to choose a destination path for the csv file
         destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "CSV Files (*.csv)")
-        print(destination_file_path)
 
         if destination_file_path:
             with open(destination_file_path, "w", newline="") as csv_file:
@@ -227,6 +226,7 @@ class VisualizationWindow(QMainWindow):
 
                 # Todo: anpassen, dass Daten aus allen Thread heruntergeladen werden
                 for i, (name, visit_data) in enumerate(self.visits.items()):
+                #for j, dash_server in enumerate(self.dash_servers):
                     print(i)
                     print(name)
                     print(visit_data)
@@ -236,11 +236,13 @@ class VisualizationWindow(QMainWindow):
                     else:
                         visit_name = name
 
-                    tubular_metric = visit_data.visualization_data_list[i].figure_creator.get_metrics()[0]
-                    sphinkter_metric = visit_data.visualization_data_list[i].figure_creator.get_metrics()[1]
-                    esophagus_length = visit_data.visualization_data_list[i].figure_creator.get_esophagus_full_length_cm()
+                    for j in range(len(visit_data.visualization_data_list)):
 
-                writer.writerow([visit_name, round(np.mean(tubular_metric),2), round(np.mean(sphinkter_metric),2), round(esophagus_length,2)])
+                        tubular_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[0]
+                        sphinkter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
+                        esophagus_length = visit_data.visualization_data_list[j].figure_creator.get_esophagus_full_length_cm()
+
+                    writer.writerow([visit_name, round(np.mean(tubular_metric),2), round(np.mean(sphinkter_metric),2), round(esophagus_length,2)])
 
                 # Inform the user that the export is complete
         QMessageBox.information(self, "Export Complete",
