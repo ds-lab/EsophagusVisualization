@@ -222,7 +222,8 @@ class VisualizationWindow(QMainWindow):
         if destination_file_path:
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
-                writer.writerow(["Id", "Tubular Metric (Mean)", "Sphinkter Metric (Mean)", "Esophagus Length (cm)"])
+                writer.writerow(["Id", "Tubular Metric (Mean)", "Sphinkter Metric (Mean)", "Volume Tubular",
+                                 "Volume Sphinkter", "Esophagus Length (cm)"])
 
                 for i, (name, visit_data) in enumerate(self.visits.items()):
 
@@ -235,9 +236,13 @@ class VisualizationWindow(QMainWindow):
 
                         tubular_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[0]
                         sphinkter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
+                        volume_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[2]
+                        volume_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[3]
                         esophagus_length = visit_data.visualization_data_list[j].figure_creator.get_esophagus_full_length_cm()
 
-                        writer.writerow([visit_name, round(np.mean(tubular_metric),2), round(np.mean(sphinkter_metric),2), round(esophagus_length,2)])
+                        writer.writerow([visit_name, round(np.mean(tubular_metric), 2),
+                                         round(np.mean(sphinkter_metric), 2),  round(np.mean(volume_tubular), 2),
+                                         round(np.mean(volume_sphinkter), 2), round(esophagus_length, 2)])
 
                 # Inform the user that the export is complete
         QMessageBox.information(self, "Export Complete",

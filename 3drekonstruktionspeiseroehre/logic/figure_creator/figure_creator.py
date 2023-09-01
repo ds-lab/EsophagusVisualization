@@ -540,24 +540,26 @@ class FigureCreator(ABC):
         # Calculate tubular metric between upper tubular boundary and upper lower sphincter boundary
         # Length accoding to frames in surfacecolor_list
         metric_tubular = np.zeros(len(surfacecolor_list))
+        volume_sum_tubular = 0
         for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
             # TODO: bisher war bei der Berechnung bei shapely_poly.area noch ein Faktor * px_as_cm, der aber eigentlich falsch ist an der Stelle, da x und y schon cm Werte sind, wie gehen wir damit um?
             volume_slice = shapely_poly.area
+            volume_sum_tubular = volume_sum_tubular + volume_slice
             for j in range(len(surfacecolor_list)):
                 # Calculate metric for frame and height
                 metric_tubular[j] += volume_slice * surfacecolor_list[j][i]
 
         # Calculate sphincter metric between upper and lower lower sphincter boundary
         metric_sphincter = np.zeros(len(surfacecolor_list))
+        volume_sum_sphincter = 0
         for i in range(lower_sphincter_boundary[0], lower_sphincter_boundary[1] + 1):
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
             volume_slice = shapely_poly.area
+            volume_sum_sphincter = volume_sum_sphincter + volume_slice
             for j in range(len(surfacecolor_list)):
                 # Calculate metric for frame and height
                 metric_sphincter[j] += volume_slice / surfacecolor_list[j][i]
 
-        return metric_tubular, metric_sphincter
-    # @staticmethod
-    # def save_metrics(surfacecolor_list, esophagus_full_length_cm, esophagus_full_length_px, metric_tubular, metric_sphincter):
-    #    max_pressure =
+        return metric_tubular, metric_sphincter, volume_sum_tubular, volume_sum_sphincter
+
