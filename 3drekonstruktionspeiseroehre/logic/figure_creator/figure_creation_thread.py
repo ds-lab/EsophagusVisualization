@@ -30,7 +30,11 @@ class FigureCreationThread(QThread):
         starts figure creation
         """
         for visualization_data in self.visit.visualization_data_list:
+            # a mask of the esophagus is created depending on user input on xray-images (xray_polygon) and appended to
+            # visualization_data.xray_mask
             mask = np.zeros((visualization_data.xray_image_height, visualization_data.xray_image_width))
+            # parameter for drawContours: outputArray, inputArray, contourIdx (-1 means all contours),
+            # color (1 means white), thickness (thickness -1 means the areas bounded by the contours is filled)
             cv2.drawContours(mask, [np.array(visualization_data.xray_polygon)], -1, 1, -1)
             visualization_data.xray_mask = mask
             self.progress_value.emit(50)

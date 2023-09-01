@@ -26,6 +26,7 @@ class VisualizationData:
         self._second_sensor_index = None
         self._endoscopy_start_pos = None
         self._sphincter_upper_pos = None
+        self._esophagus_exit_pos = None
         self._sphincter_length_cm = None
 
     @property
@@ -154,7 +155,17 @@ class VisualizationData:
 
     @sphincter_upper_pos.setter
     def sphincter_upper_pos(self, value):
+        # value is a x,y tuple
         self._sphincter_upper_pos = value
+
+    @property
+    def esophagus_exit_pos(self):
+        return self._esophagus_exit_pos
+
+    @esophagus_exit_pos.setter
+    def esophagus_exit_pos(self, value):
+        # value is a x,y tuple
+        self._esophagus_exit_pos = value
 
     @property
     def sphincter_length_cm(self):
