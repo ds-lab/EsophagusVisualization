@@ -561,5 +561,23 @@ class FigureCreator(ABC):
                 # Calculate metric for frame and height
                 metric_sphincter[j] += volume_slice / surfacecolor_list[j][i]
 
-        return metric_tubular, metric_sphincter, volume_sum_tubular, volume_sum_sphincter
+        # Calculate max pressure over timeline for lower_sphincter_center (lower_sphincter_center is the region
+        # with the max pressure in space)
+        # ToDo: Ist das so gewollt?
+        # ToDo: Kontrollieren ob i und j nicht vertauscht
 
+        max_pressure_sphincter = 0
+        for j in range(len(surfacecolor_list)):
+            if surfacecolor_list[j][lower_sphincter_center] > max_pressure_sphincter:
+                max_pressure_sphincter = surfacecolor_list[j][lower_sphincter_center]
+
+        # Calculate max pressure over time and space for tubular part of esophagus
+
+        max_pressure_tubular = 0
+        for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
+            for j in range(len(surfacecolor_list)):
+                if surfacecolor_list[j][i] > max_pressure_tubular:
+                    max_pressure_tubular = surfacecolor_list[j][i]
+
+        return metric_tubular, metric_sphincter, volume_sum_tubular, volume_sum_sphincter, \
+            max_pressure_tubular, max_pressure_sphincter
