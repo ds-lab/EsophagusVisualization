@@ -224,12 +224,7 @@ class VisualizationWindow(QMainWindow):
                 writer = csv.writer(csv_file)
                 writer.writerow(["Id", "Tubular Metric (Mean)", "Sphinkter Metric (Mean)", "Esophagus Length (cm)"])
 
-                # Todo: anpassen, dass Daten aus allen Thread heruntergeladen werden
                 for i, (name, visit_data) in enumerate(self.visits.items()):
-                #for j, dash_server in enumerate(self.dash_servers):
-                    print(i)
-                    print(name)
-                    print(visit_data)
 
                     if "." in name:
                         visit_name = name.split(".")[0]
@@ -242,7 +237,7 @@ class VisualizationWindow(QMainWindow):
                         sphinkter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
                         esophagus_length = visit_data.visualization_data_list[j].figure_creator.get_esophagus_full_length_cm()
 
-                    writer.writerow([visit_name, round(np.mean(tubular_metric),2), round(np.mean(sphinkter_metric),2), round(esophagus_length,2)])
+                        writer.writerow([visit_name, round(np.mean(tubular_metric),2), round(np.mean(sphinkter_metric),2), round(esophagus_length,2)])
 
                 # Inform the user that the export is complete
         QMessageBox.information(self, "Export Complete",
