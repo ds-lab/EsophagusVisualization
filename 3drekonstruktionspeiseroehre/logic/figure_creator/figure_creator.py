@@ -626,4 +626,37 @@ class FigureCreator(ABC):
             figure.update_layout(width=150, margin=dict(l=10, r=10, t=60, b=10), title="Endoflip")
             tables[agg] = figure
             endoflip_colors[agg] = color_30_40
-        return tables, endoflip_colors
+        return tables, [float(x) for x in cell_texts_30]
+
+    @staticmethod
+    def get_endoflip_surface_color(sensor_path, visualisation_data: VisualizationData, endoflip_colors, esophagus_full_length_cm, esophagus_full_length_px):
+        distance_cm = visualisation_data.endoflip_screenshot['30']['distance']
+
+        # Find index of endoflip_pos in sensorpath
+        _, null_pos_index = spatial.KDTree(np.array(sensor_path)).query(np.array(visualisation_data.endoflip_pos))
+
+        # Get stop criterion (endoflip measurement length = number_of_sensors*distance_between_sensors)
+        measurement_length_fraction = distance_cm * 16 / esophagus_full_length_cm
+        measurement_length_px = esophagus_full_length_px * measurement_length_fraction
+
+        # Color change criterion for each sensor
+        sensor_length_fraction = distance_cm / esophagus_full_length_cm
+        sensor_length_px =  esophagus_full_length_px * sensor_length_fraction
+
+        # Iterate over sensor_path
+        current_length = 0
+        endoflip_surface_color = []
+        color_index = 0
+        for i in range(len(sensor_path), -1, -1):
+            # Find endoflip section on esophagus
+            if i < null_pos_index and current_length < measurement_length_px:
+                current_length += np.sqrt((sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
+                                                                                              sensor_path[i + 1][
+                                                                                                  1]) ** 2)
+                endoflip_surface_color.append(endoflip_colors[len(endoflip_colors) - 1 - color_index])
+                if current_length >= sensor_length_px * (color_index+1):
+                    color_index += 1
+            elif current_length >= measurement_length_px or i >= null_pos_index:
+                endoflip_surface_color.append(0)
+        print(endoflip_surface_color[::-1])
+        return endoflip_surface_color[::-1]

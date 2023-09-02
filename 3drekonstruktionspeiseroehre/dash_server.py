@@ -179,7 +179,7 @@ class DashServer:
 
         self.dash_app.callback(Output('3d-figure', 'figure'),Input('3d-figure','figure'))(self.__get_current_figure_callback)
 
-        self.dash_app.callback([Output('pressure-control', 'style'), Output('endoflip-control', 'style'), Output('3d-figure', 'figure')], Input('pressure-or-endoflip','on'))(self.__toggle_pressure_endoflip)
+        self.dash_app.callback([Output('pressure-control', 'style'), Output('endoflip-control', 'style'), Output('3d-figure', 'figure')], [Input('pressure-or-endoflip','on'),Input('3d-figure', 'figure')])(self.__toggle_pressure_endoflip)
 
         self.dash_app.callback([Output('endoflip-table','figure'), Output('endoflip-table','style')], Input('endoflip-table-dropdown', 'value'))(self.__update_endoflip_table)
 
@@ -302,13 +302,15 @@ class DashServer:
         else:
             raise PreventUpdate
         
-    def __toggle_pressure_endoflip(self, on):
+    def __toggle_pressure_endoflip(self, on, figure):
         if not on:
-            # TODO: get current figure with surface_list
+            # TODO: get current figure with surfacecolor_list
             return {'min-height': '30px', 'display': 'flex', 'flex-direction': 'row'}, {'display': 'none', 'align-items': 'center'}, self.visit_figures[self.selected_figure_index]
         else:
-            # TODO: get endoflip colors
-            return {'min-height': '30px', 'display': 'none', 'flex-direction': 'row'}, {'display': 'flex', 'align-items': 'center'}, self.visit_figures[self.selected_figure_index]
+            new_color = self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_endoflip_surface_color()
+            figure = go.Figure(figure)
+            figure.data[0].surfacecolor = new_color
+            return {'min-height': '30px', 'display': 'none', 'flex-direction': 'row'}, {'display': 'flex', 'align-items': 'center'}, figure
         
     def __update_endoflip_table(self, chosen_agg):
         if chosen_agg == 'off':

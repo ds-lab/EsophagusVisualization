@@ -85,10 +85,10 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         # Create endoflip table if necessary
         if visualization_data.endoflip_screenshot:
             self.table_figures, self.endoflip_colors= FigureCreator.colored_vertical_endoflip_tables_and_colors(visualization_data.endoflip_screenshot)
+            self.endoflip_surface_color = FigureCreator.get_endoflip_surface_color(sensor_path, visualization_data, self.endoflip_colors, esophagus_full_length_cm, esophagus_full_length_px)
         else:
             self.table_figures = None
-            self. endoflip_colors = None
-
+            self.endoflip_surface_color = None
 
         # Calculate metrics
         self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
@@ -100,6 +100,9 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
     
     def get_endoflip_tables(self):
         return self.table_figures
+    
+    def get_endoflip_surface_color(self):
+        return self.endoflip_surface_color
 
     def get_surfacecolor_list(self):
         return self.surfacecolor_list
