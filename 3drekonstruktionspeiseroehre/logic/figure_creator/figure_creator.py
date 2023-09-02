@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from natsort import natsorted
+
 import config
 import numpy as np
 import plotly.graph_objects as go
@@ -9,7 +11,6 @@ from logic.visualization_data import VisualizationData
 from skimage import graph
 from sklearn.linear_model import LinearRegression
 from scipy import spatial
-import matplotlib.pyplot as plt
 
 
 class FigureCreator(ABC):
