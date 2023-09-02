@@ -29,6 +29,7 @@ class VisualizationData:
         self._sphincter_upper_pos = None
         self._esophagus_exit_pos = None
         self._sphincter_length_cm = None
+        self._endoflip_pos = None
 
     @property
     def xray_filename(self):
@@ -175,6 +176,15 @@ class VisualizationData:
     def esophagus_exit_pos(self, value):
         # value is a x,y tuple
         self._esophagus_exit_pos = value
+
+    @property
+    def endoflip_pos(self):
+        return self._endoflip_pos
+
+    @endoflip_pos.setter
+    def endoflip_pos(self, value):
+        # value is a x,y tuple
+        self._endoflip_pos = value
 
     @property
     def sphincter_length_cm(self):
