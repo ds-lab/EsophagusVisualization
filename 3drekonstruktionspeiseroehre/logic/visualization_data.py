@@ -17,6 +17,7 @@ class VisualizationData:
         self._endoscopy_image_positions_cm = None
 
         self._pressure_matrix = None
+        self._endoflip_screenshot = None
 
         self._figure_creator = None
 
@@ -76,6 +77,14 @@ class VisualizationData:
     @pressure_matrix.setter
     def pressure_matrix(self, value):
         self._pressure_matrix = value
+
+    @property
+    def endoflip_screenshot(self):
+        return self._endoflip_screenshot
+
+    @endoflip_screenshot.setter
+    def endoflip_screenshot(self, value):
+        self._endoflip_screenshot = value
 
     @property
     def endoscopy_filenames(self):

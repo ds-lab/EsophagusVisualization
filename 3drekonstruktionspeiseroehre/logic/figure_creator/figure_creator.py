@@ -358,7 +358,7 @@ class FigureCreator(ABC):
                        cmax=config.cmax)])
 
         figure.update_layout(scene=dict(aspectmode='data'), uirevision='constant',
-                             title=title, title_x=0, title_y=1,
+                             title=dict(text=title, font=dict(size=24)), title_x=0, title_y=1,
                              margin=dict(l=20, r=20, t=30, b=20), hovermode=False)
         figure.update_scenes(zaxis_autorange="reversed", xaxis_autorange="reversed", xaxis_title_text='Breite',
                              yaxis_title_text='Tiefe', zaxis_title_text='Länge')
@@ -582,3 +582,48 @@ class FigureCreator(ABC):
 
         return metric_tubular, metric_sphincter, volume_sum_tubular, volume_sum_sphincter, \
             max_pressure_tubular, max_pressure_sphincter
+
+
+    @staticmethod
+    def colored_vertical_endoflip_tables_and_colors(data):
+        tables = {}
+        endoflip_colors = {}
+        common_columns = natsorted(set(data['30']['aggregates'].keys()) & set(data['40']['aggregates'].keys()))
+        for agg in ['median','min','max','mean']:
+            cell_texts_30 = []
+            cell_texts_40 = []
+
+            # rainbow to visualize high/low diameters
+            colorscale = px.colors.sample_colorscale("jet", [(30-(n+1))/(30-1) for n in range(30)])
+
+            for column in common_columns:
+                # Get aggregated values for each dataset
+                agg_30 = data['30']['aggregates'][column][agg]
+                agg_40 = data['40']['aggregates'][column][agg]
+
+                cell_texts_30.append(f'{agg_30:.2f}')
+                cell_texts_40.append(f'{agg_40:.2f}')
+                
+
+            color_30_40 = [np.array(colorscale)[[int(float(x)) for x in cell_texts_30]], np.array(colorscale)[[int(float(x)) for x in cell_texts_40]]]
+
+            # Create a table with colored cells and text annotations
+            table = go.Table(
+                header=dict(values=['<b>30ml</b>', '<b>40ml</b>'], 
+                            line_color='white',
+                            fill_color='white', 
+                            font=dict(color='black', size=13)),
+                cells=dict(values=[cell_texts_30, 
+                                cell_texts_40], 
+                            fill_color=color_30_40,
+                            line_color=color_30_40,
+                            font=dict(color='white', size=11),
+                            height=20),
+                columnwidth=[1,1],
+            )
+
+            figure = go.Figure(data=[table])
+            figure.update_layout(width=150, margin=dict(l=10, r=10, t=60, b=10), title="Endoflip")
+            tables[agg] = figure
+            endoflip_colors[agg] = color_30_40
+        return tables, endoflip_colors

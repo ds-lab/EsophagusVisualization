@@ -1,15 +1,15 @@
-import os
 import socket
 
 import config
 import plotly.graph_objects as go
 import waitress
 from dash.exceptions import PreventUpdate
+import dash_daq as daq
+import dash_bootstrap_components as dbc
 from dash_extensions.enrich import (DashProxy, Input, MultiplexerTransform,
                                     Output, State, dcc, html, no_update)
 from kthread import KThread
 from logic.visit_data import VisitData
-from logic.visualization_data import VisualizationData
 from PyQt5.QtWidgets import QMessageBox
 
 
@@ -28,12 +28,22 @@ class DashServer:
         """
         self.visit = visit
         self.visit_figures = []
-        self.visit_figures_path = []
         self.selected_figure_index = 0
         for visualization_data in self.visit.visualization_data_list:
             self.visit_figures.append(visualization_data.figure_creator.get_figure())
-            self.visit_figures_path.append(visualization_data.xray_filename.split("/")[-1].split(".")[0])
         self.current_figure = self.visit_figures[0]
+
+        if self.visit.visualization_data_list[0].endoflip_screenshot:
+            endoflip_table_width = '150px'
+            show_pressure_endoflip_toggle = 'flex'
+            endoflip_element = dcc.Graph(
+                        id='endoflip-table',
+                        figure=self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()['median'],
+                        config={'modeBarButtonsToRemove': ['toImage'], 'displaylogo': False},className='mt-4',)
+        else:
+            endoflip_table_width = '0px'
+            show_pressure_endoflip_toggle = 'none'
+            endoflip_element = None
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_bound = False
@@ -50,7 +60,7 @@ class DashServer:
             QMessageBox.critical(None, "Fehler", "Keiner der in der Konfiguration angegebenen Ports ist verfügbar")
             return
 
-        self.dash_app = DashProxy(__name__, prevent_initial_callbacks=True, transforms=[MultiplexerTransform()])
+        self.dash_app = DashProxy(__name__, prevent_initial_callbacks=True, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP], transforms=[MultiplexerTransform()])
         self.dash_app.layout = html.Div([
             dcc.Interval(id='refresh-graph-interval', disabled=True,
                          interval=1000 / config.animation_frames_per_second),
@@ -58,25 +68,48 @@ class DashServer:
             dcc.Store(id='tubular-metric-store', data=self.visit.visualization_data_list[0].figure_creator.get_metrics()[0]),
             dcc.Store(id='sphincter-metric-store', data=self.visit.visualization_data_list[0].figure_creator.get_metrics()[1]),
 
-            dcc.Graph(
-                id='3d-figure',
-                figure=self.visit.visualization_data_list[0].figure_creator.get_figure(),
-                config={'modeBarButtonsToRemove': ['toImage', 'resetCameraLastSave3d'], 'displaylogo': False},
-                style={'height': 'calc(100vh - 110px)'}
-            ),
+        
+            html.Div([
+                html.Div([
+                    endoflip_element,
+                    html.H6("Aggregationsform auswählen"),
+                    dcc.Dropdown(
+                        id='endoflip-table-dropdown',
+                        options=[
+                            {'label': 'Median', 'value': 'median'},
+                            {'label': 'Mean', 'value': 'mean'},
+                            {'label': 'Minimum', 'value': 'min'},
+                            {'label': 'Maximum', 'value': 'max'},
+                            {'label': 'Ausblenden', 'value': 'off'}
+                        ],
+                        value='median'  # Default value
+                    ),   
+                ],style={'height': 'calc(100vh - 160px)','width':endoflip_table_width, 'display': 'inline-block', 'verticalAlign': 'top', 'minWidth':endoflip_table_width}),
+                dcc.Graph(
+                    id='3d-figure',
+                    figure=self.visit.visualization_data_list[0].figure_creator.get_figure(),
+                    config={'modeBarButtonsToRemove': ['toImage','resetCameraLastSave3d'], 'displaylogo': False},
+                    style={'height': 'calc(100vh - 160px)', 'width':f'calc(100% - {endoflip_table_width})', 'display': 'inline-block', 'minWidth':f'calc(100% - {endoflip_table_width})'}
+                ),]),
 
-            dcc.RadioItems(
+            dbc.RadioItems(
                 id='figure-selector',
-                options=[{'label':  f'Breischluck {self.visit_figures_path[i]}  ', 'value': i} for i in range(len(self.visit_figures))],
+                options=[{'label':  f'Breischluck {i+1}  ', 'value': i} for i in range(len(self.visit_figures))],
                 value=0,
                 inline=True,
                 className="mb-1"
             ),
 
             html.Div([
+                html.Div('Manometrie-Daten', style={'float': 'left', 'padding-left': '10px'}),
+                daq.BooleanSwitch(id='pressure-or-endoflip', on=False), # False is Manometrie, True is Endoflip
+                html.Div('Endoflip-Daten', style={'float': 'right', 'padding-right': '10px'}),
+            ], style={'display': show_pressure_endoflip_toggle, 'align-items': 'center', 'padding-bottom': '5px'}),
+
+            html.Div([
                 html.Div([
                     html.Div(
-                        html.Button('Animation starten', id='play-button', n_clicks=0),
+                        dbc.Button('Animation starten', id='play-button', n_clicks=0),
                         style={'min-width': '130px', 'vertical-align': 'top', 'display': 'inline-block'}),
                     html.Div(
                         dcc.Slider(
@@ -86,15 +119,23 @@ class DashServer:
                             value=0,
                             marks=None,
                             id='time-slider',
-                            updatemode='drag'
+                            updatemode='drag',
+                            className='mt-2'
                         ),
-                        style={'vertical-align': 'top', 'flex': '1 0 auto', 'display': 'inline-block'}
+                        style={'vertical-aling':'middle','align-items':'center', 'flex': '1 0 auto', 'display': 'inline-block'}
                     ),
                     html.Div(
                         id='time-field', children=' Zeitpunkt: 0.00s',
-                        style={'min-width': '170px', 'vertical-align': 'top', 'display': 'inline-block'}
+                        style={'min-width': '170px', 'display': 'inline-block'}
                     )
-                ], style={'min-height': '30px', 'display': 'flex', 'flex-direction': 'row'}),
+                ], style={'min-height': '30px', 'display': 'flex', 'align-items': 'center', 'flex-direction': 'row'}, id='pressure-control'),
+
+                html.Div([
+                    html.Div('30ml', style={'float': 'left', 'padding-left': '10px'}),
+                    daq.BooleanSwitch(id='30-or-40', on=False), # False is 30, True is 40
+                    html.Div('40ml',  style={'float': 'right', 'padding-right': '10px'}),
+                ], style={'min-height': '30px', 'display': 'none', 'align-items': 'center', 'padding-bottom':'5px'}, id='endoflip-control'),
+
                 html.Div(
                     id='metrics',
                     children="Metriken: tubulärer Abschnitt (" + str(config.length_tubular_part_cm) +
@@ -104,23 +145,25 @@ class DashServer:
                 ),
             ])
 
-        ], style={'height': '100vh'})
+        ], className='m-2', style={'height': '100%'})
 
         self.dash_app.clientside_callback(
             """
-            function(time, index, figure, colors, tubular_metric, sphincter_metric) {
+            function(time, index, figure, colors, tubular_metric, sphincter_metric, endoflip_on) {
                 var expandedColors = [];
-                for (var i = 0; i < colors[time].length; i++) {
-                    expandedColors[i] = new Array(""" + str(config.figure_number_of_angles) + """).fill(colors[time][i]);
+                if (!endoflip_on && colors !== null && colors[time] !== undefined && Array.isArray(colors[time])) {
+                    for (var i = 0; i < colors[time].length; i++) {
+                        expandedColors[i] = new Array(""" + str(config.figure_number_of_angles) + """).fill(colors[time][i]);
+                        }
+                        new_figure = {...figure};
+                        new_figure.data[0].surfacecolor = expandedColors;
+                        return [new_figure, 
+                                "Zeitpunkt: " + (time/20).toFixed(2) + "s", 
+                                "Metriken: tubulärer Abschnitt (""" + str(config.length_tubular_part_cm) + """cm) [Volumen*Druck]: " 
+                                + tubular_metric[time].toFixed(2) + "; unterer Sphinkter (""" +
+                                str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """cm) [Volumen/Druck]: " + sphincter_metric[time].toFixed(5)];
                     }
-                    new_figure = {...figure};
-                    new_figure.data[0].surfacecolor = expandedColors;
-                    return [new_figure, 
-                            "Zeitpunkt: " + (time/20).toFixed(2) + "s", 
-                            "Metriken: tubulärer Abschnitt (""" + str(config.length_tubular_part_cm) + """cm) [Volumen*Druck]: " 
-                            + tubular_metric[time].toFixed(2) + "; unterer Sphinkter (""" +
-                            str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """cm) [Volumen/Druck]: " + sphincter_metric[time].toFixed(5)];
-                }
+                }    
                 """,
             [Output('3d-figure', 'figure'),
              Output('time-field', 'children'),
@@ -130,10 +173,15 @@ class DashServer:
             Input('3d-figure', 'figure')],
             [State("color-store", "data"),
              State("tubular-metric-store", "data"),
-             State("sphincter-metric-store", "data"),]
+             State("sphincter-metric-store", "data"), 
+             State('pressure-or-endoflip','on')]
         )
 
         self.dash_app.callback(Output('3d-figure', 'figure'),Input('3d-figure','figure'))(self.__get_current_figure_callback)
+
+        self.dash_app.callback([Output('pressure-control', 'style'), Output('endoflip-control', 'style'), Output('3d-figure', 'figure')], Input('pressure-or-endoflip','on'))(self.__toggle_pressure_endoflip)
+
+        self.dash_app.callback([Output('endoflip-table','figure'), Output('endoflip-table','style')], Input('endoflip-table-dropdown', 'value'))(self.__update_endoflip_table)
 
         self.dash_app.callback([Output('refresh-graph-interval', 'disabled'),
                                 Output('play-button', 'children'),
@@ -253,3 +301,17 @@ class DashServer:
                              "cm) [Volumen/Druck]: " + str(round(self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1][0], 5))]
         else:
             raise PreventUpdate
+        
+    def __toggle_pressure_endoflip(self, on):
+        if not on:
+            # TODO: get current figure with surface_list
+            return {'min-height': '30px', 'display': 'flex', 'flex-direction': 'row'}, {'display': 'none', 'align-items': 'center'}, self.visit_figures[self.selected_figure_index]
+        else:
+            # TODO: get endoflip colors
+            return {'min-height': '30px', 'display': 'none', 'flex-direction': 'row'}, {'display': 'flex', 'align-items': 'center'}, self.visit_figures[self.selected_figure_index]
+        
+    def __update_endoflip_table(self, chosen_agg):
+        if chosen_agg == 'off':
+            return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()['median'], {'display':'none'}
+        else:
+            return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()[chosen_agg], {'display':'block'}

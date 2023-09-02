@@ -147,6 +147,13 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         # create figure
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
                                                   '3D-Ansicht aus Röntgen-, Endoskopie- und Manometriedaten')
+        
+        # Create endoflip table if necessary
+        if visualization_data.endoflip_screenshot:
+            self.table_figures, self.endoflip_colors= FigureCreator.colored_vertical_endoflip_tables_and_colors(visualization_data.endoflip_screenshot)
+        else:
+            self.table_figures = None
+            self. endoflip_colors = None
 
         # calculate metrics
         self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
@@ -158,6 +165,9 @@ class FigureCreatorWithEndoscopy(FigureCreator):
 
     def get_figure(self):
         return self.figure
+
+    def get_endoflip_tables(self):
+        return self.table_figures
 
     def get_surfacecolor_list(self):
         return self.surfacecolor_list

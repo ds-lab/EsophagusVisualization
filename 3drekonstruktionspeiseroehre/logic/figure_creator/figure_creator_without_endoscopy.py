@@ -82,15 +82,24 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         self.esophagus_length_cm = FigureCreator.calculate_esophagus_full_length_cm(
             sensor_path, esophagus_full_length_px, visualization_data, offset_top)
 
-        # calculate metrics
-        # TODO: todo correct centers usage
-        # TODO: manchmal sind lücken in der 3d ansicht -> damit richtig umgehen -> schwellenwert für kreisgröße oder so
+        # Create endoflip table if necessary
+        if visualization_data.endoflip_screenshot:
+            self.table_figures, self.endoflip_colors= FigureCreator.colored_vertical_endoflip_tables_and_colors(visualization_data.endoflip_screenshot)
+        else:
+            self.table_figures = None
+            self. endoflip_colors = None
+
+
+        # Calculate metrics
         self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
                                                        len(centers) - 1, esophagus_full_length_cm,
                                                        esophagus_full_length_px)
 
     def get_figure(self):
         return self.figure
+    
+    def get_endoflip_tables(self):
+        return self.table_figures
 
     def get_surfacecolor_list(self):
         return self.surfacecolor_list
