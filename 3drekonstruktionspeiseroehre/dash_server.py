@@ -8,6 +8,7 @@ import dash_daq as daq
 import dash_bootstrap_components as dbc
 from dash_extensions.enrich import (DashProxy, Input, MultiplexerTransform,
                                     Output, State, dcc, html, no_update)
+import plotly.express as px
 from kthread import KThread
 from logic.visit_data import VisitData
 from PyQt5.QtWidgets import QMessageBox
@@ -157,6 +158,9 @@ class DashServer:
                         }
                         new_figure = {...figure};
                         new_figure.data[0].surfacecolor = expandedColors;
+                        new_figure.data[0].colorscale = """ + str(config.colorscale) + """;
+                        new_figure.data[0].cmin=""" + str(config.cmin) + """;
+                        new_figure.data[0].cmax=""" + str(config.cmax) + """;
                         return [new_figure, 
                                 "Zeitpunkt: " + (time/20).toFixed(2) + "s", 
                                 "Metriken: tubulärer Abschnitt (""" + str(config.length_tubular_part_cm) + """cm) [Volumen*Druck]: " 
@@ -304,12 +308,18 @@ class DashServer:
         
     def __toggle_pressure_endoflip(self, on, figure):
         if not on:
-            # TODO: get current figure with surfacecolor_list
+            # Surface color is changed back to pressure values automatically due to animation
             return {'min-height': '30px', 'display': 'flex', 'flex-direction': 'row'}, {'display': 'none', 'align-items': 'center'}, self.visit_figures[self.selected_figure_index]
         else:
-            new_color = self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_endoflip_surface_color()
+            # Get endoflip surfacecolors
+            endoflip_color = self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_endoflip_surface_color()
+            expandedColors = [[endoflip_color[i] for _ in range(config.figure_number_of_angles)] for i in range(len(endoflip_color))]
             figure = go.Figure(figure)
-            figure.data[0].surfacecolor = new_color
+            figure.data[0].surfacecolor = expandedColors
+            figure.data[0].colorscale = px.colors.sample_colorscale("jet", [(30-(n+1))/(30-1) for n in range(30)])
+            figure.data[0].cmin= 0
+            figure.data[0].cmax= 30
+            
             return {'min-height': '30px', 'display': 'none', 'flex-direction': 'row'}, {'display': 'flex', 'align-items': 'center'}, figure
         
     def __update_endoflip_table(self, chosen_agg):
