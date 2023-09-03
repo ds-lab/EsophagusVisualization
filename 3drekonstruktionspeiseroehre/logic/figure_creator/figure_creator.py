@@ -647,16 +647,27 @@ class FigureCreator(ABC):
         current_length = 0
         endoflip_surface_color = []
         color_index = 0
-        for i in range(len(sensor_path), -1, -1):
+        for i in range(len(sensor_path)-1, -1, -1):
             # Find endoflip section on esophagus
             if i < null_pos_index and current_length < measurement_length_px:
                 current_length += np.sqrt((sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
                                                                                               sensor_path[i + 1][
                                                                                                   1]) ** 2)
-                endoflip_surface_color.append(endoflip_colors[len(endoflip_colors) - 1 - color_index])
+                # Append appropriate color for endoflip sensor
+                current_sensor = endoflip_colors[len(endoflip_colors) - 1 - color_index]
+                next_sensor = endoflip_colors[len(endoflip_colors) - 2 - color_index]
+                # Smooth color transition
+                endoflip_value = current_sensor + (next_sensor - current_sensor) * (
+                                (current_length - sensor_length_px * (color_index)) / (
+                                sensor_length_px * (color_index+1) -
+                                sensor_length_px * (color_index)))
+                endoflip_surface_color.append(endoflip_value)
+                
                 if current_length >= sensor_length_px * (color_index+1):
                     color_index += 1
             elif current_length >= measurement_length_px or i >= null_pos_index:
-                endoflip_surface_color.append(0)
+                # Outside of endoflip section, add high value to simulate None values
+                endoflip_surface_color.append(40)
         print(endoflip_surface_color[::-1])
+        # Reverse colors because the color list was created in reverse
         return endoflip_surface_color[::-1]
