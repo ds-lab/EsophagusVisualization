@@ -625,11 +625,10 @@ class FigureCreator(ABC):
             figure = go.Figure(data=[table])
             figure.update_layout(width=150, margin=dict(l=10, r=10, t=60, b=10), title="Endoflip")
             tables[agg] = figure
-            endoflip_colors[agg] = color_30_40
-        return tables, [float(x) for x in cell_texts_30]
+        return tables
 
     @staticmethod
-    def get_endoflip_surface_color(sensor_path, visualisation_data: VisualizationData, endoflip_colors, esophagus_full_length_cm, esophagus_full_length_px):
+    def get_endoflip_surface_color(sensor_path, visualisation_data: VisualizationData, esophagus_full_length_cm, esophagus_full_length_px):
         distance_cm = visualisation_data.endoflip_screenshot['30']['distance']
 
         # Find index of endoflip_pos in sensorpath
@@ -643,31 +642,48 @@ class FigureCreator(ABC):
         sensor_length_fraction = distance_cm / esophagus_full_length_cm
         sensor_length_px =  esophagus_full_length_px * sensor_length_fraction
 
-        # Iterate over sensor_path
-        current_length = 0
-        endoflip_surface_color = []
-        color_index = 0
-        for i in range(len(sensor_path)-1, -1, -1):
-            # Find endoflip section on esophagus
-            if i < null_pos_index and current_length < measurement_length_px:
-                current_length += np.sqrt((sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
-                                                                                              sensor_path[i + 1][
-                                                                                                  1]) ** 2)
-                # Append appropriate color for endoflip sensor
-                current_sensor = endoflip_colors[len(endoflip_colors) - 1 - color_index]
-                next_sensor = endoflip_colors[len(endoflip_colors) - 2 - color_index]
-                # Smooth color transition
-                endoflip_value = current_sensor + (next_sensor - current_sensor) * (
-                                (current_length - sensor_length_px * (color_index)) / (
-                                sensor_length_px * (color_index+1) -
-                                sensor_length_px * (color_index)))
-                endoflip_surface_color.append(endoflip_value)
-                
-                if current_length >= sensor_length_px * (color_index+1):
-                    color_index += 1
-            elif current_length >= measurement_length_px or i >= null_pos_index:
-                # Outside of endoflip section, add high value to simulate None values
-                endoflip_surface_color.append(40)
-        print(endoflip_surface_color[::-1])
-        # Reverse colors because the color list was created in reverse
-        return endoflip_surface_color[::-1]
+        surface_color_collect = {}
+
+        # Get ballon_volume 30 and 40
+        for ballon_volume in visualisation_data.endoflip_screenshot:
+            bv_color_collect = {}
+
+            # Iterate over the aggregate rows of the pandas dataframe
+            for agg, row_data in visualisation_data.endoflip_screenshot[ballon_volume]['aggregates'].iterrows():
+                endoflip_colors = row_data
+
+                # Iterate over sensor_path
+                current_length = 0
+                endoflip_surface_color = []
+                color_index = 0
+
+                for i in range(len(sensor_path)-1, -1, -1):
+                    # Find endoflip section on esophagus
+                    if i < null_pos_index and current_length < measurement_length_px:
+                        current_length += np.sqrt((sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
+                                                                                                    sensor_path[i + 1][
+                                                                                                        1]) ** 2)
+                        # Append appropriate color for endoflip sensor
+                        current_sensor = endoflip_colors[len(endoflip_colors) - 1 - color_index]
+                        next_sensor = endoflip_colors[len(endoflip_colors) - 2 - color_index]
+                        # Smooth color transition
+                        endoflip_value = current_sensor + (next_sensor - current_sensor) * (
+                                        (current_length - sensor_length_px * (color_index)) / (
+                                        sensor_length_px * (color_index+1) -
+                                        sensor_length_px * (color_index)))
+                        endoflip_surface_color.append(endoflip_value)
+
+                        # Check if the next endoflip sensor has been reached 
+                        if current_length >= sensor_length_px * (color_index+1):
+                            color_index += 1
+
+                    elif current_length >= measurement_length_px or i >= null_pos_index:
+                        # Outside of endoflip section, add high value to simulate None values
+                        endoflip_surface_color.append(40)
+
+                # Reverse colors because the color list was created in reverse
+                bv_color_collect[agg] = endoflip_surface_color[::-1]
+            # Append all colors per aggregation per current ballon_volume
+            surface_color_collect[ballon_volume] = bv_color_collect
+        
+        return surface_color_collect

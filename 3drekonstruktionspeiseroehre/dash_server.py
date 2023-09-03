@@ -183,7 +183,13 @@ class DashServer:
 
         self.dash_app.callback(Output('3d-figure', 'figure'),Input('3d-figure','figure'))(self.__get_current_figure_callback)
 
-        self.dash_app.callback([Output('pressure-control', 'style'), Output('endoflip-control', 'style'), Output('3d-figure', 'figure')], [Input('pressure-or-endoflip','on'),Input('3d-figure', 'figure')])(self.__toggle_pressure_endoflip)
+        self.dash_app.callback([Output('pressure-control', 'style'), 
+                                Output('endoflip-control', 'style'), 
+                                Output('3d-figure', 'figure')], 
+                                [Input('pressure-or-endoflip','on'),
+                                 Input('3d-figure', 'figure')],
+                                 Input('endoflip-table-dropdown', 'value'),
+                                 Input('30-or-40', 'on'))(self.__toggle_pressure_endoflip)
 
         self.dash_app.callback([Output('endoflip-table','figure'), Output('endoflip-table','style')], Input('endoflip-table-dropdown', 'value'))(self.__update_endoflip_table)
 
@@ -306,13 +312,13 @@ class DashServer:
         else:
             raise PreventUpdate
         
-    def __toggle_pressure_endoflip(self, on, figure):
-        if not on:
+    def __toggle_pressure_endoflip(self, endoflip_selected, figure, aggregate_function, ballon_volume):
+        if not endoflip_selected:
             # Surface color is changed back to pressure values automatically due to animation
             return {'min-height': '30px', 'display': 'flex', 'flex-direction': 'row'}, {'display': 'none', 'align-items': 'center'}, self.visit_figures[self.selected_figure_index]
         else:
             # Get endoflip surfacecolors
-            endoflip_color = self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_endoflip_surface_color()
+            endoflip_color = self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_endoflip_surface_color('40' if ballon_volume else '30', aggregate_function)
             expandedColors = [[endoflip_color[i] for _ in range(config.figure_number_of_angles)] for i in range(len(endoflip_color))]
             figure = go.Figure(figure)
             figure.data[0].surfacecolor = expandedColors
