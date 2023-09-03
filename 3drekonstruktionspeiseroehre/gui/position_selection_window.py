@@ -24,7 +24,7 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
         self.visualization_data = visit.visualization_data_list[n]
@@ -78,9 +78,9 @@ class PositionSelectionWindow(QMainWindow):
             self.plot_ax.imshow(self.xray_image)
             self.plot_ax.axis('off')
             if self.active_paint_index == 0:
-                self.first_sensor_pos = event.ydata
+                self.first_sensor_pos = (event.xdata, event.ydata)
             elif self.active_paint_index == 1:
-                self.second_sensor_pos = event.ydata
+                self.second_sensor_pos = (event.xdata, event.ydata)
             elif self.active_paint_index == 2:
                 self.endoscopy_pos = (event.xdata, event.ydata)
             elif self.active_paint_index == 3:
@@ -89,9 +89,11 @@ class PositionSelectionWindow(QMainWindow):
                 self.esophagus_exit_pos = (event.xdata, event.ydata)
 
             if self.first_sensor_pos:
-                self.plot_ax.axhline(self.first_sensor_pos, color='green')
+                point = Circle(self.first_sensor_pos, 4.0, color='green')
+                self.plot_ax.add_patch(point)
             if self.second_sensor_pos:
-                self.plot_ax.axhline(self.second_sensor_pos, color='blue')
+                point = Circle(self.second_sensor_pos, 4.0, color='blue')
+                self.plot_ax.add_patch(point)
             if self.endoscopy_pos:
                 point = Circle(self.endoscopy_pos, 4.0, color='red')
                 self.plot_ax.add_patch(point)
@@ -115,14 +117,14 @@ class PositionSelectionWindow(QMainWindow):
                         self.ui.apply_button.setDisabled(True)
                         offset = min([point[1] for point in self.visualization_data.xray_polygon])
                         if self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex():
-                            self.visualization_data.first_sensor_pos = int(self.first_sensor_pos - offset)
+                            self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1] - offset))
                             self.visualization_data.first_sensor_index = self.ui.first_combobox.currentIndex()
-                            self.visualization_data.second_sensor_pos = int(self.second_sensor_pos - offset)
+                            self.visualization_data.second_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1] - offset))
                             self.visualization_data.second_sensor_index = self.ui.second_combobox.currentIndex()
                         else:
-                            self.visualization_data.first_sensor_pos = int(self.second_sensor_pos - offset)
+                            self.visualization_data.first_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1] - offset))
                             self.visualization_data.first_sensor_index = self.ui.second_combobox.currentIndex()
-                            self.visualization_data.second_sensor_pos = int(self.first_sensor_pos - offset)
+                            self.visualization_data.second_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1] - offset))
                             self.visualization_data.second_sensor_index = self.ui.first_combobox.currentIndex()
                         self.visualization_data.sphincter_upper_pos = (
                             int(self.sphincter_upper_pos[0]), int(self.sphincter_upper_pos[1] - offset))
@@ -196,9 +198,9 @@ class PositionSelectionWindow(QMainWindow):
         :return: True or False
         """
         return (self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex()
-                and self.first_sensor_pos > self.second_sensor_pos) \
+                and self.first_sensor_pos[1] > self.second_sensor_pos[1]) \
             or (self.ui.first_combobox.currentIndex() < self.ui.second_combobox.currentIndex()
-                and self.first_sensor_pos < self.second_sensor_pos)
+                and self.first_sensor_pos[1] < self.second_sensor_pos[1])
 
     def __is_any_position_outside_polygon(self):
         """
@@ -207,8 +209,8 @@ class PositionSelectionWindow(QMainWindow):
         """
         poly_y_min = min([point[1] for point in self.visualization_data.xray_polygon])
         poly_y_max = max([point[1] for point in self.visualization_data.xray_polygon])
-        # ToDo: Check für endoscopy_pos anpassen
-        return self.first_sensor_pos < poly_y_min or self.first_sensor_pos > poly_y_max \
-            or self.second_sensor_pos < poly_y_min or self.second_sensor_pos > poly_y_max \
+        # ToDo: Checks evtl noch anpassen
+        return self.first_sensor_pos[1] < poly_y_min or self.first_sensor_pos[1] > poly_y_max \
+            or self.second_sensor_pos[1] < poly_y_min or self.second_sensor_pos[1] > poly_y_max \
             or (len(self.visualization_data.endoscopy_filenames) > 0 and (self.endoscopy_pos[1] < poly_y_min
                                                                           or self.endoscopy_pos[1] > poly_y_max))

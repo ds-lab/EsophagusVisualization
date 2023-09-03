@@ -68,6 +68,7 @@ class FigureCreator(ABC):
         :return: length in pixels
         """
         path_length_px = 0
+        # ToDo: noch anpassen
         for i in range(0, len(sensor_path)):
             if i > 0 and sensor_path[i - 1][0] >= start_index:
                 # Add euklidean distance of the previous point and the current one, [0] corresponds to the y-axis
@@ -94,18 +95,36 @@ class FigureCreator(ABC):
         second_sensor_cm = config.coords_sensors[visualization_data.second_sensor_index]
 
         # Find the first point on the sensor_path that matches the y-value of the first sensor position
-        endpoint = next(
-            (point for point in sensor_path if int(point[0]) == int(visualization_data.first_sensor_pos - offset_top)),
-            None)
+        # endpoint = next(
+        #     (point for point in sensor_path if int(point[0]) == int(visualization_data.first_sensor_pos - offset_top)),
+        #     None)
+
+        _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(visualization_data.first_sensor_pos))
+
+        _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(visualization_data.second_sensor_pos))
+
+        print(f"index_first: {index_first}")
+        print(f"index_second: {index_second}")
+        print(f"sensor path: {sensor_path}")
 
         # Calculate segement length to find out centimeter to pixel ratio
-        length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, visualization_data.second_sensor_pos -
-                                                                   offset_top, endpoint)
+        # length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, sensor_path[index_second],
+        #                                                            sensor_path[index_first])
+
+        path_length_px = 0
+        for i in range(index_second, index_first):
+            # Add euklidean distance of the previous point and the current one, [0] corresponds to the y-axis
+            print(f"sensor path i: {sensor_path[i]}")
+            print(f"sensor path i[0]: {sensor_path[i][0]}")
+            print(f"sensor path i[1]: {sensor_path[i][1]}")
+            path_length_px += np.sqrt(
+                (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
+            print(f"path length: {path_length_px}")
 
         length_cm = first_sensor_cm - second_sensor_cm
 
         # Calculate centimeter length using ratio and full pixel length
-        return length_cm * (esophagus_full_length_px / length_pixel)
+        return length_cm * (esophagus_full_length_px / path_length_px)
 
     @staticmethod
     def calculate_surfacecolor_list(sensor_path, visualization_data, esophagus_full_length_px, esophagus_full_length_cm,
