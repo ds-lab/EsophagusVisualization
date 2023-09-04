@@ -99,13 +99,20 @@ class FigureCreator(ABC):
         #     (point for point in sensor_path if int(point[0]) == int(visualization_data.first_sensor_pos - offset_top)),
         #     None)
 
-        _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(visualization_data.first_sensor_pos))
+        first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
+        second_sensor_pos_switched = (visualization_data.second_sensor_pos[1], visualization_data.second_sensor_pos[0])
 
-        _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(visualization_data.second_sensor_pos))
+        _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
+
+        _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(second_sensor_pos_switched))
 
         print(f"index_first: {index_first}")
         print(f"index_second: {index_second}")
+        print(f"first sensor pos: {visualization_data.first_sensor_pos}")
+        print(f"second sensor pos: {visualization_data.second_sensor_pos}")
         print(f"sensor path: {sensor_path}")
+        print(f"sensor path index first: {sensor_path[index_first]}")
+        print(f"sensor path index second: {sensor_path[index_second]}")
 
         # Calculate segement length to find out centimeter to pixel ratio
         # length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, sensor_path[index_second],
@@ -120,6 +127,10 @@ class FigureCreator(ABC):
             path_length_px += np.sqrt(
                 (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
             print(f"path length: {path_length_px}")
+            print(f"sensor path first index 1: {sensor_path[index_first][1]}")
+            print(f"sensor path first index 0: {sensor_path[index_first][0]}")
+            if i == index_first:
+                break
 
         length_cm = first_sensor_cm - second_sensor_cm
 
@@ -143,7 +154,8 @@ class FigureCreator(ABC):
         # Path length from top for first sensor
         first_sensor_path_length_px = 0
         for i in range(0, len(sensor_path)):
-            if visualization_data.first_sensor_pos - offset_top == sensor_path[i][0]:
+            #ToDo: Abbruchkritierium -> für welche Bereiche werden Farben berechnet?
+            if visualization_data.first_sensor_pos[1] - offset_top == sensor_path[i][0]:
                 break
             if i > 0:
                 first_sensor_path_length_px += np.sqrt(
