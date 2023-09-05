@@ -53,7 +53,7 @@ class PositionSelectionWindow(QMainWindow):
         if self.visualization_data.endoflip_screenshot:
             self.ui.endoflip_button.clicked.connect(self.__endoflip_button_clicked)
         else:
-            self.ui.endoflip_button.setHidden(True)
+            self.ui.endoflip_groupbox.setHidden(True)
 
         self.figure_canvas = FigureCanvasQTAgg(Figure())
         self.ui.gridLayout.addWidget(self.figure_canvas)
@@ -79,7 +79,6 @@ class PositionSelectionWindow(QMainWindow):
         handles left-click on image
         :param event:
         """
-        # TODO: second und sphincter Punkte mit x und y übergeben und ax line nehmen 
         if event.xdata and event.ydata and self.active_paint_index is not None:
             self.plot_ax.clear()
             self.plot_ax.imshow(self.xray_image)
@@ -209,7 +208,7 @@ class PositionSelectionWindow(QMainWindow):
         """
         return self.first_sensor_pos and self.second_sensor_pos and self.sphincter_upper_pos and self.esophagus_exit_pos \
             and (self.endoscopy_pos or len(self.visualization_data.endoscopy_filenames) == 0) \
-            and (self.endoflip_pos or self.visualization_data.endoflip_screenshot)       
+            and (self.endoflip_pos or self.visualization_data.endoflip_screenshot == None)       
     
     def __is_sensor_order_correct(self):
         """

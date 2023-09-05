@@ -587,8 +587,9 @@ class FigureCreator(ABC):
     @staticmethod
     def colored_vertical_endoflip_tables_and_colors(data):
         tables = {}
-        endoflip_colors = {}
         common_columns = natsorted(set(data['30']['aggregates'].keys()) & set(data['40']['aggregates'].keys()))
+        # Reverse List because P16 is on top and P1 is at the bottom
+        common_columns = common_columns[::-1]
         for agg in ['median','min','max','mean']:
             cell_texts_30 = []
             cell_texts_40 = []
@@ -659,13 +660,13 @@ class FigureCreator(ABC):
 
                 for i in range(len(sensor_path)-1, -1, -1):
                     # Find endoflip section on esophagus
-                    if i < null_pos_index and current_length < measurement_length_px:
+                    if i < null_pos_index and current_length < measurement_length_px and color_index + 1 < len(endoflip_colors):
                         current_length += np.sqrt((sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
                                                                                                     sensor_path[i + 1][
                                                                                                         1]) ** 2)
                         # Append appropriate color for endoflip sensor
-                        current_sensor = endoflip_colors[len(endoflip_colors) - 1 - color_index]
-                        next_sensor = endoflip_colors[len(endoflip_colors) - 2 - color_index]
+                        current_sensor = endoflip_colors[color_index]
+                        next_sensor = endoflip_colors[color_index + 1]
                         # Smooth color transition
                         endoflip_value = current_sensor + (next_sensor - current_sensor) * (
                                         (current_length - sensor_length_px * (color_index)) / (
@@ -677,7 +678,7 @@ class FigureCreator(ABC):
                         if current_length >= sensor_length_px * (color_index+1):
                             color_index += 1
 
-                    elif current_length >= measurement_length_px or i >= null_pos_index:
+                    elif current_length >= measurement_length_px or i >= null_pos_index or color_index + 1 >= len(endoflip_colors):
                         # Outside of endoflip section, add high value to simulate None values
                         endoflip_surface_color.append(40)
 
