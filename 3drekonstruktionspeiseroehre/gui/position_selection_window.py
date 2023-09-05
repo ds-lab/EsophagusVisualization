@@ -40,6 +40,7 @@ class PositionSelectionWindow(QMainWindow):
         self.ui.second_sensor_button.clicked.connect(self.__second_sensor_button_clicked)
         self.ui.sphinkter_button.clicked.connect(self.__sphincter_button_clicked)
         self.ui.eso_exit_button.clicked.connect(self.__eso_exit_button_clicked)
+        
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -48,6 +49,11 @@ class PositionSelectionWindow(QMainWindow):
             self.ui.endoscopy_button.clicked.connect(self.__endoscopy_button_clicked)
         else:
             self.ui.endoscopy_groupbox.setHidden(True)
+
+        if self.visualization_data.endoflip_screenshot:
+            self.ui.endoflip_button.clicked.connect(self.__endoflip_button_clicked)
+        else:
+            self.ui.endoflip_groupbox.setHidden(True)
 
         self.figure_canvas = FigureCanvasQTAgg(Figure())
         self.ui.gridLayout.addWidget(self.figure_canvas)
@@ -66,13 +72,13 @@ class PositionSelectionWindow(QMainWindow):
         self.endoscopy_pos = None
         self.sphincter_upper_pos = None
         self.esophagus_exit_pos = None
+        self.endoflip_pos = None
 
     def __on_left_click(self, event):
         """
         handles left-click on image
         :param event:
         """
-        # TODO: second und sphincter Punkte mit x und y übergeben und ax line nehmen 
         if event.xdata and event.ydata and self.active_paint_index is not None:
             self.plot_ax.clear()
             self.plot_ax.imshow(self.xray_image)
@@ -87,6 +93,9 @@ class PositionSelectionWindow(QMainWindow):
                 self.sphincter_upper_pos = (event.xdata, event.ydata)
             elif self.active_paint_index == 4:
                 self.esophagus_exit_pos = (event.xdata, event.ydata)
+            elif self.active_paint_index == 5:
+                self.endoflip_pos = (event.xdata, event.ydata)
+
 
             if self.first_sensor_pos:
                 self.plot_ax.axhline(self.first_sensor_pos, color='green')
@@ -99,8 +108,12 @@ class PositionSelectionWindow(QMainWindow):
                 point = Circle(self.sphincter_upper_pos, 4.0, color='yellow')
                 self.plot_ax.add_patch(point)
             if self.esophagus_exit_pos:
-                point = Circle(self.esophagus_exit_pos, 4.0, color='pink')
+                point = Circle(self.esophagus_exit_pos, 4.0, color='hotpink')
                 self.plot_ax.add_patch(point)
+            if self.endoflip_pos:
+                point = Circle(self.endoflip_pos, 4.0, color='darkorchid')
+                self.plot_ax.add_patch(point)
+
             self.figure_canvas.figure.canvas.draw()
 
     def __apply_button_clicked(self):
@@ -129,6 +142,9 @@ class PositionSelectionWindow(QMainWindow):
                         self.visualization_data.esophagus_exit_pos = (
                             int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1] - offset))
                         self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
+                        if self.visualization_data.endoflip_screenshot:
+                            self.visualization_data.endoflip_pos = (
+                            int(self.endoflip_pos[0]), int(self.endoflip_pos[1] - offset))
 
                         # If there are more visualizations in this visit continue with the next xray selection
                         if self.next_window:
@@ -182,14 +198,18 @@ class PositionSelectionWindow(QMainWindow):
     def __eso_exit_button_clicked(self):
         self.active_paint_index = 4
 
+    def __endoflip_button_clicked(self):
+        self.active_paint_index = 5
+
     def __are_necessary_positions_set(self):
         """
         checks if all necessary positions are set
         :return: True or False
         """
         return self.first_sensor_pos and self.second_sensor_pos and self.sphincter_upper_pos and self.esophagus_exit_pos \
-            and (self.endoscopy_pos or len(self.visualization_data.endoscopy_filenames) == 0)
-
+            and (self.endoscopy_pos or len(self.visualization_data.endoscopy_filenames) == 0) \
+            and (self.endoflip_pos or self.visualization_data.endoflip_screenshot == None)       
+    
     def __is_sensor_order_correct(self):
         """
         checks for correct sensor order
