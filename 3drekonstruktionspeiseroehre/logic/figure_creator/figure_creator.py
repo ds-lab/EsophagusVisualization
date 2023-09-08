@@ -106,14 +106,6 @@ class FigureCreator(ABC):
 
         _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(second_sensor_pos_switched))
 
-        print(f"index_first: {index_first}")
-        print(f"index_second: {index_second}")
-        print(f"first sensor pos: {visualization_data.first_sensor_pos}")
-        print(f"second sensor pos: {visualization_data.second_sensor_pos}")
-        print(f"sensor path: {sensor_path}")
-        print(f"sensor path index first: {sensor_path[index_first]}")
-        print(f"sensor path index second: {sensor_path[index_second]}")
-
         # Calculate segement length to find out centimeter to pixel ratio
         # length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, sensor_path[index_second],
         #                                                            sensor_path[index_first])
@@ -121,14 +113,8 @@ class FigureCreator(ABC):
         path_length_px = 0
         for i in range(index_second, index_first):
             # Add euklidean distance of the previous point and the current one, [0] corresponds to the y-axis
-            print(f"sensor path i: {sensor_path[i]}")
-            print(f"sensor path i[0]: {sensor_path[i][0]}")
-            print(f"sensor path i[1]: {sensor_path[i][1]}")
             path_length_px += np.sqrt(
                 (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
-            print(f"path length: {path_length_px}")
-            print(f"sensor path first index 1: {sensor_path[index_first][1]}")
-            print(f"sensor path first index 0: {sensor_path[index_first][0]}")
             if i == index_first:
                 break
 
@@ -153,9 +139,13 @@ class FigureCreator(ABC):
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
         # Path length from top for first sensor
         first_sensor_path_length_px = 0
+
+        #first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
+        #_, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
+
         for i in range(0, len(sensor_path)):
-            #ToDo: Abbruchkritierium -> für welche Bereiche werden Farben berechnet?
-            if visualization_data.first_sensor_pos[1] - offset_top == sensor_path[i][0]:
+            if i == len(sensor_path)-1:
+            #if visualization_data.first_sensor_pos[1] - offset_top == sensor_path[i][0]:
                 break
             if i > 0:
                 first_sensor_path_length_px += np.sqrt(
