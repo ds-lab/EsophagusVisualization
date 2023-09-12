@@ -209,8 +209,16 @@ class PositionSelectionWindow(QMainWindow):
         """
         poly_y_min = min([point[1] for point in self.visualization_data.xray_polygon])
         poly_y_max = max([point[1] for point in self.visualization_data.xray_polygon])
-        # ToDo: Checks evtl noch anpassen
+        poly_x_min = min([point[0] for point in self.visualization_data.xray_polygon])
+        poly_x_max = max([point[0] for point in self.visualization_data.xray_polygon])
         return self.first_sensor_pos[1] < poly_y_min or self.first_sensor_pos[1] > poly_y_max \
+            or self.first_sensor_pos[0] < poly_x_min or self.first_sensor_pos[0] > poly_x_max \
             or self.second_sensor_pos[1] < poly_y_min or self.second_sensor_pos[1] > poly_y_max \
-            or (len(self.visualization_data.endoscopy_filenames) > 0 and (self.endoscopy_pos[1] < poly_y_min
-                                                                          or self.endoscopy_pos[1] > poly_y_max))
+            or self.second_sensor_pos[0] < poly_x_min or self.second_sensor_pos[0] > poly_x_max \
+            or self.sphincter_upper_pos[1] < poly_y_min or self.sphincter_upper_pos[1] > poly_y_max \
+            or self.sphincter_upper_pos[0] < poly_x_min or self.sphincter_upper_pos[0] > poly_x_max \
+            or self.esophagus_exit_pos[1] < poly_y_min or self.esophagus_exit_pos[1] > poly_y_max \
+            or self.esophagus_exit_pos[0] < poly_x_min or self.esophagus_exit_pos[0] > poly_x_max \
+            or (len(self.visualization_data.endoscopy_filenames) > 0 and
+                (self.endoscopy_pos[1] < poly_y_min or self.endoscopy_pos[1] > poly_y_max
+                 or self.endoscopy_pos[0] < poly_x_min or self.endoscopy_pos[0] > poly_x_max))
