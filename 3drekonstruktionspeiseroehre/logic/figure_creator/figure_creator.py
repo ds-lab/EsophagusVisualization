@@ -457,25 +457,22 @@ class FigureCreator(ABC):
         end_top = None
         found_top = False
 
-        image = Image.fromarray(np.uint8(cm.Greys(visualization_data.xray_mask) * 255))
+        #image = Image.fromarray(np.uint8(cm.Greys(visualization_data.xray_mask) * 255))
 
         edges = cv2.Canny(np.uint8((visualization_data.xray_mask) * 255), 100, 200)
         min_line_length = 50
         max_line_gap = 5
         lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 50, None, min_line_length, max_line_gap)
-        print(f"lines: {lines}")
-        print(f"lines[0]: {lines[0]}")
-
         embedded_lists = [inner_list[0] for inner_list in lines]
-        print(f"embedded lists: {embedded_lists}")
         sorted_lists = sorted(embedded_lists, key=lambda x: (x[1], x[3]))
-        print(f"sorted lists: {sorted_lists}")
         top_line = sorted_lists[0]
-        #ToDo: Kontrollieren, dass nirgends x und y vertauscht
         startpoint = (((top_line[0] + top_line[1]) / 2), (top_line[2] + top_line[3]) / 2)
 
 
-        # TodDo: wird später noch gebraucht, bloß vorerst auskommentiert
+        # ToDo: wird später noch gebraucht, bloß vorerst auskommentiert
+        # müssen die alte Methode nehmen, wenn die Speiseröhre zu schräg ist
+
+
         # Search startpoint
         # Iterate over rows of xray_mask (y-axis)
         # for i in range(visualization_data.xray_mask.shape[0]):
