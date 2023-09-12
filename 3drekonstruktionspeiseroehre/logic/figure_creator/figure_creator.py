@@ -460,8 +460,8 @@ class FigureCreator(ABC):
         #image = Image.fromarray(np.uint8(cm.Greys(visualization_data.xray_mask) * 255))
 
         edges = cv2.Canny(np.uint8((visualization_data.xray_mask) * 255), 100, 200)
-        min_line_length = 50
-        max_line_gap = 5
+        min_line_length = 50 #ggf. noch anpassen
+        max_line_gap = 5 #ggf. noch anpassen
         lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 50, None, min_line_length, max_line_gap)
         embedded_lists = [inner_list[0] for inner_list in lines]
         sorted_lists = sorted(embedded_lists, key=lambda x: (x[1], x[3]))
