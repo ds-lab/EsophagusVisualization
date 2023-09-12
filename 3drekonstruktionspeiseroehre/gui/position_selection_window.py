@@ -115,21 +115,22 @@ class PositionSelectionWindow(QMainWindow):
                 if self.__is_sensor_order_correct():
                     if not self.__is_any_position_outside_polygon():
                         self.ui.apply_button.setDisabled(True)
-                        offset = min([point[1] for point in self.visualization_data.xray_polygon])
+                        #offset = min([point[1] for point in self.visualization_data.xray_polygon])
+                        print(f"xray_polygon: {self.visualization_data.xray_polygon}")
                         if self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex():
-                            self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1] - offset))
+                            self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
                             self.visualization_data.first_sensor_index = self.ui.first_combobox.currentIndex()
-                            self.visualization_data.second_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1] - offset))
+                            self.visualization_data.second_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1]))
                             self.visualization_data.second_sensor_index = self.ui.second_combobox.currentIndex()
                         else:
-                            self.visualization_data.first_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1] - offset))
+                            self.visualization_data.first_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1]))
                             self.visualization_data.first_sensor_index = self.ui.second_combobox.currentIndex()
-                            self.visualization_data.second_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1] - offset))
+                            self.visualization_data.second_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
                             self.visualization_data.second_sensor_index = self.ui.first_combobox.currentIndex()
                         self.visualization_data.sphincter_upper_pos = (
-                            int(self.sphincter_upper_pos[0]), int(self.sphincter_upper_pos[1] - offset))
+                            int(self.sphincter_upper_pos[0]), int(self.sphincter_upper_pos[1]))
                         self.visualization_data.esophagus_exit_pos = (
-                            int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1] - offset))
+                            int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1]))
                         self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
 
                         # If there are more visualizations in this visit continue with the next xray selection
@@ -137,9 +138,8 @@ class PositionSelectionWindow(QMainWindow):
                             self.master_window.switch_to(self.next_window)
                         # Handle Endoscopy annotation
                         elif len(self.visualization_data.endoscopy_filenames) > 0:
-                            # ToDo: richtige y-position für endoscopy_pos finden
                             self.visualization_data.endoscopy_start_pos = \
-                                (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1] - offset))
+                                (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1]))
                             endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
                                                                                   self.patient_data, self.visit)
                             self.master_window.switch_to(endoscopy_selection_window)
