@@ -103,8 +103,10 @@ class FigureCreator(ABC):
         second_sensor_pos_switched = (visualization_data.second_sensor_pos[1], visualization_data.second_sensor_pos[0])
 
         _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
-
         _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(second_sensor_pos_switched))
+
+        print(f"index first {index_first}")
+        print(f"sensor path index first {sensor_path[index_first]}")
 
         # Calculate segement length to find out centimeter to pixel ratio
         # length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, sensor_path[index_second],
@@ -143,6 +145,8 @@ class FigureCreator(ABC):
         #first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
         #_, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
 
+        # ToDo: vorher wurde hier nicht der ganze Sensorpath abgelaufen, sondern nur bis zur ersten Sensorposition
+        # wir laufen jetzt den ganzen Sensorpath ab -> passt das so?
         for i in range(0, len(sensor_path)):
             if i == len(sensor_path)-1:
             #if visualization_data.first_sensor_pos[1] - offset_top == sensor_path[i][0]:
@@ -214,6 +218,28 @@ class FigureCreator(ABC):
         centers = []
         slopes = []
         offset_top = sensor_path[0][0]  # y-value of first point in path
+
+        ####
+        # Create a figure and axis FOR DEBUGGING
+        fig, ax = plt.subplots()
+
+        ##Invert y-axis to have positive y downwards FOR DEBUGGING
+        ax.invert_yaxis()
+        ##plot xray FOR DEBUGGING
+        #coordinates = [(row_idx, col_idx) for row_idx, row in enumerate(visualization_data.xray_mask) for col_idx, value
+        #               in enumerate(row) if value == 1]
+        #x_values, y_values = zip(*coordinates)
+        #plt.scatter(y_values, x_values, s=0.5)
+        plt.imshow(visualization_data.xray_mask, cmap='gray')
+
+
+        # # plot shortest path FOR DEBUGGING
+        # x_values = [point[1] for point in sensor_path] # in sensor path stehen die x werte an index 1
+        # y_values = [point[0] for point in sensor_path]
+        # plt.scatter(x_values, y_values, color="red", s=3)
+        # plt.savefig("path.png")
+        ####
+
 
         num_points_for_polyfit = 40
 
@@ -342,6 +368,16 @@ class FigureCreator(ABC):
                 else:
                     raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
 
+            #### FOR DEBUGGING
+            x_values = [point[1] for point in sensor_path]  # in sensor path stehen die x werte an index 1
+            y_values = [point[0] for point in sensor_path]
+            plt.scatter(x_values, y_values, color="red", s=0.5, alpha=0.05)
+            if boundary_1 is not None and boundary_2 is not None:
+                plt.scatter([boundary_1[1], boundary_2[1]], [boundary_1[0], boundary_2[0]], color="black",
+                            s=0.5, alpha=0.5)
+                pass
+            ####
+
             # Step 2: Calculate Width
             # Calculate the distance between two boundary points
             width = np.linalg.norm(np.array(boundary_1) - np.array(boundary_2))
@@ -354,6 +390,19 @@ class FigureCreator(ABC):
             # Store the calculated width and center
             widths.append(width)
             centers.append(center)
+
+        #### FOR DEBUGGING
+        # plt.savefig("perp_points.png")
+        plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="yellow", s=0.5,
+                    alpha=0.1)
+        plt.scatter([visualization_data.esophagus_exit_pos[0]], [visualization_data.esophagus_exit_pos[1]],
+                    color="pink", s=5)
+        ax.set_xlim(0, visualization_data.xray_mask.shape[1])
+        ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
+        plt.savefig("centers8.png", dpi=300)
+        ####
+
+        print(f"exit pos: {visualization_data.esophagus_exit_pos}")
 
         return widths, centers, slopes, offset_top
 
@@ -406,8 +455,9 @@ class FigureCreator(ABC):
         found_top = False
 
         # Search startpoint
+        # Iterate over rows of xray_mask (y-axis)
         for i in range(visualization_data.xray_mask.shape[0]):
-            # Iterate over xray mask width horizontally (x-axis)
+            # Iterate over columns of xray_mask (x-axis)
             for j in range(visualization_data.xray_mask.shape[1]):
                 if visualization_data.xray_mask[i, j]:
                     if not start_top:
@@ -415,9 +465,11 @@ class FigureCreator(ABC):
                     end_top = (i, j)
                     found_top = True
             if found_top:
+                # start_top[0] is the y, start_top[1] is the x
                 startpoint = (start_top[0], (start_top[1] + end_top[1]) // 2)
                 break
 
+        offset = start_top[0]
                 # Use annotated endpoint as end of shortest path
         endpoint = visualization_data.esophagus_exit_pos
         # Calculate shortest path
