@@ -10,6 +10,9 @@ from skimage import graph
 from sklearn.linear_model import LinearRegression
 from scipy import spatial
 import matplotlib.pyplot as plt
+import cv2
+from PIL import Image
+from matplotlib import cm
 
 
 class FigureCreator(ABC):
@@ -454,23 +457,41 @@ class FigureCreator(ABC):
         end_top = None
         found_top = False
 
+        image = Image.fromarray(np.uint8(cm.Greys(visualization_data.xray_mask) * 255))
+
+        edges = cv2.Canny(np.uint8((visualization_data.xray_mask) * 255), 100, 200)
+        min_line_length = 50
+        max_line_gap = 5
+        lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 50, None, min_line_length, max_line_gap)
+        print(f"lines: {lines}")
+        print(f"lines[0]: {lines[0]}")
+
+        embedded_lists = [inner_list[0] for inner_list in lines]
+        print(f"embedded lists: {embedded_lists}")
+        sorted_lists = sorted(embedded_lists, key=lambda x: (x[1], x[3]))
+        print(f"sorted lists: {sorted_lists}")
+        top_line = sorted_lists[0]
+        #ToDo: Kontrollieren, dass nirgends x und y vertauscht
+        startpoint = (((top_line[0] + top_line[1]) / 2), (top_line[2] + top_line[3]) / 2)
+
+
+        # TodDo: wird später noch gebraucht, bloß vorerst auskommentiert
         # Search startpoint
         # Iterate over rows of xray_mask (y-axis)
-        for i in range(visualization_data.xray_mask.shape[0]):
-            # Iterate over columns of xray_mask (x-axis)
-            for j in range(visualization_data.xray_mask.shape[1]):
-                if visualization_data.xray_mask[i, j]:
-                    if not start_top:
-                        start_top = (i, j)
-                    end_top = (i, j)
-                    found_top = True
-            if found_top:
-                # start_top[0] is the y, start_top[1] is the x
-                startpoint = (start_top[0], (start_top[1] + end_top[1]) // 2)
-                break
+        # for i in range(visualization_data.xray_mask.shape[0]):
+        #     # Iterate over columns of xray_mask (x-axis)
+        #     for j in range(visualization_data.xray_mask.shape[1]):
+        #         if visualization_data.xray_mask[i, j]:
+        #             if not start_top:
+        #                 start_top = (i, j)
+        #             end_top = (i, j)
+        #             found_top = True
+        #     if found_top:
+        #         # start_top[0] is the y, start_top[1] is the x
+        #         startpoint = (start_top[0], (start_top[1] + end_top[1]) // 2)
+        #         break
 
-        offset = start_top[0]
-                # Use annotated endpoint as end of shortest path
+        # Use annotated endpoint as end of shortest path
         endpoint = visualization_data.esophagus_exit_pos
         # Calculate shortest path
         path, cost = graph.route_through_array(costs, start=startpoint,
