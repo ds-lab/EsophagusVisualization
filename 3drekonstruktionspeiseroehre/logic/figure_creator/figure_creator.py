@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from skimage.morphology import skeletonize
+
 import config
 import numpy as np
 import plotly.graph_objects as go
@@ -223,6 +225,9 @@ class FigureCreator(ABC):
         slopes = []
         offset_top = sensor_path[0][0]  # y-value of first point in path
 
+        skeleton = skeletonize(visualization_data.xray_mask)
+        coords = np.argwhere(skeleton == 1)
+
         ####
         # Create a figure and axis FOR DEBUGGING
         fig, ax = plt.subplots()
@@ -235,6 +240,8 @@ class FigureCreator(ABC):
         #x_values, y_values = zip(*coordinates)
         #plt.scatter(y_values, x_values, s=0.5)
         plt.imshow(visualization_data.xray_mask, cmap='gray')
+        x_values, y_values = zip(*coords)
+        plt.scatter(y_values, x_values, s=0.5, color="green", alpha=0.05)
 
 
         # # plot shortest path FOR DEBUGGING
@@ -403,7 +410,7 @@ class FigureCreator(ABC):
                     color="pink", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("centers_medskel.png", dpi=300)
+        plt.savefig("centers_skel.png", dpi=300)
         ####
 
         print(f"exit pos: {visualization_data.esophagus_exit_pos}")
@@ -469,8 +476,8 @@ class FigureCreator(ABC):
         # top_line = sorted_lists[0]
         # startpoint = (((top_line[0] + top_line[1]) / 2), (top_line[2] + top_line[3]) / 2)
 
-        fil = FilFinder2D(costs)
-        fil.medskel(verbose=True)
+        #fil = FilFinder2D(costs)
+        #fil.medskel(verbose=True)
 
         # müssen die alte Methode nehmen, wenn die Speiseröhre zu schräg ist
 
