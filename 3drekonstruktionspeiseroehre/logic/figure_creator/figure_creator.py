@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import cv2
 from PIL import Image
 from matplotlib import cm
+from fil_finder import FilFinder2D
 
 
 class FigureCreator(ABC):
@@ -376,7 +377,7 @@ class FigureCreator(ABC):
             y_values = [point[0] for point in sensor_path]
             plt.scatter(x_values, y_values, color="red", s=0.5, alpha=0.05)
             if boundary_1 is not None and boundary_2 is not None:
-                plt.scatter([boundary_1[1], boundary_2[1]], [boundary_1[0], boundary_2[0]], color="black",
+                plt.scatter([boundary_1[1], boundary_2[1]], [boundary_1[0], boundary_2[0]], color="yellow",
                             s=0.5, alpha=0.5)
                 pass
             ####
@@ -396,13 +397,13 @@ class FigureCreator(ABC):
 
         #### FOR DEBUGGING
         # plt.savefig("perp_points.png")
-        plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="yellow", s=0.5,
+        plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="blue", s=0.5,
                     alpha=0.1)
         plt.scatter([visualization_data.esophagus_exit_pos[0]], [visualization_data.esophagus_exit_pos[1]],
                     color="pink", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("centers8.png", dpi=300)
+        plt.savefig("centers_medskel.png", dpi=300)
         ####
 
         print(f"exit pos: {visualization_data.esophagus_exit_pos}")
@@ -459,34 +460,35 @@ class FigureCreator(ABC):
 
         #image = Image.fromarray(np.uint8(cm.Greys(visualization_data.xray_mask) * 255))
 
-        edges = cv2.Canny(np.uint8((visualization_data.xray_mask) * 255), 100, 200)
-        min_line_length = 50 #ggf. noch anpassen
-        max_line_gap = 5 #ggf. noch anpassen
-        lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 50, None, min_line_length, max_line_gap)
-        embedded_lists = [inner_list[0] for inner_list in lines]
-        sorted_lists = sorted(embedded_lists, key=lambda x: (x[1], x[3]))
-        top_line = sorted_lists[0]
-        startpoint = (((top_line[0] + top_line[1]) / 2), (top_line[2] + top_line[3]) / 2)
+        # edges = cv2.Canny(np.uint8((visualization_data.xray_mask) * 255), 100, 200)
+        # min_line_length = 5 #ggf. noch anpassen
+        # max_line_gap = 5 #ggf. noch anpassen
+        # lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 50, None, min_line_length, max_line_gap)
+        # embedded_lists = [inner_list[0] for inner_list in lines]
+        # sorted_lists = sorted(embedded_lists, key=lambda x: (x[1], x[3]))
+        # top_line = sorted_lists[0]
+        # startpoint = (((top_line[0] + top_line[1]) / 2), (top_line[2] + top_line[3]) / 2)
 
+        fil = FilFinder2D(costs)
+        fil.medskel(verbose=True)
 
-        # ToDo: wird später noch gebraucht, bloß vorerst auskommentiert
         # müssen die alte Methode nehmen, wenn die Speiseröhre zu schräg ist
 
 
         # Search startpoint
         # Iterate over rows of xray_mask (y-axis)
-        # for i in range(visualization_data.xray_mask.shape[0]):
-        #     # Iterate over columns of xray_mask (x-axis)
-        #     for j in range(visualization_data.xray_mask.shape[1]):
-        #         if visualization_data.xray_mask[i, j]:
-        #             if not start_top:
-        #                 start_top = (i, j)
-        #             end_top = (i, j)
-        #             found_top = True
-        #     if found_top:
-        #         # start_top[0] is the y, start_top[1] is the x
-        #         startpoint = (start_top[0], (start_top[1] + end_top[1]) // 2)
-        #         break
+        for i in range(visualization_data.xray_mask.shape[0]):
+            # Iterate over columns of xray_mask (x-axis)
+            for j in range(visualization_data.xray_mask.shape[1]):
+                if visualization_data.xray_mask[i, j]:
+                    if not start_top:
+                        start_top = (i, j)
+                    end_top = (i, j)
+                    found_top = True
+            if found_top:
+                # start_top[0] is the y, start_top[1] is the x
+                startpoint = (start_top[0], (start_top[1] + end_top[1]) // 2)
+                break
 
         # Use annotated endpoint as end of shortest path
         endpoint = visualization_data.esophagus_exit_pos
