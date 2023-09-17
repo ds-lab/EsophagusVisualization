@@ -10,7 +10,7 @@ import shapely.geometry
 from logic.visualization_data import VisualizationData
 from skimage import graph
 from sklearn.linear_model import LinearRegression
-from scipy import spatial
+from scipy import spatial, ndimage
 import matplotlib.pyplot as plt
 import cv2
 from PIL import Image
@@ -249,7 +249,7 @@ class FigureCreator(ABC):
         ####
 
 
-        num_points_for_polyfit = 60
+        num_points_for_polyfit = 30
 
         for i in range(len(sensor_path)):
             # Create slope_points that are used to calculate linear regression (slope)
@@ -276,6 +276,7 @@ class FigureCreator(ABC):
             model.fit(x, y)
 
             # Calculate perpendicular slope, use epsilon to avoid divisions by zero or values close to zero
+            # ToDo: dies darf es nicht oder nur in Ausnahmefällen überhaupt geben, sonst Fehler
             if model.coef_[0] == 0:
                 perpendicular_slope = -1 / (model.coef_[0] + 0.0001)
             else:
@@ -432,7 +433,15 @@ class FigureCreator(ABC):
 
         print(f"exit pos: {visualization_data.esophagus_exit_pos}")
 
-        return widths, centers, slopes, offset_top
+        # ToDo: Alternative Berechnung width wieder entfernen, auch in Return wenn gefixt
+
+        dist = ndimage.distance_transform_edt(visualization_data.xray_mask)
+        distance = []
+        for sensor_pos in sensor_path:
+            dist_at_point = dist[sensor_pos[0]][sensor_pos[1]]
+            distance.append(dist_at_point)
+
+        return distance, sensor_path, slopes, offset_top
 
     @staticmethod
     def create_figure(x, y, z, surfacecolor_list, title):
