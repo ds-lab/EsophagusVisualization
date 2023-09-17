@@ -455,8 +455,125 @@ class FigureCreator(ABC):
         :param center_bottom: center coordinate at the bottom of the esophagus
         :return: path as list of coordinates
         """
-        # Cut off offsets from xray mask
+
         array = visualization_data.xray_mask
+
+        for row in range(len(array)):
+            for col in range(len(array[row])):
+                if array[row][col] == 0:
+                    array[row][col] = 1
+                elif array[row][col] == 1:
+                    array[row][col] = 0
+                else:
+                    print("nicht 0 oder 1")
+
+        print(f"array converted: {array}")
+
+        # Step1: Find and straigthen contours around esophagus xray_mask
+        # adapted from: https://stackoverflow.com/questions/60227551/rectify-edges-of-a-shape-in-mask-with-opencv
+
+        # convert array to image
+
+
+
+        image = Image.fromarray(np.uint8(cm.Greys(array) * 255))
+
+        # Convert the Pillow Image to a NumPy array
+        image_np = np.array(image)
+
+        # Convert the image to grayscale (CV_8UC1)
+        gray_image = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
+
+        cv2.imwrite("gray_image.jpg", gray_image)
+
+        #edges = cv2.Canny(np.uint8((visualization_data.xray_mask) * 255), 100, 200)
+
+        # From the black and white image we find the contours, so the boundaries of all the shapes.
+        _, threshold = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
+        contours, hierarchy = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        print(f"contours: {contours}")
+        contours = contours[0]
+
+        peri = cv2.arcLength(contours, closed=True)
+        approx = cv2.approxPolyDP(contours, epsilon=0.01 * peri, closed=True)
+
+        # Delat threshold
+        t = 10
+
+        # n - Number of vertices
+        n = approx.shape[0]
+
+        for i in range(n):
+            #      p1              p2
+            #       *--------------*
+            #       |
+            #       |
+            #       |
+            #       *
+            #      p0
+
+            p0 = approx[(i + n - 1) % n][0]  # Previous vertex
+            p1 = approx[i][0]  # Current vertex
+            p2 = approx[(i + 1) % n][0]  # Next vertex
+            dx = p2[0] - p1[0]  # Delta pixels in horizontal direction
+            dy = p2[1] - p1[1]  # Delta pixels in vertical direction
+
+            # Fix x index of vertices p1 and p2 to be with same x coordinate ([<p1>, <p2>] form horizontal line).
+            if abs(dx) < t:
+                if ((dx < 0) and (p0[0] > p1[0])) or ((dx > 0) and (p0[0] < p1[0])):
+                    p2[0] = p1[0]
+                else:
+                    p1[0] = p2[0]
+
+            # Fix y index of vertices p1 and p2 to be with same y coordinate ([<p1>, <p2>] form vertical line).
+            if abs(dy) < t:
+                if ((dy < 0) and (p0[1] > p1[1])) or ((dy > 0) and (p0[1] < p1[1])):
+                    p2[1] = p1[1]
+                else:
+                    p1[1] = p2[1]
+
+            approx[i][0] = p1
+            approx[(i + 1) % n][0] = p2
+
+        brg_image = cv2.cvtColor(gray_image, cv2.COLOR_BGR2RGB)
+        cv2.drawContours(brg_image, [approx], 0, (0, 128, 0), 3)
+        cv2.imwrite("contours.jpg", brg_image)
+
+        # Step2: Use left and right coordinates of upper most horizontal countour line (straigtened) as upper esophagus border
+        # This will be used to fill the xray_mask upwards with white pixels
+        embedded_lists = [inner_list[0] for inner_list in approx]
+        print(f"embedded_lists: {embedded_lists}")
+        sorted_lists = sorted(embedded_lists, key=lambda x: (x[1]))
+        print(f"sorted_lists: {sorted_lists}")
+
+        x1 = sorted_lists[0][0]
+        x2 = sorted_lists[1][0]
+        y = sorted_lists[0][1]
+
+        print(f"x1, x2, y: {x1, x2, y}")
+
+        for row in range(y):
+            for col in range(x1, x2):
+                array[row][col] = 0
+
+        extended_image = Image.fromarray(np.uint8(cm.Greys(array) * 255))
+
+        # Convert the Pillow Image to a NumPy array
+        extended_image_np = np.array(extended_image)
+
+        # Convert the image to grayscale (CV_8UC1)
+        extended_gray_image = cv2.cvtColor(extended_image_np, cv2.COLOR_RGB2GRAY)
+
+        cv2.imwrite("extended_gray_image.jpg", extended_gray_image)
+
+        # Step3: Calculate the skeleton on extended xray_mask
+
+        # Step4: Calculate shortest path from point on skeleton that is nearest to endpoint to highest point
+
+        # Step5:
+
+
         # Replace zeros with 1000 for cost calculation of shortest path
         # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
         costs = np.where(array, 1, 1000)
