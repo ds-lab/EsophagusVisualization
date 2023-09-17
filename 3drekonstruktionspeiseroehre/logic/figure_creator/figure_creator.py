@@ -290,7 +290,7 @@ class FigureCreator(ABC):
             line_length = visualization_data.xray_mask.shape[1] * 2
             # Calculate equidistant points between two points on perpendicular (equidistant to avoid skipping points later)
             # new_y                        y     + m               * (new_x - x)
-            perpendicular_start_y = point[0] + perpendicular_slope * (0 - point[1])  # TODO: fix
+            perpendicular_start_y = point[0] + perpendicular_slope * (0 - point[1])
             perpendicular_end_y = point[0] + perpendicular_slope * (
                     visualization_data.xray_mask.shape[1] - 1 - point[1])
             perpendicular_start = (perpendicular_start_y, 0)
@@ -483,8 +483,6 @@ class FigureCreator(ABC):
 
         cv2.imwrite("gray_image.jpg", gray_image)
 
-        #edges = cv2.Canny(np.uint8((visualization_data.xray_mask) * 255), 100, 200)
-
         # From the black and white image we find the contours, so the boundaries of all the shapes.
         _, threshold = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
         contours, hierarchy = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -539,6 +537,7 @@ class FigureCreator(ABC):
 
         # Step2: Use left and right coordinates of upper most horizontal countour line (straigtened) as upper esophagus border
         # This will be used to fill the xray_mask upwards with white pixels
+
         embedded_lists = [inner_list[0] for inner_list in approx]
         print(f"embedded_lists: {embedded_lists}")
         sorted_lists = sorted(embedded_lists, key=lambda x: (x[1]))
@@ -547,10 +546,16 @@ class FigureCreator(ABC):
         x1 = sorted_lists[0][0]
         x2 = sorted_lists[1][0]
         y = sorted_lists[0][1]
+        length = x2 - x1
+        middle = x1 + length // 2
+        if length >= 32:
+            x1 = middle - length // 8
+            x2 = middle + length // 8
+
 
         print(f"x1, x2, y: {x1, x2, y}")
 
-        for row in range(y):
+        for row in range(1, y): # we have to start at row 1, so that the first line is still black
             for col in range(x1, x2):
                 array[row][col] = 0
 
