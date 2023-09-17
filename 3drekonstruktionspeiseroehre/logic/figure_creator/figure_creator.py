@@ -225,9 +225,6 @@ class FigureCreator(ABC):
         slopes = []
         offset_top = sensor_path[0][0]  # y-value of first point in path
 
-        skeleton = skeletonize(visualization_data.xray_mask)
-        coords = np.argwhere(skeleton == 1)
-
         ####
         # Create a figure and axis FOR DEBUGGING
         fig, ax = plt.subplots()
@@ -240,8 +237,8 @@ class FigureCreator(ABC):
         #x_values, y_values = zip(*coordinates)
         #plt.scatter(y_values, x_values, s=0.5)
         plt.imshow(visualization_data.xray_mask, cmap='gray')
-        x_values, y_values = zip(*coords)
-        plt.scatter(y_values, x_values, s=0.5, color="green", alpha=0.05)
+        #x_values, y_values = zip(*coords)
+        #plt.scatter(y_values, x_values, s=0.5, color="green", alpha=0.05)
 
 
         # # plot shortest path FOR DEBUGGING
@@ -569,7 +566,44 @@ class FigureCreator(ABC):
 
         # Step3: Calculate the skeleton on extended xray_mask
 
+        for row in range(len(array)):
+            for col in range(len(array[row])):
+                if array[row][col] == 0:
+                    array[row][col] = 1
+                elif array[row][col] == 1:
+                    array[row][col] = 0
+                else:
+                    print("nicht 0 oder 1")
+
+        skeleton = skeletonize(array)
+        coords = np.argwhere(skeleton == 1)
+        print(f"coords: {coords}")
+
+        ####
+        # Create a figure and axis FOR DEBUGGING
+        fig, ax = plt.subplots()
+
+        ##Invert y-axis to have positive y downwards FOR DEBUGGING
+        ax.invert_yaxis()
+        ##plot xray FOR DEBUGGING
+        plt.imshow(visualization_data.xray_mask, cmap='gray')
+        x_values, y_values = zip(*coords)
+        plt.scatter(y_values, x_values, s=0.5, color="green", alpha=0.05)
+        plt.savefig("skeleton.png")
+
         # Step4: Calculate shortest path from point on skeleton that is nearest to endpoint to highest point
+
+        #ToDo: Shortest Path vom obersten Punkt des Skeletons bis zum Endpunkt (nächster Punkt auf Skeleton) funktioniert noch nicht
+        # ausprobieren ob letzter Punkt vom Skeleton auch bei stark gebogenen Speiseröhren immer der am Ösophagus-Ausgang/Ende
+
+        esophagus_exit_pos_switched = (visualization_data.esophagus_exit_pos[1], visualization_data.esophagus_exit_pos[0])
+
+        startpoint = coords[0]
+        _, endpoint = spatial.KDTree(np.array(skeleton)).query(np.array(esophagus_exit_pos_switched))
+        endpoint = skeleton[endpoint]
+
+        print(f"startpoint: {startpoint}")
+        print(f"endpoint: {endpoint}")
 
         # Step5:
 
