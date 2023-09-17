@@ -589,70 +589,35 @@ class FigureCreator(ABC):
         plt.imshow(visualization_data.xray_mask, cmap='gray')
         x_values, y_values = zip(*coords)
         plt.scatter(y_values, x_values, s=0.5, color="green", alpha=0.05)
-        plt.savefig("skeleton.png")
+        #plt.savefig("skeleton.png")
 
         # Step4: Calculate shortest path from point on skeleton that is nearest to endpoint to highest point
 
-        #ToDo: Shortest Path vom obersten Punkt des Skeletons bis zum Endpunkt (nächster Punkt auf Skeleton) funktioniert noch nicht
-        # ausprobieren ob letzter Punkt vom Skeleton auch bei stark gebogenen Speiseröhren immer der am Ösophagus-Ausgang/Ende
+        # Define cost array
+        cost_array = [[1000 for col in range(array.shape[1])] for row in range(array.shape[0])]
+        for coord in coords:
+            row, col = coord
+            cost_array[row][col] = 0
+
 
         esophagus_exit_pos_switched = (visualization_data.esophagus_exit_pos[1], visualization_data.esophagus_exit_pos[0])
 
         startpoint = coords[0]
-        _, endpoint = spatial.KDTree(np.array(skeleton)).query(np.array(esophagus_exit_pos_switched))
-        endpoint = skeleton[endpoint]
+        _, endpoint = spatial.KDTree(np.array(coords)).query(np.array(esophagus_exit_pos_switched))
+        endpoint = coords[endpoint]
 
         print(f"startpoint: {startpoint}")
         print(f"endpoint: {endpoint}")
 
-        # Step5:
+        path, cost = graph.route_through_array(cost_array, start=(startpoint[0], startpoint[1]),
+                                               end=(endpoint[0], endpoint[1]), fully_connected=True)
 
+        ##### for debugging
+        x_values, y_values = zip(*path)
+        plt.scatter(y_values, x_values, s=0.5, color="red", alpha=0.05)
+        plt.savefig("skeleton_and_shortest.png")
+        print(f"path: {path}")
 
-        # Replace zeros with 1000 for cost calculation of shortest path
-        # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
-        costs = np.where(array, 1, 1000)
-
-        start_top = None
-        end_top = None
-        found_top = False
-
-        #image = Image.fromarray(np.uint8(cm.Greys(visualization_data.xray_mask) * 255))
-
-        # edges = cv2.Canny(np.uint8((visualization_data.xray_mask) * 255), 100, 200)
-        # min_line_length = 5 #ggf. noch anpassen
-        # max_line_gap = 5 #ggf. noch anpassen
-        # lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 50, None, min_line_length, max_line_gap)
-        # embedded_lists = [inner_list[0] for inner_list in lines]
-        # sorted_lists = sorted(embedded_lists, key=lambda x: (x[1], x[3]))
-        # top_line = sorted_lists[0]
-        # startpoint = (((top_line[0] + top_line[1]) / 2), (top_line[2] + top_line[3]) / 2)
-
-        #fil = FilFinder2D(costs)
-        #fil.medskel(verbose=True)
-
-        # müssen die alte Methode nehmen, wenn die Speiseröhre zu schräg ist
-
-
-        # Search startpoint
-        # Iterate over rows of xray_mask (y-axis)
-        for i in range(visualization_data.xray_mask.shape[0]):
-            # Iterate over columns of xray_mask (x-axis)
-            for j in range(visualization_data.xray_mask.shape[1]):
-                if visualization_data.xray_mask[i, j]:
-                    if not start_top:
-                        start_top = (i, j)
-                    end_top = (i, j)
-                    found_top = True
-            if found_top:
-                # start_top[0] is the y, start_top[1] is the x
-                startpoint = (start_top[0], (start_top[1] + end_top[1]) // 2)
-                break
-
-        # Use annotated endpoint as end of shortest path
-        endpoint = visualization_data.esophagus_exit_pos
-        # Calculate shortest path
-        path, cost = graph.route_through_array(costs, start=startpoint,
-                                               end=(endpoint[1], endpoint[0]), fully_connected=True)
         return path
 
     @staticmethod
