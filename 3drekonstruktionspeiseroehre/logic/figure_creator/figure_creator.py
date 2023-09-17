@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import cv2
 from PIL import Image
 from matplotlib import cm
-from fil_finder import FilFinder2D
+import statsmodels.api as sm
 
 
 class FigureCreator(ABC):
@@ -301,8 +301,11 @@ class FigureCreator(ABC):
                 perpendicular_start = (point[0], point[1] - line_length)
                 perpendicular_end = (point[0], point[1] + line_length)
 
-            if model.coef_[0] > -0.0001 and model.coef_[0] < 0.0001:
+            if -0.0001 < model.coef_[0] < 0.0001:
                 # If the points used for the lin reg are inline along the x axis (slope is zero)
+                # ToDo: Hier können falsche Werte für die widths rauskommen
+                # ToDo: slope der perpendicular ist sehr steil, fast senkret
+                # ToDo: überprüfen ob die boundaries die durch diese Stellen entstanden sind, Sinn machen
                 perpendicular_start = (point[0] - line_length, point[1])
                 perpendicular_end = (point[0] + line_length, point[1])
 
@@ -339,7 +342,6 @@ class FigureCreator(ABC):
             boundary_2 = None
             # Move left and right from the current point along the perpendicular to find the boundaries
             for j in range(len(perpendicular_points) - 1):
-                # TODO: für die Lücken -> maybe weil der sensor_path an der Grenze lang läuft werden die boundaries hier komisch, siehe geplottete centers die an der Grenze entlang laufen
                 # Move "left" until boundary is found
                 if boundary_1 is None and (index - j) >= 0:
                     point_along_line = perpendicular_points[index - j]
@@ -348,9 +350,11 @@ class FigureCreator(ABC):
                             visualization_data.xray_mask.shape[0] and point_along_line[1] < \
                             visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
+                            # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
                             boundary_1 = point_along_line
                         # Esophagus touches left image edge
                         elif point_along_line[0] == 0 or point_along_line[1] == 0:
+                            # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
                             boundary_1 = point_along_line
 
                 # Move "right" until boundary is found
@@ -361,10 +365,12 @@ class FigureCreator(ABC):
                             visualization_data.xray_mask.shape[0] and point_along_line[1] < \
                             visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
+                            # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
                             boundary_2 = point_along_line
                         # Esophagus touches right image edge
                         elif point_along_line[0] == visualization_data.xray_mask.shape[0] - 1 or point_along_line[1] == \
                                 visualization_data.xray_mask.shape[1] - 1:
+                            # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
                             boundary_2 = point_along_line
 
             # Check if there are at least 2 boundary points 
@@ -583,6 +589,7 @@ class FigureCreator(ABC):
         skeleton = skeletonize(array)
         coords = np.argwhere(skeleton == 1)
         print(f"coords: {coords}")
+
 
         ####
         # Create a figure and axis FOR DEBUGGING
