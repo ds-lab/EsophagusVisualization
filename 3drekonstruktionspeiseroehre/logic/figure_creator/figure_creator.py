@@ -249,7 +249,7 @@ class FigureCreator(ABC):
         ####
 
 
-        num_points_for_polyfit = 40
+        num_points_for_polyfit = 60
 
         for i in range(len(sensor_path)):
             # Create slope_points that are used to calculate linear regression (slope)
@@ -351,11 +351,17 @@ class FigureCreator(ABC):
                             visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
                             # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
-                            boundary_1 = point_along_line
+                            if model.coef_[0] > abs(0.1):
+                                boundary_1 = point_along_line
+                            else:
+                                print(f"Steigung zu klein")
                         # Esophagus touches left image edge
                         elif point_along_line[0] == 0 or point_along_line[1] == 0:
                             # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
-                            boundary_1 = point_along_line
+                            if model.coef_[0] > abs(0.1):
+                                boundary_1 = point_along_line
+                            else:
+                                print(f"Steigung zu klein")
 
                 # Move "right" until boundary is found
                 if boundary_2 is None and (index + j) <= len(perpendicular_points) - 1:
@@ -366,12 +372,18 @@ class FigureCreator(ABC):
                             visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
                             # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
-                            boundary_2 = point_along_line
+                            if model.coef_[0] > abs(0.1):
+                                boundary_2 = point_along_line
+                            else:
+                                print(f"Steigung zu klein")
                         # Esophagus touches right image edge
                         elif point_along_line[0] == visualization_data.xray_mask.shape[0] - 1 or point_along_line[1] == \
                                 visualization_data.xray_mask.shape[1] - 1:
                             # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
-                            boundary_2 = point_along_line
+                            if model.coef_[0] > abs(0.1):
+                                boundary_2 = point_along_line
+                            else:
+                                print(f"Steigung zu klein")
 
             # Check if there are at least 2 boundary points 
             if boundary_1 is None or boundary_2 is None:
@@ -379,8 +391,8 @@ class FigureCreator(ABC):
                     # In very few cases the top is extremely tilted so that only one boundary can be found, in this case "fake" this point by creating a small width
                     boundary_1 = (perpendicular_points[index][0] - 1, perpendicular_points[index][1] - 1)
                     boundary_2 = (perpendicular_points[index][0] + 1, perpendicular_points[index][1] + 1)
-                else:
-                    raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
+            #    else:
+            #        raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
 
             #### FOR DEBUGGING
             x_values = [point[1] for point in sensor_path]  # in sensor path stehen die x werte an index 1
@@ -394,12 +406,14 @@ class FigureCreator(ABC):
 
             # Step 2: Calculate Width
             # Calculate the distance between two boundary points
-            width = np.linalg.norm(np.array(boundary_1) - np.array(boundary_2))
+            if boundary_1 is not None and boundary_2 is not None:
+                width = np.linalg.norm(np.array(boundary_1) - np.array(boundary_2))
 
             # Step 3: Calculate Center
             # Calculate the midpoint between two boundary points
-            center = (np.array(boundary_1) + np.array(boundary_2)) / 2
-            center = (int(center[0]), int(center[1]))
+            if boundary_1 is not None and boundary_2 is not None:
+                center = (np.array(boundary_1) + np.array(boundary_2)) / 2
+                center = (int(center[0]), int(center[1]))
 
             # Store the calculated width and center
             widths.append(width)
