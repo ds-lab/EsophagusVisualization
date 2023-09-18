@@ -249,7 +249,7 @@ class FigureCreator(ABC):
         ####
 
 
-        num_points_for_polyfit = 30
+        num_points_for_polyfit = 40
 
         for i in range(len(sensor_path)):
             # Create slope_points that are used to calculate linear regression (slope)
@@ -352,17 +352,11 @@ class FigureCreator(ABC):
                             visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
                             # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
-                            if model.coef_[0] > abs(0.1):
-                                boundary_1 = point_along_line
-                            else:
-                                print(f"Steigung zu klein")
+                            boundary_1 = point_along_line
                         # Esophagus touches left image edge
                         elif point_along_line[0] == 0 or point_along_line[1] == 0:
                             # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
-                            if model.coef_[0] > abs(0.1):
-                                boundary_1 = point_along_line
-                            else:
-                                print(f"Steigung zu klein")
+                            boundary_1 = point_along_line
 
                 # Move "right" until boundary is found
                 if boundary_2 is None and (index + j) <= len(perpendicular_points) - 1:
@@ -373,18 +367,12 @@ class FigureCreator(ABC):
                             visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
                             # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
-                            if model.coef_[0] > abs(0.1):
-                                boundary_2 = point_along_line
-                            else:
-                                print(f"Steigung zu klein")
+                            boundary_2 = point_along_line
                         # Esophagus touches right image edge
                         elif point_along_line[0] == visualization_data.xray_mask.shape[0] - 1 or point_along_line[1] == \
                                 visualization_data.xray_mask.shape[1] - 1:
                             # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
-                            if model.coef_[0] > abs(0.1):
-                                boundary_2 = point_along_line
-                            else:
-                                print(f"Steigung zu klein")
+                            boundary_2 = point_along_line
 
             # Check if there are at least 2 boundary points 
             if boundary_1 is None or boundary_2 is None:
@@ -441,7 +429,9 @@ class FigureCreator(ABC):
             dist_at_point = dist[sensor_pos[0]][sensor_pos[1]]
             distance.append(dist_at_point)
 
-        return distance, sensor_path, slopes, offset_top
+        print(f"slopes: {slopes}")
+
+        return widths, centers, slopes, offset_top
 
     @staticmethod
     def create_figure(x, y, z, surfacecolor_list, title):
