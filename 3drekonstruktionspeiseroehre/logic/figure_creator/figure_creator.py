@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import cv2
 from PIL import Image
 from matplotlib import cm
+import tcod
 
 
 class FigureCreator(ABC):
@@ -118,11 +119,11 @@ class FigureCreator(ABC):
         #                                                            sensor_path[index_first])
 
         path_length_px = 0
-        for i in range(index_second, index_first):
+        for i in range(index_first, index_second):
             # Add euklidean distance of the previous point and the current one, [0] corresponds to the y-axis
             path_length_px += np.sqrt(
                 (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
-            if i == index_first:
+            if i == index_second:
                 break
 
         length_cm = first_sensor_cm - second_sensor_cm
@@ -246,7 +247,7 @@ class FigureCreator(ABC):
         # plt.savefig("path.png")
         ####
 
-        num_points_for_polyfit = 40
+        num_points_for_polyfit = 120
 
         for i in range(len(sensor_path)):
             # Create slope_points that are used to calculate linear regression (slope)
@@ -413,7 +414,7 @@ class FigureCreator(ABC):
                     color="pink", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("centers_middle.png", dpi=300)
+        plt.savefig("new_shortest_path_c2_d3_120pointsforreg.png", dpi=300)
         ####
 
         return widths, centers, slopes, offset_top
@@ -563,13 +564,27 @@ class FigureCreator(ABC):
 
         # Replace zeros with 1000 for cost calculation of shortest path
         # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
-        costs = np.where(array, 1, 1000)
+        # costs = np.where(array, 1, 1000)
+
 
         # Use annotated endpoint as end of shortest path
         endpoint = visualization_data.esophagus_exit_pos
+
+
+        # Tried alternative way of shortest path calculation
+        cost = np.where(array, 1, 0)
+        graph = tcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
+        pf = tcod.path.Pathfinder(graph)
+        pf.add_root((endpoint[1], endpoint[0]))
+        path = np.array(pf.path_to((middle_y, middle_x)).tolist())
+
+        print(f"path: {path}")
+
+
+
         # Calculate shortest path
-        path, cost = graph.route_through_array(costs, start=(middle_y, middle_x),
-                                               end=(endpoint[1], endpoint[0]), fully_connected=True)
+        # path, cost = graph.route_through_array(costs, start=(middle_y, middle_x),
+        #                                        end=(endpoint[1], endpoint[0]), fully_connected=True)
         return path
 
     @staticmethod
