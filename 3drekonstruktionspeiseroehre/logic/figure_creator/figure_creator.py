@@ -247,7 +247,7 @@ class FigureCreator(ABC):
         # plt.savefig("path.png")
         ####
 
-        num_points_for_polyfit = 120
+        num_points_for_polyfit = 60
 
         for i in range(len(sensor_path)):
             # Create slope_points that are used to calculate linear regression (slope)
@@ -267,11 +267,23 @@ class FigureCreator(ABC):
             # x and y coords of slope_points
             x = np.array([p[1] for p in slope_points]).reshape(-1, 1)
             # Edit x so x-values aren't the same (sklearn can't handle that)
+            # x = np.array([x + i * 0.00001 for i, x in enumerate(x)])
+            # y = np.array([p[0] for p in slope_points])
+            # # Calculate linear regression to get slope of esophagus segment
+            # model = LinearRegression()
+            # model.fit(x, y)
             x = np.array([x + i * 0.00001 for i, x in enumerate(x)])
+            x1 = x[0]
+            x2 = x[-1]
+            x = np.array([x1, x2])
             y = np.array([p[0] for p in slope_points])
+            y1 = y[0]
+            y2 = y[-1]
+            y = np.array([y1, y2])
             # Calculate linear regression to get slope of esophagus segment
             model = LinearRegression()
             model.fit(x, y)
+
 
             # Calculate perpendicular slope, use epsilon to avoid divisions by zero or values close to zero
             # ToDo: dies darf es nicht oder nur in Ausnahmefällen überhaupt geben, sonst Fehler
@@ -414,7 +426,7 @@ class FigureCreator(ABC):
                     color="pink", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("new_shortest_path_c2_d3_120pointsforreg.png", dpi=300)
+        plt.savefig("new_shortest_path_c1_d3_60pointsforreg.png", dpi=300)
         ####
 
         return widths, centers, slopes, offset_top
@@ -573,7 +585,7 @@ class FigureCreator(ABC):
 
         # Tried alternative way of shortest path calculation
         cost = np.where(array, 1, 0)
-        graph = tcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
+        graph = tcod.path.SimpleGraph(cost=cost, cardinal=1, diagonal=3)
         pf = tcod.path.Pathfinder(graph)
         pf.add_root((endpoint[1], endpoint[0]))
         path = np.array(pf.path_to((middle_y, middle_x)).tolist())
