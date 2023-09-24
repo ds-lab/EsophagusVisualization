@@ -390,8 +390,8 @@ class FigureCreator(ABC):
                     # In very few cases the top is extremely tilted so that only one boundary can be found, in this case "fake" this point by creating a small width
                     boundary_1 = (perpendicular_points[index][0] - 1, perpendicular_points[index][1] - 1)
                     boundary_2 = (perpendicular_points[index][0] + 1, perpendicular_points[index][1] + 1)
-                # else:
-                #     raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
+                else:
+                    raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
 
             #### FOR DEBUGGING
             x_values = [point[1] for point in sensor_path]  # in sensor path stehen die x werte an index 1
@@ -426,7 +426,7 @@ class FigureCreator(ABC):
                     color="pink", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("new_shortest_path_c1_d3_60pointsforreg.png", dpi=300)
+        plt.savefig("new_shortest_path_c2_d3_60pointsforreg_onlyfirstlast.png", dpi=300)
         ####
 
         return widths, centers, slopes, offset_top
@@ -585,7 +585,7 @@ class FigureCreator(ABC):
 
         # Tried alternative way of shortest path calculation
         cost = np.where(array, 1, 0)
-        graph = tcod.path.SimpleGraph(cost=cost, cardinal=1, diagonal=3)
+        graph = tcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
         pf = tcod.path.Pathfinder(graph)
         pf.add_root((endpoint[1], endpoint[0]))
         path = np.array(pf.path_to((middle_y, middle_x)).tolist())
