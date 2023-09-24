@@ -377,8 +377,8 @@ class FigureCreator(ABC):
                     # In very few cases the top is extremely tilted so that only one boundary can be found, in this case "fake" this point by creating a small width
                     boundary_1 = (perpendicular_points[index][0] - 1, perpendicular_points[index][1] - 1)
                     boundary_2 = (perpendicular_points[index][0] + 1, perpendicular_points[index][1] + 1)
-                else:
-                    raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
+                # else:
+                #     raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
 
             #### FOR DEBUGGING
             x_values = [point[1] for point in sensor_path]  # in sensor path stehen die x werte an index 1
@@ -546,12 +546,21 @@ class FigureCreator(ABC):
 
         x1 = sorted_lists[0][0]
         x2 = sorted_lists[1][0]
+        middle_y = sorted_lists[0][1]
         length = x2 - x1
-        middle = x1 + length // 2
+        middle_x = x1 + length // 2
 
         # Step3: Calculate shortest path on original xray mask from "middle" to endpoint
 
-        array = visualization_data.xray_mask
+        for row in range(len(array)):
+            for col in range(len(array[row])):
+                if array[row][col] == 0:
+                    array[row][col] = 1
+                elif array[row][col] == 1:
+                    array[row][col] = 0
+                else:
+                    print("nicht 0 oder 1")
+
         # Replace zeros with 1000 for cost calculation of shortest path
         # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
         costs = np.where(array, 1, 1000)
@@ -559,7 +568,7 @@ class FigureCreator(ABC):
         # Use annotated endpoint as end of shortest path
         endpoint = visualization_data.esophagus_exit_pos
         # Calculate shortest path
-        path, cost = graph.route_through_array(costs, start=(middle[1], middle[0]),
+        path, cost = graph.route_through_array(costs, start=(middle_y, middle_x),
                                                end=(endpoint[1], endpoint[0]), fully_connected=True)
         return path
 
