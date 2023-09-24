@@ -563,8 +563,6 @@ class FigureCreator(ABC):
                                                end=(endpoint[1], endpoint[0]), fully_connected=True)
         return path
 
-        return path
-
     @staticmethod
     def calculate_index_by_startindex_and_cm_position(start_index, position_cm, sensor_path, esophagus_full_length_px,
                                                       esophagus_full_length_cm):
