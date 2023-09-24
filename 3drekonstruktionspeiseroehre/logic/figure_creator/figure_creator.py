@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import cv2
 from PIL import Image
 from matplotlib import cm
-import statsmodels.api as sm
 
 
 class FigureCreator(ABC):
@@ -148,14 +147,14 @@ class FigureCreator(ABC):
         # Path length from top for first sensor
         first_sensor_path_length_px = 0
 
-        #first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
-        #_, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
+        # first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
+        # _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
 
         # ToDo: vorher wurde hier nicht der ganze Sensorpath abgelaufen, sondern nur bis zur ersten Sensorposition
         # wir laufen jetzt den ganzen Sensorpath ab -> passt das so?
         for i in range(0, len(sensor_path)):
-            if i == len(sensor_path)-1:
-            #if visualization_data.first_sensor_pos[1] - offset_top == sensor_path[i][0]:
+            if i == len(sensor_path) - 1:
+                # if visualization_data.first_sensor_pos[1] - offset_top == sensor_path[i][0]:
                 break
             if i > 0:
                 first_sensor_path_length_px += np.sqrt(
@@ -232,14 +231,13 @@ class FigureCreator(ABC):
         ##Invert y-axis to have positive y downwards FOR DEBUGGING
         ax.invert_yaxis()
         ##plot xray FOR DEBUGGING
-        #coordinates = [(row_idx, col_idx) for row_idx, row in enumerate(visualization_data.xray_mask) for col_idx, value
+        # coordinates = [(row_idx, col_idx) for row_idx, row in enumerate(visualization_data.xray_mask) for col_idx, value
         #               in enumerate(row) if value == 1]
-        #x_values, y_values = zip(*coordinates)
-        #plt.scatter(y_values, x_values, s=0.5)
+        # x_values, y_values = zip(*coordinates)
+        # plt.scatter(y_values, x_values, s=0.5)
         plt.imshow(visualization_data.xray_mask, cmap='gray')
-        #x_values, y_values = zip(*coords)
-        #plt.scatter(y_values, x_values, s=0.5, color="green", alpha=0.05)
-
+        # x_values, y_values = zip(*coords)
+        # plt.scatter(y_values, x_values, s=0.5, color="green", alpha=0.05)
 
         # # plot shortest path FOR DEBUGGING
         # x_values = [point[1] for point in sensor_path] # in sensor path stehen die x werte an index 1
@@ -247,7 +245,6 @@ class FigureCreator(ABC):
         # plt.scatter(x_values, y_values, color="red", s=3)
         # plt.savefig("path.png")
         ####
-
 
         num_points_for_polyfit = 40
 
@@ -380,8 +377,8 @@ class FigureCreator(ABC):
                     # In very few cases the top is extremely tilted so that only one boundary can be found, in this case "fake" this point by creating a small width
                     boundary_1 = (perpendicular_points[index][0] - 1, perpendicular_points[index][1] - 1)
                     boundary_2 = (perpendicular_points[index][0] + 1, perpendicular_points[index][1] + 1)
-            #    else:
-            #        raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
+                else:
+                    raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
 
             #### FOR DEBUGGING
             x_values = [point[1] for point in sensor_path]  # in sensor path stehen die x werte an index 1
@@ -416,20 +413,8 @@ class FigureCreator(ABC):
                     color="pink", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("centers_skel.png", dpi=300)
+        plt.savefig("centers_middle.png", dpi=300)
         ####
-
-        print(f"exit pos: {visualization_data.esophagus_exit_pos}")
-
-        # ToDo: Alternative Berechnung width wieder entfernen, auch in Return wenn gefixt
-
-        dist = ndimage.distance_transform_edt(visualization_data.xray_mask)
-        distance = []
-        for sensor_pos in sensor_path:
-            dist_at_point = dist[sensor_pos[0]][sensor_pos[1]]
-            distance.append(dist_at_point)
-
-        print(f"slopes: {slopes}")
 
         return widths, centers, slopes, offset_top
 
@@ -489,8 +474,6 @@ class FigureCreator(ABC):
         # adapted from: https://stackoverflow.com/questions/60227551/rectify-edges-of-a-shape-in-mask-with-opencv
 
         # convert array to image
-
-
 
         image = Image.fromarray(np.uint8(cm.Greys(array) * 255))
 
@@ -554,8 +537,7 @@ class FigureCreator(ABC):
         cv2.drawContours(brg_image, [approx], 0, (0, 128, 0), 3)
         cv2.imwrite("contours.jpg", brg_image)
 
-        # Step2: Use left and right coordinates of upper most horizontal countour line (straigtened) as upper esophagus border
-        # This will be used to fill the xray_mask upwards with white pixels
+        # Step2: Calculate middle point of upper most horizontal line
 
         embedded_lists = [inner_list[0] for inner_list in approx]
         print(f"embedded_lists: {embedded_lists}")
@@ -564,84 +546,22 @@ class FigureCreator(ABC):
 
         x1 = sorted_lists[0][0]
         x2 = sorted_lists[1][0]
-        y = sorted_lists[0][1]
         length = x2 - x1
         middle = x1 + length // 2
-        if length >= 32:
-            x1 = middle - length // 8
-            x2 = middle + length // 8
 
+        # Step3: Calculate shortest path on original xray mask from "middle" to endpoint
 
-        print(f"x1, x2, y: {x1, x2, y}")
+        array = visualization_data.xray_mask
+        # Replace zeros with 1000 for cost calculation of shortest path
+        # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
+        costs = np.where(array, 1, 1000)
 
-        for row in range(1, y): # we have to start at row 1, so that the first line is still black
-            for col in range(x1, x2):
-                array[row][col] = 0
-
-        extended_image = Image.fromarray(np.uint8(cm.Greys(array) * 255))
-
-        # Convert the Pillow Image to a NumPy array
-        extended_image_np = np.array(extended_image)
-
-        # Convert the image to grayscale (CV_8UC1)
-        extended_gray_image = cv2.cvtColor(extended_image_np, cv2.COLOR_RGB2GRAY)
-
-        cv2.imwrite("extended_gray_image.jpg", extended_gray_image)
-
-        # Step3: Calculate the skeleton on extended xray_mask
-
-        for row in range(len(array)):
-            for col in range(len(array[row])):
-                if array[row][col] == 0:
-                    array[row][col] = 1
-                elif array[row][col] == 1:
-                    array[row][col] = 0
-                else:
-                    print("nicht 0 oder 1")
-
-        skeleton = skeletonize(array)
-        coords = np.argwhere(skeleton == 1)
-        print(f"coords: {coords}")
-
-
-        ####
-        # Create a figure and axis FOR DEBUGGING
-        fig, ax = plt.subplots()
-
-        ##Invert y-axis to have positive y downwards FOR DEBUGGING
-        ax.invert_yaxis()
-        ##plot xray FOR DEBUGGING
-        plt.imshow(visualization_data.xray_mask, cmap='gray')
-        x_values, y_values = zip(*coords)
-        plt.scatter(y_values, x_values, s=0.5, color="green", alpha=0.05)
-        #plt.savefig("skeleton.png")
-
-        # Step4: Calculate shortest path from point on skeleton that is nearest to endpoint to highest point
-
-        # Define cost array
-        cost_array = [[1000 for col in range(array.shape[1])] for row in range(array.shape[0])]
-        for coord in coords:
-            row, col = coord
-            cost_array[row][col] = 0
-
-
-        esophagus_exit_pos_switched = (visualization_data.esophagus_exit_pos[1], visualization_data.esophagus_exit_pos[0])
-
-        startpoint = coords[0]
-        _, endpoint = spatial.KDTree(np.array(coords)).query(np.array(esophagus_exit_pos_switched))
-        endpoint = coords[endpoint]
-
-        print(f"startpoint: {startpoint}")
-        print(f"endpoint: {endpoint}")
-
-        path, cost = graph.route_through_array(cost_array, start=(startpoint[0], startpoint[1]),
-                                               end=(endpoint[0], endpoint[1]), fully_connected=True)
-
-        ##### for debugging
-        x_values, y_values = zip(*path)
-        plt.scatter(y_values, x_values, s=0.5, color="red", alpha=0.05)
-        plt.savefig("skeleton_and_shortest.png")
-        print(f"path: {path}")
+        # Use annotated endpoint as end of shortest path
+        endpoint = visualization_data.esophagus_exit_pos
+        # Calculate shortest path
+        path, cost = graph.route_through_array(costs, start=(middle[1], middle[0]),
+                                               end=(endpoint[1], endpoint[0]), fully_connected=True)
+        return path
 
         return path
 
