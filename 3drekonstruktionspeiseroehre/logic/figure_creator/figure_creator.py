@@ -111,8 +111,8 @@ class FigureCreator(ABC):
         _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
         _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(second_sensor_pos_switched))
 
-        print(f"index first {index_first}")
-        print(f"sensor path index first {sensor_path[index_first]}")
+        # print(f"index first {index_first}")
+        # print(f"sensor path index first {sensor_path[index_first]}")
 
         # Calculate segement length to find out centimeter to pixel ratio
         # length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, sensor_path[index_second],
@@ -247,9 +247,23 @@ class FigureCreator(ABC):
         # plt.savefig("path.png")
         ####
 
-        num_points_for_polyfit = 60
-
+        num_points_for_polyfit = 80
+        count = 0
+        point_distance = 1
         for i in range(len(sensor_path)):
+            if i > (point_distance*2) and abs(sensor_path[i][1] - sensor_path[i - (point_distance*2)][1]) < abs(
+                    sensor_path[i][1] - sensor_path[i - point_distance][1]):
+                num_points_for_polyfit = 40
+                count = 1
+                print("40 points for polyfit")
+            if 0 < count < 20:
+                num_points_for_polyfit = 40
+                count += 1
+                print("40 points for polyfit weil count")
+            elif count == 20:
+                count = 0
+                num_points_for_polyfit = 80
+                print("80 points for polyfit")
             # Create slope_points that are used to calculate linear regression (slope)
             if i < num_points_for_polyfit // 2:
                 # Before we have num_points_for_polyfit point available skip to the part where we have enough to calcuate the slope
@@ -284,7 +298,6 @@ class FigureCreator(ABC):
             model = LinearRegression()
             model.fit(x, y)
 
-
             # Calculate perpendicular slope, use epsilon to avoid divisions by zero or values close to zero
             # ToDo: dies darf es nicht oder nur in Ausnahmefällen überhaupt geben, sonst Fehler
             if model.coef_[0] == 0:
@@ -295,6 +308,7 @@ class FigureCreator(ABC):
             # If the esophagus shows a tight curve/bend, wrong slopes may be calculated (very steep perpendicular)-> in this case take the previous slope to skip the wrong one
             if i > 1 and abs(perpendicular_slope) > 30 and abs(perpendicular_slope / slopes[i - 1]) > 50:
                 perpendicular_slope = slopes[i - 1]
+                print("vorherige Slope wird genommen")
 
             slopes.append(perpendicular_slope)
 
@@ -426,7 +440,7 @@ class FigureCreator(ABC):
                     color="pink", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("new_shortest_path_c2_d3_60pointsforreg_onlyfirstlast.png", dpi=300)
+        plt.savefig("new_shortest_path_c2_d3_40_80_pointsforreg_onlyfirstlast.png", dpi=300)
         ####
 
         return widths, centers, slopes, offset_top
@@ -481,8 +495,6 @@ class FigureCreator(ABC):
                 else:
                     print("nicht 0 oder 1")
 
-        print(f"array converted: {array}")
-
         # Step1: Find and straigthen contours around esophagus xray_mask
         # adapted from: https://stackoverflow.com/questions/60227551/rectify-edges-of-a-shape-in-mask-with-opencv
 
@@ -496,13 +508,11 @@ class FigureCreator(ABC):
         # Convert the image to grayscale (CV_8UC1)
         gray_image = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
 
-        cv2.imwrite("gray_image.jpg", gray_image)
+        # cv2.imwrite("gray_image.jpg", gray_image)
 
         # From the black and white image we find the contours, so the boundaries of all the shapes.
         _, threshold = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
         contours, hierarchy = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-        print(f"contours: {contours}")
         contours = contours[0]
 
         peri = cv2.arcLength(contours, closed=True)
@@ -546,16 +556,14 @@ class FigureCreator(ABC):
             approx[i][0] = p1
             approx[(i + 1) % n][0] = p2
 
-        brg_image = cv2.cvtColor(gray_image, cv2.COLOR_BGR2RGB)
-        cv2.drawContours(brg_image, [approx], 0, (0, 128, 0), 3)
-        cv2.imwrite("contours.jpg", brg_image)
+        # brg_image = cv2.cvtColor(gray_image, cv2.COLOR_BGR2RGB)
+        # cv2.drawContours(brg_image, [approx], 0, (0, 128, 0), 3)
+        # cv2.imwrite("contours.jpg", brg_image)
 
         # Step2: Calculate middle point of upper most horizontal line
 
         embedded_lists = [inner_list[0] for inner_list in approx]
-        print(f"embedded_lists: {embedded_lists}")
         sorted_lists = sorted(embedded_lists, key=lambda x: (x[1]))
-        print(f"sorted_lists: {sorted_lists}")
 
         x1 = sorted_lists[0][0]
         x2 = sorted_lists[1][0]
@@ -578,10 +586,8 @@ class FigureCreator(ABC):
         # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
         # costs = np.where(array, 1, 1000)
 
-
         # Use annotated endpoint as end of shortest path
         endpoint = visualization_data.esophagus_exit_pos
-
 
         # Tried alternative way of shortest path calculation
         cost = np.where(array, 1, 0)
@@ -589,10 +595,6 @@ class FigureCreator(ABC):
         pf = tcod.path.Pathfinder(graph)
         pf.add_root((endpoint[1], endpoint[0]))
         path = np.array(pf.path_to((middle_y, middle_x)).tolist())
-
-        print(f"path: {path}")
-
-
 
         # Calculate shortest path
         # path, cost = graph.route_through_array(costs, start=(middle_y, middle_x),
