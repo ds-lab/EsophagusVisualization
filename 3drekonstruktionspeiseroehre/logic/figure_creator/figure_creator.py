@@ -438,6 +438,12 @@ class FigureCreator(ABC):
                     alpha=0.1)
         plt.scatter([visualization_data.esophagus_exit_pos[0]], [visualization_data.esophagus_exit_pos[1]],
                     color="pink", s=5)
+        #plt.scatter([visualization_data.endoscopy_start_pos[0]], [visualization_data.endoscopy_start_pos[1]],
+        #            color="black", s=5)
+        plt.scatter([visualization_data.first_sensor_pos[0]], [visualization_data.first_sensor_pos[1]],
+                    color="black", s=5)
+        plt.scatter([visualization_data.second_sensor_pos[0]], [visualization_data.second_sensor_pos[1]],
+                    color="black", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
         plt.savefig("test.png", dpi=300)
