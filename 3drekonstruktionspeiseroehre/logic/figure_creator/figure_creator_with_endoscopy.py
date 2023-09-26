@@ -26,6 +26,7 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         widths, centers, slopes, offset_top = FigureCreator.calculate_widths_centers_slope_offset(
             visualization_data, sensor_path)
 
+        # ToDo: Wirklich von 0 oder von offset?
         esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(sensor_path, 0,
                                                                                visualization_data.esophagus_exit_pos)
 
