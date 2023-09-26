@@ -186,6 +186,7 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         :return: indexes
         """
         endoscopy_image_indexes = []
+        # ToDo: brauchen wir hier offset und müssen wir evtl. x und y vertauschen?
         endoscopy_start_pos = (endoscopy_start_pos[0], endoscopy_start_pos[1] - offset_top)
         # Find endoscopy start positiion in sensor_path
         _, index = spatial.KDTree(np.array(sensor_path)).query(np.array(endoscopy_start_pos))
