@@ -247,22 +247,22 @@ class FigureCreator(ABC):
         # plt.savefig("path.png")
         ####
 
-        num_points_for_polyfit = 80
+        num_points_for_polyfit = config.num_points_for_polyfit_smooth
         count = 0
-        point_distance = 1
+        point_distance = config.point_distance_in_polyfit
         for i in range(len(sensor_path)):
             if i > (point_distance*2) and abs(sensor_path[i][1] - sensor_path[i - (point_distance*2)][1]) < abs(
                     sensor_path[i][1] - sensor_path[i - point_distance][1]):
-                num_points_for_polyfit = 40
+                num_points_for_polyfit = config.num_points_for_polyfit_sharp
                 count = 1
                 print("40 points for polyfit")
-            if 0 < count < 20:
-                num_points_for_polyfit = 40
+            if 0 < count < config.points_for_smoothing_in_sharp_edges:
+                num_points_for_polyfit = config.num_points_for_polyfit_sharp
                 count += 1
                 print("40 points for polyfit weil count")
-            elif count == 20:
+            elif count == config.points_for_smoothing_in_sharp_edges:
                 count = 0
-                num_points_for_polyfit = 80
+                num_points_for_polyfit = config.num_points_for_polyfit_smooth
                 print("80 points for polyfit")
             # Create slope_points that are used to calculate linear regression (slope)
             if i < num_points_for_polyfit // 2:
@@ -525,7 +525,7 @@ class FigureCreator(ABC):
         approx = cv2.approxPolyDP(contours, epsilon=0.01 * peri, closed=True)
 
         # Delat threshold
-        t = 10
+        t = config.px_threshold_for_straight_line
 
         # n - Number of vertices
         n = approx.shape[0]

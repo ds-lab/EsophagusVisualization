@@ -31,3 +31,10 @@ csv_values_per_second = 20  # how many values belong to one second
 # window size
 window_start_size_width = 600
 window_start_size_height = 350
+
+# figure creation
+num_points_for_polyfit_smooth = 80  # points for polyfit in parts of the sensor-paths where there is no sharp edge
+num_points_for_polyfit_sharp = 40  # points for polyfit in parts of the sensor-paths where there IS a sharp edge
+point_distance_in_polyfit = 10  # distance of the points on the sensor-paths that are used for the polyfit
+points_for_smoothing_in_sharp_edges = 20  # number of points after a detected sharp edge for which num_points_for_polyfit_sharp is used
+px_threshold_for_straight_line = 10  # pixel threshold for detecting the upper most horizontal line in shorted paths calculation
