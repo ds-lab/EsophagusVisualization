@@ -111,13 +111,6 @@ class FigureCreator(ABC):
         _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
         _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(second_sensor_pos_switched))
 
-        # print(f"index first {index_first}")
-        # print(f"sensor path index first {sensor_path[index_first]}")
-
-        # Calculate segement length to find out centimeter to pixel ratio
-        # length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, sensor_path[index_second],
-        #                                                            sensor_path[index_first])
-
         path_length_px = 0
         for i in range(index_first, index_second):
             # Add euklidean distance of the previous point and the current one, [0] corresponds to the y-axis
@@ -255,15 +248,12 @@ class FigureCreator(ABC):
                     sensor_path[i][1] - sensor_path[i - point_distance][1]):
                 num_points_for_polyfit = config.num_points_for_polyfit_sharp
                 count = 1
-                print("40 points for polyfit")
             if 0 < count < config.points_for_smoothing_in_sharp_edges:
                 num_points_for_polyfit = config.num_points_for_polyfit_sharp
                 count += 1
-                print("40 points for polyfit weil count")
             elif count == config.points_for_smoothing_in_sharp_edges:
                 count = 0
                 num_points_for_polyfit = config.num_points_for_polyfit_smooth
-                print("80 points for polyfit")
             # Create slope_points that are used to calculate linear regression (slope)
             if i < num_points_for_polyfit // 2:
                 # Before we have num_points_for_polyfit point available skip to the part where we have enough to calcuate the slope
@@ -299,7 +289,6 @@ class FigureCreator(ABC):
             model.fit(x, y)
 
             # Calculate perpendicular slope, use epsilon to avoid divisions by zero or values close to zero
-            # ToDo: dies darf es nicht oder nur in Ausnahmefällen überhaupt geben, sonst Fehler
             if model.coef_[0] == 0:
                 perpendicular_slope = -1 / (model.coef_[0] + 0.0001)
             else:
@@ -329,8 +318,8 @@ class FigureCreator(ABC):
             if -0.0001 < model.coef_[0] < 0.0001:
                 # If the points used for the lin reg are inline along the x axis (slope is zero)
                 # ToDo: Hier können falsche Werte für die widths rauskommen
-                # ToDo: slope der perpendicular ist sehr steil, fast senkret
-                # ToDo: überprüfen ob die boundaries die durch diese Stellen entstanden sind, Sinn machen
+                # slope der perpendicular ist sehr steil, fast senkret
+                # überprüfen ob die boundaries die durch diese Stellen entstanden sind, Sinn machen
                 perpendicular_start = (point[0] - line_length, point[1])
                 perpendicular_end = (point[0] + line_length, point[1])
 
@@ -375,11 +364,9 @@ class FigureCreator(ABC):
                             visualization_data.xray_mask.shape[0] and point_along_line[1] < \
                             visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
-                            # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
                             boundary_1 = point_along_line
                         # Esophagus touches left image edge
                         elif point_along_line[0] == 0 or point_along_line[1] == 0:
-                            # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
                             boundary_1 = point_along_line
 
                 # Move "right" until boundary is found
@@ -390,12 +377,10 @@ class FigureCreator(ABC):
                             visualization_data.xray_mask.shape[0] and point_along_line[1] < \
                             visualization_data.xray_mask.shape[1]:
                         if visualization_data.xray_mask[point_along_line[0]][point_along_line[1]] == 0:
-                            # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
                             boundary_2 = point_along_line
                         # Esophagus touches right image edge
                         elif point_along_line[0] == visualization_data.xray_mask.shape[0] - 1 or point_along_line[1] == \
                                 visualization_data.xray_mask.shape[1] - 1:
-                            # ToDo: nur wenn die Perpendicular nicht zu steil war, bzw. der Sensor-Path nicht zu flach
                             boundary_2 = point_along_line
 
             # Check if there are at least 2 boundary points 
@@ -465,8 +450,6 @@ class FigureCreator(ABC):
         # calculate colormatrix for first frame, the others will be done by javascript
         first_surfacecolor = np.tile(np.array([surfacecolor_list[0]]).transpose(), (1, config.figure_number_of_angles))
 
-        # data = {"x": x.flatten(), "y": y.flatten(), "z": z.flatten(), "colors": first_surfacecolor.flatten()}
-        # figure = px.scatter_3d(data, x="x", y="y", z="z", color="colors", color_continuous_scale=config.colorscale, range_color=(config.cmin,config.cmax))
         figure = go.Figure(data=[
             go.Surface(x=x, y=y, z=z, surfacecolor=first_surfacecolor, colorscale=config.colorscale, cmin=config.cmin,
                        cmax=config.cmax)])
@@ -483,14 +466,18 @@ class FigureCreator(ABC):
         """
         estimates the course of the manometry catheter in the esophagus
         :param visualization_data: VisualizationData
-        :param offset_top: top offset of the x-ray image
-        :param offset_bottom: bottom offset of the x-ray image
-        :param center_top: center coordinate at the top of the esophagus
-        :param center_bottom: center coordinate at the bottom of the esophagus
         :return: path as list of coordinates
         """
 
+        # For the calculation of the shortest path, we need the points between which the shortest path should be calculated
+        # At the "bottom" of the esophagus this is the user-defined esophagus-exit position (it is not necessarily the bottom most point)
+        # At the top of the esophagus this is the middle of the upper most horizontal line of the xray-mask ----------x----------
+        # However, due to drawing inaccuracies of the xray-polygon the upper most "line" is not always horizontal (or even one single "line")
+        # So we need to find the upper most horizonal contour of the xray-mask, straighten it and find its middle.
+
         array = visualization_data.xray_mask
+
+        # Values in the xray_mask (array) need to be reversed, because we will find the contours in a black figure on white background
 
         for row in range(len(array)):
             for col in range(len(array[row])):
@@ -530,6 +517,7 @@ class FigureCreator(ABC):
         # n - Number of vertices
         n = approx.shape[0]
 
+        # now to true (straight) contours are approximated
         for i in range(n):
             #      p1              p2
             #       *--------------*
@@ -562,10 +550,6 @@ class FigureCreator(ABC):
             approx[i][0] = p1
             approx[(i + 1) % n][0] = p2
 
-        # brg_image = cv2.cvtColor(gray_image, cv2.COLOR_BGR2RGB)
-        # cv2.drawContours(brg_image, [approx], 0, (0, 128, 0), 3)
-        # cv2.imwrite("contours.jpg", brg_image)
-
         # Step2: Calculate middle point of upper most horizontal line
 
         embedded_lists = [inner_list[0] for inner_list in approx]
@@ -578,7 +562,9 @@ class FigureCreator(ABC):
         middle_x = x1 + length // 2
 
         # Step3: Calculate shortest path on original xray mask from "middle" to endpoint
+        # ToDo macht es einen Unterschied wie rum (von Start zu Ende oder anders herum) wir den Shortest Path berechnen?
 
+        # reverse the values in the array again back to original values for calculation of shortest path
         for row in range(len(array)):
             for col in range(len(array[row])):
                 if array[row][col] == 0:
@@ -588,23 +574,16 @@ class FigureCreator(ABC):
                 else:
                     print("nicht 0 oder 1")
 
-        # Replace zeros with 1000 for cost calculation of shortest path
-        # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
-        # costs = np.where(array, 1, 1000)
-
         # Use annotated endpoint as end of shortest path
         endpoint = visualization_data.esophagus_exit_pos
 
-        # Tried alternative way of shortest path calculation
-        cost = np.where(array, 1, 0)
-        graph = tcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
-        pf = tcod.path.Pathfinder(graph)
+        # Shortest path calculation
+        cost = np.where(array, 1, 0)  # define costs according to needs of library tcod
+        graph_path = tcod.path.SimpleGraph(cost=cost, cardinal=config.cardinal_cost, diagonal=config.diagnonal_cost)
+        pf = tcod.path.Pathfinder(graph_path)
         pf.add_root((endpoint[1], endpoint[0]))
         path = np.array(pf.path_to((middle_y, middle_x)).tolist())
 
-        # Calculate shortest path
-        # path, cost = graph.route_through_array(costs, start=(middle_y, middle_x),
-        #                                        end=(endpoint[1], endpoint[0]), fully_connected=True)
         return path
 
     @staticmethod
