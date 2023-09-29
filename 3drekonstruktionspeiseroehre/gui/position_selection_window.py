@@ -72,7 +72,7 @@ class PositionSelectionWindow(QMainWindow):
         handles left-click on image
         :param event:
         """
-        # TODO: second und sphincter Punkte mit x und y übergeben und ax line nehmen 
+
         if event.xdata and event.ydata and self.active_paint_index is not None:
             self.plot_ax.clear()
             self.plot_ax.imshow(self.xray_image)
