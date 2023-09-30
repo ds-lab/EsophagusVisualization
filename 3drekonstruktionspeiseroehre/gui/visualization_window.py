@@ -239,15 +239,14 @@ class VisualizationWindow(QMainWindow):
                         sphinkter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
                         volume_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[2]
                         volume_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[3]
-                        # ToDo MinPressure ist noch nicht mit drin
                         max_pressure_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[4]
                         max_pressure_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[5]
                         esophagus_length = visit_data.visualization_data_list[j].figure_creator.get_esophagus_full_length_cm()
 
                         writer.writerow([visit_name, round(np.mean(tubular_metric), 2),
-                                         round(np.mean(sphinkter_metric), 2),  round(np.mean(volume_tubular), 2),
-                                         round(np.mean(volume_sphinkter), 2), round(np.mean(max_pressure_tubular), 2),
-                                         round(np.mean(max_pressure_sphinkter), 2), round(esophagus_length, 2)])
+                                         round(np.mean(sphinkter_metric), 2),  round(volume_tubular, 2),
+                                         round(volume_sphinkter, 2), round(max_pressure_tubular, 2),
+                                         round(max_pressure_sphinkter, 2), round(esophagus_length, 2)])
 
                 # Inform the user that the export is complete
         QMessageBox.information(self, "Export Complete",

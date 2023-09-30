@@ -83,8 +83,6 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
             sensor_path, esophagus_full_length_px, visualization_data, offset_top)
 
         # calculate metrics
-        # TODO: todo correct centers usage
-        # TODO: manchmal sind lücken in der 3d ansicht -> damit richtig umgehen -> schwellenwert für kreisgröße oder so
         self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
                                                        len(centers) - 1, esophagus_full_length_cm,
                                                        esophagus_full_length_px)

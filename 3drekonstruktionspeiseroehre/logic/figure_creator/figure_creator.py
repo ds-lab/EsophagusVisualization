@@ -74,7 +74,6 @@ class FigureCreator(ABC):
         :return: length in pixels
         """
         path_length_px = 0
-        # ToDo: noch anpassen
         for i in range(0, len(sensor_path)):
             if i > 0 and sensor_path[i - 1][0] >= start_index:
                 # Add euklidean distance of the previous point and the current one, [0] corresponds to the y-axis
@@ -112,11 +111,11 @@ class FigureCreator(ABC):
         _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(second_sensor_pos_switched))
 
         path_length_px = 0
-        for i in range(index_first, index_second):
+        for i in range(index_second, index_first + 1):
             # Add euklidean distance of the previous point and the current one, [0] corresponds to the y-axis
             path_length_px += np.sqrt(
                 (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
-            if i == index_second:
+            if i == index_first:
                 break
 
         length_cm = first_sensor_cm - second_sensor_cm
@@ -138,19 +137,16 @@ class FigureCreator(ABC):
         """
         pressure_matrix = visualization_data.pressure_matrix
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
-        # Path length from top for first sensor
+
+        first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
+        _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
+
+        # Path length from top for first sensor (offset)
         first_sensor_path_length_px = 0
-
-        # first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
-        # _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
-
-        # ToDo: vorher wurde hier nicht der ganze Sensorpath abgelaufen, sondern nur bis zur ersten Sensorposition
-        # wir laufen jetzt den ganzen Sensorpath ab -> passt das so?
         for i in range(0, len(sensor_path)):
-            if i == len(sensor_path) - 1:
-                # if visualization_data.first_sensor_pos[1] - offset_top == sensor_path[i][0]:
+            if i == index_first:
                 break
-            if i > 0:
+            elif i > 0:
                 first_sensor_path_length_px += np.sqrt(
                     (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
 
@@ -299,7 +295,6 @@ class FigureCreator(ABC):
 
             if -0.0001 < model.coef_[0] < 0.0001:
                 # If the points used for the lin reg are inline along the x axis (slope is zero)
-                # ToDo: Hier können falsche Werte für die widths rauskommen
                 # slope der perpendicular ist sehr steil, fast senkret
                 # überprüfen ob die boundaries die durch diese Stellen entstanden sind, Sinn machen
                 perpendicular_start = (point[0] - line_length, point[1])
@@ -412,7 +407,7 @@ class FigureCreator(ABC):
                     color="black", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("test.png", dpi=300)
+        plt.savefig("test2.png", dpi=300)
         ####
 
         return widths, centers, slopes, offset_top
@@ -541,7 +536,6 @@ class FigureCreator(ABC):
         middle_x = x1 + length // 2
 
         # Step3: Calculate shortest path on original xray mask from "middle" to endpoint
-        # ToDo macht es einen Unterschied wie herum (von Start zu Ende oder anders herum) wir den Shortest Path berechnen?
 
         # reverse the values in the array again back to original values for calculation of shortest path
         for row in range(len(array)):
@@ -560,8 +554,8 @@ class FigureCreator(ABC):
         cost = np.where(array, 1, 0)  # define costs according to needs of library tcod
         graph_path = tcod.path.SimpleGraph(cost=cost, cardinal=config.cardinal_cost, diagonal=config.diagnonal_cost)
         pf = tcod.path.Pathfinder(graph_path)
-        pf.add_root((endpoint[1], endpoint[0]))
-        path = np.array(pf.path_to((middle_y, middle_x)).tolist())
+        pf.add_root((middle_y, middle_x))
+        path = np.array(pf.path_to((endpoint[1], endpoint[0])).tolist())
 
         return path
 
@@ -696,7 +690,7 @@ class FigureCreator(ABC):
         if tubular_part_upper_boundary is None:
             tubular_part_upper_boundary = 0
 
-        px_as_cm = esophagus_full_length_cm / esophagus_full_length_px
+        one_px_as_cm = esophagus_full_length_cm / esophagus_full_length_px
 
         # Calculate tubular metric between upper tubular boundary and upper lower sphincter boundary
         # Length accoding to frames in surfacecolor_list
@@ -704,8 +698,8 @@ class FigureCreator(ABC):
         volume_sum_tubular = 0
         for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
-            # TODO: bisher war bei der Berechnung bei shapely_poly.area noch ein Faktor * px_as_cm, der aber eigentlich falsch ist an der Stelle, da x und y schon cm Werte sind, wie gehen wir damit um?
-            volume_slice = shapely_poly.area
+            # one_px_as_cm factor is needed, because of the third dimension height (height of a single slice is one pixel)
+            volume_slice = shapely_poly.area * one_px_as_cm
             volume_sum_tubular = volume_sum_tubular + volume_slice
             for j in range(len(surfacecolor_list)):
                 # Calculate metric for frame and height
@@ -716,7 +710,8 @@ class FigureCreator(ABC):
         volume_sum_sphincter = 0
         for i in range(lower_sphincter_boundary[0], lower_sphincter_boundary[1] + 1):
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
-            volume_slice = shapely_poly.area
+            # one_px_as_cm factor is needed, because of the third dimension height (height of a single slice is one pixel)
+            volume_slice = shapely_poly.area * one_px_as_cm
             volume_sum_sphincter = volume_sum_sphincter + volume_slice
             for j in range(len(surfacecolor_list)):
                 # Calculate metric for frame and height
@@ -724,16 +719,12 @@ class FigureCreator(ABC):
 
         # Calculate max pressure over timeline for lower_sphincter_center (lower_sphincter_center is the region
         # with the max pressure in space)
-        # ToDo: Ist das so gewollt?
-        # ToDo: Kontrollieren ob i und j nicht vertauscht
-
         max_pressure_sphincter = 0
         for j in range(len(surfacecolor_list)):
             if surfacecolor_list[j][lower_sphincter_center] > max_pressure_sphincter:
                 max_pressure_sphincter = surfacecolor_list[j][lower_sphincter_center]
 
         # Calculate max pressure over time and space for tubular part of esophagus
-
         max_pressure_tubular = 0
         for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
             for j in range(len(surfacecolor_list)):
