@@ -18,7 +18,7 @@ import numpy as np
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    def __init__(self, master_window: MasterWindow, next_window, patient_data: PatientData, visit: VisitData, n: int):
+    def __init__(self, master_window: MasterWindow, next_window, patient_data: PatientData, visit: VisitData, n: int, shapely_poly):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -32,6 +32,7 @@ class PositionSelectionWindow(QMainWindow):
         self.visualization_data = visit.visualization_data_list[n]
         self.visit = visit
         self.n = n
+        self.shapely_poly = shapely_poly
         self.next_window = next_window
         sensor_names = ["P" + str(22 - i) for i in range(22)]
         self.ui.first_combobox.addItems(sensor_names)
@@ -84,16 +85,27 @@ class PositionSelectionWindow(QMainWindow):
         :param event:
         """
 
-        polygon_points = np.array(self.visualization_data.xray_polygon, np.int32)
+        #polygon_points = np.array(self.visualization_data.xray_polygon, np.int32)
 
         # Reshape the array, da cv2.polylines() erwartet, dass die Punkte in einem 3D-Array liegen
-        polygon_points = polygon_points.reshape((-1, 1, 2))
+        #polygon_points = polygon_points.reshape((-1, 1, 2))
 
         # Zeichne das Polygon auf das Bild
-        cv2.polylines(self.xray_image, [polygon_points], isClosed=True, color=(0, 255, 0), thickness=2)
+        #cv2.polylines(self.xray_image, [polygon_points], isClosed=True, color=(0, 255, 0), thickness=2)
+
+        # Konvertieren Sie die Koordinaten in Tupel
+        points = [tuple(point) for point in self.visualization_data.xray_polygon]
+
+        # Zeichne die Punkte auf das Bild
+        color = (0, 255, 0)  # Farbe der Punkte in BGR (hier: Grün)
+        radius = 4  # Radius der Punkte
+        for point in points:
+            self.xray_image = cv2.circle(self.xray_image, point, radius, color, -1)
 
 
         if event.xdata and event.ydata and self.active_paint_index is not None:
+
+
             self.plot_ax.clear()
             self.plot_ax.imshow(self.xray_image)
             self.plot_ax.axis('off')
