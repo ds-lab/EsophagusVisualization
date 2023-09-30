@@ -85,6 +85,9 @@ class PositionSelectionWindow(QMainWindow):
         :param event:
         """
 
+        #TODO: Eingezeichnetes Polygon von xray-window in sensor-position-window übertragen für bessere Kontrolle der korrekten Positionen
+        #Problem: funktioniert bei sehr schmalen Speiseröhren nicht
+
         #polygon_points = np.array(self.visualization_data.xray_polygon, np.int32)
 
         # Reshape the array, da cv2.polylines() erwartet, dass die Punkte in einem 3D-Array liegen
