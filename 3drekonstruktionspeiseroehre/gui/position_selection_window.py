@@ -11,6 +11,8 @@ from matplotlib.pyplot import Circle
 from PyQt5 import uic
 from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
 from skimage import io
+import cv2
+import numpy as np
 
 
 class PositionSelectionWindow(QMainWindow):
@@ -63,6 +65,8 @@ class PositionSelectionWindow(QMainWindow):
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis('off')
+
+
         self.figure_canvas.mpl_connect("button_press_event", self.__on_left_click)
 
         self.active_paint_index = None  # None=none, 0=first sensor, 1=second sensor, 2=endoscopy, 3=sphincter
@@ -79,6 +83,16 @@ class PositionSelectionWindow(QMainWindow):
         handles left-click on image
         :param event:
         """
+
+        polygon_points = np.array(self.visualization_data.xray_polygon, np.int32)
+
+        # Reshape the array, da cv2.polylines() erwartet, dass die Punkte in einem 3D-Array liegen
+        polygon_points = polygon_points.reshape((-1, 1, 2))
+
+        # Zeichne das Polygon auf das Bild
+        cv2.polylines(self.xray_image, [polygon_points], isClosed=True, color=(0, 255, 0), thickness=2)
+
+
         if event.xdata and event.ydata and self.active_paint_index is not None:
             self.plot_ax.clear()
             self.plot_ax.imshow(self.xray_image)

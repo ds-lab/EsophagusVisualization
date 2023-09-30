@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
 from shapely.geometry import Polygon
 from skimage import io
 
+
 class XrayRegionSelectionWindow(QMainWindow):
     """Window where the user selects the shape of the esophagus on the x-ray image"""
 

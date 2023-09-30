@@ -216,11 +216,11 @@ class FigureCreator(ABC):
 
         ####
         # Create a figure and axis FOR DEBUGGING
-        fig, ax = plt.subplots()
+        #fig, ax = plt.subplots()
 
         ##Invert y-axis to have positive y downwards FOR DEBUGGING
-        ax.invert_yaxis()
-        plt.imshow(visualization_data.xray_mask, cmap='gray')
+        #ax.invert_yaxis()
+        #plt.imshow(visualization_data.xray_mask, cmap='gray')
         ####
 
         num_points_for_polyfit = config.num_points_for_polyfit_smooth
@@ -370,10 +370,10 @@ class FigureCreator(ABC):
                     raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
 
             #### FOR DEBUGGING
-            if boundary_1 is not None and boundary_2 is not None:
-                plt.scatter([boundary_1[1], boundary_2[1]], [boundary_1[0], boundary_2[0]], color="yellow",
-                            s=0.5, alpha=0.5)
-                pass
+            #if boundary_1 is not None and boundary_2 is not None:
+            #    plt.scatter([boundary_1[1], boundary_2[1]], [boundary_1[0], boundary_2[0]], color="yellow",
+            #                s=0.5, alpha=0.5)
+            #    pass
             ####
 
             # Step 2: Calculate Width
@@ -394,20 +394,20 @@ class FigureCreator(ABC):
         #### FOR DEBUGGING
         x_values = [point[1] for point in sensor_path]  # in sensor path stehen die x werte an index 1
         y_values = [point[0] for point in sensor_path]
-        plt.scatter(x_values, y_values, color="red", s=0.5, alpha=0.05)
-        plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="blue", s=0.5,
-                    alpha=0.1)
-        plt.scatter([visualization_data.esophagus_exit_pos[0]], [visualization_data.esophagus_exit_pos[1]],
-                    color="pink", s=5)
+        #plt.scatter(x_values, y_values, color="red", s=0.5, alpha=0.05)
+        #plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="blue", s=0.5,
+        #            alpha=0.1)
+        #plt.scatter([visualization_data.esophagus_exit_pos[0]], [visualization_data.esophagus_exit_pos[1]],
+        #            color="pink", s=5)
         #plt.scatter([visualization_data.endoscopy_start_pos[0]], [visualization_data.endoscopy_start_pos[1]],
         #            color="black", s=5)
-        plt.scatter([visualization_data.first_sensor_pos[0]], [visualization_data.first_sensor_pos[1]],
-                    color="black", s=5)
-        plt.scatter([visualization_data.second_sensor_pos[0]], [visualization_data.second_sensor_pos[1]],
-                    color="black", s=5)
-        ax.set_xlim(0, visualization_data.xray_mask.shape[1])
-        ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("test2.png", dpi=300)
+        #plt.scatter([visualization_data.first_sensor_pos[0]], [visualization_data.first_sensor_pos[1]],
+        #            color="black", s=5)
+        #plt.scatter([visualization_data.second_sensor_pos[0]], [visualization_data.second_sensor_pos[1]],
+        #            color="black", s=5)
+        #ax.set_xlim(0, visualization_data.xray_mask.shape[1])
+        #ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
+        #plt.savefig("test2.png", dpi=300)
         ####
 
         return widths, centers, slopes, offset_top
