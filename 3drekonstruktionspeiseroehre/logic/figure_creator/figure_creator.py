@@ -224,20 +224,7 @@ class FigureCreator(ABC):
 
         ##Invert y-axis to have positive y downwards FOR DEBUGGING
         ax.invert_yaxis()
-        ##plot xray FOR DEBUGGING
-        # coordinates = [(row_idx, col_idx) for row_idx, row in enumerate(visualization_data.xray_mask) for col_idx, value
-        #               in enumerate(row) if value == 1]
-        # x_values, y_values = zip(*coordinates)
-        # plt.scatter(y_values, x_values, s=0.5)
         plt.imshow(visualization_data.xray_mask, cmap='gray')
-        # x_values, y_values = zip(*coords)
-        # plt.scatter(y_values, x_values, s=0.5, color="green", alpha=0.05)
-
-        # # plot shortest path FOR DEBUGGING
-        # x_values = [point[1] for point in sensor_path] # in sensor path stehen die x werte an index 1
-        # y_values = [point[0] for point in sensor_path]
-        # plt.scatter(x_values, y_values, color="red", s=3)
-        # plt.savefig("path.png")
         ####
 
         num_points_for_polyfit = config.num_points_for_polyfit_smooth
@@ -271,12 +258,8 @@ class FigureCreator(ABC):
             # x and y coords of slope_points
             x = np.array([p[1] for p in slope_points]).reshape(-1, 1)
             # Edit x so x-values aren't the same (sklearn can't handle that)
-            # x = np.array([x + i * 0.00001 for i, x in enumerate(x)])
-            # y = np.array([p[0] for p in slope_points])
-            # # Calculate linear regression to get slope of esophagus segment
-            # model = LinearRegression()
-            # model.fit(x, y)
             x = np.array([x + i * 0.00001 for i, x in enumerate(x)])
+            # Take only last and first value for regression
             x1 = x[0]
             x2 = x[-1]
             x = np.array([x1, x2])
@@ -297,13 +280,12 @@ class FigureCreator(ABC):
             # If the esophagus shows a tight curve/bend, wrong slopes may be calculated (very steep perpendicular)-> in this case take the previous slope to skip the wrong one
             if i > 1 and abs(perpendicular_slope) > 30 and abs(perpendicular_slope / slopes[i - 1]) > 50:
                 perpendicular_slope = slopes[i - 1]
-                print("vorherige Slope wird genommen")
 
             slopes.append(perpendicular_slope)
 
             line_length = visualization_data.xray_mask.shape[1] * 2
             # Calculate equidistant points between two points on perpendicular (equidistant to avoid skipping points later)
-            # new_y                        y     + m               * (new_x - x)
+            # new_y              =          y     + m               * (new_x - x)
             perpendicular_start_y = point[0] + perpendicular_slope * (0 - point[1])
             perpendicular_end_y = point[0] + perpendicular_slope * (
                     visualization_data.xray_mask.shape[1] - 1 - point[1])
@@ -415,7 +397,6 @@ class FigureCreator(ABC):
             centers.append(center)
 
         #### FOR DEBUGGING
-        # plt.savefig("perp_points.png")
         x_values = [point[1] for point in sensor_path]  # in sensor path stehen die x werte an index 1
         y_values = [point[0] for point in sensor_path]
         plt.scatter(x_values, y_values, color="red", s=0.5, alpha=0.05)
@@ -501,17 +482,15 @@ class FigureCreator(ABC):
         # Convert the image to grayscale (CV_8UC1)
         gray_image = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
 
-        # cv2.imwrite("gray_image.jpg", gray_image)
-
-        # From the black and white image we find the contours, so the boundaries of all the shapes.
-        _, threshold = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
+        # From the black and white image we find the contours
+        _, threshold = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)  # threshold just describes which pixel values are regared as black vs. white
         contours, hierarchy = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         contours = contours[0]
 
         peri = cv2.arcLength(contours, closed=True)
         approx = cv2.approxPolyDP(contours, epsilon=0.01 * peri, closed=True)
 
-        # Delat threshold
+        # Delta threshold
         t = config.px_threshold_for_straight_line
 
         # n - Number of vertices
@@ -562,7 +541,7 @@ class FigureCreator(ABC):
         middle_x = x1 + length // 2
 
         # Step3: Calculate shortest path on original xray mask from "middle" to endpoint
-        # ToDo macht es einen Unterschied wie rum (von Start zu Ende oder anders herum) wir den Shortest Path berechnen?
+        # ToDo macht es einen Unterschied wie herum (von Start zu Ende oder anders herum) wir den Shortest Path berechnen?
 
         # reverse the values in the array again back to original values for calculation of shortest path
         for row in range(len(array)):
