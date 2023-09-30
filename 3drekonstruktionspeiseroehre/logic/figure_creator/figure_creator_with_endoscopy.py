@@ -199,8 +199,8 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         :return: indexes
         """
         endoscopy_image_indexes = []
-        endoscopy_start_pos = (endoscopy_start_pos[0], endoscopy_start_pos[1] - offset_top)
-        # Find endoscopy start positiion in sensor_path
+        endoscopy_start_pos = (endoscopy_start_pos[1], endoscopy_start_pos[0])
+        # Find endoscopy start position in sensor_path
         _, index = spatial.KDTree(np.array(sensor_path)).query(np.array(endoscopy_start_pos))
         for position in endoscopy_image_positions_cm:
             endoscopy_image_indexes.append(FigureCreator.calculate_index_by_startindex_and_cm_position(

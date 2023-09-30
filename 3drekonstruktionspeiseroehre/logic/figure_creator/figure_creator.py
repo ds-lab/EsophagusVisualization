@@ -10,7 +10,12 @@ import shapely.geometry
 from logic.visualization_data import VisualizationData
 from skimage import graph
 from sklearn.linear_model import LinearRegression
-from scipy import spatial
+from scipy import spatial, ndimage
+import matplotlib.pyplot as plt
+import cv2
+from PIL import Image
+from matplotlib import cm
+import tcod
 
 
 class FigureCreator(ABC):
@@ -95,18 +100,28 @@ class FigureCreator(ABC):
         second_sensor_cm = config.coords_sensors[visualization_data.second_sensor_index]
 
         # Find the first point on the sensor_path that matches the y-value of the first sensor position
-        endpoint = next(
-            (point for point in sensor_path if int(point[0]) == int(visualization_data.first_sensor_pos - offset_top)),
-            None)
+        # endpoint = next(
+        #     (point for point in sensor_path if int(point[0]) == int(visualization_data.first_sensor_pos - offset_top)),
+        #     None)
 
-        # Calculate segement length to find out centimeter to pixel ratio
-        length_pixel = FigureCreator.calculate_esophagus_length_px(sensor_path, visualization_data.second_sensor_pos -
-                                                                   offset_top, endpoint)
+        first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
+        second_sensor_pos_switched = (visualization_data.second_sensor_pos[1], visualization_data.second_sensor_pos[0])
+
+        _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
+        _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(second_sensor_pos_switched))
+
+        path_length_px = 0
+        for i in range(index_second, index_first + 1):
+            # Add euklidean distance of the previous point and the current one, [0] corresponds to the y-axis
+            path_length_px += np.sqrt(
+                (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
+            if i == index_first:
+                break
 
         length_cm = first_sensor_cm - second_sensor_cm
 
         # Calculate centimeter length using ratio and full pixel length
-        return length_cm * (esophagus_full_length_px / length_pixel)
+        return length_cm * (esophagus_full_length_px / path_length_px)
 
     @staticmethod
     def calculate_surfacecolor_list(sensor_path, visualization_data, esophagus_full_length_px, esophagus_full_length_cm,
@@ -122,12 +137,16 @@ class FigureCreator(ABC):
         """
         pressure_matrix = visualization_data.pressure_matrix
         px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
-        # Path length from top for first sensor
+
+        first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
+        _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
+
+        # Path length from top for first sensor (offset)
         first_sensor_path_length_px = 0
         for i in range(0, len(sensor_path)):
-            if visualization_data.first_sensor_pos - offset_top == sensor_path[i][0]:
+            if i == index_first:
                 break
-            if i > 0:
+            elif i > 0:
                 first_sensor_path_length_px += np.sqrt(
                     (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
 
@@ -195,9 +214,29 @@ class FigureCreator(ABC):
         slopes = []
         offset_top = sensor_path[0][0]  # y-value of first point in path
 
-        num_points_for_polyfit = 40
+        ####
+        # Create a figure and axis FOR DEBUGGING
+        fig, ax = plt.subplots()
 
+        ##Invert y-axis to have positive y downwards FOR DEBUGGING
+        ax.invert_yaxis()
+        plt.imshow(visualization_data.xray_mask, cmap='gray')
+        ####
+
+        num_points_for_polyfit = config.num_points_for_polyfit_smooth
+        count = 0
+        point_distance = config.point_distance_in_polyfit
         for i in range(len(sensor_path)):
+            if i > (point_distance*2) and abs(sensor_path[i][1] - sensor_path[i - (point_distance*2)][1]) < abs(
+                    sensor_path[i][1] - sensor_path[i - point_distance][1]):
+                num_points_for_polyfit = config.num_points_for_polyfit_sharp
+                count = 1
+            if 0 < count < config.points_for_smoothing_in_sharp_edges:
+                num_points_for_polyfit = config.num_points_for_polyfit_sharp
+                count += 1
+            elif count == config.points_for_smoothing_in_sharp_edges:
+                count = 0
+                num_points_for_polyfit = config.num_points_for_polyfit_smooth
             # Create slope_points that are used to calculate linear regression (slope)
             if i < num_points_for_polyfit // 2:
                 # Before we have num_points_for_polyfit point available skip to the part where we have enough to calcuate the slope
@@ -216,7 +255,14 @@ class FigureCreator(ABC):
             x = np.array([p[1] for p in slope_points]).reshape(-1, 1)
             # Edit x so x-values aren't the same (sklearn can't handle that)
             x = np.array([x + i * 0.00001 for i, x in enumerate(x)])
+            # Take only last and first value for regression
+            x1 = x[0]
+            x2 = x[-1]
+            x = np.array([x1, x2])
             y = np.array([p[0] for p in slope_points])
+            y1 = y[0]
+            y2 = y[-1]
+            y = np.array([y1, y2])
             # Calculate linear regression to get slope of esophagus segment
             model = LinearRegression()
             model.fit(x, y)
@@ -235,8 +281,8 @@ class FigureCreator(ABC):
 
             line_length = visualization_data.xray_mask.shape[1] * 2
             # Calculate equidistant points between two points on perpendicular (equidistant to avoid skipping points later)
-            # new_y                        y     + m               * (new_x - x)
-            perpendicular_start_y = point[0] + perpendicular_slope * (0 - point[1])  # TODO: fix
+            # new_y              =          y     + m               * (new_x - x)
+            perpendicular_start_y = point[0] + perpendicular_slope * (0 - point[1])
             perpendicular_end_y = point[0] + perpendicular_slope * (
                     visualization_data.xray_mask.shape[1] - 1 - point[1])
             perpendicular_start = (perpendicular_start_y, 0)
@@ -247,8 +293,10 @@ class FigureCreator(ABC):
                 perpendicular_start = (point[0], point[1] - line_length)
                 perpendicular_end = (point[0], point[1] + line_length)
 
-            if model.coef_[0] > -0.0001 and model.coef_[0] < 0.0001:
+            if -0.0001 < model.coef_[0] < 0.0001:
                 # If the points used for the lin reg are inline along the x axis (slope is zero)
+                # slope der perpendicular ist sehr steil, fast senkret
+                # überprüfen ob die boundaries die durch diese Stellen entstanden sind, Sinn machen
                 perpendicular_start = (point[0] - line_length, point[1])
                 perpendicular_end = (point[0] + line_length, point[1])
 
@@ -285,7 +333,6 @@ class FigureCreator(ABC):
             boundary_2 = None
             # Move left and right from the current point along the perpendicular to find the boundaries
             for j in range(len(perpendicular_points) - 1):
-                # TODO: für die Lücken -> maybe weil der sensor_path an der Grenze lang läuft werden die boundaries hier komisch, siehe geplottete centers die an der Grenze entlang laufen
                 # Move "left" until boundary is found
                 if boundary_1 is None and (index - j) >= 0:
                     point_along_line = perpendicular_points[index - j]
@@ -322,18 +369,46 @@ class FigureCreator(ABC):
                 else:
                     raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
 
+            #### FOR DEBUGGING
+            if boundary_1 is not None and boundary_2 is not None:
+                plt.scatter([boundary_1[1], boundary_2[1]], [boundary_1[0], boundary_2[0]], color="yellow",
+                            s=0.5, alpha=0.5)
+                pass
+            ####
+
             # Step 2: Calculate Width
             # Calculate the distance between two boundary points
-            width = np.linalg.norm(np.array(boundary_1) - np.array(boundary_2))
+            if boundary_1 is not None and boundary_2 is not None:
+                width = np.linalg.norm(np.array(boundary_1) - np.array(boundary_2))
 
             # Step 3: Calculate Center
             # Calculate the midpoint between two boundary points
-            center = (np.array(boundary_1) + np.array(boundary_2)) / 2
-            center = (int(center[0]), int(center[1]))
+            if boundary_1 is not None and boundary_2 is not None:
+                center = (np.array(boundary_1) + np.array(boundary_2)) / 2
+                center = (int(center[0]), int(center[1]))
 
             # Store the calculated width and center
             widths.append(width)
             centers.append(center)
+
+        #### FOR DEBUGGING
+        x_values = [point[1] for point in sensor_path]  # in sensor path stehen die x werte an index 1
+        y_values = [point[0] for point in sensor_path]
+        plt.scatter(x_values, y_values, color="red", s=0.5, alpha=0.05)
+        plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="blue", s=0.5,
+                    alpha=0.1)
+        plt.scatter([visualization_data.esophagus_exit_pos[0]], [visualization_data.esophagus_exit_pos[1]],
+                    color="pink", s=5)
+        #plt.scatter([visualization_data.endoscopy_start_pos[0]], [visualization_data.endoscopy_start_pos[1]],
+        #            color="black", s=5)
+        plt.scatter([visualization_data.first_sensor_pos[0]], [visualization_data.first_sensor_pos[1]],
+                    color="black", s=5)
+        plt.scatter([visualization_data.second_sensor_pos[0]], [visualization_data.second_sensor_pos[1]],
+                    color="black", s=5)
+        ax.set_xlim(0, visualization_data.xray_mask.shape[1])
+        ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
+        plt.savefig("test2.png", dpi=300)
+        ####
 
         return widths, centers, slopes, offset_top
 
@@ -351,8 +426,6 @@ class FigureCreator(ABC):
         # calculate colormatrix for first frame, the others will be done by javascript
         first_surfacecolor = np.tile(np.array([surfacecolor_list[0]]).transpose(), (1, config.figure_number_of_angles))
 
-        # data = {"x": x.flatten(), "y": y.flatten(), "z": z.flatten(), "colors": first_surfacecolor.flatten()}
-        # figure = px.scatter_3d(data, x="x", y="y", z="z", color="colors", color_continuous_scale=config.colorscale, range_color=(config.cmin,config.cmax))
         figure = go.Figure(data=[
             go.Surface(x=x, y=y, z=z, surfacecolor=first_surfacecolor, colorscale=config.colorscale, cmin=config.cmin,
                        cmax=config.cmax)])
@@ -369,40 +442,121 @@ class FigureCreator(ABC):
         """
         estimates the course of the manometry catheter in the esophagus
         :param visualization_data: VisualizationData
-        :param offset_top: top offset of the x-ray image
-        :param offset_bottom: bottom offset of the x-ray image
-        :param center_top: center coordinate at the top of the esophagus
-        :param center_bottom: center coordinate at the bottom of the esophagus
         :return: path as list of coordinates
         """
-        # Cut off offsets from xray mask
+
+        # For the calculation of the shortest path, we need the points between which the shortest path should be calculated
+        # At the "bottom" of the esophagus this is the user-defined esophagus-exit position (it is not necessarily the bottom most point)
+        # At the top of the esophagus this is the middle of the upper most horizontal line of the xray-mask ----------x----------
+        # However, due to drawing inaccuracies of the xray-polygon the upper most "line" is not always horizontal (or even one single "line")
+        # So we need to find the upper most horizonal contour of the xray-mask, straighten it and find its middle.
+
         array = visualization_data.xray_mask
-        # Replace zeros with 1000 for cost calculation of shortest path
-        # This results in a "mask"/image where the esophagus has values of 1, and the remaining pixels have values of 1000
-        costs = np.where(array, 1, 1000)
 
-        start_top = None
-        end_top = None
-        found_top = False
+        # Values in the xray_mask (array) need to be reversed, because we will find the contours in a black figure on white background
 
-        # Search startpoint
-        for i in range(visualization_data.xray_mask.shape[0]):
-            # Iterate over xray mask width horizontally (x-axis)
-            for j in range(visualization_data.xray_mask.shape[1]):
-                if visualization_data.xray_mask[i, j]:
-                    if not start_top:
-                        start_top = (i, j)
-                    end_top = (i, j)
-                    found_top = True
-            if found_top:
-                startpoint = (start_top[0], (start_top[1] + end_top[1]) // 2)
-                break
+        for row in range(len(array)):
+            for col in range(len(array[row])):
+                if array[row][col] == 0:
+                    array[row][col] = 1
+                elif array[row][col] == 1:
+                    array[row][col] = 0
+                else:
+                    print("nicht 0 oder 1")
 
-                # Use annotated endpoint as end of shortest path
+        # Step1: Find and straigthen contours around esophagus xray_mask
+        # adapted from: https://stackoverflow.com/questions/60227551/rectify-edges-of-a-shape-in-mask-with-opencv
+
+        # convert array to image
+
+        image = Image.fromarray(np.uint8(cm.Greys(array) * 255))
+
+        # Convert the Pillow Image to a NumPy array
+        image_np = np.array(image)
+
+        # Convert the image to grayscale (CV_8UC1)
+        gray_image = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
+
+        # From the black and white image we find the contours
+        _, threshold = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)  # threshold just describes which pixel values are regared as black vs. white
+        contours, hierarchy = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours = contours[0]
+
+        peri = cv2.arcLength(contours, closed=True)
+        approx = cv2.approxPolyDP(contours, epsilon=0.01 * peri, closed=True)
+
+        # Delta threshold
+        t = config.px_threshold_for_straight_line
+
+        # n - Number of vertices
+        n = approx.shape[0]
+
+        # now to true (straight) contours are approximated
+        for i in range(n):
+            #      p1              p2
+            #       *--------------*
+            #       |
+            #       |
+            #       |
+            #       *
+            #      p0
+
+            p0 = approx[(i + n - 1) % n][0]  # Previous vertex
+            p1 = approx[i][0]  # Current vertex
+            p2 = approx[(i + 1) % n][0]  # Next vertex
+            dx = p2[0] - p1[0]  # Delta pixels in horizontal direction
+            dy = p2[1] - p1[1]  # Delta pixels in vertical direction
+
+            # Fix x index of vertices p1 and p2 to be with same x coordinate ([<p1>, <p2>] form horizontal line).
+            if abs(dx) < t:
+                if ((dx < 0) and (p0[0] > p1[0])) or ((dx > 0) and (p0[0] < p1[0])):
+                    p2[0] = p1[0]
+                else:
+                    p1[0] = p2[0]
+
+            # Fix y index of vertices p1 and p2 to be with same y coordinate ([<p1>, <p2>] form vertical line).
+            if abs(dy) < t:
+                if ((dy < 0) and (p0[1] > p1[1])) or ((dy > 0) and (p0[1] < p1[1])):
+                    p2[1] = p1[1]
+                else:
+                    p1[1] = p2[1]
+
+            approx[i][0] = p1
+            approx[(i + 1) % n][0] = p2
+
+        # Step2: Calculate middle point of upper most horizontal line
+
+        embedded_lists = [inner_list[0] for inner_list in approx]
+        sorted_lists = sorted(embedded_lists, key=lambda x: (x[1]))
+
+        x1 = sorted_lists[0][0]
+        x2 = sorted_lists[1][0]
+        middle_y = sorted_lists[0][1]
+        length = x2 - x1
+        middle_x = x1 + length // 2
+
+        # Step3: Calculate shortest path on original xray mask from "middle" to endpoint
+
+        # reverse the values in the array again back to original values for calculation of shortest path
+        for row in range(len(array)):
+            for col in range(len(array[row])):
+                if array[row][col] == 0:
+                    array[row][col] = 1
+                elif array[row][col] == 1:
+                    array[row][col] = 0
+                else:
+                    print("nicht 0 oder 1")
+
+        # Use annotated endpoint as end of shortest path
         endpoint = visualization_data.esophagus_exit_pos
-        # Calculate shortest path
-        path, cost = graph.route_through_array(costs, start=startpoint,
-                                               end=(endpoint[1], endpoint[0]), fully_connected=True)
+
+        # Shortest path calculation
+        cost = np.where(array, 1, 0)  # define costs according to needs of library tcod
+        graph_path = tcod.path.SimpleGraph(cost=cost, cardinal=config.cardinal_cost, diagonal=config.diagnonal_cost)
+        pf = tcod.path.Pathfinder(graph_path)
+        pf.add_root((middle_y, middle_x))
+        path = np.array(pf.path_to((endpoint[1], endpoint[0])).tolist())
+
         return path
 
     @staticmethod
@@ -536,7 +690,7 @@ class FigureCreator(ABC):
         if tubular_part_upper_boundary is None:
             tubular_part_upper_boundary = 0
 
-        px_as_cm = esophagus_full_length_cm / esophagus_full_length_px
+        one_px_as_cm = esophagus_full_length_cm / esophagus_full_length_px
 
         # Calculate tubular metric between upper tubular boundary and upper lower sphincter boundary
         # Length accoding to frames in surfacecolor_list
@@ -544,8 +698,8 @@ class FigureCreator(ABC):
         volume_sum_tubular = 0
         for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
-            # TODO: bisher war bei der Berechnung bei shapely_poly.area noch ein Faktor * px_as_cm, der aber eigentlich falsch ist an der Stelle, da x und y schon cm Werte sind, wie gehen wir damit um?
-            volume_slice = shapely_poly.area
+            # one_px_as_cm factor is needed, because of the third dimension height (height of a single slice is one pixel)
+            volume_slice = shapely_poly.area * one_px_as_cm
             volume_sum_tubular = volume_sum_tubular + volume_slice
             for j in range(len(surfacecolor_list)):
                 # Calculate metric for frame and height
@@ -556,7 +710,8 @@ class FigureCreator(ABC):
         volume_sum_sphincter = 0
         for i in range(lower_sphincter_boundary[0], lower_sphincter_boundary[1] + 1):
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
-            volume_slice = shapely_poly.area
+            # one_px_as_cm factor is needed, because of the third dimension height (height of a single slice is one pixel)
+            volume_slice = shapely_poly.area * one_px_as_cm
             volume_sum_sphincter = volume_sum_sphincter + volume_slice
             for j in range(len(surfacecolor_list)):
                 # Calculate metric for frame and height
@@ -564,16 +719,12 @@ class FigureCreator(ABC):
 
         # Calculate max pressure over timeline for lower_sphincter_center (lower_sphincter_center is the region
         # with the max pressure in space)
-        # ToDo: Ist das so gewollt?
-        # ToDo: Kontrollieren ob i und j nicht vertauscht
-
         max_pressure_sphincter = 0
         for j in range(len(surfacecolor_list)):
             if surfacecolor_list[j][lower_sphincter_center] > max_pressure_sphincter:
                 max_pressure_sphincter = surfacecolor_list[j][lower_sphincter_center]
 
         # Calculate max pressure over time and space for tubular part of esophagus
-
         max_pressure_tubular = 0
         for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
             for j in range(len(surfacecolor_list)):
