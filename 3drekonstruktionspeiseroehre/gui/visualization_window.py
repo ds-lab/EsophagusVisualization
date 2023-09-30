@@ -239,6 +239,7 @@ class VisualizationWindow(QMainWindow):
                         sphinkter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
                         volume_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[2]
                         volume_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[3]
+                        # ToDo MinPressure ist noch nicht mit drin
                         max_pressure_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[4]
                         max_pressure_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[5]
                         esophagus_length = visit_data.visualization_data_list[j].figure_creator.get_esophagus_full_length_cm()
