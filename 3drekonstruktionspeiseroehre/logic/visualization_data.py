@@ -17,6 +17,7 @@ class VisualizationData:
         self._endoscopy_image_positions_cm = None
 
         self._pressure_matrix = None
+        self._endoflip_screenshot = None
 
         self._figure_creator = None
 
@@ -28,6 +29,7 @@ class VisualizationData:
         self._sphincter_upper_pos = None
         self._esophagus_exit_pos = None
         self._sphincter_length_cm = None
+        self._endoflip_pos = None
 
     @property
     def xray_filename(self):
@@ -76,6 +78,14 @@ class VisualizationData:
     @pressure_matrix.setter
     def pressure_matrix(self, value):
         self._pressure_matrix = value
+
+    @property
+    def endoflip_screenshot(self):
+        return self._endoflip_screenshot
+
+    @endoflip_screenshot.setter
+    def endoflip_screenshot(self, value):
+        self._endoflip_screenshot = value
 
     @property
     def endoscopy_filenames(self):
@@ -166,6 +176,15 @@ class VisualizationData:
     def esophagus_exit_pos(self, value):
         # value is a x,y tuple
         self._esophagus_exit_pos = value
+
+    @property
+    def endoflip_pos(self):
+        return self._endoflip_pos
+
+    @endoflip_pos.setter
+    def endoflip_pos(self, value):
+        # value is a x,y tuple
+        self._endoflip_pos = value
 
     @property
     def sphincter_length_cm(self):

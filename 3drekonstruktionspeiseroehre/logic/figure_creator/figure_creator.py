@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from skimage.morphology import skeletonize
+from natsort import natsorted
 
 import config
 import numpy as np
@@ -431,7 +431,7 @@ class FigureCreator(ABC):
                        cmax=config.cmax)])
 
         figure.update_layout(scene=dict(aspectmode='data'), uirevision='constant',
-                             title=title, title_x=0, title_y=1,
+                             title=dict(text=title, font=dict(size=24)), title_x=0, title_y=1,
                              margin=dict(l=20, r=20, t=30, b=20), hovermode=False)
         figure.update_scenes(zaxis_autorange="reversed", xaxis_autorange="reversed", xaxis_title_text='Breite',
                              yaxis_title_text='Tiefe', zaxis_title_text='Länge')
@@ -733,3 +733,109 @@ class FigureCreator(ABC):
 
         return metric_tubular, metric_sphincter, volume_sum_tubular, volume_sum_sphincter, \
             max_pressure_tubular, max_pressure_sphincter
+
+
+    @staticmethod
+    def colored_vertical_endoflip_tables_and_colors(data):
+        tables = {}
+        common_columns = natsorted(set(data['30']['aggregates'].keys()) & set(data['40']['aggregates'].keys()))
+        # Reverse List because P16 is on top and P1 is at the bottom
+        common_columns = common_columns[::-1]
+        for agg in ['median','min','max','mean']:
+            cell_texts_30 = []
+            cell_texts_40 = []
+
+            # rainbow to visualize high/low diameters
+            colorscale = px.colors.sample_colorscale("jet", [(30-(n+1))/(30-1) for n in range(30)])
+
+            for column in common_columns:
+                # Get aggregated values for each dataset
+                agg_30 = data['30']['aggregates'][column][agg]
+                agg_40 = data['40']['aggregates'][column][agg]
+
+                cell_texts_30.append(f'{agg_30:.2f}')
+                cell_texts_40.append(f'{agg_40:.2f}')
+                
+
+            color_30_40 = [np.array(colorscale)[[int(float(x)) for x in cell_texts_30]], np.array(colorscale)[[int(float(x)) for x in cell_texts_40]]]
+
+            # Create a table with colored cells and text annotations
+            table = go.Table(
+                header=dict(values=['<b>30ml</b>', '<b>40ml</b>'], 
+                            line_color='white',
+                            fill_color='white', 
+                            font=dict(color='black', size=13)),
+                cells=dict(values=[cell_texts_30, 
+                                cell_texts_40], 
+                            fill_color=color_30_40,
+                            line_color=color_30_40,
+                            font=dict(color='white', size=11),
+                            height=20),
+                columnwidth=[1,1],
+            )
+
+            figure = go.Figure(data=[table])
+            figure.update_layout(width=150, margin=dict(l=10, r=10, t=60, b=10), title="Endoflip")
+            tables[agg] = figure
+        return tables
+
+    @staticmethod
+    def get_endoflip_surface_color(sensor_path, visualisation_data: VisualizationData, esophagus_full_length_cm, esophagus_full_length_px):
+        distance_cm = visualisation_data.endoflip_screenshot['30']['distance']
+
+        # Find index of endoflip_pos in sensorpath
+        _, null_pos_index = spatial.KDTree(np.array(sensor_path)).query(np.array(visualisation_data.endoflip_pos))
+
+        # Get stop criterion (endoflip measurement length = number_of_sensors*distance_between_sensors)
+        measurement_length_fraction = distance_cm * 16 / esophagus_full_length_cm
+        measurement_length_px = esophagus_full_length_px * measurement_length_fraction
+
+        # Color change criterion for each sensor
+        sensor_length_fraction = distance_cm / esophagus_full_length_cm
+        sensor_length_px =  esophagus_full_length_px * sensor_length_fraction
+
+        surface_color_collect = {}
+
+        # Get ballon_volume 30 and 40
+        for ballon_volume in visualisation_data.endoflip_screenshot:
+            bv_color_collect = {}
+
+            # Iterate over the aggregate rows of the pandas dataframe
+            for agg, row_data in visualisation_data.endoflip_screenshot[ballon_volume]['aggregates'].iterrows():
+                endoflip_colors = row_data
+
+                # Iterate over sensor_path
+                current_length = 0
+                endoflip_surface_color = []
+                color_index = 0
+
+                for i in range(len(sensor_path)-1, -1, -1):
+                    # Find endoflip section on esophagus
+                    if i < null_pos_index and current_length < measurement_length_px and color_index + 1 < len(endoflip_colors):
+                        current_length += np.sqrt((sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
+                                                                                                    sensor_path[i + 1][
+                                                                                                        1]) ** 2)
+                        # Append appropriate color for endoflip sensor
+                        current_sensor = endoflip_colors[color_index]
+                        next_sensor = endoflip_colors[color_index + 1]
+                        # Smooth color transition
+                        endoflip_value = current_sensor + (next_sensor - current_sensor) * (
+                                        (current_length - sensor_length_px * (color_index)) / (
+                                        sensor_length_px * (color_index+1) -
+                                        sensor_length_px * (color_index)))
+                        endoflip_surface_color.append(endoflip_value)
+
+                        # Check if the next endoflip sensor has been reached 
+                        if current_length >= sensor_length_px * (color_index+1):
+                            color_index += 1
+
+                    elif current_length >= measurement_length_px or i >= null_pos_index or color_index + 1 >= len(endoflip_colors):
+                        # Outside of endoflip section, add high value to simulate None values
+                        endoflip_surface_color.append(40)
+
+                # Reverse colors because the color list was created in reverse
+                bv_color_collect[agg] = endoflip_surface_color[::-1]
+            # Append all colors per aggregation per current ballon_volume
+            surface_color_collect[ballon_volume] = bv_color_collect
+        
+        return surface_color_collect

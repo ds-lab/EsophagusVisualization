@@ -24,7 +24,9 @@ class InfoWindow(QDialog):
         Position dieser Aufnahme im Ösophagus ausgehend von einer in einem späteren Schritt einzutragenden 
         Position 0 an (von unten nach oben). <br>Bei den Endoskopiebildern ist außerdem darauf zu achten, dass diese 
         so angefertigt wurden, dass bezüglich der Drehung die linke Seite der Aufnahme der linken Seite auf dem 
-        Röntgenbild entspricht (rechte Seite analog). <br> Wenn erwünscht kann einer Rekonstruktion ein eindeutiger 
+        Röntgenbild entspricht (rechte Seite analog). 
+        <br> Optional können Endoflip-Untersuchungsergebnisse hinzugefügt werden. Diese sollten im Format .xlsx vorliegen und hierbei ein einzelnes Excel-Sheet beinhalten. <br>
+        <br> Wenn erwünscht kann einer Rekonstruktion ein eindeutiger 
         Namen zugewiesen werden, welcher auch für den Export verwendet wird.
         <br><br> Es ist ebenfalls möglich ein oder mehrere zuvor exportierte Rekonstruktionen zu importieren.
         """
@@ -46,11 +48,15 @@ class InfoWindow(QDialog):
         erforderlich. <br>Diese können aus der 'Laborie'-Software entnommen werden. <br>Für eine gute Präzision 
         sollten die Sensoren möglichst weit auseinander liegen, also etwa ein Sensor im Bereich des oberen Sphinkters 
         und einer im Bereich des unteren. <br><br>Nach einem Klick auf die jeweilige Schaltfläche kann die Position 
-        in der Graphik per Mausklick eingetragen werden. <br><br>Für die Berechnung der Metriken wird die ungefähre 
+        in der Graphik per Mausklick eingetragen werden. 
+        <br><br> Um eine möglichst genaue Rekonstruktion zu ermöglichen muss außerdem der Übergangspunkt von Ösophagus zu Magen (innerhalb des Ösophagus) eingezeichnet werden.
+        <br><br>Für die Berechnung der Metriken wird die ungefähre 
         Position des Übergangs zwischen tubulärem Abschnitt und dem unteren Sphinkter sowie die Länge des Sphinkters 
         (ablesbar in der Laborie-Software) benötigt.<br><br>Wenn beim Start der Software auch Endoskopiebilder 
         angegeben wurden, ist außerdem noch das Eintragen der Position '0cm' (bezogen auf die Positionsangaben 
-        in den Dateinamen) in der Graphik nötig."""
+        in den Dateinamen) in der Graphik nötig.
+        <br><br> Gleichermaßen muss der Sensor P1 der Endoflip-Untersuchung eingegeben werden, wenn Endoflip-Daten übergeben wurden.
+        """
         self.ui.textEdit.setHtml(text)
 
     def show_endoscopy_selection_info(self):
@@ -75,8 +81,14 @@ class InfoWindow(QDialog):
         darstellen. <br>Über die Zeitleiste kann der Zeitpunkt außerdem manuell gewählt werden. <br><br>
         Unten werden die berechneten Metriken für den tubulären Abschnitt (Volumen*Druck) und den unteren Sphinkter 
         (Volumen/Druck) im Zeitverlauf angezeigt.
-        <br><br> Werden mehrere Rekonstruktionen angezeigt, so können diese umsortiert werden durch das Gedrückthalten des linken Mauszeigers und dem Ziehen an die gewünschte Stelle.
-        <br><br> Download: Es gibt zwei verschiedene Arten des Downloads. Zum einen können die 3D Visualisierungen als html Dateien exportiert werden. Dies ermöglicht die Betrachtung der Rekonsturktionen im Browser und macht diese einbindbar in Powerpoint.
-        Zum anderen ermöglicht der 'Download für Import' den Export von '.achalasie' Dateien. Dieser Export ermöglicht, dass die Rekonstruktionen nochmals bequem und unverändert in diesem Programm geöffnet werden können.
+        <br><br> Wurden Endoflip-Daten eingegeben, erscheint links von der 3D-Rekstruktion der Endoflip-Screenshot. Hierbei werden von oben nach unten P16 bis P1 angezeigt. Unter 'Aggregationsform auswählen'
+        kann die Aggregationsfunktion des Screenshots ausgewählt werden. <br> Außerdem kann unterhalb der Rekonstruktion mit einem Schalter ausgewählt werden, welche Farben aus die Rekonstruktion projeziert werden.
+        Bei der Projektion der Endoflip-Farben, kann ausgewählt werden ob ein Ballon-Volumen von 30 oder 40ml angezeigt werden soll und über 'Aggregationsform auswählen' kann widerrum die Aggregationsfunktion gewählt werden.
+        <br><br> Werden mehrere Rekonstruktionen (Import multipler .achalasie Dateien oder über 'Weitere Rekonstruktionen einfügen') angezeigt, so können diese umsortiert werden durch das Gedrückthalten des linken Mauszeigers und dem Ziehen an die gewünschte Stelle.
+        <br><br> Download: Es gibt verschiedene Arten des Downloads. Zum einen können die 3D Visualisierungen als html Dateien exportiert werden. Dies ermöglicht die Betrachtung der Rekonsturktionen im 
+        Browser und macht diese einbindbar in Powerpoint.
+        Zum anderen ermöglicht der 'Download für Import' den Export von '.achalasie' Dateien. Dieser Export ermöglicht,
+        dass die Rekonstruktionen nochmals bequem und unverändert in diesem Programm geöffnet werden können.
+        Zusätzlich ermöglicht 'CSV Metriken Export' das Exportieren der Metriken.
         """
         self.ui.textEdit.setHtml(text)

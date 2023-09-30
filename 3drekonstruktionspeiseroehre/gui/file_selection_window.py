@@ -10,6 +10,7 @@ import pandas as pd
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
+from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
@@ -34,11 +35,13 @@ class FileSelectionWindow(QMainWindow):
         self.endoscopy_filenames = []
         self.xray_filenames = []
         self.endoscopy_image_positions = []
+        self.endoflip_screenshot = None
         self.ui.import_button.clicked.connect(self.__import_button_clicked)
         self.ui.visualization_button.clicked.connect(self.__visualization_button_clicked)
         self.ui.csv_button.clicked.connect(self.__csv_button_clicked)
         self.ui.xray_button_all.clicked.connect(self.__xray_button_clicked_all)
         self.ui.endoscopy_button.clicked.connect(self.__endoscopy_button_clicked)
+        self.ui.endoflip_button.clicked.connect(self.__endoflip_button_clicked)
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -74,6 +77,7 @@ class FileSelectionWindow(QMainWindow):
 
 
                 visualization_data.pressure_matrix = self.pressure_matrix
+                visualization_data.endoflip_screenshot = self.endoflip_screenshot
                 visualization_data.endoscopy_filenames = self.endoscopy_filenames
                 visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
                 visit.add_visualization(visualization_data)
@@ -153,6 +157,25 @@ class FileSelectionWindow(QMainWindow):
             self.ui.endoscopy_textfield.setText(str(len(filenames)) + " Dateien ausgewählt")
             self.endoscopy_image_positions = positions
             self.endoscopy_filenames = filenames
+    
+    def __endoflip_button_clicked(self):
+        """
+        endoflip button callback
+        """
+        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path, "Excel (*.xlsx *.XLSX)")
+        if len(filename) > 0:
+            error = False
+            try:
+                self.endoflip_screenshot = process_endoflip_xlsx(filename)
+            except:
+                error = True
+            if error or len(self.endoflip_screenshot['30']['aggregates']) != 4 or len(self.endoflip_screenshot['40']['aggregates']) != 4:
+                self.ui.endoflip_textfield.setText("")
+                QMessageBox.critical(self, "Ungültige Datei", "Fehler: Die Datei hat nicht das erwartete Format")
+            else:
+                self.ui.endoflip_textfield.setText(filename)
+        self.__check_button_activate()
+        self.default_path = os.path.dirname(filename)
 
     def __import_button_clicked(self):
         """
