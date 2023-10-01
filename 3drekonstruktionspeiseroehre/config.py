@@ -40,4 +40,8 @@ point_distance_in_polyfit = 10  # distance of the points on the sensor-paths tha
 points_for_smoothing_in_sharp_edges = 20  # number of points after a detected sharp edge for which num_points_for_polyfit_sharp is used
 px_threshold_for_straight_line = 10  # pixel threshold for detecting the upper most horizontal line in shorted paths calculation
 cardinal_cost = 2  # costs for shortest path calculation
-diagnonal_cost = 3  # costs for shortest path calculation
+diagonal_cost = 3  # costs for shortest path calculation
+# The esophagus is artifically expanded to create a straight line at the top.
+# This defines the number of pixels the esophagus is expanded BEYOND just building a straight line.
+# Necessary for better shortest paths / centers at the top of the esophagus
+expansion_delta = 5

@@ -407,7 +407,7 @@ class FigureCreator(ABC):
                     color="black", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("expanded_esophagus.png", dpi=300)
+        plt.savefig("expanded_esophagus3.png", dpi=300)
         ####
 
         return widths, centers, slopes, offset_top
@@ -535,7 +535,33 @@ class FigureCreator(ABC):
         length = x2 - x1
         middle_x = x1 + length // 2
 
-        # Step3: Calculate shortest path on original xray mask from "middle" to endpoint
+        # Step3: Expand Esophagus
+
+        top_y = None
+
+        for row in range(len(array)):
+            for col in range(len(array[row])):
+                if array[row][col] == 0 and top_y is None:
+                    top_y = row
+                    break
+
+        print(f"top_y: {top_y}")
+
+        for row in range(top_y - config.expansion_delta, middle_y+1): # we have to start at row 1, so that the first line is still black
+            for col in range(x1, x2):
+                array[row][col] = 0
+
+        extended_image = Image.fromarray(np.uint8(cm.Greys(array) * 255))
+
+        # Convert the Pillow Image to a NumPy array
+        extended_image_np = np.array(extended_image)
+
+        # Convert the image to grayscale (CV_8UC1)
+        extended_gray_image = cv2.cvtColor(extended_image_np, cv2.COLOR_RGB2GRAY)
+
+        cv2.imwrite("little_extended_gray_image2.jpg", extended_gray_image)
+
+        # Step4: Calculate shortest path on original xray mask from "middle" to endpoint
 
         # reverse the values in the array again back to original values for calculation of shortest path
         for row in range(len(array)):
@@ -552,7 +578,7 @@ class FigureCreator(ABC):
 
         # Shortest path calculation
         cost = np.where(array, 1, 0)  # define costs according to needs of library tcod
-        graph_path = tcod.path.SimpleGraph(cost=cost, cardinal=config.cardinal_cost, diagonal=config.diagnonal_cost)
+        graph_path = tcod.path.SimpleGraph(cost=cost, cardinal=config.cardinal_cost, diagonal=config.diagonal_cost)
         pf = tcod.path.Pathfinder(graph_path)
         pf.add_root((middle_y, middle_x))
         path = np.array(pf.path_to((endpoint[1], endpoint[0])).tolist())
