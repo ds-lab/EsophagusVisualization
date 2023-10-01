@@ -19,6 +19,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import (QAction, QFileDialog, QLabel, QMainWindow,
                              QMessageBox, QProgressDialog, QPushButton,
                              QSizePolicy, QStyle, QVBoxLayout)
+import pyvista as pv
 
 
 class VisualizationWindow(QMainWindow):
@@ -52,6 +53,9 @@ class VisualizationWindow(QMainWindow):
         menu_button_6 = QAction("CSV Metriken Download", self)
         menu_button_6.triggered.connect(self.__download_csv_file)
         self.ui.menubar.addAction(menu_button_6)
+        menu_button_7 = QAction("Download für 3D-Druck (.stl)", self)
+        menu_button_7.triggered.connect(self.__download_stl_file)
+        self.ui.menubar.addAction(menu_button_7)
         menu_button_4 = QAction("Weitere Rekonstruktion einfügen", self)
         menu_button_4.triggered.connect(self.__extend_patient_data)
         self.ui.menubar.addAction(menu_button_4)
@@ -251,6 +255,58 @@ class VisualizationWindow(QMainWindow):
                 # Inform the user that the export is complete
         QMessageBox.information(self, "Export Complete",
                                 "csv Datei wurde erfolgreich exportiert.")
+
+
+    def __download_stl_file(self):
+        """
+        Callback for the download button to store graphs as .stl for 3d printing
+        """
+
+        # Prompt the user to choose a destination directory
+        destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        # Windows uses backslashes
+        destination_directory = destination_directory.replace('/', '\\')
+
+        if destination_directory:
+
+            for i, (name, visit_data) in enumerate(self.visits.items()):
+                if "." in name:
+                    visit_name = name.split(".")[0]
+                else:
+                    visit_name = name
+
+                for j in range(len(visit_data.visualization_data_list)):
+                    xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
+
+                    figure_x = visit_data.visualization_data_list[j].figure_x
+                    figure_y = visit_data.visualization_data_list[j].figure_y
+                    figure_z = visit_data.visualization_data_list[j].figure_z
+
+                    file_name = visit_name + "_" + xray_name + ".stl"
+                    file_path = destination_directory + "\\" + file_name
+
+                    points = np.array([figure_x.flatten(), figure_y.flatten(), figure_z.flatten()])
+                    points = points.transpose(1, 0)
+
+                    points = pv.wrap(points)
+                    surface = points.reconstruct_surface()
+
+                    # Save Object for 3d printing
+                    pv.save_meshio(file_path, surface)
+
+                    # Inform the user that the export can take a while
+                    # Not possible like this, because if user does not click on "ok" next message is not shown
+                   # QMessageBox.information(
+                   #     self, "Bitte warten",
+                   #     f"Export von {file_name}\n"
+                   #     "Dies dauert einen Moment.\n"
+                   # )
+
+        # Inform the user that the export is complete
+        QMessageBox.information(
+            self, "Export erfolgreich",
+            f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
+        )
 
     def __extend_patient_data(self):
         """

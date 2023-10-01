@@ -144,6 +144,7 @@ class PositionSelectionWindow(QMainWindow):
                             int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1]))
                         self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
                         if self.visualization_data.endoflip_screenshot:
+                            # ToDo: Brauchen wir hier den Offset?
                             self.visualization_data.endoflip_pos = (
                             int(self.endoflip_pos[0]), int(self.endoflip_pos[1] - offset))
 

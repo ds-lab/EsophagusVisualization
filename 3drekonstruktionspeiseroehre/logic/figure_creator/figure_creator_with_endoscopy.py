@@ -139,6 +139,11 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         y = (y - y.min()) * px_to_cm_factor
         z = z * px_to_cm_factor
 
+        # to store the values of the figure for 3d-export
+        visualization_data.figure_x = x
+        visualization_data.figure_y = y
+        visualization_data.figure_z = z
+
         # calculate colors
         self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
                                                                            esophagus_full_length_px,
