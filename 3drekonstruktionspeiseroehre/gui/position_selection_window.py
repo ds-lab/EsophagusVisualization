@@ -128,8 +128,6 @@ class PositionSelectionWindow(QMainWindow):
                 if self.__is_sensor_order_correct():
                     if not self.__is_any_position_outside_polygon():
                         self.ui.apply_button.setDisabled(True)
-                        #offset = min([point[1] for point in self.visualization_data.xray_polygon])
-                        print(f"xray_polygon: {self.visualization_data.xray_polygon}")
                         if self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex():
                             self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
                             self.visualization_data.first_sensor_index = self.ui.first_combobox.currentIndex()

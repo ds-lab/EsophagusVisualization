@@ -407,7 +407,7 @@ class FigureCreator(ABC):
                     color="black", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("test2.png", dpi=300)
+        plt.savefig("expanded_esophagus.png", dpi=300)
         ####
 
         return widths, centers, slopes, offset_top
