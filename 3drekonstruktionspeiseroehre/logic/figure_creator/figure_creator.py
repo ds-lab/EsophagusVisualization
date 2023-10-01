@@ -547,7 +547,8 @@ class FigureCreator(ABC):
 
         # add 0s from the first row that contains the esophagus (top_y) to middle_y -> this will straighen the top line of the esophagus
         # top_y - config.expansion_delta: start a little higher, so that the esophagus is expanded a little more -> leads to better estimation of shortest paths
-        for row in range(max(top_y - config.expansion_delta, 0), middle_y+1):
+        # take max from (top_y - config.expansion_delta) and 1 to avoid out-of-range plus (1 instead of 0) to leave at least one "none-esophagus" line at the top (to avoid errors due to missing boundary-points in case of very skewed esophagus)
+        for row in range(max(top_y - config.expansion_delta, 1), middle_y+1):
             for col in range(x1, x2):
                 array[row][col] = 0
 
