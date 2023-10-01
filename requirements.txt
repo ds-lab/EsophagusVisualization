@@ -19,3 +19,5 @@ pyinstaller
 setuptools~=66.0.0
 pyreconstruct~=2.2.0
 scikit-learn~=1.3.0
+pyvista~=0.42.2
+meshio~=5.3.4
