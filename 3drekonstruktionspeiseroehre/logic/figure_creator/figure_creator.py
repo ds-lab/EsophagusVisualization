@@ -535,31 +535,21 @@ class FigureCreator(ABC):
         length = x2 - x1
         middle_x = x1 + length // 2
 
-        # Step3: Expand Esophagus
+        # Step3: Expand Esophagus = add some white pixels at the top at the esophagus for better estimation of shortest paths and centers
 
+        # find first row which contains the esophagus
         top_y = None
-
         for row in range(len(array)):
             for col in range(len(array[row])):
-                if array[row][col] == 0 and top_y is None:
+                if array[row][col] == 0 and top_y is None:  # because the values are revered 0 means here is esophagus/xray_mask
                     top_y = row
                     break
 
-        print(f"top_y: {top_y}")
-
-        for row in range(top_y - config.expansion_delta, middle_y+1): # we have to start at row 1, so that the first line is still black
+        # add 0s from the first row that contains the esophagus (top_y) to middle_y -> this will straighen the top line of the esophagus
+        # top_y - config.expansion_delta: start a little higher, so that the esophagus is expanded a little more -> leads to better estimation of shortest paths
+        for row in range(top_y - config.expansion_delta, middle_y+1):
             for col in range(x1, x2):
                 array[row][col] = 0
-
-        extended_image = Image.fromarray(np.uint8(cm.Greys(array) * 255))
-
-        # Convert the Pillow Image to a NumPy array
-        extended_image_np = np.array(extended_image)
-
-        # Convert the image to grayscale (CV_8UC1)
-        extended_gray_image = cv2.cvtColor(extended_image_np, cv2.COLOR_RGB2GRAY)
-
-        cv2.imwrite("little_extended_gray_image2.jpg", extended_gray_image)
 
         # Step4: Calculate shortest path on original xray mask from "middle" to endpoint
 
