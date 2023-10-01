@@ -90,5 +90,6 @@ class InfoWindow(QDialog):
         Zum anderen ermöglicht der 'Download für Import' den Export von '.achalasie' Dateien. Dieser Export ermöglicht,
         dass die Rekonstruktionen nochmals bequem und unverändert in diesem Programm geöffnet werden können.
         Zusätzlich ermöglicht 'CSV Metriken Export' das Exportieren der Metriken.
+        Weiterhin können '.stl'-Dateien für den 3d-Druck heruntergeladen werden. Der Download dieser Dateien kann ein paar Sekunden bis Minuten dauern. Nach erfolgreichem Download herhalten Sie eine Bestätigung vom Programm. 
         """
         self.ui.textEdit.setHtml(text)
