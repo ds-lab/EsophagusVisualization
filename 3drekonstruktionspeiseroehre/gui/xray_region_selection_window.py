@@ -5,7 +5,6 @@ from gui.master_window import MasterWindow
 from gui.position_selection_window import PositionSelectionWindow
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
-from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
@@ -87,7 +86,6 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.visualization_data.xray_polygon = np.array(self.polygon, dtype=int)
                 self.visualization_data.xray_image_height = self.xray_image.shape[0]
                 self.visualization_data.xray_image_width = self.xray_image.shape[1]
-                # übergebe all_visualization vom vorherigen Fenster
                 position_selection_window = PositionSelectionWindow(self.master_window, self.next_window, self.patient_data, self.visit, self.n)
                 self.master_window.switch_to(position_selection_window)
                 self.close()

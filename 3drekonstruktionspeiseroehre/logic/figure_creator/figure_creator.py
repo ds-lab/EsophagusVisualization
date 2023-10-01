@@ -407,7 +407,7 @@ class FigureCreator(ABC):
                     color="black", s=5)
         ax.set_xlim(0, visualization_data.xray_mask.shape[1])
         ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("expanded_esophagus3.png", dpi=300)
+        plt.savefig("expanded_esophagus5.png", dpi=300)
         ####
 
         return widths, centers, slopes, offset_top
@@ -547,7 +547,7 @@ class FigureCreator(ABC):
 
         # add 0s from the first row that contains the esophagus (top_y) to middle_y -> this will straighen the top line of the esophagus
         # top_y - config.expansion_delta: start a little higher, so that the esophagus is expanded a little more -> leads to better estimation of shortest paths
-        for row in range(top_y - config.expansion_delta, middle_y+1):
+        for row in range(max(top_y - config.expansion_delta, 0), middle_y+1):
             for col in range(x1, x2):
                 array[row][col] = 0
 
