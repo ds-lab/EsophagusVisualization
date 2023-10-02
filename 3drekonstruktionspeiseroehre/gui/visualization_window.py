@@ -19,7 +19,6 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import (QAction, QFileDialog, QLabel, QMainWindow,
                              QMessageBox, QProgressDialog, QPushButton,
                              QSizePolicy, QStyle, QVBoxLayout)
-import pyvista as pv
 
 
 class VisualizationWindow(QMainWindow):
@@ -53,9 +52,6 @@ class VisualizationWindow(QMainWindow):
         menu_button_6 = QAction("CSV Metriken Download", self)
         menu_button_6.triggered.connect(self.__download_csv_file)
         self.ui.menubar.addAction(menu_button_6)
-        menu_button_7 = QAction("Download für 3D-Druck (.stl)", self)
-        menu_button_7.triggered.connect(self.__download_stl_file)
-        self.ui.menubar.addAction(menu_button_7)
         menu_button_4 = QAction("Weitere Rekonstruktion einfügen", self)
         menu_button_4.triggered.connect(self.__extend_patient_data)
         self.ui.menubar.addAction(menu_button_4)
@@ -226,9 +222,10 @@ class VisualizationWindow(QMainWindow):
         if destination_file_path:
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
-                writer.writerow(["Id", "Tubular Metric (Mean)", "Sphinkter Metric (Mean)", "Volume Tubular",
-                                 "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)",
-                                 "Esophagus Length (cm)"])
+                writer.writerow(["Id", "Breischluckbild", "Tubular Index (Mean)", "Sphinkter Index (Mean)", "Volume Tubular",
+                                 "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)", "Index Tublar (Max)",
+                                 "Index Sphinkter (Max)", "Index Tublar (Min)", "Index Sphinkter (Min)", "Esophagus Length (cm)"])
+
 
                 for i, (name, visit_data) in enumerate(self.visits.items()):
 
@@ -238,75 +235,30 @@ class VisualizationWindow(QMainWindow):
                         visit_name = name
 
                     for j in range(len(visit_data.visualization_data_list)):
-
+                        xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
                         tubular_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[0]
                         sphinkter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
                         volume_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[2]
                         volume_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[3]
                         max_pressure_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[4]
                         max_pressure_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[5]
+                        max_metric_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[6]
+                        max_metric_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[7]
+                        min_metric_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[8]
+                        min_metric_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[9]
                         esophagus_length = visit_data.visualization_data_list[j].figure_creator.get_esophagus_full_length_cm()
 
-                        writer.writerow([visit_name, round(np.mean(tubular_metric), 2),
-                                         round(np.mean(sphinkter_metric), 2),  round(volume_tubular, 2),
-                                         round(volume_sphinkter, 2), round(max_pressure_tubular, 2),
-                                         round(max_pressure_sphinkter, 2), round(esophagus_length, 2)])
+                    writer.writerow([visit_name, xray_name, round(np.mean(tubular_metric), 2),
+                                     round(np.mean(sphinkter_metric), 2), round(volume_tubular, 2),
+                                     round(volume_sphinkter, 2), round(max_pressure_tubular, 2),
+                                     round(max_pressure_sphinkter, 2), round(max_metric_tubular, 2),
+                                     round(max_metric_sphinkter, 2), round(min_metric_tubular, 2),
+                                     round(min_metric_sphinkter, 2),
+                                     round(esophagus_length, 2)])
 
                 # Inform the user that the export is complete
         QMessageBox.information(self, "Export Complete",
                                 "csv Datei wurde erfolgreich exportiert.")
-
-
-    def __download_stl_file(self):
-        """
-        Callback for the download button to store graphs as .stl for 3d printing
-        """
-
-        # Prompt the user to choose a destination directory
-        destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
-        # Windows uses backslashes
-        destination_directory = destination_directory.replace('/', '\\')
-
-        if destination_directory:
-
-            for i, (name, visit_data) in enumerate(self.visits.items()):
-                if "." in name:
-                    visit_name = name.split(".")[0]
-                else:
-                    visit_name = name
-
-                for j in range(len(visit_data.visualization_data_list)):
-                    xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
-
-                    figure_x = visit_data.visualization_data_list[j].figure_x
-                    figure_y = visit_data.visualization_data_list[j].figure_y
-                    figure_z = visit_data.visualization_data_list[j].figure_z
-
-                    file_name = visit_name + "_" + xray_name + ".stl"
-                    file_path = destination_directory + "\\" + file_name
-
-                    points = np.array([figure_x.flatten(), figure_y.flatten(), figure_z.flatten()])
-                    points = points.transpose(1, 0)
-
-                    points = pv.wrap(points)
-                    surface = points.reconstruct_surface()
-
-                    # Save Object for 3d printing
-                    pv.save_meshio(file_path, surface)
-
-                    # Inform the user that the export can take a while
-                    # Not possible like this, because if user does not click on "ok" next message is not shown
-                   # QMessageBox.information(
-                   #     self, "Bitte warten",
-                   #     f"Export von {file_name}\n"
-                   #     "Dies dauert einen Moment.\n"
-                   # )
-
-        # Inform the user that the export is complete
-        QMessageBox.information(
-            self, "Export erfolgreich",
-            f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
-        )
 
     def __extend_patient_data(self):
         """
