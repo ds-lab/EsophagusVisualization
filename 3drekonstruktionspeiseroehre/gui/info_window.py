@@ -10,7 +10,7 @@ class InfoWindow(QDialog):
         init InfoWindow
         """
         super().__init__()
-        self.ui = uic.loadUi("./ui-files/info_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/info_window_design.ui", self)
 
     def show_file_selection_info(self):
         text = """In diesem Fenster werden die für die Generierung der 3D-Darstellung benötigten Dateien ausgewählt. 

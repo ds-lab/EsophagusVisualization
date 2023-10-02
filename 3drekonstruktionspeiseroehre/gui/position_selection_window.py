@@ -8,15 +8,18 @@ from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.pyplot import Circle
+from matplotlib.patches import Polygon
 from PyQt5 import uic
 from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
 from skimage import io
+import cv2
+import numpy as np
 
 
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    def __init__(self, master_window: MasterWindow, next_window, patient_data: PatientData, visit: VisitData, n: int):
+    def __init__(self, master_window: MasterWindow, next_window, patient_data: PatientData, visit: VisitData, n: int, xray_polygon):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -24,12 +27,13 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("./ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
         self.visualization_data = visit.visualization_data_list[n]
         self.visit = visit
         self.n = n
+        self.xray_polygon = xray_polygon
         self.next_window = next_window
         sensor_names = ["P" + str(22 - i) for i in range(22)]
         self.ui.first_combobox.addItems(sensor_names)
@@ -63,6 +67,12 @@ class PositionSelectionWindow(QMainWindow):
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis('off')
+
+        # Draw the polygon using the xray_polygon data
+        if self.xray_polygon:
+            poly = Polygon(self.xray_polygon, closed=True, fill=None, edgecolor='lime', linewidth=1)
+            self.plot_ax.add_patch(poly)
+
         self.figure_canvas.mpl_connect("button_press_event", self.__on_left_click)
 
         self.active_paint_index = None  # None=none, 0=first sensor, 1=second sensor, 2=endoscopy, 3=sphincter
@@ -79,10 +89,16 @@ class PositionSelectionWindow(QMainWindow):
         handles left-click on image
         :param event:
         """
+
         if event.xdata and event.ydata and self.active_paint_index is not None:
             self.plot_ax.clear()
+            # Redraw image and polygon
             self.plot_ax.imshow(self.xray_image)
+            if self.xray_polygon:
+                poly = Polygon(self.xray_polygon, closed=True, fill=None, edgecolor='lime', linewidth=1)
+                self.plot_ax.add_patch(poly)
             self.plot_ax.axis('off')
+
             if self.active_paint_index == 0:
                 self.first_sensor_pos = (event.xdata, event.ydata)
             elif self.active_paint_index == 1:
@@ -128,8 +144,6 @@ class PositionSelectionWindow(QMainWindow):
                 if self.__is_sensor_order_correct():
                     if not self.__is_any_position_outside_polygon():
                         self.ui.apply_button.setDisabled(True)
-                        #offset = min([point[1] for point in self.visualization_data.xray_polygon])
-                        print(f"xray_polygon: {self.visualization_data.xray_polygon}")
                         if self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex():
                             self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
                             self.visualization_data.first_sensor_index = self.ui.first_combobox.currentIndex()
@@ -147,7 +161,7 @@ class PositionSelectionWindow(QMainWindow):
                         self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
                         if self.visualization_data.endoflip_screenshot:
                             self.visualization_data.endoflip_pos = (
-                            int(self.endoflip_pos[0]), int(self.endoflip_pos[1] - offset))
+                            int(self.endoflip_pos[0]), int(self.endoflip_pos[1]))
 
                         # If there are more visualizations in this visit continue with the next xray selection
                         if self.next_window:
