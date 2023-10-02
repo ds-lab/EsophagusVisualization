@@ -17,7 +17,8 @@ Features:
 - Side-by-Side Darstellung von mehreren Speiseröhren (Prä/Post-Therapie, verschiedene Patienten)
 - einfacher Import und Export von '.achalasie' Dateien, damit die Annotation der Daten pro Rekonstruktion nur einmalig geschehen muss 
 - Export der Metriken als .csv 
-- Export der Rekonstruktion als .html
+- Export der Rekonstruktion als .html zur Darstellung außerhalb der Software
+- Export der Rekonstruktion als .stl Datei zum 3D Druck
   
   
 ## Einrichtung
