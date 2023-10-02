@@ -25,9 +25,9 @@ class InfoWindow(QDialog):
         Position 0 an (von unten nach oben). <br>Bei den Endoskopiebildern ist außerdem darauf zu achten, dass diese 
         so angefertigt wurden, dass bezüglich der Drehung die linke Seite der Aufnahme der linken Seite auf dem 
         Röntgenbild entspricht (rechte Seite analog). 
-        <br> Optional können Endoflip-Untersuchungsergebnisse hinzugefügt werden. Diese sollten im Format .xlsx vorliegen und hierbei ein einzelnes Excel-Sheet beinhalten. <br>
+        <br> Optional können EndoFLIP-Untersuchungsergebnisse hinzugefügt werden. Diese sollten im Format .xlsx vorliegen und hierbei ein einzelnes Excel-Sheet beinhalten. <br>
         <br> Wenn erwünscht kann einer Rekonstruktion ein eindeutiger 
-        Namen zugewiesen werden, welcher auch für den Export verwendet wird.
+        Namen zugewiesen werden, welcher auch für den Export verwendet wird. Ansonsten wird das Pseudoym des Patienten verwendet.
         <br><br> Es ist ebenfalls möglich ein oder mehrere zuvor exportierte Rekonstruktionen zu importieren.
         """
         self.ui.textEdit.setHtml(text)
@@ -39,17 +39,18 @@ class InfoWindow(QDialog):
         richtige Stelle verschoben werden. Durch einen Rechtsklick kann ein Punkt entfernt werden. <br>Wenn die 
         automatische Auswahl stark abweicht, sollte die Form nach einem Klick auf 'Neue Auswahl starten' händisch 
         eingetragen werden. Durch einen Klick in die Graphik wird dabei jeweils ein neuer Punkt erstellt. <br>
+        Bitte achten Sie beim Einzeichnen darauf dass die Speiseröhren-Grenze am oberen Bildrand möglichst horizontal eingezeichnet wird.
         Abgeschlossen wird die Auswahl durch einen Klick auf den ersten Punkt."""
         self.ui.textEdit.setHtml(text)
 
     def show_position_selection_info(self):
         text = """In diesem Fenster werden für die Berechnung der 3D-Darstellung notwendige Positionen in das Röntenbild 
-        eingetragen. <br><br>Es sind dabei die Positionen von zwei beliebigen Sensoren der Manometriemessung 
+        eingetragen. In hellgrün wird der bereits eingezeichnete Breischluck-Umriss dargestellt. <br><br>Es sind dabei die Positionen von zwei beliebigen Sensoren der Manometriemessung 
         erforderlich. <br>Diese können aus der 'Laborie'-Software entnommen werden. <br>Für eine gute Präzision 
         sollten die Sensoren möglichst weit auseinander liegen, also etwa ein Sensor im Bereich des oberen Sphinkters 
         und einer im Bereich des unteren. <br><br>Nach einem Klick auf die jeweilige Schaltfläche kann die Position 
         in der Graphik per Mausklick eingetragen werden. 
-        <br><br> Um eine möglichst genaue Rekonstruktion zu ermöglichen muss außerdem der Übergangspunkt von Ösophagus zu Magen (innerhalb des Ösophagus) eingezeichnet werden.
+        <br><br> Außerdem muss der Übergangspunkt von Ösophagus zu Magen ("Ösophagus Ausgang") eingezeichnet werden. Dies ist notwendig um eine möglichst genaue Rekonstruktion - vorallem auch bei Schräglagen - zu garantieren.
         <br><br>Für die Berechnung der Metriken wird die ungefähre 
         Position des Übergangs zwischen tubulärem Abschnitt und dem unteren Sphinkter sowie die Länge des Sphinkters 
         (ablesbar in der Laborie-Software) benötigt.<br><br>Wenn beim Start der Software auch Endoskopiebilder 
@@ -90,5 +91,6 @@ class InfoWindow(QDialog):
         Zum anderen ermöglicht der 'Download für Import' den Export von '.achalasie' Dateien. Dieser Export ermöglicht,
         dass die Rekonstruktionen nochmals bequem und unverändert in diesem Programm geöffnet werden können.
         Zusätzlich ermöglicht 'CSV Metriken Export' das Exportieren der Metriken.
+        Werden mehrere Rekonstruktionen simultan dargestellt so erfolgt der Export für alle Rekonstruktionen und diese werden in .zip Ordnern abgespeichert.
         """
         self.ui.textEdit.setHtml(text)
