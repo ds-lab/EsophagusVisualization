@@ -211,10 +211,13 @@ class VisualizationWindow(QMainWindow):
                     # Remove the temporary HTML file
                     os.remove(html_file_name)
 
-        # Inform the user that the export is complete
-        QMessageBox.information(self, "Export Complete", "HTML Dateien wurden erfolgreich als zip Datei exportiert.")
+            # Inform the user that the export is complete
+            QMessageBox.information(self, "Export Complete", "HTML Dateien wurden erfolgreich als zip Datei exportiert.")
 
     def __download_csv_file(self):
+        """
+        Callback for the download button to store a csv-file of the metrics of all loaded visualizations
+        """
 
         # Prompt the user to choose a destination path for the csv file
         destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "CSV Files (*.csv)")
@@ -222,10 +225,10 @@ class VisualizationWindow(QMainWindow):
         if destination_file_path:
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
-                writer.writerow(["Id", "Breischluckbild", "Tubular Index (Mean)", "Sphinkter Index (Mean)", "Volume Tubular",
-                                 "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)", "Index Tublar (Max)",
-                                 "Index Sphinkter (Max)", "Index Tublar (Min)", "Index Sphinkter (Min)", "Esophagus Length (cm)"])
-
+                writer.writerow(
+                    ["Id", "Breischluckbild", "Tubular Index (Mean)", "Sphinkter Index (Mean)", "Volume Tubular",
+                     "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)", "Index Tublar (Max)",
+                     "Index Sphinkter (Max)", "Index Tublar (Min)", "Index Sphinkter (Min)", "Esophagus Length (cm)"])
 
                 for i, (name, visit_data) in enumerate(self.visits.items()):
 
@@ -246,7 +249,8 @@ class VisualizationWindow(QMainWindow):
                         max_metric_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[7]
                         min_metric_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[8]
                         min_metric_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[9]
-                        esophagus_length = visit_data.visualization_data_list[j].figure_creator.get_esophagus_full_length_cm()
+                        esophagus_length = visit_data.visualization_data_list[
+                            j].figure_creator.get_esophagus_full_length_cm()
 
                     writer.writerow([visit_name, xray_name, round(np.mean(tubular_metric), 2),
                                      round(np.mean(sphinkter_metric), 2), round(volume_tubular, 2),
@@ -256,8 +260,8 @@ class VisualizationWindow(QMainWindow):
                                      round(min_metric_sphinkter, 2),
                                      round(esophagus_length, 2)])
 
-                # Inform the user that the export is complete
-        QMessageBox.information(self, "Export Complete",
+            # Inform the user that the export is complete
+            QMessageBox.information(self, "Export Complete",
                                 "csv Datei wurde erfolgreich exportiert.")
 
     def __extend_patient_data(self):
