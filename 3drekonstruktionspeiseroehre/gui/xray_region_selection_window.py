@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
 from shapely.geometry import Polygon
 from skimage import io
 
+
 class XrayRegionSelectionWindow(QMainWindow):
     """Window where the user selects the shape of the esophagus on the x-ray image"""
 
@@ -28,7 +29,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("./ui-files/xray_region_selection_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/xray_region_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
         self.master_window.maximize()
@@ -86,7 +87,8 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.visualization_data.xray_polygon = np.array(self.polygon, dtype=int)
                 self.visualization_data.xray_image_height = self.xray_image.shape[0]
                 self.visualization_data.xray_image_width = self.xray_image.shape[1]
-                position_selection_window = PositionSelectionWindow(self.master_window, self.next_window, self.patient_data, self.visit, self.n)
+                # übergebe all_visualization vom vorherigen Fenster
+                position_selection_window = PositionSelectionWindow(self.master_window, self.next_window, self.patient_data, self.visit, self.n, self.polygon)
                 self.master_window.switch_to(position_selection_window)
                 self.close()
             else:

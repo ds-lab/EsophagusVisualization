@@ -10,7 +10,7 @@ class InfoWindow(QDialog):
         init InfoWindow
         """
         super().__init__()
-        self.ui = uic.loadUi("./ui-files/info_window_design.ui", self)
+        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/info_window_design.ui", self)
 
     def show_file_selection_info(self):
         text = """In diesem Fenster werden die für die Generierung der 3D-Darstellung benötigten Dateien ausgewählt. 
@@ -83,7 +83,7 @@ class InfoWindow(QDialog):
         (Volumen/Druck) im Zeitverlauf angezeigt.
         <br><br> Wurden Endoflip-Daten eingegeben, erscheint links von der 3D-Rekstruktion der Endoflip-Screenshot. Hierbei werden von oben nach unten P16 bis P1 angezeigt. Unter 'Aggregationsform auswählen'
         kann die Aggregationsfunktion des Screenshots ausgewählt werden. <br> Außerdem kann unterhalb der Rekonstruktion mit einem Schalter ausgewählt werden, welche Farben aus die Rekonstruktion projeziert werden.
-        Bei der Projektion der Endoflip-Farben, kann ausgewählt werden ob ein Ballon-Volumen von 30 oder 40ml angezeigt werden soll und über 'Aggregationsform auswählen' kann widerrum die Aggregationsfunktion gewählt werden.
+        Bei der Projektion der Endoflip-Farben, kann ausgewählt werden ob ein Ballon-Volumen von 30 oder 40ml angezeigt werden soll und über 'Aggregationsform auswählen' kann widerrum die Aggregationsfunktion gewählt werden. ACHTUNG: Die EndoFLIP-Datenaufbereitung wurde nicht auführlich getestet. Bitte immer Gegenchecken mit der Hersteller-Visualisierung.
         <br><br> Werden mehrere Rekonstruktionen (Import multipler .achalasie Dateien oder über 'Weitere Rekonstruktionen einfügen') angezeigt, so können diese umsortiert werden durch das Gedrückthalten des linken Mauszeigers und dem Ziehen an die gewünschte Stelle.
         <br><br> Download: Es gibt verschiedene Arten des Downloads. Zum einen können die 3D Visualisierungen als html Dateien exportiert werden. Dies ermöglicht die Betrachtung der Rekonsturktionen im 
         Browser und macht diese einbindbar in Powerpoint.

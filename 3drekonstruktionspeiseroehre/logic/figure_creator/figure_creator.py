@@ -216,11 +216,11 @@ class FigureCreator(ABC):
 
         ####
         # Create a figure and axis FOR DEBUGGING
-        fig, ax = plt.subplots()
+        #fig, ax = plt.subplots()
 
         ##Invert y-axis to have positive y downwards FOR DEBUGGING
-        ax.invert_yaxis()
-        plt.imshow(visualization_data.xray_mask, cmap='gray')
+        #ax.invert_yaxis()
+        #plt.imshow(visualization_data.xray_mask, cmap='gray')
         ####
 
         num_points_for_polyfit = config.num_points_for_polyfit_smooth
@@ -370,10 +370,10 @@ class FigureCreator(ABC):
                     raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
 
             #### FOR DEBUGGING
-            if boundary_1 is not None and boundary_2 is not None:
-                plt.scatter([boundary_1[1], boundary_2[1]], [boundary_1[0], boundary_2[0]], color="yellow",
-                            s=0.5, alpha=0.5)
-                pass
+            #if boundary_1 is not None and boundary_2 is not None:
+            #    plt.scatter([boundary_1[1], boundary_2[1]], [boundary_1[0], boundary_2[0]], color="yellow",
+            #                s=0.5, alpha=0.5)
+            #    pass
             ####
 
             # Step 2: Calculate Width
@@ -394,20 +394,20 @@ class FigureCreator(ABC):
         #### FOR DEBUGGING
         x_values = [point[1] for point in sensor_path]  # in sensor path stehen die x werte an index 1
         y_values = [point[0] for point in sensor_path]
-        plt.scatter(x_values, y_values, color="red", s=0.5, alpha=0.05)
-        plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="blue", s=0.5,
-                    alpha=0.1)
-        plt.scatter([visualization_data.esophagus_exit_pos[0]], [visualization_data.esophagus_exit_pos[1]],
-                    color="pink", s=5)
+        #plt.scatter(x_values, y_values, color="red", s=0.5, alpha=0.05)
+        #plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="blue", s=0.5,
+        #            alpha=0.1)
+        #plt.scatter([visualization_data.esophagus_exit_pos[0]], [visualization_data.esophagus_exit_pos[1]],
+        #            color="pink", s=5)
         #plt.scatter([visualization_data.endoscopy_start_pos[0]], [visualization_data.endoscopy_start_pos[1]],
         #            color="black", s=5)
-        plt.scatter([visualization_data.first_sensor_pos[0]], [visualization_data.first_sensor_pos[1]],
-                    color="black", s=5)
-        plt.scatter([visualization_data.second_sensor_pos[0]], [visualization_data.second_sensor_pos[1]],
-                    color="black", s=5)
-        ax.set_xlim(0, visualization_data.xray_mask.shape[1])
-        ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        plt.savefig("expanded_esophagus5.png", dpi=300)
+        #plt.scatter([visualization_data.first_sensor_pos[0]], [visualization_data.first_sensor_pos[1]],
+        #            color="black", s=5)
+        #plt.scatter([visualization_data.second_sensor_pos[0]], [visualization_data.second_sensor_pos[1]],
+        #            color="black", s=5)
+        #ax.set_xlim(0, visualization_data.xray_mask.shape[1])
+        #ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
+        #plt.savefig("test2.png", dpi=300)
         ####
 
         return widths, centers, slopes, offset_top
@@ -449,7 +449,7 @@ class FigureCreator(ABC):
         # At the "bottom" of the esophagus this is the user-defined esophagus-exit position (it is not necessarily the bottom most point)
         # At the top of the esophagus this is the middle of the upper most horizontal line of the xray-mask ----------x----------
         # However, due to drawing inaccuracies of the xray-polygon the upper most "line" is not always horizontal (or even one single "line")
-        # So we need to find the upper most horizonal contour of the xray-mask, straighten it and find its middle.
+        # So we need to find the upper most horizontal contour of the xray-mask, straighten it and find its middle.
 
         array = visualization_data.xray_mask
 
@@ -467,8 +467,7 @@ class FigureCreator(ABC):
         # Step1: Find and straigthen contours around esophagus xray_mask
         # adapted from: https://stackoverflow.com/questions/60227551/rectify-edges-of-a-shape-in-mask-with-opencv
 
-        # convert array to image
-
+        # Convert array to image
         image = Image.fromarray(np.uint8(cm.Greys(array) * 255))
 
         # Convert the Pillow Image to a NumPy array
@@ -800,8 +799,8 @@ class FigureCreator(ABC):
     def get_endoflip_surface_color(sensor_path, visualisation_data: VisualizationData, esophagus_full_length_cm, esophagus_full_length_px):
         distance_cm = visualisation_data.endoflip_screenshot['30']['distance']
 
-        # Find index of endoflip_pos in sensorpath
-        _, null_pos_index = spatial.KDTree(np.array(sensor_path)).query(np.array(visualisation_data.endoflip_pos))
+        # Find index of endoflip_pos in sensorpath, matched y/x axis order of endoflip_pos to sensor_path
+        _, null_pos_index = spatial.KDTree(np.array(sensor_path)).query(np.array((visualisation_data.endoflip_pos[1], visualisation_data.endoflip_pos[0])))
 
         # Get stop criterion (endoflip measurement length = number_of_sensors*distance_between_sensors)
         measurement_length_fraction = distance_cm * 16 / esophagus_full_length_cm
@@ -826,6 +825,7 @@ class FigureCreator(ABC):
                 endoflip_surface_color = []
                 color_index = 0
 
+                # Iterate over sensor_path from bottom to top (P1 is at the bottom of the sphincter, P16 at the top)
                 for i in range(len(sensor_path)-1, -1, -1):
                     # Find endoflip section on esophagus
                     if i < null_pos_index and current_length < measurement_length_px and color_index + 1 < len(endoflip_colors):
