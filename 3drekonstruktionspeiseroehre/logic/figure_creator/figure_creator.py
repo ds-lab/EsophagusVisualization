@@ -534,7 +534,24 @@ class FigureCreator(ABC):
         length = x2 - x1
         middle_x = x1 + length // 2
 
-        # Step3: Calculate shortest path on original xray mask from "middle" to endpoint
+        # Step3: Expand Esophagus = add some white pixels at the top at the esophagus for better estimation of shortest paths and centers
+
+        # find first row which contains the esophagus
+        top_y = None
+        for row in range(len(array)):
+            for col in range(len(array[row])):
+                if array[row][col] == 0 and top_y is None:  # because the values are revered 0 means here is esophagus/xray_mask
+                    top_y = row
+                    break
+
+        # add 0s from the first row that contains the esophagus (top_y) to middle_y -> this will straighen the top line of the esophagus
+        # top_y - config.expansion_delta: start a little higher, so that the esophagus is expanded a little more -> leads to better estimation of shortest paths
+        # take max from (top_y - config.expansion_delta) and 1 to avoid out-of-range plus (1 instead of 0) to leave at least one "none-esophagus" line at the top (to avoid errors due to missing boundary-points in case of very skewed esophagus)
+        for row in range(max(top_y - config.expansion_delta, 1), middle_y+1):
+            for col in range(x1, x2):
+                array[row][col] = 0
+
+        # Step4: Calculate shortest path on original xray mask from "middle" to endpoint
 
         # reverse the values in the array again back to original values for calculation of shortest path
         for row in range(len(array)):
@@ -551,7 +568,7 @@ class FigureCreator(ABC):
 
         # Shortest path calculation
         cost = np.where(array, 1, 0)  # define costs according to needs of library tcod
-        graph_path = tcod.path.SimpleGraph(cost=cost, cardinal=config.cardinal_cost, diagonal=config.diagnonal_cost)
+        graph_path = tcod.path.SimpleGraph(cost=cost, cardinal=config.cardinal_cost, diagonal=config.diagonal_cost)
         pf = tcod.path.Pathfinder(graph_path)
         pf.add_root((middle_y, middle_x))
         path = np.array(pf.path_to((endpoint[1], endpoint[0])).tolist())
@@ -731,8 +748,8 @@ class FigureCreator(ABC):
                     max_pressure_tubular = surfacecolor_list[j][i]
 
         return metric_tubular, metric_sphincter, volume_sum_tubular, volume_sum_sphincter, \
-            max_pressure_tubular, max_pressure_sphincter
-
+            max_pressure_tubular, max_pressure_sphincter, max(metric_tubular), max(metric_sphincter), min(
+            metric_tubular), min(metric_sphincter)
 
     @staticmethod
     def colored_vertical_endoflip_tables_and_colors(data):

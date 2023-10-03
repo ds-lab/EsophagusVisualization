@@ -5,7 +5,6 @@ from gui.master_window import MasterWindow
 from gui.position_selection_window import PositionSelectionWindow
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
-from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
