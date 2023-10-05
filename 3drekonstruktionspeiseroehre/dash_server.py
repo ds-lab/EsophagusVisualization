@@ -1,17 +1,18 @@
 import socket
 
-import config
+import dash_bootstrap_components as dbc
+import dash_daq as daq
+import plotly.express as px
 import plotly.graph_objects as go
 import waitress
 from dash.exceptions import PreventUpdate
-import dash_daq as daq
-import dash_bootstrap_components as dbc
 from dash_extensions.enrich import (DashProxy, Input, MultiplexerTransform,
                                     Output, State, dcc, html, no_update)
-import plotly.express as px
 from kthread import KThread
-from logic.visit_data import VisitData
 from PyQt5.QtWidgets import QMessageBox
+
+import config
+from logic.visit_data import VisitData
 
 
 class DashServer:
@@ -25,7 +26,7 @@ class DashServer:
         Initialize DashServer
 
         Args:
-            visit (VisitData): VisitData object
+            visit (VisitData): VisitData object representing the current visit data including visualization data.
         """
         self.visit = visit
         self.visit_figures = []
@@ -221,29 +222,31 @@ class DashServer:
 
     def stop(self):
         """
-        stops the server
+        Stops the server and closes the socket.
         """
         self.thread.terminate()
         self.server_socket.close()
 
     def get_port(self):
         """
-        returns the port of the server
-        :return: port number
+        Returns the port number of the server.
+
+        Returns:
+            int: Port number.
         """
         return self.port
 
     def __play_button_clicked_callback(self, n_clicks, disabled, value):
         """
-        Callback of the play button
+        Callback for the play button.
 
         Args:
-            n_clicks (int): Number of clicks
-            disabled (bool): Disabled state of refresh-graph-interval
-            value (int): Time-slider value
+            n_clicks (int): Number of clicks.
+            disabled (bool): Disabled state of refresh-graph-interval.
+            value (int): Time-slider value.
 
         Returns:
-            tuple: New interval state, new button text, new slider value
+            tuple: New interval state, new button text, new slider value.
         """
         interval_new_state = not disabled
         slider_new_value = no_update
@@ -257,14 +260,14 @@ class DashServer:
 
     def __interval_action_callback(self, n_intervals, value):
         """
-        Callback of refresh-graph-interval
+        Callback for refresh-graph-interval.
 
         Args:
-            n_intervals (int): Number of intervals
-            value (int): Slider value
+            n_intervals (int): Number of intervals.
+            value (int): Slider value.
 
         Returns:
-            tuple: New slider value, new button text, new slider disabled state
+            tuple: New slider value, new button text, new slider disabled state.
         """
         new_value = value + int(config.csv_values_per_second / config.animation_frames_per_second)
         if new_value >= self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1:
@@ -289,14 +292,13 @@ class DashServer:
 
     def __update_figure(self,selected_figure):
         """
-        Callback to update the figure and related components
+        Callback to update the figure and related components.
 
         Args:
-            selected_figure (int): Selected figure index
+            selected_figure (int): Selected figure index.
 
         Returns:
-            list: Updated figure, color store, tubular metric store, sphincter metric store,
-                  maximum value of time slider, updated time slider value, metrics text
+            list: Updated figure, color store, tubular metric store, sphincter metric store, maximum value of time slider, updated time slider value, metrics text.
         """
         self.selected_figure_index = selected_figure
         if selected_figure is not None:
@@ -313,6 +315,18 @@ class DashServer:
             raise PreventUpdate
         
     def __toggle_pressure_endoflip(self, endoflip_selected, figure, aggregate_function, ballon_volume):
+        """
+        Callback to toggle between pressure and Endoflip visualization.
+
+        Args:
+            endoflip_selected (bool): True if Endoflip data is selected, False for pressure data.
+            figure (dict): Current figure dictionary.
+            aggregate_function (str): The aggregation function for Endoflip data.
+            ballon_volume (bool): True for 40ml balloon, False for 30ml balloon.
+
+        Returns:
+            tuple: Pressure control style, Endoflip control style, updated figure.
+        """
         if not endoflip_selected:
             # Surface color is changed back to pressure values automatically due to animation
             return {'min-height': '30px', 'display': 'flex', 'flex-direction': 'row'}, {'display': 'none', 'align-items': 'center'}, self.visit_figures[self.selected_figure_index]
@@ -329,6 +343,15 @@ class DashServer:
             return {'min-height': '30px', 'display': 'none', 'flex-direction': 'row'}, {'display': 'flex', 'align-items': 'center'}, figure
         
     def __update_endoflip_table(self, chosen_agg):
+        """
+        Callback to update the Endoflip color projection on figure and Endoflip table.
+
+        Args:
+            chosen_agg (str): The chosen Endoflip aggregation function.
+
+        Returns:
+            tuple: Updated Endoflip figure, Endoflip table style.
+        """
         if chosen_agg == 'off':
             return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()['median'], {'display':'none'}
         else:
