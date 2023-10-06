@@ -1,4 +1,10 @@
+import logic.image_polygon_detection as image_polygon_detection
 import numpy as np
+from gui.info_window import InfoWindow
+from gui.master_window import MasterWindow
+from gui.visualization_window import VisualizationWindow
+from logic.patient_data import PatientData
+from logic.visit_data import VisitData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
@@ -7,18 +13,11 @@ from PyQt5.QtWidgets import QAction, QMessageBox
 from shapely.geometry import Polygon
 from skimage import io
 
-import logic.image_polygon_detection as image_polygon_detection
-from gui.info_window import InfoWindow
-from gui.master_window import MasterWindow
-from gui.visualization_window import VisualizationWindow
-from logic.patient_data import PatientData
-from logic.visualization_data import VisualizationData
-
 
 class EndoscopySelectionWindow(QtWidgets.QMainWindow):
     """Window where the user selects the polyon shape on the endoscopy images"""
 
-    def __init__(self, master_window: MasterWindow, visualization_data: VisualizationData, patient_data: PatientData):
+    def __init__(self, master_window: MasterWindow, patient_data: PatientData, visit:VisitData):
         """
         Initialize EndoscopySelectionWindow.
 
@@ -31,8 +30,8 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/endoscopy_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
+        self.visit = visit
 
-        self.visualization_data = visualization_data
         self.current_image_index = 0
         self.current_polygon = []
         self.polygon_list = []
@@ -47,7 +46,8 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         self.plot_ax = self.figure_canvas.figure.subplots()
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
 
-        self.endoscopy_images = [io.imread(filename) for filename in visualization_data.endoscopy_filenames]
+        # Get endoscopy images (same for all visualisation data since only xray differ)
+        self.endoscopy_images = [io.imread(filename) for filename in visit.visualization_data_list[0].endoscopy_filenames]
 
         self.__load_image(self.endoscopy_images[0])
         self.__update_button_text()
@@ -130,10 +130,12 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
                 self.polygon_list.append(np.array(self.current_polygon, dtype=int))
                 if self.__is_last_image():
                     self.ui.apply_button.setDisabled(True)
-                    self.visualization_data.endoscopy_polygons = self.polygon_list
+                    
+                    # Update the polygon for all visualization objects in visit
+                    for vis in self.visit.visualization_data_list:
+                        vis.endoscopy_polygons = self.polygon_list
 
-                    # Add new visualization to patient_data
-                    self.patient_data.add_visualization(self.visualization_data.reconstruction_name, self.visualization_data)
+                    self.patient_data.add_visit(self.visit.name, self.visit)
                     visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                     self.master_window.switch_to(visualization_window)
                     self.close()
