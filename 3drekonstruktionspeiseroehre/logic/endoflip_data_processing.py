@@ -7,7 +7,6 @@ def process_endoflip_xlsx(file_path: str) -> dict:
 
     Args:
         file_path (str): The path to the Excel file to be processed.
-        sheet_name (str, optional): The name of the sheet to read from the Excel file. Defaults to 'GH'.
 
     Returns:
         dict: A dictionary containing extracted data and aggregates.

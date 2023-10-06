@@ -179,7 +179,7 @@ class PositionSelectionWindow(QMainWindow):
                             self.close()
                         # Else show the visualization
                         else:
-                            # Add new visualization to visit and visit to patient data
+                            # Add new visit to patient data
                             self.patient_data.add_visit(self.visit.name, self.visit)
                             visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                             self.master_window.switch_to(visualization_window)
