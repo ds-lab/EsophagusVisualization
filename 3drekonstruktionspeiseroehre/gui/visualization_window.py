@@ -33,7 +33,7 @@ class VisualizationWindow(QMainWindow):
             patient_data (PatientData): PatientData object
         """
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/visualization_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/visualization_window_design.ui", self)
         self.master_window = master_window
         # Maximize window to show the whole 3d reconstruction (necessary if visualization_data is imported)
         self.master_window.maximize()

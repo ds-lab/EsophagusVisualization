@@ -25,10 +25,10 @@ class FileSelectionWindow(QMainWindow):
         """
         init FileSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
-        :param patient_data:
+        :param patient_data: an instance of PatientData
         """
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
         self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
@@ -191,7 +191,7 @@ class FileSelectionWindow(QMainWindow):
 
     def __check_button_activate(self):
         """
-        activates visualization button if necessary files are selected
+        activates the visualization button if necessary files are selected
         """
         if (len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield_all.text()) > 0 or
                 len(self.ui.import_textfield.text()) > 0):

@@ -26,7 +26,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         :param visit: VisitData 
         """
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/endoscopy_selection_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/endoscopy_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
         self.visit = visit
