@@ -40,6 +40,8 @@ class InfoWindow(QDialog):
         richtige Stelle verschoben werden. Durch einen Rechtsklick kann ein Punkt entfernt werden. <br>Wenn die 
         automatische Auswahl stark abweicht, sollte die Form nach einem Klick auf 'Neue Auswahl starten' händisch 
         eingetragen werden. Durch einen Klick in die Graphik wird dabei jeweils ein neuer Punkt erstellt. <br>
+        Bei einer händischen Einzeichnung ist zu beachten, dass die obere Schnittfläche des Ösophagus gerade einzuzeichnen ist. 
+        Dabei dürfen keine scheife Formen eingezeichnet werden. <br>
         Abgeschlossen wird die Auswahl durch einen Klick auf den ersten Punkt."""
         self.ui.textEdit.setHtml(text)
 
@@ -48,8 +50,9 @@ class InfoWindow(QDialog):
         eingetragen. <br><br>Es sind dabei die Positionen von zwei beliebigen Sensoren der Manometriemessung 
         erforderlich. <br>Diese können aus der 'Laborie'-Software entnommen werden. <br>Für eine gute Präzision 
         sollten die Sensoren möglichst weit auseinander liegen, also etwa ein Sensor im Bereich des oberen Sphinkters 
-        und einer im Bereich des unteren. <br><br>Nach einem Klick auf die jeweilige Schaltfläche kann die Position 
-        in der Graphik per Mausklick eingetragen werden. 
+        und einer im Bereich des unteren. Dabei ist zu beachten, dass keine lange Strecke ohne Sensoren abgedeckt werden sollte
+        (besonders bei Einzeichnung des Sensors P1). 
+        <br><br>Nach einem Klick auf die jeweilige Schaltfläche kann die Position in der Graphik per Mausklick eingetragen werden. 
         <br><br> Um eine möglichst genaue Rekonstruktion zu ermöglichen, muss außerdem der Übergangspunkt von Ösophagus 
         zu Magen (innerhalb des Ösophagus) eingezeichnet werden.
         <br><br>Für die Berechnung der Metriken wird die ungefähre Position des Übergangs zwischen tubulärem Abschnitt 
