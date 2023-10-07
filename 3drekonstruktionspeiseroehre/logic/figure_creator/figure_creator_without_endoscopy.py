@@ -1,5 +1,5 @@
-from math import atan
 import config
+from math import atan
 import numpy as np
 from logic.figure_creator.figure_creator import FigureCreator
 from logic.visualization_data import VisualizationData
@@ -13,7 +13,7 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         initFigureCreatorWithoutEndoscopy
         :param visualization_data: VisualizationData
         """
-        # Frames of the pressure (Manometrie) animation
+        # Frames of the pressure (Manometry) animation
         self.number_of_frames = visualization_data.pressure_matrix.shape[1]
 
         # Calculate a path through the esophagus along the xray image
@@ -28,7 +28,7 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
 
         esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(sensor_path,
                                                                                     esophagus_full_length_px,
-                                                                                    visualization_data, offset_top)
+                                                                                    visualization_data)
 
         # Calculate shape without endoscopy data by approximating profile as circles
         # Get array of 50 equi-spaced values between 0 and 2pi
@@ -78,14 +78,14 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         # calculate colors
         self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
                                                                            esophagus_full_length_px,
-                                                                           esophagus_full_length_cm, offset_top)
+                                                                           esophagus_full_length_cm)
 
         # create figure
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
                                                   '3D-Ansicht aus Röntgen- und Manometriedaten')
 
         self.esophagus_length_cm = FigureCreator.calculate_esophagus_full_length_cm(
-            sensor_path, esophagus_full_length_px, visualization_data, offset_top)
+            sensor_path, esophagus_full_length_px, visualization_data)
 
         # Create endoflip table and colors if necessary
         if visualization_data.endoflip_screenshot:

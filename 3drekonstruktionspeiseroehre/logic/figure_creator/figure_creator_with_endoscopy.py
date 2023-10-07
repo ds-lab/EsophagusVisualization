@@ -1,4 +1,3 @@
-from scipy import spatial
 import config
 import numpy as np
 import shapely.geometry
@@ -7,6 +6,7 @@ from logic.visualization_data import VisualizationData
 from scipy.interpolate import interp1d
 from shapely.geometry import LineString
 from math import atan
+from scipy import spatial
 
 
 class FigureCreatorWithEndoscopy(FigureCreator):
@@ -17,8 +17,9 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         initFigureCreatorWithEndoscopy
         :param visualization_data: VisualizationData
         """
-        # Frames of the pressure (Manometrie) animation
+        # Frames of the pressure (Manometry) animation
         self.number_of_frames = visualization_data.pressure_matrix.shape[1]
+
         # Calculate a path through the esophagus along the xray image
         sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data)
 
@@ -31,7 +32,7 @@ class FigureCreatorWithEndoscopy(FigureCreator):
 
         esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(sensor_path,
                                                                                     esophagus_full_length_px,
-                                                                                    visualization_data, offset_top)
+                                                                                    visualization_data)
 
         # Calculate shape with endoscopy data
         # Get array of n equi-spaced values between 0 and 2pi
@@ -77,7 +78,6 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         # Interpolation
         interpolated_radius = np.empty((len(widths), config.figure_number_of_angles))
         for i in range(config.figure_number_of_angles):
-
             x_for_interpolation = endoscopy_image_indexes.copy()
             y_for_interpolation = [row[i] for row in distances_from_centroid]
             if 0 not in x_for_interpolation:
@@ -147,7 +147,7 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         # calculate colors
         self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
                                                                            esophagus_full_length_px,
-                                                                           esophagus_full_length_cm, offset_top)
+                                                                           esophagus_full_length_cm)
 
         # create figure
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
@@ -155,8 +155,11 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         
         # Create endoflip table and colors if necessary
         if visualization_data.endoflip_screenshot:
-            self.table_figures= FigureCreator.colored_vertical_endoflip_tables_and_colors(visualization_data.endoflip_screenshot)
-            self.endoflip_surface_color = FigureCreator.get_endoflip_surface_color(sensor_path, visualization_data, esophagus_full_length_cm, esophagus_full_length_px)
+            self.table_figures = FigureCreator.colored_vertical_endoflip_tables_and_colors(visualization_data.endoflip_screenshot)
+            self.endoflip_surface_color = FigureCreator.get_endoflip_surface_color(sensor_path,
+                                                                                   visualization_data,
+                                                                                   esophagus_full_length_cm,
+                                                                                   esophagus_full_length_px)
         else:
             self.table_figures = None
             self.endoflip_surface_color = None
@@ -167,7 +170,7 @@ class FigureCreatorWithEndoscopy(FigureCreator):
                                                        esophagus_full_length_px)
 
         self.esophagus_length_cm = FigureCreator.calculate_esophagus_full_length_cm(
-            sensor_path, esophagus_full_length_px, visualization_data, offset_top)
+            sensor_path, esophagus_full_length_px, visualization_data)
 
     def get_figure(self):
         return self.figure
@@ -197,10 +200,10 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         """
         calculates the pixel positions of the endoscopy images
         :param endoscopy_image_positions_cm: the positions given by the filenames
-        :param endoscopy_start_pos: start position
-        :param sensor_path: estimated path
-        :param esophagus_full_length_px: length in pixels
-        :param esophagus_full_length_cm: length in cm
+        :param endoscopy_start_pos: start position of the endoscopy
+        :param sensor_path: estimated path of the sensor catheter as list of coordinates
+        :param esophagus_full_length_px: length of the esophagus in pixels
+        :param esophagus_full_length_cm: length of the esophagus in cm
         :return: indexes
         """
         endoscopy_image_indexes = []
