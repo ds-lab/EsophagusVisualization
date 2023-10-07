@@ -2,7 +2,6 @@ from gui.master_window import MasterWindow
 from gui.xray_region_selection_window import XrayRegionSelectionWindow
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
-from PyQt5.QtWidgets import QAction, QMainWindow
 
 
 class ManageXrayWindows:

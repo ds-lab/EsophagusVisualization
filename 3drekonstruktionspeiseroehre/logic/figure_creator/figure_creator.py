@@ -1,17 +1,13 @@
 from abc import ABC, abstractmethod
-
 from natsort import natsorted
-
 import config
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 import shapely.geometry
 from logic.visualization_data import VisualizationData
-from skimage import graph
 from sklearn.linear_model import LinearRegression
-from scipy import spatial, ndimage
-import matplotlib.pyplot as plt
+from scipy import spatial
 import cv2
 from PIL import Image
 from matplotlib import cm
@@ -98,11 +94,6 @@ class FigureCreator(ABC):
         # Map sensor indices to centimeter
         first_sensor_cm = config.coords_sensors[visualization_data.first_sensor_index]
         second_sensor_cm = config.coords_sensors[visualization_data.second_sensor_index]
-
-        # Find the first point on the sensor_path that matches the y-value of the first sensor position
-        # endpoint = next(
-        #     (point for point in sensor_path if int(point[0]) == int(visualization_data.first_sensor_pos - offset_top)),
-        #     None)
 
         first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
         second_sensor_pos_switched = (visualization_data.second_sensor_pos[1], visualization_data.second_sensor_pos[0])
@@ -213,15 +204,6 @@ class FigureCreator(ABC):
         centers = []
         slopes = []
         offset_top = sensor_path[0][0]  # y-value of first point in path
-
-        ####
-        # Create a figure and axis FOR DEBUGGING
-        #fig, ax = plt.subplots()
-
-        ##Invert y-axis to have positive y downwards FOR DEBUGGING
-        #ax.invert_yaxis()
-        #plt.imshow(visualization_data.xray_mask, cmap='gray')
-        ####
 
         num_points_for_polyfit = config.num_points_for_polyfit_smooth
         count = 0
@@ -369,12 +351,6 @@ class FigureCreator(ABC):
                 else:
                     raise ValueError(f"Algorithm wasn't able to detect esophagus width at sensor_point {i}")
 
-            #### FOR DEBUGGING
-            #if boundary_1 is not None and boundary_2 is not None:
-            #    plt.scatter([boundary_1[1], boundary_2[1]], [boundary_1[0], boundary_2[0]], color="yellow",
-            #                s=0.5, alpha=0.5)
-            #    pass
-            ####
 
             # Step 2: Calculate Width
             # Calculate the distance between two boundary points
@@ -390,25 +366,6 @@ class FigureCreator(ABC):
             # Store the calculated width and center
             widths.append(width)
             centers.append(center)
-
-        #### FOR DEBUGGING
-        x_values = [point[1] for point in sensor_path]  # in sensor path stehen die x werte an index 1
-        y_values = [point[0] for point in sensor_path]
-        #plt.scatter(x_values, y_values, color="red", s=0.5, alpha=0.05)
-        #plt.scatter([point[1] for point in centers], [point[0] for point in centers], color="blue", s=0.5,
-        #            alpha=0.1)
-        #plt.scatter([visualization_data.esophagus_exit_pos[0]], [visualization_data.esophagus_exit_pos[1]],
-        #            color="pink", s=5)
-        #plt.scatter([visualization_data.endoscopy_start_pos[0]], [visualization_data.endoscopy_start_pos[1]],
-        #            color="black", s=5)
-        #plt.scatter([visualization_data.first_sensor_pos[0]], [visualization_data.first_sensor_pos[1]],
-        #            color="black", s=5)
-        #plt.scatter([visualization_data.second_sensor_pos[0]], [visualization_data.second_sensor_pos[1]],
-        #            color="black", s=5)
-        #ax.set_xlim(0, visualization_data.xray_mask.shape[1])
-        #ax.set_ylim(visualization_data.xray_mask.shape[0], 0)
-        #plt.savefig("test2.png", dpi=300)
-        ####
 
         return widths, centers, slopes, offset_top
 
@@ -721,7 +678,7 @@ class FigureCreator(ABC):
                 # Calculate metric for frame and height
                 metric_tubular[j] += volume_slice * surfacecolor_list[j][i]
 
-        # Calculate sphincter metric between upper and lower lower sphincter boundary
+        # Calculate sphincter metric between upper and lower sphincter boundary
         metric_sphincter = np.zeros(len(surfacecolor_list))
         volume_sum_sphincter = 0
         for i in range(lower_sphincter_boundary[0], lower_sphincter_boundary[1] + 1):
