@@ -47,10 +47,9 @@ class MasterWindow:
         self.stacked_widget.raise_()
         self.stacked_widget.setWindowState(Qt.WindowState.WindowActive)
 
-    def __stacked_widget_close_event(self, event):
+    def __stacked_widget_close_event(self):
         """
         closing callback
-        :param event:
         """
         current_widget = self.stacked_widget.currentWidget()
         if current_widget:

@@ -25,6 +25,7 @@ class FileSelectionWindow(QMainWindow):
         """
         init FileSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
+        :param patient_data:
         """
         super().__init__()
         self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
