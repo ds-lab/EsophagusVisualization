@@ -41,6 +41,7 @@ class VisualizationWindow(QMainWindow):
         self.patient_data = patient_data
         self.visits = self.patient_data.visit_data_dict
 
+        # Create Menu-Buttons
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -230,25 +231,32 @@ class VisualizationWindow(QMainWindow):
 
         if destination_directory:
 
+            # loop through all visits.items (these are figures which are displayed in different threads)
             for i, (name, visit_data) in enumerate(self.visits.items()):
                 if "." in name:
                     visit_name = name.split(".")[0]
                 else:
                     visit_name = name
 
+                # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
                 for j in range(len(visit_data.visualization_data_list)):
+                    # extract the name
                     xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
 
+                    # get the data to create the .stl-object
                     figure_x = visit_data.visualization_data_list[j].figure_x
                     figure_y = visit_data.visualization_data_list[j].figure_y
                     figure_z = visit_data.visualization_data_list[j].figure_z
 
+                    # create file_name and file_path for each object
                     file_name = visit_name + "_" + xray_name + ".stl"
                     file_path = destination_directory + "\\" + file_name
 
+                    # convert the data of the figure into the correct format
                     points = np.array([figure_x.flatten(), figure_y.flatten(), figure_z.flatten()])
                     points = points.transpose(1, 0)
 
+                    # create the 3d-object
                     points = pv.wrap(points)
                     surface = points.reconstruct_surface()
 
@@ -286,6 +294,7 @@ class VisualizationWindow(QMainWindow):
                      "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)", "Index Tublar (Max)",
                      "Index Sphinkter (Max)", "Index Tublar (Min)", "Index Sphinkter (Min)", "Esophagus Length (cm)"])
 
+                # loop through all visits.items (these are figures which are displayed in different threads)
                 for i, (name, visit_data) in enumerate(self.visits.items()):
 
                     if "." in name:
@@ -293,6 +302,7 @@ class VisualizationWindow(QMainWindow):
                     else:
                         visit_name = name
 
+                    # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
                     for j in range(len(visit_data.visualization_data_list)):
                         xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
                         tubular_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[0]
@@ -308,6 +318,7 @@ class VisualizationWindow(QMainWindow):
                         esophagus_length = visit_data.visualization_data_list[
                             j].figure_creator.get_esophagus_full_length_cm()
 
+                    # Write metrics data to CSV file
                     writer.writerow([visit_name, xray_name, round(np.mean(tubular_metric), 2),
                                      round(np.mean(sphinkter_metric), 2), round(volume_tubular, 2),
                                      round(volume_sphinkter, 2), round(max_pressure_tubular, 2),
