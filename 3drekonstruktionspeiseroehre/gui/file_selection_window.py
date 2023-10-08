@@ -27,7 +27,7 @@ class FileSelectionWindow(QMainWindow):
         :param master_window: the MasterWindow in which the next window will be displayed
         """
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/file_selection_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
         self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
@@ -87,10 +87,18 @@ class FileSelectionWindow(QMainWindow):
         elif len(self.ui.import_textfield.text()) > 0:
             # Iterate over *.achalasie files
             for import_filename in self.import_filenames:
-                 # Open the pickle file in binary mode for reading
-                with open(import_filename, 'rb') as file:
-                    # Load the VisualizationData object from import file and add it to patient_data
-                    self.patient_data.add_visit(import_filename.split("/")[-1].split(".")[0], pickle.load(file))
+                # Check if a '.achalasie'-file is loaded.
+                # This check is probably not really necessary, because it should only be possible to select '.achalasie" files.
+                file_ending = import_filename.split("/")[-1].split(".")[-1]
+                if file_ending != "achalasie":
+                    QMessageBox.information(self, "Falsche Dateiendung",
+                                            "Die Dateiendung muss '.achalasie' sein.\n"
+                                            f"Die Datei {import_filename} kann nicht geladen werden.")
+                else:
+                    # Open the pickle file in binary mode for reading
+                    with open(import_filename, 'rb') as file:
+                        # Load the VisualizationData object from import file and add it to patient_data
+                        self.patient_data.add_visit(import_filename.split("/")[-1].split(".")[0], pickle.load(file))
 
             visualization_window = gui.visualization_window.VisualizationWindow(self.master_window, self.patient_data)
             self.master_window.switch_to(visualization_window)
@@ -181,6 +189,12 @@ class FileSelectionWindow(QMainWindow):
         """
         import button callback
         """
+        # Inform the user, that only '.achalasie'-files from trustworthy sources should be loaded
+        QMessageBox.warning(self, "Achtung!",
+                                "Laden Sie nur '.achalasie'-Dateien,\n"
+                                "welche Sie selbst mit diesem Programm\n"
+                                "exportiert haben!")
+
         filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
                                                   "exportierte Dateien (*.achalasie)")
         if len(filenames) > 0:
