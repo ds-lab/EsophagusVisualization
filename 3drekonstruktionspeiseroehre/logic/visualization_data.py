@@ -31,6 +31,10 @@ class VisualizationData:
         self._sphincter_length_cm = None
         self._endoflip_pos = None
 
+        self._figure_x = None
+        self._figure_y = None
+        self._figure_z = None
+
     @property
     def xray_filename(self):
         return self._xray_filename
@@ -193,3 +197,27 @@ class VisualizationData:
     @sphincter_length_cm.setter
     def sphincter_length_cm(self, value):
         self._sphincter_length_cm = value
+
+    @property
+    def figure_x(self):
+        return self._figure_x
+
+    @figure_x.setter
+    def figure_x(self, value):
+        self._figure_x = value
+
+    @property
+    def figure_y(self):
+        return self._figure_y
+
+    @figure_y.setter
+    def figure_y(self, value):
+        self._figure_y = value
+
+    @property
+    def figure_z(self):
+        return self._figure_z
+
+    @figure_z.setter
+    def figure_z(self, value):
+        self._figure_z = value
