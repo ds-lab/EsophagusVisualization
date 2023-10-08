@@ -1,7 +1,16 @@
 import pandas as pd
 import re
 
-def process_endoflip_xlsx(file_path: str, sheet_name:str = 'GH') -> dict:
+def process_endoflip_xlsx(file_path: str) -> dict:
+    """
+    Process an Endoflip data Excel file (.xlsx) and extract relevant information.
+
+    Args:
+        file_path (str): The path to the Excel file to be processed.
+
+    Returns:
+        dict: A dictionary containing extracted data and aggregates.
+    """
     if not file_path or not file_path.endswith(".xlsx"):
         raise ValueError("Not xlsx format.")
 

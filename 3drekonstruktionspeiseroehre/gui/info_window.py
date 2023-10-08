@@ -10,7 +10,7 @@ class InfoWindow(QDialog):
         init InfoWindow
         """
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/info_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/info_window_design.ui", self)
 
     def show_file_selection_info(self):
         text = """In diesem Fenster werden die für die Generierung der 3D-Darstellung benötigten Dateien ausgewählt. 
@@ -25,10 +25,11 @@ class InfoWindow(QDialog):
         Position 0 an (von unten nach oben). <br>Bei den Endoskopiebildern ist außerdem darauf zu achten, dass diese 
         so angefertigt wurden, dass bezüglich der Drehung die linke Seite der Aufnahme der linken Seite auf dem 
         Röntgenbild entspricht (rechte Seite analog). 
-        <br> Optional können Endoflip-Untersuchungsergebnisse hinzugefügt werden. Diese sollten im Format .xlsx vorliegen und hierbei ein einzelnes Excel-Sheet beinhalten. <br>
-        <br> Wenn erwünscht kann einer Rekonstruktion ein eindeutiger 
-        Namen zugewiesen werden, welcher auch für den Export verwendet wird.
-        <br><br> Es ist ebenfalls möglich ein oder mehrere zuvor exportierte Rekonstruktionen zu importieren.
+        <br> Optional können Endoflip-Untersuchungsergebnisse hinzugefügt werden. Diese sollten im Format .xlsx 
+        vorliegen und hierbei ein einzelnes Excel-Sheet beinhalten. <br>
+        <br> Falls erwünscht, kann einer Rekonstruktion ein eindeutiger Name zugewiesen werden, welcher auch für den 
+        Export verwendet wird.
+        <br><br> Es ist ebenfalls möglich, ein oder mehrere zuvor exportierte Rekonstruktionen zu importieren.
         """
         self.ui.textEdit.setHtml(text)
 
@@ -39,6 +40,8 @@ class InfoWindow(QDialog):
         richtige Stelle verschoben werden. Durch einen Rechtsklick kann ein Punkt entfernt werden. <br>Wenn die 
         automatische Auswahl stark abweicht, sollte die Form nach einem Klick auf 'Neue Auswahl starten' händisch 
         eingetragen werden. Durch einen Klick in die Graphik wird dabei jeweils ein neuer Punkt erstellt. <br>
+        Bei einer händischen Einzeichnung ist zu beachten, dass die obere Schnittfläche des Ösophagus gerade einzuzeichnen ist. 
+        Dabei dürfen keine scheife Formen eingezeichnet werden. <br>
         Abgeschlossen wird die Auswahl durch einen Klick auf den ersten Punkt."""
         self.ui.textEdit.setHtml(text)
 
@@ -47,14 +50,15 @@ class InfoWindow(QDialog):
         eingetragen. <br><br>Es sind dabei die Positionen von zwei beliebigen Sensoren der Manometriemessung 
         erforderlich. <br>Diese können aus der 'Laborie'-Software entnommen werden. <br>Für eine gute Präzision 
         sollten die Sensoren möglichst weit auseinander liegen, also etwa ein Sensor im Bereich des oberen Sphinkters 
-        und einer im Bereich des unteren. <br><br>Nach einem Klick auf die jeweilige Schaltfläche kann die Position 
-        in der Graphik per Mausklick eingetragen werden. 
-        <br><br> Um eine möglichst genaue Rekonstruktion zu ermöglichen muss außerdem der Übergangspunkt von Ösophagus zu Magen (innerhalb des Ösophagus) eingezeichnet werden.
-        <br><br>Für die Berechnung der Metriken wird die ungefähre 
-        Position des Übergangs zwischen tubulärem Abschnitt und dem unteren Sphinkter sowie die Länge des Sphinkters 
-        (ablesbar in der Laborie-Software) benötigt.<br><br>Wenn beim Start der Software auch Endoskopiebilder 
-        angegeben wurden, ist außerdem noch das Eintragen der Position '0cm' (bezogen auf die Positionsangaben 
-        in den Dateinamen) in der Graphik nötig.
+        und einer im Bereich des unteren. Dabei ist zu beachten, dass keine lange Strecke ohne Sensoren abgedeckt werden sollte
+        (besonders bei Einzeichnung des Sensors P1). 
+        <br><br>Nach einem Klick auf die jeweilige Schaltfläche kann die Position in der Graphik per Mausklick eingetragen werden. 
+        <br><br> Um eine möglichst genaue Rekonstruktion zu ermöglichen, muss außerdem der Übergangspunkt von Ösophagus 
+        zu Magen (innerhalb des Ösophagus) eingezeichnet werden.
+        <br><br>Für die Berechnung der Metriken wird die ungefähre Position des Übergangs zwischen tubulärem Abschnitt 
+        und dem unteren Sphinkter, sowie die Länge des Sphinkters (ablesbar in der Laborie-Software) benötigt.
+        <br><br>Wenn beim Start der Software auch Endoskopiebilder angegeben wurden, ist außerdem noch das Eintragen der 
+        Position '0cm' (bezogen auf die Positionsangaben in den Dateinamen) in der Graphik nötig.
         <br><br> Gleichermaßen muss der Sensor P1 der Endoflip-Untersuchung eingegeben werden, wenn Endoflip-Daten übergeben wurden.
         """
         self.ui.textEdit.setHtml(text)
@@ -75,22 +79,30 @@ class InfoWindow(QDialog):
         bewegt werden. <br>Standardmäßig wird sie durch Ziehen mit der Maus gedreht. <br>
         Durch gleichzeitiges Halten der Strg-Taste kann sie verschoben werden. <br>
         Mit dem Mausrad lässt sich die Größe ändern. <br><br> Anhand der Legende lässt sich die berechnete Größe
-        des Ösophagus in Zentimetern ablesen. Weicht diese stark von der zu erwartenden Größe ab, so deutet dies auf 
+        des Ösophagus in Zentimetern ablesen. Weicht diese stark von der zu erwartenden Größe ab, deutet dies auf 
         falsch oder ungenau eingetragene Positionen der Sensoren hin.<br><br>
         Durch einen Klick auf 'Animation starten' lässt sich der zeitliche Verlauf der Druckwerte animiert 
         darstellen. <br>Über die Zeitleiste kann der Zeitpunkt außerdem manuell gewählt werden. <br><br>
-        Unten werden die berechneten Metriken für den tubulären Abschnitt (Volumen*Druck) und den unteren Sphinkter 
+        Darunter werden die berechneten Metriken für den tubulären Abschnitt (Volumen*Druck) und den unteren Sphinkter 
         (Volumen/Druck) im Zeitverlauf angezeigt.
-        <br><br> Wurden Endoflip-Daten eingegeben, erscheint links von der 3D-Rekstruktion der Endoflip-Screenshot. Hierbei werden von oben nach unten P16 bis P1 angezeigt. Unter 'Aggregationsform auswählen'
-        kann die Aggregationsfunktion des Screenshots ausgewählt werden. <br> Außerdem kann unterhalb der Rekonstruktion mit einem Schalter ausgewählt werden, welche Farben aus die Rekonstruktion projeziert werden.
-        Bei der Projektion der Endoflip-Farben, kann ausgewählt werden ob ein Ballon-Volumen von 30 oder 40ml angezeigt werden soll und über 'Aggregationsform auswählen' kann widerrum die Aggregationsfunktion gewählt werden. ACHTUNG: Die EndoFLIP-Datenaufbereitung wurde nicht auführlich getestet. Bitte immer Gegenchecken mit der Hersteller-Visualisierung.
-        <br><br> Werden mehrere Rekonstruktionen (Import multipler .achalasie Dateien oder über 'Weitere Rekonstruktionen einfügen') angezeigt, so können diese umsortiert werden durch das Gedrückthalten des linken Mauszeigers und dem Ziehen an die gewünschte Stelle.
-        <br><br> Download: Es gibt verschiedene Arten des Downloads. Zum einen können die 3D Visualisierungen als html Dateien exportiert werden. Dies ermöglicht die Betrachtung der Rekonsturktionen im 
-        Browser und macht diese einbindbar in Powerpoint.
-        Zum anderen ermöglicht der 'Download für Import' den Export von '.achalasie' Dateien. Dieser Export ermöglicht,
+        <br><br> Wurden Endoflip-Daten eingegeben, erscheint links von der 3D-Rekstruktion der Endoflip-Screenshot. 
+        Hierbei werden von oben nach unten P16 bis P1 angezeigt. Unter 'Aggregationsform auswählen'
+        kann die Aggregationsfunktion des Screenshots ausgewählt werden. <br> Außerdem kann unterhalb der Rekonstruktion 
+        mit einem Schalter ausgewählt werden, welche Farben auf die Rekonstruktion projeziert werden.
+        Bei der Projektion der Endoflip-Farben kann ausgewählt werden, ob ein Ballon-Volumen von 30 oder 40ml angezeigt 
+        werden soll. Über 'Aggregationsform auswählen' kann die Aggregationsfunktion gewählt werden. 
+        ACHTUNG: Die EndoFLIP-Datenaufbereitung wurde nicht auführlich getestet. Bitte immer mit der 
+        Hersteller-Visualisierung gegenprüfen.
+        <br><br> Werden mehrere Rekonstruktionen (Import multipler .achalasie Dateien oder über 'Weitere Rekonstruktionen 
+        einfügen') angezeigt, so können diese durch das Gedrückthalten des linken Mauszeigers und dem 
+        Ziehen an die gewünschte Stelle umsortiert werden.
+        <br><br> Download: Die 3D Visualisierungen können über 'Download für Darstellung' als html Dateien exportiert werden. 
+        Dies ermöglicht die Betrachtung der Rekonsturktionen im Browser und macht diese einbindbar in Powerpoint.
+        Zudem ermöglicht der 'Download für Import' den Export von '.achalasie' Dateien. Dieser Export ermöglicht,
         dass die Rekonstruktionen nochmals bequem und unverändert in diesem Programm geöffnet werden können.
-        Zusätzlich ermöglicht 'CSV Metriken Export' das Exportieren der Metriken.<br><br>
-        Weiterhin können '.stl'-Dateien für den 3d-Druck heruntergeladen werden. Der Download dieser Dateien kann ein paar Sekunden bis Minuten dauern. <br><br>
-        Nach erfolgreichem Download herhalten Sie bei allen Download-Formaten eine Bestätigung vom Programm. 
+        Zusätzlich ermöglicht 'CSV Metriken Download' das Exportieren der Metriken.<br><br>
+        Weiterhin können '.stl'-Dateien für den 3D-Druck heruntergeladen werden. Der Download dieser Dateien kann ein paar Minuten in Anspruch nehmen. <br><br>
+        Nach erfolgreichem Download erhalten Sie bei allen Download-Formaten eine Bestätigung vom Programm. 
+        Über 'Reset' kann die Eingabe zurückgesetzt werden und neue Dateien geladen werden.
         """
         self.ui.textEdit.setHtml(text)

@@ -1,6 +1,7 @@
 import config
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget
 
 
@@ -14,6 +15,7 @@ class MasterWindow:
         self.stacked_widget = QtWidgets.QStackedWidget()
         self.stacked_widget.resize(config.window_start_size_width, config.window_start_size_height)
         self.stacked_widget.closeEvent = self.__stacked_widget_close_event
+        self.stacked_widget.setWindowIcon(QIcon("./media/mini-icon.png"))
 
     def switch_to(self, window: QWidget):
         """
@@ -47,10 +49,9 @@ class MasterWindow:
         self.stacked_widget.raise_()
         self.stacked_widget.setWindowState(Qt.WindowState.WindowActive)
 
-    def __stacked_widget_close_event(self, event):
+    def __stacked_widget_close_event(self):
         """
         closing callback
-        :param event:
         """
         current_widget = self.stacked_widget.currentWidget()
         if current_widget:

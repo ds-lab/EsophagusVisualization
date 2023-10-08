@@ -694,7 +694,7 @@ class FigureCreator(ABC):
                 # Calculate metric for frame and height
                 metric_tubular[j] += volume_slice * surfacecolor_list[j][i]
 
-        # Calculate sphincter metric between upper and lower lower sphincter boundary
+        # Calculate sphincter metric between upper and lower sphincter boundary
         metric_sphincter = np.zeros(len(surfacecolor_list))
         volume_sum_sphincter = 0
         for i in range(lower_sphincter_boundary[0], lower_sphincter_boundary[1] + 1):

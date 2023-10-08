@@ -4,7 +4,6 @@ from gui.master_window import MasterWindow
 from gui.visualization_window import VisualizationWindow
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
-from logic.visualization_data import VisualizationData
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.pyplot import Circle
@@ -12,8 +11,6 @@ from matplotlib.patches import Polygon
 from PyQt5 import uic
 from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
 from skimage import io
-import cv2
-import numpy as np
 
 
 class PositionSelectionWindow(QMainWindow):
@@ -27,7 +24,7 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         super().__init__()
-        self.ui = uic.loadUi("3drekonstruktionspeiseroehre/ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/position_selection_window_design.ui", self)
         self.master_window = master_window
         self.patient_data = patient_data
         self.visualization_data = visit.visualization_data_list[n]
@@ -138,7 +135,7 @@ class PositionSelectionWindow(QMainWindow):
         """
         apply-button callback
         """
-        #
+
         if self.__are_necessary_positions_set():
             if self.ui.first_combobox.currentIndex() != self.ui.second_combobox.currentIndex():
                 if self.__is_sensor_order_correct():
@@ -160,7 +157,6 @@ class PositionSelectionWindow(QMainWindow):
                             int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1]))
                         self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
                         if self.visualization_data.endoflip_screenshot:
-                            # ToDo: Brauchen wir hier den Offset?
                             self.visualization_data.endoflip_pos = (
                             int(self.endoflip_pos[0]), int(self.endoflip_pos[1]))
 
@@ -179,7 +175,7 @@ class PositionSelectionWindow(QMainWindow):
                             self.close()
                         # Else show the visualization
                         else:
-                            # Add new visualization to visit and visit to patient data
+                            # Add new visit to patient data
                             self.patient_data.add_visit(self.visit.name, self.visit)
                             visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                             self.master_window.switch_to(visualization_window)
