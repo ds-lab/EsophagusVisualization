@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-from logic.figure_creator.figure_creator import FigureCreator
 from logic.figure_creator.figure_creator_with_endoscopy import \
     FigureCreatorWithEndoscopy
 from logic.figure_creator.figure_creator_without_endoscopy import \
@@ -18,7 +17,7 @@ class FigureCreationThread(QThread):
     def __init__(self, visit: VisitData):
         """
         init FigureCreationThread
-        :param visualization_data: VisualizationData
+        :param visit: VisitData
         """
         super().__init__()
         self.visit = visit
