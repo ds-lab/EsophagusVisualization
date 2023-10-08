@@ -1,11 +1,10 @@
-from logic.visit_data import VisitData
 import logic.image_polygon_detection as image_polygon_detection
 import numpy as np
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.visualization_window import VisualizationWindow
 from logic.patient_data import PatientData
-from logic.visualization_data import VisualizationData
+from logic.visit_data import VisitData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
@@ -16,14 +15,16 @@ from skimage import io
 
 
 class EndoscopySelectionWindow(QtWidgets.QMainWindow):
-    """Window where the user selects the profiles on the endoscopy images"""
+    """Window where the user selects the polyon shape on the endoscopy images"""
 
     def __init__(self, master_window: MasterWindow, patient_data: PatientData, visit:VisitData):
         """
-        init EndoscopySelectionWindow
-        :param master_window: the MasterWindow in which the next window will be displayed
-        :param patient_data: PatientData 
-        :param visit: VisitData 
+        Initialize EndoscopySelectionWindow.
+
+        Args:
+            master_window (MasterWindow): The MasterWindow in which the next window will be displayed.
+            visualization_data (VisualizationData): An instance of VisualizationData that the endoscopy images belong to.
+            patient_data (PatientData): An instance of the current PatientData that the VisualizationDate belongs to.
         """
         super().__init__()
         self.ui = uic.loadUi("./ui-files/endoscopy_selection_window_design.ui", self)
@@ -53,8 +54,9 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
 
     def __menu_button_clicked(self):
         """
-        menu button callback
-        shows an InfoWindow
+        Callback for the menu button.
+
+        Shows an InfoWindow with relevant information.
         """
         info_window = InfoWindow()
         info_window.show_endoscopy_selection_info()
@@ -62,24 +64,28 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
 
     def __update_button_text(self):
         """
-        updates the button text
+        Updates the text of the apply button based on the current image index.
         """
         if not self.__is_last_image():
             self.ui.apply_button.setText('Auswahl anwenden und nächstes Bild laden')
         else:
             self.ui.apply_button.setText('Auswahl anwenden und Visualisierung generieren')
 
-    def __is_last_image(self):
+    def __is_last_image(self) -> bool:
         """
-        checks if the last image is loaded
-        :return: True or False
+        Checks if the last image is loaded.
+
+        Returns:
+            bool: True if the last image is loaded, False otherwise.
         """
         return self.current_image_index == len(self.endoscopy_images) - 1
 
     def __load_image(self, image):
         """
-        loads the given image
-        :param image: the image to load
+        Loads the given image and initializes the polygon selector.
+
+        Args:
+            image: The image to load.
         """
         self.plot_ax.clear()
         self.plot_ax.imshow(image)
@@ -97,20 +103,26 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
 
     def __onselect(self, polygon):
         """
-        called when a polygon is finished
-        :param polygon: the new polygon
+        Called when a polygon selection is finished.
+
+        Args:
+            polygon: The new polygon selection.
         """
         self.current_polygon = polygon
 
     def __reset_button_clicked(self):
         """
-        callback of reset-button
+        Callback for the reset button.
+
+        Resets the polygon selection.
         """
         self.__reset_selector()
 
     def __apply_button_clicked(self):
         """
-        apply-button callback
+        Callback for the apply button.
+
+        Applies the current polygon selection and either loads the next image or generates visualization.
         """
         if len(self.current_polygon) > 2:
             shapely_poly = Polygon(self.current_polygon)
@@ -139,7 +151,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
 
     def __reset_selector(self):
         """
-        starts a new polygon selection
+        Starts a new polygon selection by resetting the selector.
         """
         self.selector._xs, self.selector._ys = [], []
         self.selector._xys = [(0, 0)]

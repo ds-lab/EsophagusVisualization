@@ -3,10 +3,13 @@ import pickle
 import re
 from pathlib import Path
 
-import config
-import gui.visualization_window
 import numpy as np
 import pandas as pd
+from PyQt5 import uic
+from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
+
+import config
+import gui.visualization_window
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
@@ -14,8 +17,6 @@ from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
-from PyQt5 import uic
-from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
 
 
 class FileSelectionWindow(QMainWindow):
@@ -23,8 +24,11 @@ class FileSelectionWindow(QMainWindow):
 
     def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
         """
-        init FileSelectionWindow
-        :param master_window: the MasterWindow in which the next window will be displayed
+        Initialize FileSelectionWindow.
+
+        Args:
+            master_window (MasterWindow): The MasterWindow in which the next window will be displayed.
+            patient_data (PatientData, optional): An instance of PatientData. Defaults to PatientData().
         """
         super().__init__()
         self.ui = uic.loadUi("./ui-files/file_selection_window_design.ui", self)
@@ -49,7 +53,7 @@ class FileSelectionWindow(QMainWindow):
 
     def __menu_button_clicked(self):
         """
-        info button callback
+        Info button callback. Shows information about file selection.
         """
         info_window = InfoWindow()
         info_window.show_file_selection_info()
@@ -57,7 +61,7 @@ class FileSelectionWindow(QMainWindow):
 
     def __visualization_button_clicked(self):
         """
-        visualization button callback
+        Visualization button callback. Initiates the visualization process.
         """
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield_all.text()) > 0:
             if len(self.ui.visualization_namefield.text()) > 0:
@@ -108,7 +112,7 @@ class FileSelectionWindow(QMainWindow):
 
     def __csv_button_clicked(self):
         """
-        csv button callback
+        CSV button callback. Handles CSV file selection.
         """
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path, "CSV (*.csv *.CSV)")
         if len(filename) > 0:
@@ -132,7 +136,7 @@ class FileSelectionWindow(QMainWindow):
 
     def __xray_button_clicked_all(self):
         """
-        x-ray button callback
+        X-ray button callback. Handles X-ray file selection for all files.
         """
         filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
                                                   "Bilder (*.jpg *.JPG *.png *.PNG)")
@@ -145,7 +149,7 @@ class FileSelectionWindow(QMainWindow):
 
     def __endoscopy_button_clicked(self):
         """
-        endoscopy button callback
+        Endoscopy button callback. Handles endoscopy image selection.
         """
         filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
                                                     "Bilder (*.jpg *.JPG *.png *.PNG)")
@@ -168,7 +172,7 @@ class FileSelectionWindow(QMainWindow):
     
     def __endoflip_button_clicked(self):
         """
-        endoflip button callback
+        EndoFLIP button callback. Handles EndoFLIP .xlsx file selection.
         """
         filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path, "Excel (*.xlsx *.XLSX)")
         if len(filename) > 0:
@@ -187,7 +191,7 @@ class FileSelectionWindow(QMainWindow):
 
     def __import_button_clicked(self):
         """
-        import button callback
+        Import button callback. Handles import file selection.
         """
         # Inform the user, that only '.achalasie'-files from trustworthy sources should be loaded
         QMessageBox.warning(self, "Achtung!",
@@ -204,7 +208,7 @@ class FileSelectionWindow(QMainWindow):
 
     def __check_button_activate(self):
         """
-        activates visualization button if necessary files are selected
+        Activates the visualization button if necessary files are selected.
         """
         if (len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield_all.text()) > 0 or
                 len(self.ui.import_textfield.text()) > 0):
