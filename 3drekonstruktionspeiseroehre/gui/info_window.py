@@ -47,7 +47,7 @@ class InfoWindow(QDialog):
 
     def show_position_selection_info(self):
         text = """In diesem Fenster werden für die Berechnung der 3D-Darstellung notwendige Positionen in das Röntenbild 
-        eingetragen. <br><br>Es sind dabei die Positionen von zwei beliebigen Sensoren der Manometriemessung 
+        eingetragen. In hellgrün wird der bereits eingezeichnete Breischluck-Umriss dargestellt. <br><br>Es sind dabei die Positionen von zwei beliebigen Sensoren der Manometriemessung 
         erforderlich. <br>Diese können aus der 'Laborie'-Software entnommen werden. <br>Für eine gute Präzision 
         sollten die Sensoren möglichst weit auseinander liegen, also etwa ein Sensor im Bereich des oberen Sphinkters 
         und einer im Bereich des unteren. Dabei ist zu beachten, dass keine lange Strecke ohne Sensoren abgedeckt werden sollte
