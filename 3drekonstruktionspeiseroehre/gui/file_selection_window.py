@@ -24,11 +24,9 @@ class FileSelectionWindow(QMainWindow):
 
     def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
         """
-        Initialize FileSelectionWindow.
-
-        Args:
-            master_window (MasterWindow): The MasterWindow in which the next window will be displayed.
-            patient_data (PatientData, optional): An instance of PatientData. Defaults to PatientData().
+        init FileSelectionWindow
+        :param master_window: the MasterWindow in which the next window will be displayed
+        :param patient_data: an instance of PatientData
         """
         super().__init__()
         self.ui = uic.loadUi("./ui-files/file_selection_window_design.ui", self)
@@ -208,7 +206,7 @@ class FileSelectionWindow(QMainWindow):
 
     def __check_button_activate(self):
         """
-        Activates the visualization button if necessary files are selected.
+        activates the visualization button if necessary files are selected
         """
         if (len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield_all.text()) > 0 or
                 len(self.ui.import_textfield.text()) > 0):
