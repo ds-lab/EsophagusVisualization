@@ -20,7 +20,7 @@ Features:
 - Export der Rekonstruktion als .html zur Darstellung außerhalb der Software
 - Export der Rekonstruktion als .stl Datei zum 3D Druck
   
-![Beispiel: Visualisierung zweier Speiseröhren](https://github.com/Alici96/myrepo/blob/main/Demo.png?raw=true)
+![Beispiel: Visualisierung zweier Speiseröhren](https://github.com/Alici96/myrepo/blob/main/Demo1.png?raw=true)
 
 
 ## Einrichtung
