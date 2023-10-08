@@ -25,7 +25,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         init XrayRegionSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
         :param visualization_data: VisualizationData
-        :param n: ??
+        :param n: n-th visualization of that visit
         """
 
         super().__init__()
@@ -38,24 +38,33 @@ class XrayRegionSelectionWindow(QMainWindow):
         self.n = n
         self.polygon = []
 
+        # Create a figure canvas for displaying the image
         self.figure_canvas = FigureCanvasQTAgg(Figure())
         self.ui.gridLayout.addWidget(self.figure_canvas)
+        # Connect button click events to methods
         self.ui.reset_button.clicked.connect(self.__reset_button_clicked)
         self.ui.apply_button.clicked.connect(self.__apply_button_clicked)
+        # Create a menu button for displaying the Info-Window
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
+        # Create a plot axis for displaying the image
         self.plot_ax = self.figure_canvas.figure.subplots()
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
+        # Create a polygon selector for user interaction
         self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color='red'))
 
+        # Load the X-ray image
         self.xray_image = io.imread(self.visualization_data.xray_filename)
 
+        # Display the X-ray image
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis('off')
 
+        # Calculate the initial polygon from the X-ray image
         self.polygon = image_polygon_detection.calculate_xray_polygon(self.xray_image)
 
+        # If the polygon has more than 2 points, set it as the initial selection
         if len(self.polygon) > 2:
             self.selector.verts = self.polygon
         else:
@@ -79,7 +88,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         """
         apply-button callback
         """
-
+        # Check if the selected polygon is valid
         if len(self.polygon) > 2:
             shapely_poly = Polygon(self.polygon)
             if shapely_poly.is_valid:
@@ -87,7 +96,6 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.visualization_data.xray_polygon = np.array(self.polygon, dtype=int)
                 self.visualization_data.xray_image_height = self.xray_image.shape[0]
                 self.visualization_data.xray_image_width = self.xray_image.shape[1]
-                # übergebe all_visualization vom vorherigen Fenster
                 position_selection_window = PositionSelectionWindow(self.master_window, self.next_window, self.patient_data, self.visit, self.n, self.polygon)
                 self.master_window.switch_to(position_selection_window)
                 self.close()
@@ -98,7 +106,7 @@ class XrayRegionSelectionWindow(QMainWindow):
 
     def __reset_selector(self):
         """
-        starts the selection of a new polygon
+        starts the selection of a new polygon/resets the polygon selector
         """
         self.selector._xs, self.selector._ys = [], []
         self.selector._xys = [(0, 0)]

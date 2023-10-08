@@ -14,6 +14,7 @@ class ManageXrayWindows:
         :param visit: The VisitData object representing the visit information.
         :param patient_data: The PatientData object representing the patient information.
         """
+        # Initialize class attributes
         self.master_window: MasterWindow = master_window
         self.patient_data: PatientData = patient_data
         self.visit: VisitData = visit
