@@ -1,4 +1,4 @@
 Disclaimer:
-Diese Software ist ein Prototyp, der im Rahmen einer Masterarbeit entstanden ist. 
+Diese Software ist ein Prototyp, der im Rahmen einer Masterarbeit sowie eines Praktikums entstanden ist.
 Die Korrektheit der generierten Daten kann nicht garantiert werden. 
 Treffen Sie keine medizinischen Entscheidungen auf Basis der Ausgaben dieser Software! 
