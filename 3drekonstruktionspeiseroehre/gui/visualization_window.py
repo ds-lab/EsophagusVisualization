@@ -318,14 +318,14 @@ class VisualizationWindow(QMainWindow):
                         esophagus_length = visit_data.visualization_data_list[
                             j].figure_creator.get_esophagus_full_length_cm()
 
-                    # Write metrics data to CSV file
-                    writer.writerow([visit_name, xray_name, round(np.mean(tubular_metric), 2),
-                                     round(np.mean(sphinkter_metric), 2), round(volume_tubular, 2),
-                                     round(volume_sphinkter, 2), round(max_pressure_tubular, 2),
-                                     round(max_pressure_sphinkter, 2), round(max_metric_tubular, 2),
-                                     round(max_metric_sphinkter, 2), round(min_metric_tubular, 2),
-                                     round(min_metric_sphinkter, 2),
-                                     round(esophagus_length, 2)])
+                        # Write metrics data to CSV file
+                        writer.writerow([visit_name, xray_name, round(np.mean(tubular_metric), 2),
+                                         round(np.mean(sphinkter_metric), 2), round(volume_tubular, 2),
+                                         round(volume_sphinkter, 2), round(max_pressure_tubular, 2),
+                                         round(max_pressure_sphinkter, 2), round(max_metric_tubular, 2),
+                                         round(max_metric_sphinkter, 2), round(min_metric_tubular, 2),
+                                         round(min_metric_sphinkter, 2),
+                                         round(esophagus_length, 2)])
 
             # Inform the user that the export is complete
             QMessageBox.information(self, "Export Complete",

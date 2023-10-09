@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Ösophagus Visualisierung"
-#define MyAppVersion "0.1.1"
+#define MyAppVersion "0.2"
 ;#define MyAppPublisher ""
 #define MyAppExeName "ÖsophagusVisualisierung.exe"
 
@@ -33,8 +33,8 @@ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "dist\main\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "dist\main\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\piasc\Documents\Studium\Projekt-Achalasie\3drekonstruktionspeiseroehre\dist\main\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\piasc\Documents\Studium\Projekt-Achalasie\3drekonstruktionspeiseroehre\dist\main\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
