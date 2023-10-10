@@ -219,7 +219,7 @@ class DashServer:
     
         self.dash_app.callback(Output('hidden-output', 'data'),[
             Input('figure-selector', 'value'),
-            State('3d-figure', 'figure')])(self.__get_current_fig_for_time_and_xray)
+            State('3d-figure', 'figure')])(self.__get_current_fig_xray)
 
 
         self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
