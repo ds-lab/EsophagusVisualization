@@ -1,8 +1,6 @@
 import csv
 import os
 import pickle
-import shutil
-import zipfile
 import numpy as np
 
 import gui.file_selection_window
@@ -195,10 +193,6 @@ class VisualizationWindow(QMainWindow):
                 self, "Export erfolgreich",
                 f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
             )
-
-    import os
-    import shutil
-    import zipfile
 
     def __download_html_file(self):
         """
