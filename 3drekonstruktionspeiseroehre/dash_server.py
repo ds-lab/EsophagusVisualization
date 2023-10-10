@@ -30,20 +30,34 @@ class DashServer:
         """
         self.visit = visit
         self.visit_figures = []
-        self.visit_figures_path = []
+        self.xray_names = []
         self.selected_figure_index = 0
         for visualization_data in self.visit.visualization_data_list:
             self.visit_figures.append(visualization_data.figure_creator.get_figure())
-            self.visit_figures_path.append(visualization_data.xray_filename.split("/")[-1].split(".")[0])
+            self.xray_names.append(visualization_data.xray_filename.split("/")[-1].split(".")[0])
         self.current_figure = self.visit_figures[0]
 
         if self.visit.visualization_data_list[0].endoflip_screenshot:
             endoflip_table_width = '150px'
             show_pressure_endoflip_toggle = 'flex'
-            endoflip_element = dcc.Graph(
+            endoflip_element = html.Div([
+                    dcc.Graph(
                         id='endoflip-table',
                         figure=self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()['median'],
-                        config={'modeBarButtonsToRemove': ['toImage'], 'displaylogo': False},className='mt-4',)
+                        config={'modeBarButtonsToRemove': ['toImage'], 'displaylogo': False},className='mt-4',),
+                    html.H6("Aggregationsform auswählen"),
+                    dcc.Dropdown(
+                        id='endoflip-table-dropdown',
+                        options=[
+                            {'label': 'Median', 'value': 'median'},
+                            {'label': 'Mean', 'value': 'mean'},
+                            {'label': 'Minimum', 'value': 'min'},
+                            {'label': 'Maximum', 'value': 'max'},
+                            {'label': 'Ausblenden', 'value': 'off'}
+                        ],
+                        value='median'  # Default value
+                    ),   
+                ],style={'height': 'calc(100vh - 160px)','width':endoflip_table_width, 'display': 'inline-block', 'verticalAlign': 'top', 'minWidth':endoflip_table_width})
         else:
             endoflip_table_width = '0px'
             show_pressure_endoflip_toggle = 'none'
@@ -74,21 +88,7 @@ class DashServer:
 
         
             html.Div([
-                html.Div([
-                    endoflip_element,
-                    html.H6("Aggregationsform auswählen"),
-                    dcc.Dropdown(
-                        id='endoflip-table-dropdown',
-                        options=[
-                            {'label': 'Median', 'value': 'median'},
-                            {'label': 'Mean', 'value': 'mean'},
-                            {'label': 'Minimum', 'value': 'min'},
-                            {'label': 'Maximum', 'value': 'max'},
-                            {'label': 'Ausblenden', 'value': 'off'}
-                        ],
-                        value='median'  # Default value
-                    ),   
-                ],style={'height': 'calc(100vh - 160px)','width':endoflip_table_width, 'display': 'inline-block', 'verticalAlign': 'top', 'minWidth':endoflip_table_width}),
+                endoflip_element,
                 dcc.Graph(
                     id='3d-figure',
                     figure=self.visit.visualization_data_list[0].figure_creator.get_figure(),
@@ -98,7 +98,7 @@ class DashServer:
 
             dbc.RadioItems(
                 id='figure-selector',
-                options=[{'label':  f'Breischluck {self.visit_figures_path[i]}  ', 'value': i} for i in range(len(self.visit_figures))],
+                options=[{'label':  f'Breischluck {self.xray_names[i]}  ', 'value': i} for i in range(len(self.visit_figures))],
                 value=0,
                 inline=True,
                 className="mb-1"
@@ -190,9 +190,9 @@ class DashServer:
                                 Output('endoflip-control', 'style'), 
                                 Output('3d-figure', 'figure')], 
                                 [Input('pressure-or-endoflip','on'),
-                                 Input('3d-figure', 'figure')],
                                  Input('endoflip-table-dropdown', 'value'),
-                                 Input('30-or-40', 'on'))(self.__toggle_pressure_endoflip)
+                                 Input('30-or-40', 'on'),],
+                                 State('3d-figure', 'figure'))(self.__toggle_pressure_endoflip)
 
         self.dash_app.callback([Output('endoflip-table','figure'), Output('endoflip-table','style')], Input('endoflip-table-dropdown', 'value'))(self.__update_endoflip_table)
 
@@ -280,7 +280,7 @@ class DashServer:
     
     def __get_current_figure_callback(self,figure):
         """
-        Callback to update self.current_figure
+        Callback to update self.current_figure. Necessary for html Export.
 
         Args:
             figure (dict): Dict from Graph object
@@ -316,7 +316,7 @@ class DashServer:
         else:
             raise PreventUpdate
         
-    def __toggle_pressure_endoflip(self, endoflip_selected, figure, aggregate_function, ballon_volume):
+    def __toggle_pressure_endoflip(self, endoflip_selected, aggregate_function, ballon_volume, figure):
         """
         Callback to toggle between pressure and Endoflip visualization.
 
