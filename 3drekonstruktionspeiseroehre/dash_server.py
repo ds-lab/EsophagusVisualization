@@ -85,6 +85,7 @@ class DashServer:
             dcc.Store(id='color-store', data=self.visit.visualization_data_list[0].figure_creator.get_surfacecolor_list()),
             dcc.Store(id='tubular-metric-store', data=self.visit.visualization_data_list[0].figure_creator.get_metrics()[0]),
             dcc.Store(id='sphincter-metric-store', data=self.visit.visualization_data_list[0].figure_creator.get_metrics()[1]),
+            dcc.Store(id='hidden-output'),
 
         
             html.Div([
@@ -215,6 +216,10 @@ class DashServer:
                                 Output('time-slider', 'max'),
                                 Output('metrics', 'children')],
                                 Input('figure-selector', 'value'))(self.__update_figure)
+    
+        self.dash_app.callback(Output('hidden-output', 'data'),[
+            Input('figure-selector', 'value'),
+            State('3d-figure', 'figure')])(self.__get_current_fig_for_time_and_xray)
 
 
         self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
@@ -344,3 +349,7 @@ class DashServer:
             return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()['median'], {'display':'none'}
         else:
             return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()[chosen_agg], {'display':'block'}
+        
+    def __get_current_fig_xray(self,choosen_xray,figure):
+        self.current_figure = go.Figure(figure)
+        return figure
