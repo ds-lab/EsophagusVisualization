@@ -184,9 +184,7 @@ class DashServer:
              State('pressure-or-endoflip','on')]
         )
 
-        # Create a server-side callback to update self.current_figure
-        self.dash_app.callback(Output('current-figure-store', 'data'), Input('3d-figure', 'figure'))(self.__get_current_figure_callback)
-
+        self.dash_app.callback(Output('3d-figure', 'figure'),Input('3d-figure','figure'))(self.__get_current_figure_callback)
 
         self.dash_app.callback([Output('pressure-control', 'style'), 
                                 Output('endoflip-control', 'style'), 
@@ -291,12 +289,7 @@ class DashServer:
             dict: Figure unchanged (without returning the figure, it won't update again)
         """
         self.current_figure = go.Figure(figure)
-        return self.current_figure
-
-    def __update_current_figure(self, figure):
-        # Set self.current_figure to the updated figure
-        self.current_figure = go.Figure(figure)
-        return None  # R
+        raise PreventUpdate
     
 
     def __update_figure(self,selected_figure):
