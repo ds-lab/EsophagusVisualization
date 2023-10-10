@@ -54,7 +54,7 @@ class FigureCreatorWithEndoscopy(FigureCreator):
                 intersections = []
                 for boundary_line in boundary:
                     intersection = shapely_line.intersection(boundary_line)
-                    if intersection:
+                    if not intersection.is_empty:
                         intersections.append(intersection)
                 distance = max(
                     [shapely.geometry.LineString([centroid, intersection]).length for intersection in intersections] + [
