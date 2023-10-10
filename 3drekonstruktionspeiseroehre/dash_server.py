@@ -184,8 +184,6 @@ class DashServer:
              State('pressure-or-endoflip','on')]
         )
 
-        self.dash_app.callback(Output('3d-figure', 'figure'),Input('3d-figure','figure'))(self.__get_current_figure_callback)
-
         self.dash_app.callback([Output('pressure-control', 'style'), 
                                 Output('endoflip-control', 'style'), 
                                 Output('3d-figure', 'figure')], 
@@ -201,7 +199,8 @@ class DashServer:
                                 Output('time-slider', 'value')],
                                [Input('play-button', 'n_clicks')],
                                [State('refresh-graph-interval', 'disabled'),
-                                State('time-slider', 'value')])(self.__play_button_clicked_callback)
+                                State('time-slider', 'value'),
+                                State('3d-figure', 'figure')])(self.__play_button_clicked_callback)
 
         self.dash_app.callback([Output('time-slider', 'value'),
                                 Output('play-button', 'children'),
@@ -238,7 +237,7 @@ class DashServer:
         """
         return self.port
 
-    def __play_button_clicked_callback(self, n_clicks, disabled, value):
+    def __play_button_clicked_callback(self, n_clicks, disabled, value, figure):
         """
         Callback for the play button.
 
@@ -250,6 +249,7 @@ class DashServer:
         Returns:
             tuple: New interval state, new button text, new slider value.
         """
+        self.current_figure = go.Figure(figure)
         interval_new_state = not disabled
         slider_new_value = no_update
         if interval_new_state:
@@ -276,20 +276,6 @@ class DashServer:
             return self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1, DashServer.button_text_start, True
         else:
             return new_value, no_update, no_update
-        
-    
-    def __get_current_figure_callback(self,figure):
-        """
-        Callback to update self.current_figure. Necessary for html Export.
-
-        Args:
-            figure (dict): Dict from Graph object
-
-        Returns:
-            dict: Figure unchanged (without returning the figure, it won't update again)
-        """
-        self.current_figure = go.Figure(figure)
-        raise PreventUpdate
     
 
     def __update_figure(self,selected_figure):
@@ -318,7 +304,7 @@ class DashServer:
         
     def __toggle_pressure_endoflip(self, endoflip_selected, aggregate_function, ballon_volume, figure):
         """
-        Callback to toggle between pressure and Endoflip visualization.
+        Callback to toggle between pressure and Endoflip visualization and update aggregate function/ballon volume visualization of EndoFLIP.
 
         Args:
             endoflip_selected (bool): True if Endoflip data is selected, False for pressure data.
@@ -341,7 +327,7 @@ class DashServer:
             figure.data[0].colorscale = px.colors.sample_colorscale("jet", [(30-(n+1))/(30-1) for n in range(30)])
             figure.data[0].cmin= 0
             figure.data[0].cmax= 30
-            
+            self.current_figure = figure
             return {'min-height': '30px', 'display': 'none', 'flex-direction': 'row'}, {'display': 'flex', 'align-items': 'center'}, figure
         
     def __update_endoflip_table(self, chosen_agg):
