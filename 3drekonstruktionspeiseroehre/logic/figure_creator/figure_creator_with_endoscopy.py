@@ -1,3 +1,4 @@
+import warnings
 import config
 import numpy as np
 import shapely.geometry
@@ -43,21 +44,29 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         for polygon in visualization_data.endoscopy_polygons:
             shapely_poly = shapely.geometry.Polygon(polygon)
             centroid = shapely_poly.centroid
-            max_diameter = shapely_poly.length  # upper bound
+            max_diameter = int(round(shapely_poly.length))  # Round to the nearest integer for max_diameter
             current_polygon_distances_from_centroid = []
             for angle in angles:
-                line = [(centroid.x, centroid.y),
-                        (centroid.x + (np.cos(angle) * max_diameter), centroid.y + (np.sin(angle) * max_diameter))]
+                x1, y1 = int(round(centroid.x)), int(round(centroid.y))
+                x2, y2 = int(round(centroid.x + (np.cos(angle) * max_diameter))), int(round(centroid.y + (np.sin(angle) * max_diameter)))
+                
+                line = [(x1, y1), (x2, y2)]
                 shapely_line = shapely.geometry.LineString(line)
+                
                 boundary = [LineString([pt1, pt2]) for pt1, pt2 in
                             zip(shapely_poly.boundary.coords, shapely_poly.boundary.coords[1:])]
+                
                 intersections = []
                 for boundary_line in boundary:
-                    intersection = shapely_line.intersection(boundary_line)
-                    if intersection:
-                        intersections.append(intersection)
+                    # Not all boundaries and lines intersect (logically), suppress shapely warning if no intersections occur
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        intersection = shapely_line.intersection(boundary_line)
+                        if not intersection.is_empty:
+                            intersections.append(intersection)
+                
                 distance = max(
-                    [shapely.geometry.LineString([centroid, intersection]).length for intersection in intersections] + [
+                    [shapely.geometry.LineString([(x1, y1), (int(round(intersection.x)), int(round(intersection.y)))]).length for intersection in intersections] + [
                         0])  # distance from centroid to outer polygon bound in specific angle
                 current_polygon_distances_from_centroid.append(distance)
             distances_from_centroid.append(current_polygon_distances_from_centroid)

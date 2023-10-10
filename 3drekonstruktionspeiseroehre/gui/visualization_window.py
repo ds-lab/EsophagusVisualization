@@ -208,7 +208,7 @@ class VisualizationWindow(QMainWindow):
                 for i, dash_server in enumerate(self.dash_servers):
                     figure = dash_server.current_figure
                     # Generate a unique file name for each HTML file
-                    html_file_name = f"figure_{i}.html"
+                    html_file_name = f"figure_{dash_server.visit.name}.html"
                     # Write the figure to an HTML file
                     figure.write_html(html_file_name)
                     # Add the HTML file to the zip

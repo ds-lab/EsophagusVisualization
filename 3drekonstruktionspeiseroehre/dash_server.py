@@ -30,20 +30,34 @@ class DashServer:
         """
         self.visit = visit
         self.visit_figures = []
-        self.visit_figures_path = []
+        self.xray_names = []
         self.selected_figure_index = 0
         for visualization_data in self.visit.visualization_data_list:
             self.visit_figures.append(visualization_data.figure_creator.get_figure())
-            self.visit_figures_path.append(visualization_data.xray_filename.split("/")[-1].split(".")[0])
+            self.xray_names.append(visualization_data.xray_filename.split("/")[-1].split(".")[0])
         self.current_figure = self.visit_figures[0]
 
         if self.visit.visualization_data_list[0].endoflip_screenshot:
             endoflip_table_width = '150px'
             show_pressure_endoflip_toggle = 'flex'
-            endoflip_element = dcc.Graph(
+            endoflip_element = html.Div([
+                    dcc.Graph(
                         id='endoflip-table',
                         figure=self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()['median'],
-                        config={'modeBarButtonsToRemove': ['toImage'], 'displaylogo': False},className='mt-4',)
+                        config={'modeBarButtonsToRemove': ['toImage'], 'displaylogo': False},className='mt-4',),
+                    html.H6("Aggregationsform auswählen"),
+                    dcc.Dropdown(
+                        id='endoflip-table-dropdown',
+                        options=[
+                            {'label': 'Median', 'value': 'median'},
+                            {'label': 'Mean', 'value': 'mean'},
+                            {'label': 'Minimum', 'value': 'min'},
+                            {'label': 'Maximum', 'value': 'max'},
+                            {'label': 'Ausblenden', 'value': 'off'}
+                        ],
+                        value='median'  # Default value
+                    ),   
+                ],style={'height': 'calc(100vh - 160px)','width':endoflip_table_width, 'display': 'inline-block', 'verticalAlign': 'top', 'minWidth':endoflip_table_width})
         else:
             endoflip_table_width = '0px'
             show_pressure_endoflip_toggle = 'none'
@@ -71,24 +85,11 @@ class DashServer:
             dcc.Store(id='color-store', data=self.visit.visualization_data_list[0].figure_creator.get_surfacecolor_list()),
             dcc.Store(id='tubular-metric-store', data=self.visit.visualization_data_list[0].figure_creator.get_metrics()[0]),
             dcc.Store(id='sphincter-metric-store', data=self.visit.visualization_data_list[0].figure_creator.get_metrics()[1]),
+            dcc.Store(id='hidden-output'),
 
         
             html.Div([
-                html.Div([
-                    endoflip_element,
-                    html.H6("Aggregationsform auswählen"),
-                    dcc.Dropdown(
-                        id='endoflip-table-dropdown',
-                        options=[
-                            {'label': 'Median', 'value': 'median'},
-                            {'label': 'Mean', 'value': 'mean'},
-                            {'label': 'Minimum', 'value': 'min'},
-                            {'label': 'Maximum', 'value': 'max'},
-                            {'label': 'Ausblenden', 'value': 'off'}
-                        ],
-                        value='median'  # Default value
-                    ),   
-                ],style={'height': 'calc(100vh - 160px)','width':endoflip_table_width, 'display': 'inline-block', 'verticalAlign': 'top', 'minWidth':endoflip_table_width}),
+                endoflip_element,
                 dcc.Graph(
                     id='3d-figure',
                     figure=self.visit.visualization_data_list[0].figure_creator.get_figure(),
@@ -98,7 +99,7 @@ class DashServer:
 
             dbc.RadioItems(
                 id='figure-selector',
-                options=[{'label':  f'Breischluck {self.visit_figures_path[i]}  ', 'value': i} for i in range(len(self.visit_figures))],
+                options=[{'label':  f'Breischluck {self.xray_names[i]}  ', 'value': i} for i in range(len(self.visit_figures))],
                 value=0,
                 inline=True,
                 className="mb-1"
@@ -184,15 +185,13 @@ class DashServer:
              State('pressure-or-endoflip','on')]
         )
 
-        self.dash_app.callback(Output('3d-figure', 'figure'),Input('3d-figure','figure'))(self.__get_current_figure_callback)
-
         self.dash_app.callback([Output('pressure-control', 'style'), 
                                 Output('endoflip-control', 'style'), 
                                 Output('3d-figure', 'figure')], 
                                 [Input('pressure-or-endoflip','on'),
-                                 Input('3d-figure', 'figure')],
                                  Input('endoflip-table-dropdown', 'value'),
-                                 Input('30-or-40', 'on'))(self.__toggle_pressure_endoflip)
+                                 Input('30-or-40', 'on'),],
+                                 State('3d-figure', 'figure'))(self.__toggle_pressure_endoflip)
 
         self.dash_app.callback([Output('endoflip-table','figure'), Output('endoflip-table','style')], Input('endoflip-table-dropdown', 'value'))(self.__update_endoflip_table)
 
@@ -201,7 +200,8 @@ class DashServer:
                                 Output('time-slider', 'value')],
                                [Input('play-button', 'n_clicks')],
                                [State('refresh-graph-interval', 'disabled'),
-                                State('time-slider', 'value')])(self.__play_button_clicked_callback)
+                                State('time-slider', 'value'),
+                                State('3d-figure', 'figure')])(self.__play_button_clicked_callback)
 
         self.dash_app.callback([Output('time-slider', 'value'),
                                 Output('play-button', 'children'),
@@ -216,6 +216,10 @@ class DashServer:
                                 Output('time-slider', 'max'),
                                 Output('metrics', 'children')],
                                 Input('figure-selector', 'value'))(self.__update_figure)
+    
+        self.dash_app.callback(Output('hidden-output', 'data'),[
+            Input('figure-selector', 'value'),
+            State('3d-figure', 'figure')])(self.__get_current_fig_xray)
 
 
         self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
@@ -238,7 +242,7 @@ class DashServer:
         """
         return self.port
 
-    def __play_button_clicked_callback(self, n_clicks, disabled, value):
+    def __play_button_clicked_callback(self, n_clicks, disabled, value, figure):
         """
         Callback for the play button.
 
@@ -250,6 +254,7 @@ class DashServer:
         Returns:
             tuple: New interval state, new button text, new slider value.
         """
+        self.current_figure = go.Figure(figure)
         interval_new_state = not disabled
         slider_new_value = no_update
         if interval_new_state:
@@ -276,20 +281,6 @@ class DashServer:
             return self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1, DashServer.button_text_start, True
         else:
             return new_value, no_update, no_update
-        
-    
-    def __get_current_figure_callback(self,figure):
-        """
-        Callback to update self.current_figure
-
-        Args:
-            figure (dict): Dict from Graph object
-
-        Returns:
-            dict: Figure unchanged (without returning the figure, it won't update again)
-        """
-        self.current_figure = go.Figure(figure)
-        return self.current_figure
     
 
     def __update_figure(self,selected_figure):
@@ -316,9 +307,9 @@ class DashServer:
         else:
             raise PreventUpdate
         
-    def __toggle_pressure_endoflip(self, endoflip_selected, figure, aggregate_function, ballon_volume):
+    def __toggle_pressure_endoflip(self, endoflip_selected, aggregate_function, ballon_volume, figure):
         """
-        Callback to toggle between pressure and Endoflip visualization.
+        Callback to toggle between pressure and Endoflip visualization and update aggregate function/ballon volume visualization of EndoFLIP.
 
         Args:
             endoflip_selected (bool): True if Endoflip data is selected, False for pressure data.
@@ -341,7 +332,7 @@ class DashServer:
             figure.data[0].colorscale = px.colors.sample_colorscale("jet", [(30-(n+1))/(30-1) for n in range(30)])
             figure.data[0].cmin= 0
             figure.data[0].cmax= 30
-            
+            self.current_figure = figure
             return {'min-height': '30px', 'display': 'none', 'flex-direction': 'row'}, {'display': 'flex', 'align-items': 'center'}, figure
         
     def __update_endoflip_table(self, chosen_agg):
@@ -358,3 +349,7 @@ class DashServer:
             return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()['median'], {'display':'none'}
         else:
             return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()[chosen_agg], {'display':'block'}
+        
+    def __get_current_fig_xray(self,choosen_xray,figure):
+        self.current_figure = go.Figure(figure)
+        return figure
