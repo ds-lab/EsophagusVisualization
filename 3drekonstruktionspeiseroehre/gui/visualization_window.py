@@ -1,6 +1,7 @@
 import csv
 import os
 import pickle
+import shutil
 import zipfile
 import numpy as np
 
@@ -195,26 +196,42 @@ class VisualizationWindow(QMainWindow):
                 f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
             )
 
+    import os
+    import shutil
+    import zipfile
+
     def __download_html_file(self):
         """
         Callback for the download button to store visible graphs as .html files with their current coloring
         """
-        # Prompt the user to choose a destination path for the zip file
-        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "ZIP Files (*.zip)")
+        # Prompt the user to choose a destination directory
+        destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        # Windows uses backslashes
+        destination_directory = destination_directory.replace('/', '\\')
 
-        if destination_file_path:
-            with zipfile.ZipFile(destination_file_path, 'w') as zip_file:
-                # Iterate over each visualization and export its HTML
-                for i, dash_server in enumerate(self.dash_servers):
-                    figure = dash_server.current_figure
-                    # Generate a unique file name for each HTML file
-                    html_file_name = f"figure_{dash_server.visit.name}.html"
-                    # Write the figure to an HTML file
-                    figure.write_html(html_file_name)
-                    # Add the HTML file to the zip
-                    zip_file.write(html_file_name)
-                    # Remove the temporary HTML file
-                    os.remove(html_file_name)
+        if destination_directory:
+
+            # loop through all visits.items (these are figures which are displayed in different threads)
+            for i, (name, visit_data) in enumerate(self.visits.items()):
+                if "." in name:
+                    visit_name = name.split(".")[0]
+                else:
+                    visit_name = name
+
+                # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
+                for j in range(len(visit_data.visualization_data_list)):
+                    # extract the name
+                    xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
+
+                    # create file_name and file_path for each object
+                    file_name = visit_name + "_" + xray_name + ".html"
+                    file_path = destination_directory + "\\" + file_name
+
+                    # get figure
+                    figure = visit_data.visualization_data_list[j].figure_creator.get_figure()
+
+                    # write figure in directory
+                    figure.write_html(file_path)
 
             # Inform the user that the export is complete
             QMessageBox.information(self, "Export Complete", "HTML Dateien wurden erfolgreich als zip Datei exportiert.")
