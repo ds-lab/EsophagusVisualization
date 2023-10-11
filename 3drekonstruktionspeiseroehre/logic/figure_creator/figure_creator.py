@@ -705,7 +705,10 @@ class FigureCreator(ABC):
             volume_sum_sphincter = volume_sum_sphincter + volume_slice
             for j in range(len(surfacecolor_list)):
                 # Calculate metric for frame and height
-                metric_sphincter[j] += volume_slice / surfacecolor_list[j][i]
+                if surfacecolor_list[j][i] != 0:
+                    metric_sphincter[j] += volume_slice / surfacecolor_list[j][i]
+                else:
+                    metric_sphincter[j] += 0
 
         # Calculate max pressure over timeline for lower_sphincter_center
         # (lower_sphincter_center is the region with the max pressure in space)

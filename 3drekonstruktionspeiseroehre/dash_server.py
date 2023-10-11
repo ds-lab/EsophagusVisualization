@@ -216,11 +216,6 @@ class DashServer:
                                 Output('time-slider', 'max'),
                                 Output('metrics', 'children')],
                                 Input('figure-selector', 'value'))(self.__update_figure)
-    
-        self.dash_app.callback(Output('hidden-output', 'data'),[
-            Input('figure-selector', 'value'),
-            State('3d-figure', 'figure')])(self.__get_current_fig_xray)
-
 
         self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
         self.thread = KThread(target=self.server.run)
@@ -294,6 +289,7 @@ class DashServer:
             list: Updated figure, color store, tubular metric store, sphincter metric store, maximum value of time slider, updated time slider value, metrics text.
         """
         self.selected_figure_index = selected_figure
+        self.current_figure = self.visit_figures[selected_figure]
         if selected_figure is not None:
             return [self.visit_figures[selected_figure], 
                     self.visit.visualization_data_list[selected_figure].figure_creator.get_surfacecolor_list(),
@@ -350,6 +346,3 @@ class DashServer:
         else:
             return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()[chosen_agg], {'display':'block'}
         
-    def __get_current_fig_xray(self,choosen_xray,figure):
-        self.current_figure = go.Figure(figure)
-        return figure

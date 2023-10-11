@@ -1,7 +1,6 @@
 import csv
 import os
 import pickle
-import zipfile
 import numpy as np
 
 import gui.file_selection_window
@@ -199,25 +198,23 @@ class VisualizationWindow(QMainWindow):
         """
         Callback for the download button to store visible graphs as .html files with their current coloring
         """
-        # Prompt the user to choose a destination path for the zip file
-        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "ZIP Files (*.zip)")
+         # Prompt the user to choose a destination directory
+        destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        # Windows uses backslashes
+        destination_directory = destination_directory.replace('/', '\\')
 
-        if destination_file_path:
-            with zipfile.ZipFile(destination_file_path, 'w') as zip_file:
-                # Iterate over each visualization and export its HTML
-                for i, dash_server in enumerate(self.dash_servers):
-                    figure = dash_server.current_figure
-                    # Generate a unique file name for each HTML file
-                    html_file_name = f"figure_{dash_server.visit.name}.html"
-                    # Write the figure to an HTML file
-                    figure.write_html(html_file_name)
-                    # Add the HTML file to the zip
-                    zip_file.write(html_file_name)
-                    # Remove the temporary HTML file
-                    os.remove(html_file_name)
+        if destination_directory:
+            # Iterate over each visualization and export its HTML
+            for i, dash_server in enumerate(self.dash_servers):
+                figure = dash_server.current_figure
+                # Generate a unique file name for each HTML file
+                html_file_name = f"figure_{dash_server.visit.name}.html"
+                # Write the figure to an HTML file
+                figure.write_html(destination_directory + "\\" + html_file_name)
+        # Inform the user that the export is complete
+        QMessageBox.information(self, "Export Complete", "HTML Dateien wurden erfolgreich exportiert.")
 
-            # Inform the user that the export is complete
-            QMessageBox.information(self, "Export Complete", "HTML Dateien wurden erfolgreich als zip Datei exportiert.")
+
 
     def __download_stl_file(self):
         """
