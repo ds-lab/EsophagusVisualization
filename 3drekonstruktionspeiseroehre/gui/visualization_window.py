@@ -72,10 +72,6 @@ class VisualizationWindow(QMainWindow):
         # set native menu bar flag as false to see MenuBar on Mac
         self.ui.menubar.setNativeMenuBar(False)
 
-        self.progress_dialog = QProgressDialog("Visualisierung wird erstellt", None, 0, 100, None)
-        self.progress_dialog.setWindowTitle("Fortschritt")
-        self.progress_dialog.show()
-
         # Thread per visualzation data object
         self.thread = [None] * len(self.visits)
         for i, (name, visit_data) in enumerate(self.visits.items()):
@@ -87,6 +83,10 @@ class VisualizationWindow(QMainWindow):
             self.thread[i].start()
 
         self.setCentralWidget(self.visualization_layout)
+
+        self.progress_dialog = QProgressDialog("Visualisierung wird erstellt", None, 0, 100, None)
+        self.progress_dialog.setWindowTitle("Fortschritt")
+        self.progress_dialog.show()
 
     def __menu_button_clicked(self):
         """
