@@ -55,7 +55,7 @@ Anschließend:
 
   
 
-- pyinstaller --noconfirm main.spec
+- pyinstaller --noconfirm --clean main.spec
 
   
 
