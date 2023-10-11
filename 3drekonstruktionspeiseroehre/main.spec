@@ -38,7 +38,7 @@ exe = EXE(
     splash,
     [],
     exclude_binaries=True,
-    name='EsophagusVisualisation',
+    name='EsophagusVisualization',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
