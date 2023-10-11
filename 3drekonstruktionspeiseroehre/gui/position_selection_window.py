@@ -71,8 +71,8 @@ class PositionSelectionWindow(QMainWindow):
             self.plot_ax.add_patch(poly)
 
         self.figure_canvas.mpl_connect("button_press_event", self.__on_left_click)
-
-        self.active_paint_index = None  # None=none, 0=first sensor, 1=second sensor, 2=endoscopy, 3=sphincter
+        # None=none, 0=first sensor, 1=second sensor, 2=endoscopy, 3=sphincter,  4=esophagus_exit, 5=endoflip
+        self.active_paint_index = None  
         self.first_sensor_pos = None
         self.second_sensor_pos = None
         self.second_sensor_pos_2 = None
