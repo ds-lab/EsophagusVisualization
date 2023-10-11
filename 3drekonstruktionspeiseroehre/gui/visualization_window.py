@@ -228,7 +228,7 @@ class VisualizationWindow(QMainWindow):
                     figure.write_html(file_path)
 
             # Inform the user that the export is complete
-            QMessageBox.information(self, "Export Complete", "HTML Dateien wurden erfolgreich als zip Datei exportiert.")
+            QMessageBox.information(self, "Export Complete", "HTML Dateien wurden erfolgreich exportiert.")
 
     def __download_stl_file(self):
         """
