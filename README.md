@@ -55,7 +55,8 @@ Anschließend:
 
   
 
-- pyinstaller --noconfirm --clean main.spec
+- pyinstaller --noconfirm --clean main.spec  
+(Hinweis:  ggf. Pfad zu main.spec anpassen)
 
   
 
@@ -67,7 +68,8 @@ Der neue Ordner 'dist' beinhaltet nun die Exe-Datei 'ÖsophagusVisualisierung.ex
 
 Nachdem mit PyInstaller ein Gesamtpaket erstellt wurde, kann aus diesem mit InnoSetup ein Installer generiert werden.
 
-Hierfür zuerst InnoSetup installieren und dann die Datei 'inno_setup_script.iss' damit öffnen und kompilieren.
+Hierfür zuerst InnoSetup installieren und dann die Datei 'inno_setup_script.iss' damit öffnen und kompilieren.  
+(Hinweis: Auch zum Bearbeiten, die 'inno_setup_script.iss' mit dem Program InnoSetup öffnen (und nicht z.B. mit PyCharm), da sich sonst unter Umständen die Kodierung des Files ändert.)
 
   
 
