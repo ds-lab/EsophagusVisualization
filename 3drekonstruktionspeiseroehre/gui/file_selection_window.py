@@ -5,8 +5,11 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from PyQt5 import uic
-from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
+#from PyQt5 import uic
+#from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
+from PyQt6 import uic
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
 import config
 import gui.visualization_window

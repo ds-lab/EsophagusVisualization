@@ -1,9 +1,12 @@
 import config
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QWidget
+#from PyQt5 import QtWidgets
+#from PyQt5.QtCore import Qt
+#from PyQt5.QtGui import QIcon
+#from PyQt5.QtWidgets import QWidget
 
+from PyQt6 import QtWidgets
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget
 
 class MasterWindow:
     """Flexible Window that shows other windows inside"""
@@ -39,7 +42,8 @@ class MasterWindow:
         """
         maximize this window
         """
-        self.stacked_widget.setWindowState(Qt.WindowMaximized)
+        #self.stacked_widget.setWindowState(Qt.WindowMaximized)
+        self.stacked_widget.setWindowState(Qt.WindowState.WindowMaximized)
 
     def activate(self):
         """

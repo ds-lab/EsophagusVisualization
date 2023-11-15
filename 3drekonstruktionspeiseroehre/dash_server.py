@@ -9,7 +9,8 @@ from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import (DashProxy, Input, MultiplexerTransform,
                                     Output, State, dcc, html, no_update)
 from kthread import KThread
-from PyQt5.QtWidgets import QMessageBox
+# from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox
 
 import config
 from logic.visit_data import VisitData

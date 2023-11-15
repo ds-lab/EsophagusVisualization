@@ -8,8 +8,11 @@ from logic.visit_data import VisitData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
-from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QAction, QMessageBox
+#from PyQt5 import QtWidgets, uic
+#from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QMessageBox
 from shapely.geometry import Polygon
 from skimage import io
 
@@ -33,6 +36,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         self.visit = visit
 
         self.current_image_index = 0
+        # list of points (not cm)
         self.current_polygon = []
         self.polygon_list = []
 
