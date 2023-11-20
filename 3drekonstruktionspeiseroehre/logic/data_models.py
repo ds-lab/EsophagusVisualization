@@ -30,6 +30,7 @@ previous_therapies_table = Table(
     "previous_therapies",
     metadata_obj,
     Column("previous_therapy_id", Integer, primary_key=True),
+    Column("patient_id", ForeignKey("patients.patient_id"), nullable=False),
     Column("therapy", Enum, nullable=False),
     Column("times", Integer, nullable=True),
     Column("last_date", Date, nullable=True)  # Wann hat der Pat. die Therapie zuletzt bekommen (Datum)
