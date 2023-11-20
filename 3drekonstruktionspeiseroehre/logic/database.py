@@ -1,8 +1,14 @@
 from sqlalchemy import create_engine
 from logic import data_models
 
-engine = create_engine("sqlite:///database.db", echo=True)
+
+# ToDo: Pfad anpassen - Wo soll die lokale DB später gespeichert werden?
+engine_local = create_engine("sqlite:///database.db", echo=True)
 
 
-def create_db_and_tables():
-    data_models.metadata_obj.create_all(engine)
+def create_db_and_tables_local():
+    data_models.metadata_obj.create_all(engine_local)
+
+
+def create_db_and_tables_remote(): # für Postgresql-Server (oder Docker-Container...)
+    pass
