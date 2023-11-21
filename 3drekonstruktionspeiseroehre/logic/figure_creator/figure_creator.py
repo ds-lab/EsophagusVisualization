@@ -730,8 +730,8 @@ class FigureCreator(ABC):
         with database.engine_local.connect() as conn:
             conn.execute(
                 insert(data_models.metrics_table).
-                values(metric_id=1,  # ToDO: anpassen -> autoincrement oder so
-                       visit_id=1,  # ToDO: bisher gibt es noch keine visit-id -> anpassen
+                values(visit_id=1,  # ToDO: bisher gibt es noch keine visit-id -> anpassen
+                       time=1, #anpassen
                        metric_tubular_mean=np.mean(metric_tubular),
                        metric_sphincter_mean=np.mean(metric_sphincter),
                        metric_tubular_max=max(metric_tubular),

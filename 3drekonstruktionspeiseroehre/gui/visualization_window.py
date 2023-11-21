@@ -87,6 +87,11 @@ class VisualizationWindow(QMainWindow):
         self.progress_dialog.setWindowTitle("Fortschritt")
         self.progress_dialog.show()
 
+        print(f"VisitData: {self.visit}")
+        print(f"Visit.Visualization_data_list: {self.visit.visualization_data_list}")
+        print(f"PatientData: {self.patient_data}")
+        print(f"patient_data.visit_data_dict.items(): {self.patient_data.visit_data_dict.items()}")
+
     def __menu_button_clicked(self):
         """
         Callback for the info-button
