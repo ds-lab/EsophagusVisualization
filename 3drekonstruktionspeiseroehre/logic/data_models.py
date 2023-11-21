@@ -1,4 +1,4 @@
-from sqlalchemy import MetaData, Table, Column, Integer, String, Enum, Date, ForeignKey, Boolean
+from sqlalchemy import MetaData, Table, Column, Integer, String, Enum, Date, ForeignKey, Boolean, Float
 
 
 metadata_obj = MetaData()
@@ -34,4 +34,22 @@ previous_therapies_table = Table(
     Column("therapy", Enum, nullable=False),
     Column("times", Integer, nullable=True),
     Column("last_date", Date, nullable=True)  # Wann hat der Pat. die Therapie zuletzt bekommen (Datum)
+)
+
+metrics_table = Table(
+    "metrics",
+    metadata_obj,
+    Column("metric_id", Integer, primary_key=True),
+    Column("visit_id", ForeignKey("visits.visit_id"), nullable=False),
+    Column("metric_tubular_mean", Float, nullable=True),
+    Column("metric_sphincter_mean", Float, nullable=True),
+    Column("metric_tubular_max", Float, nullable=True),
+    Column("metric_sphincter_max", Float, nullable=True),
+    Column("metric_tubular_min", Float, nullable=True),
+    Column("metric_sphincter_min", Float, nullable=True),
+    Column("pressure_tubular_max", Float, nullable=True),
+    Column("pressure_sphincter_max", Float, nullable=True),
+    Column("volume_tubular", Float, nullable=True),
+    Column("volume_sphincter", Float, nullable=True),
+    Column("esophagus_length_cm", Float, nullable=True),
 )
