@@ -31,6 +31,8 @@ class FigureCreationThread(QThread):
         starts figure creation
         """
 
+        #  Save visualization_data in local DB to reproduce results
+        # ToDo: Auch hier muss noch überprüft werden, ob die Daten schon existieren, damit nicht uU ständig die gleichen Daten mehrfach abgespeichert werden
         with database.engine_local.connect() as conn:
             conn.execute(
                 insert(data_models.visualization_table).
