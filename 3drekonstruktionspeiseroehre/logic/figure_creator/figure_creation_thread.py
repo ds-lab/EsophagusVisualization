@@ -7,6 +7,9 @@ from logic.figure_creator.figure_creator_without_endoscopy import \
 from logic.visit_data import VisitData
 from PyQt5.QtCore import QThread, pyqtSignal
 
+from logic import database, data_models
+from sqlalchemy import insert
+
 
 class FigureCreationThread(QThread):
     """Thread that creates the plotly figure"""
@@ -27,6 +30,15 @@ class FigureCreationThread(QThread):
         to be run as thread
         starts figure creation
         """
+
+        with database.engine_local.connect() as conn:
+            conn.execute(
+                insert(data_models.visualization_table).
+                values(visit_id=1,  # ToDO: bisher gibt es noch keine visit-id -> anpassen
+                       visualization_data=self.visit)
+            )
+            conn.commit()
+
         for visualization_data in self.visit.visualization_data_list:
             # a mask of the esophagus is created depending on user input on xray-images (xray_polygon) and appended to
             # visualization_data.xray_mask

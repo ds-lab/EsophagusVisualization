@@ -54,3 +54,10 @@ metrics_table = Table(
     Column("esophagus_length_cm", Float, nullable=False),
 )
 
+visualization_table = Table(
+    "visualization_data_list",
+    metadata_obj,
+    Column("visualization_id", Integer, primary_key=True, autoincrement=True),
+    Column("visit_id", ForeignKey("visits.visit_id"), nullable=False),
+    Column("visualization_data", PickleType, nullable=False)
+)

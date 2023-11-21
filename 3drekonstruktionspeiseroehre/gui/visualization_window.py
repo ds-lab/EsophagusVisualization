@@ -182,6 +182,7 @@ class VisualizationWindow(QMainWindow):
         if destination_directory:
             # Iterate over each VisualizationData object in the visit_data_dict
             for name, visit_data in self.patient_data.visit_data_dict.items():
+                print(f"visit_data: {visit_data}")
                 # Generate a file name for each pickle file
                 file_name = f"{name.split('.')[0]}.achalasie"
                 # Construct the file path by joining the destination directory and the file name
