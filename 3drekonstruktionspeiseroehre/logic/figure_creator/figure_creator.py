@@ -727,6 +727,8 @@ class FigureCreator(ABC):
                     max_pressure_tubular = surfacecolor_list[j][i]
 
         # Save metrics in local database
+        # ToDO: Wie damit umgehen, dass die Daten jeweils nur einmal gespeichert werden sollen und nicht z.B. wenn die Rekonstruktion nochmals betrachtet wird erneut?
+        # z.B. vorher Abfrage ob die Daten (visit_id und time) bereits in der Datenbank sind oder (visit_id und time) als primary_key?
         with database.engine_local.connect() as conn:
             conn.execute(
                 insert(data_models.metrics_table).

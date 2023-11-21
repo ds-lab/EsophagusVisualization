@@ -1,5 +1,4 @@
-from sqlalchemy import MetaData, Table, Column, Integer, String, Enum, Date, ForeignKey, Boolean, Float
-
+from sqlalchemy import MetaData, Table, Column, Integer, String, Enum, Date, ForeignKey, Boolean, Float, PickleType
 
 metadata_obj = MetaData()
 
@@ -54,3 +53,4 @@ metrics_table = Table(
     Column("volume_sphincter", Float, nullable=False),
     Column("esophagus_length_cm", Float, nullable=False),
 )
+
