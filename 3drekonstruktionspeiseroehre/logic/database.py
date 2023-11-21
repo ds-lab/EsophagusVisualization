@@ -3,12 +3,12 @@ from logic import data_models
 
 
 # ToDo: Pfad anpassen - Wo soll die lokale DB später gespeichert werden?
-engine_local = create_engine("sqlite:///database.db", echo=True)
+engine_local = create_engine("sqlite:///database.db", echo=True)  # echo in Produktion auf false setzen
 
 
 def create_db_and_tables_local():
     data_models.metadata_obj.create_all(engine_local)
 
 
-def create_db_and_tables_remote(): # für Postgresql-Server (oder Docker-Container...)
+def create_db_and_tables_remote():  # für Postgresql-Server (oder Docker-Container...)
     pass

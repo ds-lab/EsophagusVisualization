@@ -12,7 +12,8 @@ from scipy import spatial
 from PIL import Image
 from matplotlib import cm
 from logic.visualization_data import VisualizationData
-
+from logic import database, data_models
+from sqlalchemy import insert
 
 
 class FigureCreator(ABC):
@@ -121,7 +122,8 @@ class FigureCreator(ABC):
         return length_cm * (esophagus_full_length_px / path_length_px)
 
     @staticmethod
-    def calculate_surfacecolor_list(sensor_path, visualization_data, esophagus_full_length_px, esophagus_full_length_cm):
+    def calculate_surfacecolor_list(sensor_path, visualization_data, esophagus_full_length_px,
+                                    esophagus_full_length_cm):
         """
         calculates the surface-colors for every frame
         :param sensor_path: estimated path of the sensor catheter as list of coordinates
@@ -208,9 +210,9 @@ class FigureCreator(ABC):
         :param sensor_path: estimated path of the sensor catheter as list of coordinates
         :return: widths and centers as lists of lists and offsets as int
         """
-        widths = []     # width of the esophagus shape for every height on the x-ray image
-        centers = []    # center of the esophagus shape for every height on the x-ray image
-        slopes = []     # slope of esophagus segment using linear regression
+        widths = []  # width of the esophagus shape for every height on the x-ray image
+        centers = []  # center of the esophagus shape for every height on the x-ray image
+        slopes = []  # slope of esophagus segment using linear regression
         offset_top = sensor_path[0][0]  # y-value of first point in path
 
         num_points_for_polyfit = config.num_points_for_polyfit_smooth
@@ -218,7 +220,7 @@ class FigureCreator(ABC):
         point_distance = config.point_distance_in_polyfit
         for i in range(len(sensor_path)):
             # if there is a sharp edge, more points are used to refine the line
-            if i > (point_distance*2) and abs(sensor_path[i][1] - sensor_path[i - (point_distance*2)][1]) < abs(
+            if i > (point_distance * 2) and abs(sensor_path[i][1] - sensor_path[i - (point_distance * 2)][1]) < abs(
                     sensor_path[i][1] - sensor_path[i - point_distance][1]):
                 num_points_for_polyfit = config.num_points_for_polyfit_sharp
                 count = 1
@@ -521,7 +523,7 @@ class FigureCreator(ABC):
         # take max from (top_y - config.expansion_delta) and 1 to avoid out-of-range plus (1 instead of 0)
         # to leave at least one "none-esophagus" line at the top (to avoid errors
         # due to missing boundary-points in case of very skewed esophagus)
-        for row in range(max(top_y - config.expansion_delta, 1), middle_y+1):
+        for row in range(max(top_y - config.expansion_delta, 1), middle_y + 1):
             for col in range(x1, x2):
                 array[row][col] = 0
 
@@ -724,6 +726,26 @@ class FigureCreator(ABC):
                 if surfacecolor_list[j][i] > max_pressure_tubular:
                     max_pressure_tubular = surfacecolor_list[j][i]
 
+        # Save metrics in local database
+        with database.engine_local.connect() as conn:
+            conn.execute(
+                insert(data_models.metrics_table).
+                values(metric_id=1,  # ToDO: anpassen -> autoincrement oder so
+                       visit_id=1,  # ToDO: bisher gibt es noch keine visit-id -> anpassen
+                       metric_tubular_mean=np.mean(metric_tubular),
+                       metric_sphincter_mean=np.mean(metric_sphincter),
+                       metric_tubular_max=max(metric_tubular),
+                       metric_sphincter_max=max(metric_sphincter),
+                       metric_tubular_min=min(metric_tubular),
+                       metric_sphincter_min=min(metric_sphincter),
+                       pressure_tubular_max=max_pressure_tubular,
+                       pressure_sphincter_max=max_pressure_sphincter,
+                       volume_tubular=volume_sum_tubular,
+                       volume_sphincter=volume_sum_sphincter,
+                       esophagus_length_cm=esophagus_full_length_cm)
+            )
+            conn.commit()
+
         return metric_tubular, metric_sphincter, volume_sum_tubular, volume_sum_sphincter, \
             max_pressure_tubular, max_pressure_sphincter, max(metric_tubular), max(metric_sphincter), min(
             metric_tubular), min(metric_sphincter)
@@ -739,12 +761,12 @@ class FigureCreator(ABC):
         common_columns = natsorted(set(data['30']['aggregates'].keys()) & set(data['40']['aggregates'].keys()))
         # Reverse List because P16 is on top and P1 is at the bottom
         common_columns = common_columns[::-1]
-        for agg in ['median','min','max','mean']:
+        for agg in ['median', 'min', 'max', 'mean']:
             cell_texts_30 = []
             cell_texts_40 = []
 
             # rainbow to visualize high/low diameters
-            colorscale = px.colors.sample_colorscale("jet", [(30-(n+1))/(30-1) for n in range(30)])
+            colorscale = px.colors.sample_colorscale("jet", [(30 - (n + 1)) / (30 - 1) for n in range(30)])
 
             for column in common_columns:
                 # Get aggregated values for each dataset
@@ -754,21 +776,22 @@ class FigureCreator(ABC):
                 cell_texts_30.append(f'{agg_30:.2f}')
                 cell_texts_40.append(f'{agg_40:.2f}')
 
-            color_30_40 = [np.array(colorscale)[[int(float(x)) for x in cell_texts_30]], np.array(colorscale)[[int(float(x)) for x in cell_texts_40]]]
+            color_30_40 = [np.array(colorscale)[[int(float(x)) for x in cell_texts_30]],
+                           np.array(colorscale)[[int(float(x)) for x in cell_texts_40]]]
 
             # Create a table with colored cells and text annotations
             table = go.Table(
-                header=dict(values=['<b>30ml</b>', '<b>40ml</b>'], 
+                header=dict(values=['<b>30ml</b>', '<b>40ml</b>'],
                             line_color='white',
-                            fill_color='white', 
+                            fill_color='white',
                             font=dict(color='black', size=13)),
-                cells=dict(values=[cell_texts_30, 
-                                cell_texts_40], 
-                            fill_color=color_30_40,
-                            line_color=color_30_40,
-                            font=dict(color='white', size=11),
-                            height=20),
-                columnwidth=[1,1],
+                cells=dict(values=[cell_texts_30,
+                                   cell_texts_40],
+                           fill_color=color_30_40,
+                           line_color=color_30_40,
+                           font=dict(color='white', size=11),
+                           height=20),
+                columnwidth=[1, 1],
             )
 
             figure = go.Figure(data=[table])
@@ -799,7 +822,7 @@ class FigureCreator(ABC):
 
         # Color change criterion for each sensor
         sensor_length_fraction = distance_cm / esophagus_full_length_cm
-        sensor_length_px =  esophagus_full_length_px * sensor_length_fraction
+        sensor_length_px = esophagus_full_length_px * sensor_length_fraction
 
         surface_color_collect = {}
 
@@ -817,27 +840,30 @@ class FigureCreator(ABC):
                 color_index = 0
 
                 # Iterate over sensor_path from bottom to top (P1 is at the bottom of the sphincter, P16 at the top)
-                for i in range(len(sensor_path)-1, -1, -1):
+                for i in range(len(sensor_path) - 1, -1, -1):
                     # Find endoflip section on esophagus
-                    if i < null_pos_index and current_length < measurement_length_px and color_index + 1 < len(endoflip_colors):
-                        current_length += np.sqrt((sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
-                                                                                                    sensor_path[i + 1][
-                                                                                                        1]) ** 2)
+                    if i < null_pos_index and current_length < measurement_length_px and color_index + 1 < len(
+                            endoflip_colors):
+                        current_length += np.sqrt(
+                            (sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
+                                                                                sensor_path[i + 1][
+                                                                                    1]) ** 2)
                         # Append appropriate color for endoflip sensor
                         current_sensor = endoflip_colors[color_index]
                         next_sensor = endoflip_colors[color_index + 1]
                         # Smooth color transition
                         endoflip_value = current_sensor + (next_sensor - current_sensor) * (
-                                        (current_length - sensor_length_px * (color_index)) / (
-                                        sensor_length_px * (color_index+1) -
-                                        sensor_length_px * (color_index)))
+                                (current_length - sensor_length_px * (color_index)) / (
+                                sensor_length_px * (color_index + 1) -
+                                sensor_length_px * (color_index)))
                         endoflip_surface_color.append(endoflip_value)
 
                         # Check if the next endoflip sensor has been reached 
-                        if current_length >= sensor_length_px * (color_index+1):
+                        if current_length >= sensor_length_px * (color_index + 1):
                             color_index += 1
 
-                    elif current_length >= measurement_length_px or i >= null_pos_index or color_index + 1 >= len(endoflip_colors):
+                    elif current_length >= measurement_length_px or i >= null_pos_index or color_index + 1 >= len(
+                            endoflip_colors):
                         # Out of the endoflip section, add high value to simulate None values
                         endoflip_surface_color.append(40)
 
@@ -845,5 +871,5 @@ class FigureCreator(ABC):
                 bv_color_collect[agg] = endoflip_surface_color[::-1]
             # Append all colors per aggregation per current ballon_volume
             surface_color_collect[ballon_volume] = bv_color_collect
-        
+
         return surface_color_collect
