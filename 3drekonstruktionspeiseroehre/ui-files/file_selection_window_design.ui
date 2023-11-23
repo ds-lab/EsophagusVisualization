@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>716</width>
-    <height>652</height>
+    <width>874</width>
+    <height>994</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,14 +32,14 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
       </property>
-      <item row="3" column="0">
+      <item row="9" column="0">
        <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="11" column="0">
        <widget class="QGroupBox" name="groupBox_2">
         <property name="title">
          <string>Eines oder mehrere Röntgenbilder (Breischluckbilder) auswählen</string>
@@ -66,7 +66,14 @@
         </layout>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="15" column="0">
+       <widget class="QPushButton" name="visualization_button">
+        <property name="text">
+         <string>Visualisierung generieren</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="0">
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
          <string>Endoskopiebilder auswählen (optional)</string>
@@ -93,31 +100,7 @@
         </layout>
        </widget>
       </item>
-      <item row="9" column="0">
-       <widget class="QPushButton" name="visualization_button">
-        <property name="text">
-         <string>Visualisierung generieren</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;oder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="scaledContents">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
+      <item row="10" column="0">
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
          <string>Manometriedatei auswählen (im CSV-Format)</string>
@@ -144,59 +127,30 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QGroupBox" name="groupBox_4">
-        <property name="title">
-         <string>Import einer oder mehrerer erstellter 3D Rekonstruktionen</string>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="QLineEdit" name="import_textfield">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="import_button">
-             <property name="text">
-              <string>Dateien auswählen</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="7" column="0">
+      <item row="13" column="0">
        <widget class="QGroupBox" name="groupBox_6">
         <property name="title">
          <string>EndoFLIP auswählen (optional)</string>
         </property>
-        
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <item>
-           <widget class="QLineEdit" name="endoflip_textfield">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="endoflip_button">
-            <property name="text">
-             <string>Datei auswählen</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QLineEdit" name="endoflip_textfield">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="endoflip_button">
+           <property name="text">
+            <string>Datei auswählen</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
-      <item row="8" column="0">s
+      <item row="14" column="0">
        <widget class="QGroupBox" name="groupBox_5">
         <property name="title">
          <string>Rekonstruktion eindeutig benennen (optional)</string>
@@ -208,6 +162,232 @@
         </layout>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;oder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="scaledContents">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string>Import einer oder mehrerer erstellter 3D Rekonstruktionen</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLineEdit" name="import_textfield">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="import_button">
+           <property name="text">
+            <string>Dateien auswählen</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QGroupBox" name="groupBox_8">
+        <property name="title">
+         <string>Visit Data</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="7" column="0">
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="Center"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Center:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="5" column="0">
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="1" column="0">
+            <widget class="QRadioButton" name="Diagnotics">
+             <property name="text">
+              <string>Diagnostics</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Timepoint</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QRadioButton" name="Therapy">
+             <property name="text">
+              <string>Therapy</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QRadioButton" name="FollowUp">
+             <property name="text">
+              <string>Follow-Up</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Months after Therapy</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QSpinBox" name="MonthAfterTherapy"/>
+           </item>
+           <item row="2" column="2">
+            <widget class="QComboBox" name="Method">
+             <item>
+              <property name="text">
+               <string>Botox</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Pneumatische Dilatation 30ml</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Pneumatische Dilatation 35ml</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Pneumatische Dilatation 40ml</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>POEM</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Laparoskopische Myotomie</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Method</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="Line" name="line_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QGroupBox" name="groupBox_7">
+        <property name="title">
+         <string>Patient Data</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="1" column="1">
+            <widget class="QDateEdit" name="Bithdate"/>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="Birthdate">
+             <property name="text">
+              <string>Birthdate</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="patientId">
+             <property name="text">
+              <string>Patient-Id</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QCheckBox" name="PreviousTherapies">
+             <property name="text">
+              <string>Previous Therapies</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLineEdit" name="PatientId"/>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="gender">
+             <property name="text">
+              <string>Gender</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QComboBox" name="Gender">
+             <item>
+              <property name="text">
+               <string>Male</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Female</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Divers</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="Line" name="line_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -217,8 +397,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>716</width>
-     <height>22</height>
+     <width>874</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

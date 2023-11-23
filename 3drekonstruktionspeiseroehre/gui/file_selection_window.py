@@ -90,7 +90,7 @@ class FileSelectionWindow(QMainWindow):
             # Iterate over *.achalasie files
             for import_filename in self.import_filenames:
                 # Check if a '.achalasie'-file is loaded.
-                # This check is probably not really necessary, because it should only be possible to select '.achalasie" files.
+                # This check is probably not really necessary, because it should only be possible to select '.achalasie' files.
                 file_ending = import_filename.split("/")[-1].split(".")[-1]
                 if file_ending != "achalasie":
                     QMessageBox.information(self, "Falsche Dateiendung",
