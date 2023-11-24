@@ -30,4 +30,4 @@ if __name__ == '__main__':
         pyi_splash.close()
     except ModuleNotFoundError:
         pass
-    app.exec_()
+    app.exec()

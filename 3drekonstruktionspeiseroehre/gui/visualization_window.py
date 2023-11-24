@@ -16,9 +16,9 @@ from logic.visit_data import VisitData
 #from PyQt5.QtGui import QFont
 #from PyQt5.QtWebEngineWidgets import QWebEngineView
 #from PyQt5.QtWidgets import (QAction, QFileDialog, QLabel, QMainWindow,
-                             QMessageBox, QProgressDialog, QPushButton,
+                             #QMessageBox, QProgressDialog, QPushButton,
                              #QSizePolicy, QStyle, QVBoxLayout)
-                             from PyQt6 import uic
+from PyQt6 import uic
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QFont, QAction
 from PyQt6.QtWebEngineWidgets import QWebEngineView
