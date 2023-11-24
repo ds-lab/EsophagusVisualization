@@ -24,10 +24,10 @@ if __name__ == '__main__':
     master_window = MasterWindow()
     master_window.show()
     master_window.activate()
-    #select_center_window = SelectCenterWindow(master_window)
-    #master_window.switch_to(select_center_window)
-    file_selection_window = FileSelectionWindow(master_window)
-    master_window.switch_to(file_selection_window)
+    select_center_window = SelectCenterWindow(master_window)
+    master_window.switch_to(select_center_window)
+    #file_selection_window = FileSelectionWindow(master_window)
+    #master_window.switch_to(file_selection_window)
     try:
         # close the splash screen if running as pyinstaller-exe
         import pyi_splash
