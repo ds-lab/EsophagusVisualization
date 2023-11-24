@@ -2,6 +2,7 @@ import sys
 
 from gui.file_selection_window import FileSelectionWindow
 from gui.master_window import MasterWindow
+from gui.select_center_window import SelectCenterWindow
 #from PyQt5 import QtCore, QtWidgets
 #from PyQt5.QtWidgets import QApplication
 
@@ -19,9 +20,12 @@ from PyQt6.QtWidgets import QApplication
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     # create the MasterWindow and show the first UI
+
     master_window = MasterWindow()
     master_window.show()
     master_window.activate()
+    #select_center_window = SelectCenterWindow(master_window)
+    #master_window.switch_to(select_center_window)
     file_selection_window = FileSelectionWindow(master_window)
     master_window.switch_to(file_selection_window)
     try:
