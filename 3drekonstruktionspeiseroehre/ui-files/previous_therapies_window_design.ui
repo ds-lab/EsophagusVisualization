@@ -41,13 +41,13 @@
          <item row="5" column="0">
           <layout class="QGridLayout" name="gridLayout_7">
            <item row="5" column="1">
-            <widget class="QSpinBox" name="TimesPOEM"/>
+            <widget class="QSpinBox" name="poem_spin"/>
            </item>
            <item row="4" column="1">
-            <widget class="QSpinBox" name="TimesPneuDil40"/>
+            <widget class="QSpinBox" name="pneu_dil_40_spin"/>
            </item>
            <item row="7" column="1">
-            <widget class="QSpinBox" name="TimesOther"/>
+            <widget class="QSpinBox" name="other_spin"/>
            </item>
            <item row="0" column="1">
             <widget class="QLabel" name="label_2">
@@ -57,24 +57,24 @@
             </widget>
            </item>
            <item row="2" column="2">
-            <widget class="QDateEdit" name="DateLastPneuDil30">
+            <widget class="QDateEdit" name="pneu_dil_30_calendar">
              <property name="calendarPopup">
               <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="1" column="2">
-            <widget class="QDateEdit" name="DateLastBotox">
+            <widget class="QDateEdit" name="botox_calendar">
              <property name="calendarPopup">
               <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QSpinBox" name="TimesPneuDil30"/>
+            <widget class="QSpinBox" name="pneu_dil_30_spin"/>
            </item>
            <item row="4" column="2">
-            <widget class="QDateEdit" name="DateLastPneuDil40">
+            <widget class="QDateEdit" name="pneu_dil_40_calendar">
              <property name="calendarPopup">
               <bool>true</bool>
              </property>
@@ -88,14 +88,14 @@
             </widget>
            </item>
            <item row="7" column="0">
-            <widget class="QCheckBox" name="TherapyOther">
+            <widget class="QCheckBox" name="other_check">
              <property name="text">
               <string>other</string>
              </property>
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QCheckBox" name="TherapyBotox">
+            <widget class="QCheckBox" name="botox_check">
              <property name="text">
               <string>Botox</string>
              </property>
@@ -109,121 +109,121 @@
             </widget>
            </item>
            <item row="6" column="1">
-            <widget class="QSpinBox" name="TimesLapro"/>
+            <widget class="QSpinBox" name="lapro_spin"/>
            </item>
            <item row="6" column="2">
-            <widget class="QDateEdit" name="DateLastLapro">
+            <widget class="QDateEdit" name="lapro_calendar">
              <property name="calendarPopup">
               <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="3" column="0">
-            <widget class="QCheckBox" name="TherapyPneuDil35">
+            <widget class="QCheckBox" name="pneu_dil_35_check">
              <property name="text">
               <string>Pneumatische Dilatation 35ml</string>
              </property>
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QSpinBox" name="TimesPneuDil35"/>
+            <widget class="QSpinBox" name="pneu_dil_35_spin"/>
            </item>
            <item row="1" column="1">
-            <widget class="QSpinBox" name="TimesBotox"/>
+            <widget class="QSpinBox" name="botox_spin"/>
            </item>
            <item row="3" column="2">
-            <widget class="QDateEdit" name="DateLastPneuDil35">
+            <widget class="QDateEdit" name="pneu_dil_35_calendar">
              <property name="calendarPopup">
               <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QCheckBox" name="TherapyPneuDil30">
+            <widget class="QCheckBox" name="pneu_dil_30_check">
              <property name="text">
               <string>Pneumatische Dilatation 30ml</string>
              </property>
             </widget>
            </item>
            <item row="5" column="0">
-            <widget class="QCheckBox" name="TherapyPOEM">
+            <widget class="QCheckBox" name="poem_check">
              <property name="text">
               <string>POEM</string>
              </property>
             </widget>
            </item>
            <item row="6" column="0">
-            <widget class="QCheckBox" name="TherapyLapro">
+            <widget class="QCheckBox" name="lapro_check">
              <property name="text">
               <string>Laparoskopische Myotomie</string>
              </property>
             </widget>
            </item>
            <item row="4" column="0">
-            <widget class="QCheckBox" name="TherapyPneuDil40">
+            <widget class="QCheckBox" name="pneu_dil_40_check">
              <property name="text">
               <string>Pneumatische Dilatation 40ml</string>
              </property>
             </widget>
            </item>
            <item row="7" column="2">
-            <widget class="QDateEdit" name="DateLastOther">
+            <widget class="QDateEdit" name="other_calendar">
              <property name="calendarPopup">
               <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="5" column="2">
-            <widget class="QDateEdit" name="DateLastPOEM">
+            <widget class="QDateEdit" name="peom_calendar">
              <property name="calendarPopup">
               <bool>true</bool>
              </property>
             </widget>
            </item>
            <item row="1" column="3">
-            <widget class="QCheckBox" name="UnknownDateBotox">
+            <widget class="QCheckBox" name="botox_date_check">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item row="3" column="3">
-            <widget class="QCheckBox" name="UnknownDatePneuDil35">
+            <widget class="QCheckBox" name="pneu_dil_35_date_check">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item row="4" column="3">
-            <widget class="QCheckBox" name="UnknownDatePneuDil40">
+            <widget class="QCheckBox" name="pneu_dil_40_date_check">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item row="5" column="3">
-            <widget class="QCheckBox" name="UnknownDatePOEM">
+            <widget class="QCheckBox" name="poem_date_check">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item row="6" column="3">
-            <widget class="QCheckBox" name="UnknownDateLapro">
+            <widget class="QCheckBox" name="lapro_date_check">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item row="7" column="3">
-            <widget class="QCheckBox" name="UnknownDateOther">
+            <widget class="QCheckBox" name="other_date_check">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item row="2" column="3">
-            <widget class="QCheckBox" name="UnknownDatePneuDil30">
+            <widget class="QCheckBox" name="pneu_dil_30_date_check">
              <property name="text">
               <string/>
              </property>
@@ -239,7 +239,7 @@
           </layout>
          </item>
          <item row="6" column="0">
-          <widget class="QPushButton" name="SavePreviousTherapies">
+          <widget class="QPushButton" name="save_button">
            <property name="text">
             <string>Save</string>
            </property>
