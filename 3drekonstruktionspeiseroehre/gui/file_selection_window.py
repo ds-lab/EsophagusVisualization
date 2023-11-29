@@ -13,6 +13,7 @@ import gui.visualization_window
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
+from gui.previous_therapies_window import PreviousTherapiesWindow
 from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
@@ -45,6 +46,7 @@ class FileSelectionWindow(QMainWindow):
         self.ui.xray_button_all.clicked.connect(self.__xray_button_clicked_all)
         self.ui.endoscopy_button.clicked.connect(self.__endoscopy_button_clicked)
         self.ui.endoflip_button.clicked.connect(self.__endoflip_button_clicked)
+        self.ui.previous_therapies_check.stateChanged.connect(self.__previous_therapies_check_clicked)
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -62,9 +64,6 @@ class FileSelectionWindow(QMainWindow):
         """
         checks if all patient and visit data are filled out
         """
-        print(f"self.ui.gender_dropdown.currentText(): {self.ui.gender_dropdown.currentText()}")
-        print(f"self.ui.patient_id_field.text(): {self.ui.patient_id_field.text()}")
-
         if (
                 len(self.ui.patient_id_field.text()) > 0
                 and self.ui.gender_dropdown.currentText() != "---"
@@ -77,6 +76,18 @@ class FileSelectionWindow(QMainWindow):
             print("all filled out")
         else:
             print("please fill out all patient data")
+
+    def __previous_therapies_check_clicked(self):
+        """
+        checks if the previous therapies field is checked
+        showes previous therapies window if previous therapies field is checked
+        """
+        if self.ui.previous_therapies_check.isChecked():
+            print("Checkbox checked")
+            previous_therapies = PreviousTherapiesWindow(self.master_window, self.patient_data)
+            previous_therapies.show()
+        else:
+            print("Checkbox not checked")
 
     def __visualization_button_clicked(self):
         """
