@@ -208,20 +208,6 @@
          <string>Visit Data</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_8">
-         <item row="7" column="0">
-          <layout class="QGridLayout" name="gridLayout_9">
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="center_id_field"/>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>Center:</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
          <item row="5" column="0">
           <layout class="QGridLayout" name="gridLayout_7">
            <item row="1" column="0">
@@ -255,7 +241,10 @@
            <item row="3" column="1">
             <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>Months after Therapy</string>
+              <string>Months after Therapy:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -314,9 +303,53 @@
            <item row="2" column="1">
             <widget class="QLabel" name="label_4">
              <property name="text">
-              <string>Method</string>
+              <string>Method:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="0">
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="0" column="3">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Center:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Date of Visit:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QDateEdit" name="date_calendar">
+             <property name="calendarPopup">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QLineEdit" name="center_id_field"/>
+           </item>
+           <item row="0" column="2">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
