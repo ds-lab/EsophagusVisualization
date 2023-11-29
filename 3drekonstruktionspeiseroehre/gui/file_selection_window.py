@@ -38,6 +38,7 @@ class FileSelectionWindow(QMainWindow):
         self.xray_filenames = []
         self.endoscopy_image_positions = []
         self.endoflip_screenshot = None
+        self.ui.visit_data_button.clicked.connect(self.__visit_data_button_clicked)
         self.ui.import_button.clicked.connect(self.__import_button_clicked)
         self.ui.visualization_button.clicked.connect(self.__visualization_button_clicked)
         self.ui.csv_button.clicked.connect(self.__csv_button_clicked)
@@ -57,26 +58,46 @@ class FileSelectionWindow(QMainWindow):
         info_window.show_file_selection_info()
         info_window.show()
 
+    def __visit_data_button_clicked(self):
+        """
+        checks if all patient and visit data are filled out
+        """
+        print(f"self.ui.gender_dropdown.currentText(): {self.ui.gender_dropdown.currentText()}")
+        print(f"self.ui.patient_id_field.text(): {self.ui.patient_id_field.text()}")
+
+        if (
+                len(self.ui.patient_id_field.text()) > 0
+                and self.ui.gender_dropdown.currentText() != "---"
+                and
+                (self.ui.diagnostics_radio.isChecked() or self.ui.therapy_radio.isChecked() or self.ui.follow_up_radio.isChecked())
+                and (not self.ui.therapy_radio.isChecked() or self.ui.method_dropdown.currentText() != "---")
+                and (not self.ui.follow_up_radio.isChecked() or self.ui.months_after_therapy_spin.value() != -1)
+                and len(self.ui.center_id_field.text()) > 0
+        ):
+            print("all filled out")
+        else:
+            print("please fill out all patient data")
+
     def __visualization_button_clicked(self):
         """
         Visualization button callback. Initiates the visualization process.
         """
         if len(self.ui.csv_textfield.text()) > 0 and len(self.ui.xray_textfield_all.text()) > 0:
             if len(self.ui.visualization_namefield.text()) > 0:
-                    # Add name if user chooses to name the reconstruction
-                    name = self.ui.visualization_namefield.text()
-                    if self.ui.visualization_namefield.text() in self.patient_data.visit_data_dict.keys():
-                        QMessageBox.critical(self, "Rekonstruktionsname nicht eindeutig","Fehler: Rekonstruktionsnamen müssen eindeutig sein.")
-                        return
+                # Add name if user chooses to name the reconstruction
+                name = self.ui.visualization_namefield.text()
+                if self.ui.visualization_namefield.text() in self.patient_data.visit_data_dict.keys():
+                    QMessageBox.critical(self, "Rekonstruktionsname nicht eindeutig",
+                                         "Fehler: Rekonstruktionsnamen müssen eindeutig sein.")
+                    return
             else:
-                    # No name was specifiied by user -> use pseudonym and xray filename
-                    name = self.xray_filenames[0].split("/")[-3] + "-" + self.xray_filenames[0].split("/")[-1].split(".")[0]
+                # No name was specifiied by user -> use pseudonym and xray filename
+                name = self.xray_filenames[0].split("/")[-3] + "-" + self.xray_filenames[0].split("/")[-1].split(".")[0]
 
             visit = VisitData(name)
             for xray_filename in self.xray_filenames:
                 visualization_data = VisualizationData()
                 visualization_data.xray_filename = xray_filename
-
 
                 visualization_data.pressure_matrix = self.pressure_matrix
                 visualization_data.endoflip_screenshot = self.endoflip_screenshot
@@ -131,19 +152,17 @@ class FileSelectionWindow(QMainWindow):
         self.__check_button_activate()
         self.default_path = os.path.dirname(filename)
 
-
     def __xray_button_clicked_all(self):
         """
         X-ray button callback. Handles X-ray file selection for all files.
         """
         filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
-                                                  "Bilder (*.jpg *.JPG *.png *.PNG)")
+                                                    "Bilder (*.jpg *.JPG *.png *.PNG)")
         if len(filenames) > 0:
             self.ui.xray_textfield_all.setText(str(len(filenames)) + " Dateien ausgewählt")
             self.xray_filenames = filenames
             self.__check_button_activate()
             self.default_path = os.path.dirname(filenames[0])
-
 
     def __endoscopy_button_clicked(self):
         """
@@ -167,7 +186,7 @@ class FileSelectionWindow(QMainWindow):
             self.ui.endoscopy_textfield.setText(str(len(filenames)) + " Dateien ausgewählt")
             self.endoscopy_image_positions = positions
             self.endoscopy_filenames = filenames
-    
+
     def __endoflip_button_clicked(self):
         """
         EndoFLIP button callback. Handles EndoFLIP .xlsx file selection.
@@ -179,7 +198,8 @@ class FileSelectionWindow(QMainWindow):
                 self.endoflip_screenshot = process_endoflip_xlsx(filename)
             except:
                 error = True
-            if error or len(self.endoflip_screenshot['30']['aggregates']) != 4 or len(self.endoflip_screenshot['40']['aggregates']) != 4:
+            if error or len(self.endoflip_screenshot['30']['aggregates']) != 4 or len(
+                    self.endoflip_screenshot['40']['aggregates']) != 4:
                 self.ui.endoflip_textfield.setText("")
                 QMessageBox.critical(self, "Ungültige Datei", "Fehler: Die Datei hat nicht das erwartete Format")
             else:
@@ -193,12 +213,12 @@ class FileSelectionWindow(QMainWindow):
         """
         # Inform the user, that only '.achalasie'-files from trustworthy sources should be loaded
         QMessageBox.warning(self, "Achtung!",
-                                "Laden Sie nur '.achalasie'-Dateien,\n"
-                                "welche Sie selbst mit diesem Programm\n"
-                                "exportiert haben!")
+                            "Laden Sie nur '.achalasie'-Dateien,\n"
+                            "welche Sie selbst mit diesem Programm\n"
+                            "exportiert haben!")
 
         filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
-                                                  "exportierte Dateien (*.achalasie)")
+                                                    "exportierte Dateien (*.achalasie)")
         if len(filenames) > 0:
             self.ui.import_textfield.setText(str(len(filenames)) + " Dateien ausgewählt")
             self.import_filenames = filenames

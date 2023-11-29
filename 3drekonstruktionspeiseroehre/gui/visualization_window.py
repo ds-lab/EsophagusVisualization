@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 
 import gui.file_selection_window
+import logic.visit_data
 from dash_server import DashServer
 from gui.drag_and_drop import *
 from gui.info_window import InfoWindow
