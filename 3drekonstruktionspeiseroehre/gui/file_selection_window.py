@@ -67,6 +67,7 @@ class FileSelectionWindow(QMainWindow):
         if (
                 len(self.ui.patient_id_field.text()) > 0
                 and self.ui.gender_dropdown.currentText() != "---"
+                and self.ui.ethnicity_dropdown.currentText() != "---"
                 and
                 (self.ui.diagnostics_radio.isChecked() or self.ui.therapy_radio.isChecked() or self.ui.follow_up_radio.isChecked())
                 and (not self.ui.therapy_radio.isChecked() or self.ui.method_dropdown.currentText() != "---")
