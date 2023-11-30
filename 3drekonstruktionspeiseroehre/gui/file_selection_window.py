@@ -66,6 +66,18 @@ class FileSelectionWindow(QMainWindow):
         """
         checks if all patient and visit data are filled out
         """
+        measure = None
+        if self.ui.diagnostics_radio.isChecked() == 1:
+            measure = "diagnostics"
+        elif self.ui.therapy_radio.isChecked() == 1:
+            measure = "therapy"
+        elif  self.ui.follow_up_radio.isChecked() == 1:
+            measure = "follow_up"
+
+        age = self.ui.date_calendar.date().toPyDate().year - self.ui.birthdate_calendar.date().toPyDate().year - (
+                    (self.ui.date_calendar.date().toPyDate().month, self.ui.date_calendar.date().toPyDate().day) <
+                    (self.ui.birthdate_calendar.date().toPyDate().month, self.ui.birthdate_calendar.date().toPyDate().day))
+
         if (
                 len(self.ui.patient_id_field.text()) > 0
                 and self.ui.gender_dropdown.currentText() != "---"
@@ -78,12 +90,25 @@ class FileSelectionWindow(QMainWindow):
         ):
             with database.engine_local.connect() as conn:
                 conn.execute(
-                    insert(data_models.patients_table).
-                    values(patient_id=self.ui.patient_id_field.text(),
-                           ancestry=self.ui.ancestry_dropdown.currentText(),
-                           birth_year=self.ui.birthdate_calendar.date().toPyDate().year, # due to data security/anononymity reasons only the year is saved
-                           previous_therapies=self.ui.previous_therapies_check.isChecked())
+                    # ToDo: check einfügen, ob die Daten wirklich eingefügt werden sollen
+                    insert(data_models.patients_table).values(
+                        patient_id=self.ui.patient_id_field.text(),
+                        ancestry=self.ui.ancestry_dropdown.currentText(),
+                        birth_year=self.ui.birthdate_calendar.date().toPyDate().year,
+                        previous_therapies=self.ui.previous_therapies_check.isChecked()
+                    )
                 )
+
+                # ToDo: check einfügen, ob die Daten wirklich eingefügt werden sollen
+                conn.execute(
+                    insert(data_models.visits_table).values(
+                        patient_id=self.ui.patient_id_field.text(),
+                        measure=measure,
+                        center=self.ui.center_id_field.text(),
+                        age_at_visit=age
+                    )
+                )
+
                 conn.commit()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient and visit data.")
@@ -91,7 +116,7 @@ class FileSelectionWindow(QMainWindow):
     def __previous_therapies_check_clicked(self):
         """
         checks if the previous therapies field is checked
-        showes previous therapies window if previous therapies field is checked
+        shows previous therapies window if previous therapies field is checked
         """
         if self.ui.previous_therapies_check.isChecked():
             print("Checkbox checked")

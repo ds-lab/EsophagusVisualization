@@ -15,11 +15,11 @@ patients_table = Table(
 visits_table = Table(
     "visits",
     metadata_obj,
-    Column("visit_id", Integer, primary_key=True),
+    Column("visit_id", Integer, primary_key=True, autoincrement=True),
     Column("patient_id", ForeignKey("patients.patient_id"), nullable=False),
     Column("measure", String(11), nullable=False),
     Column("center", String(20), nullable=False),
-    Column("date", Date, nullable=False)  # brauchen das Datum um das Alter des Patienten zu verschiedenen Zeitpunkten berechnen zu können
+    Column("age_at_visit", Integer, nullable=False)
 )
 
 therapy_table = Table(
