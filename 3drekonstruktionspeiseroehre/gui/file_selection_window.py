@@ -14,10 +14,12 @@ from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
 from gui.previous_therapies_window import PreviousTherapiesWindow
+from logic import database, data_models
 from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
+from sqlalchemy import insert
 
 
 class FileSelectionWindow(QMainWindow):
@@ -67,15 +69,22 @@ class FileSelectionWindow(QMainWindow):
         if (
                 len(self.ui.patient_id_field.text()) > 0
                 and self.ui.gender_dropdown.currentText() != "---"
-                and self.ui.ethnicity_dropdown.currentText() != "---"
+                and self.ui.ancestry_dropdown.currentText() != "---"
                 and
                 (self.ui.diagnostics_radio.isChecked() or self.ui.therapy_radio.isChecked() or self.ui.follow_up_radio.isChecked())
                 and (not self.ui.therapy_radio.isChecked() or self.ui.method_dropdown.currentText() != "---")
                 and (not self.ui.follow_up_radio.isChecked() or self.ui.months_after_therapy_spin.value() != -1)
                 and len(self.ui.center_id_field.text()) > 0
         ):
-            # ToDo: Daten in DB speichern
-            print("all filled out")
+            with database.engine_local.connect() as conn:
+                conn.execute(
+                    insert(data_models.patients_table).
+                    values(patient_id=self.ui.patient_id_field.text(),
+                           ancestry=self.ui.ancestry_dropdown.currentText(),
+                           birth_year=self.ui.birthdate_calendar.date().toPyDate().year, # due to data security/anononymity reasons only the year is saved
+                           previous_therapies=self.ui.previous_therapies_check.isChecked())
+                )
+                conn.commit()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient and visit data.")
 

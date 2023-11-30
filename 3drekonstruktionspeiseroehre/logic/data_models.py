@@ -7,8 +7,8 @@ patients_table = Table(
     "patients",
     metadata_obj,
     Column("patient_id", String(30), primary_key=True),
-    Column("ancestry", Enum),   # Kann man in der GUI auch auf ein in Python definiertes Enum zugreifen? Sonst ginge hier auch String.
-    Column("birth_year", Date),
+    Column("ancestry", String(15)),
+    Column("birth_year", Integer),
     Column("previous_therapies", Boolean)
 )
 
@@ -17,7 +17,7 @@ visits_table = Table(
     metadata_obj,
     Column("visit_id", Integer, primary_key=True),
     Column("patient_id", ForeignKey("patients.patient_id"), nullable=False),
-    Column("measure", Enum, nullable=False),
+    Column("measure", String(11), nullable=False),
     Column("center", String(20), nullable=False),
     Column("date", Date, nullable=False)  # brauchen das Datum um das Alter des Patienten zu verschiedenen Zeitpunkten berechnen zu können
 )
