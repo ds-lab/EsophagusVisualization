@@ -17,12 +17,25 @@ visits_table = Table(
     metadata_obj,
     Column("visit_id", Integer, primary_key=True),
     Column("patient_id", ForeignKey("patients.patient_id"), nullable=False),
-    Column("time", Integer), # z.B. Integer -1 steht für vor Therapie, 0 steht für Therapie, alle andereren Werte stehen für die Monate nach Therapie
-    # dies die -1 und 0 kann/sollte von uns automatisch eingetragen werden, je nachdem was in der GUI angeklickt wird
-    # evtl. Jahre in Monate umrechnen
-    Column("therapy", Enum, nullable=False),
+    Column("measure", Enum, nullable=False),
     Column("center", String(20), nullable=False),
     Column("date", Date, nullable=False)  # brauchen das Datum um das Alter des Patienten zu verschiedenen Zeitpunkten berechnen zu können
+)
+
+therapy_table = Table(
+    "therapies",
+    metadata_obj,
+    Column("therapy_id", Integer, primary_key=True),
+    Column("visit_id", ForeignKey("visits.visit_id"), nullable=False),
+    Column("therapy", Enum, nullable=False)
+)
+
+followup_table = Table(
+    "followups",
+    metadata_obj,
+    Column("followup_id", Integer, primary_key=True),
+    Column("visit_id", ForeignKey("visits.visit_id"), nullable=False),
+    Column("followup", Integer, nullable=False)
 )
 
 previous_therapies_table = Table(
