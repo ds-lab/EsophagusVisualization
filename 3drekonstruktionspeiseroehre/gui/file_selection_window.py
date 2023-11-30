@@ -73,9 +73,10 @@ class FileSelectionWindow(QMainWindow):
                 and (not self.ui.follow_up_radio.isChecked() or self.ui.months_after_therapy_spin.value() != -1)
                 and len(self.ui.center_id_field.text()) > 0
         ):
+            # ToDo: Daten in DB speichern
             print("all filled out")
         else:
-            print("please fill out all patient data")
+            QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient and visit data.")
 
     def __previous_therapies_check_clicked(self):
         """
