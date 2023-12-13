@@ -390,8 +390,14 @@
            </item>
            <item row="1" column="1">
             <widget class="QDateEdit" name="birthdate_calendar">
+             <property name="currentSection">
+              <enum>QDateTimeEdit::DaySection</enum>
+             </property>
              <property name="calendarPopup">
               <bool>true</bool>
+             </property>
+             <property name="currentSectionIndex">
+              <number>0</number>
              </property>
             </widget>
            </item>
@@ -434,7 +440,7 @@
             </widget>
            </item>
            <item row="1" column="3">
-            <widget class="QComboBox" name="ethnicity_dropdown">
+            <widget class="QComboBox" name="ancestry_dropdown">
              <item>
               <property name="text">
                <string>---</string>
@@ -475,7 +481,7 @@
            <item row="0" column="3">
             <widget class="QLabel" name="label_7">
              <property name="text">
-              <string>Ethnicity</string>
+              <string>Ancestry</string>
              </property>
             </widget>
            </item>
