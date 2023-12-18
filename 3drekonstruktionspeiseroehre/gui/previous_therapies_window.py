@@ -1,5 +1,5 @@
-from PyQt5 import uic
-from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
+from PyQt6 import uic
+from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
