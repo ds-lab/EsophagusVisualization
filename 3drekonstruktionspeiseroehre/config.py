@@ -20,7 +20,7 @@ colorscale = [[0, "rgb(16, 1, 255)"],
 cmin = -15  # min pressure -> 0 in colorscale
 cmax = 200  # max pressure -> 1 in colorscale
 
-# manometry sensor: sensor positions in cm for catheter CE4-0062 (from top to bottom)
+# manometry sensor: sensor positions in cm for catheter CE4-0062 (from top to bottom) P22 - 0cm und P1 - 40cm
 coords_sensors = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 23, 24, 26, 28, 30, 31, 32, 33, 34, 35, 40]
 
 # csv import

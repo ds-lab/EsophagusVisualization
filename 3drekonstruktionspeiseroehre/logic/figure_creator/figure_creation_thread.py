@@ -5,7 +5,8 @@ from logic.figure_creator.figure_creator_with_endoscopy import \
 from logic.figure_creator.figure_creator_without_endoscopy import \
     FigureCreatorWithoutEndoscopy
 from logic.visit_data import VisitData
-from PyQt5.QtCore import QThread, pyqtSignal
+#from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt6.QtCore import QThread, pyqtSignal
 
 from logic import database, data_models
 from sqlalchemy import insert

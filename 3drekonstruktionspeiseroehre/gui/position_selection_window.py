@@ -8,8 +8,11 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.pyplot import Circle
 from matplotlib.patches import Polygon
-from PyQt5 import uic
-from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
+#from PyQt5 import uic
+#from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
+from PyQt6 import uic
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from skimage import io
 
 

@@ -12,11 +12,18 @@ from gui.master_window import MasterWindow
 from logic.figure_creator.figure_creation_thread import FigureCreationThread
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
-from PyQt5 import uic
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QFont
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import (QAction, QFileDialog, QLabel, QMainWindow,
+#from PyQt5 import uic
+#from PyQt5.QtCore import QUrl
+#from PyQt5.QtGui import QFont
+#from PyQt5.QtWebEngineWidgets import QWebEngineView
+#from PyQt5.QtWidgets import (QAction, QFileDialog, QLabel, QMainWindow,
+                             #QMessageBox, QProgressDialog, QPushButton,
+                             #QSizePolicy, QStyle, QVBoxLayout)
+from PyQt6 import uic
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QFont, QAction
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWidgets import (QFileDialog, QLabel, QMainWindow,       # QAction
                              QMessageBox, QProgressDialog, QPushButton,
                              QSizePolicy, QStyle, QVBoxLayout)
 import pyvista as pv
@@ -145,13 +152,15 @@ class VisualizationWindow(QMainWindow):
         else:
             visit_name = visit.name
         label = QLabel(visit_name)
-        label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        #label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        label.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
         label.setFont(QFont('Arial', 14))
         vbox.addWidget(label)
 
         # Create a button with a trash can icon that triggers the removal of the visualization
         button = QPushButton()
-        button.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_TitleBarCloseButton')))
+        #button.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_TitleBarCloseButton')))
+        button.setIcon(self.style().standardIcon(getattr(QStyle.StandardPixmap, 'SP_TitleBarCloseButton')))
         button.setFixedSize(20, 20)
         button.clicked.connect(lambda _, visit_name=visit_name, item=item: self.__delete_visualization(visit_name,
                                                                                                        item))  # Connect the button's clicked signal to the delete visualization method

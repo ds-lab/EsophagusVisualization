@@ -5,8 +5,11 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from PyQt5 import uic
-from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
+#from PyQt5 import uic
+#from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
+from PyQt6 import uic
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
 import config
 import gui.visualization_window
@@ -25,7 +28,7 @@ from sqlalchemy import insert
 class FileSelectionWindow(QMainWindow):
     """Window where the user selects the needed files"""
 
-    def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
+    def __init__(self, master_window: MasterWindow, center: str,  patient_data: PatientData = PatientData()):
         """
         init FileSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -36,6 +39,7 @@ class FileSelectionWindow(QMainWindow):
         self.master_window: MasterWindow = master_window
         self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
+        self.center = center
         self.import_filenames = []
         self.endoscopy_filenames = []
         self.xray_filenames = []
