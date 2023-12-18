@@ -7,3 +7,4 @@ dist
 build
 .vscode
 /3drekonstruktionspeiseroehre.egg-info
+database.db
