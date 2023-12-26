@@ -9,9 +9,8 @@ numpy==1.24.3
 openpyxl==3.1.2
 pandas==2.0.1
 plotly==5.14.1
-#pyqt5==5.15.9 #PyQt6 #m1
-#pyside6==6.3.1 #m1
-#pyqtwebengine  PyQt6-WebEngine  #m1
+PyQt6==6.6.1
+PyQt6-WebEngine==6.6.0
 scikit-image==0.20.0
 scipy==1.9.1
 shapely==2.0.1
