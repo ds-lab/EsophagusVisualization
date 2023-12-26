@@ -1,3 +1,4 @@
+import os
 from sqlalchemy import create_engine
 from logic import data_models
 from sqlalchemy.orm import sessionmaker
@@ -5,7 +6,12 @@ from logic.data_declarative_models import Base
 
 # ToDo: Pfad anpassen - Wo soll die lokale DB später gespeichert werden?
 # echo in Produktion auf false setzen
-engine_local = create_engine("sqlite:///database.db", echo=True)
+if os.environ.get('TESTING') == 'True':
+    DATABASE_URL = 'sqlite:///test_database.db'
+else:
+    DATABASE_URL = 'sqlite:///database.db'
+
+engine_local = create_engine(DATABASE_URL, echo=True)
 Session = sessionmaker(bind=engine_local)
 
 

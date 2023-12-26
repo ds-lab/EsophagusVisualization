@@ -53,7 +53,7 @@ class Metric(Base):
     metric_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id"), nullable=False)
     # Zeitpunkt des Breischluckbildes
-    time = mapped_column(Integer, nullable=False),
+    time = mapped_column(Integer, nullable=False)
     metric_tubular_mean = mapped_column(Float, nullable=False)
     metric_sphincter_mean = mapped_column(Float, nullable=False)
     metric_tubular_max = mapped_column(Float, nullable=False)
