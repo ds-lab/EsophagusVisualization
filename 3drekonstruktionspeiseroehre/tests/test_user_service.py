@@ -23,8 +23,9 @@ class TestPatientService(unittest.TestCase):
 
     def tearDown(self):
         self.session.rollback()
+        self.session.close()
 
-    def test_create_user(self):
+    def test_create_patient(self):
         data = patient_1
         created_patient = patient_service.create_patient(data, self.session)
         assert created_patient == 1
