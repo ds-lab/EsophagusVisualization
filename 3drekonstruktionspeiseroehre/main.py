@@ -2,7 +2,7 @@ import sys
 
 from gui.file_selection_window import FileSelectionWindow
 from gui.master_window import MasterWindow
-from logic.database import create_db_and_tables_local
+from logic.database import create_db_and_tables_local, create_db_and_tables_local_declarative
 from gui.select_center_window import SelectCenterWindow
 from PyQt6.QtWidgets import QApplication
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     master_window.switch_to(select_center_window)
     #file_selection_window = FileSelectionWindow(master_window)
     #master_window.switch_to(file_selection_window)
-    create_db_and_tables_local()
+    create_db_and_tables_local_declarative()
     try:
         # close the splash screen if running as pyinstaller-exe
         import pyi_splash
