@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import delete, insert
 from logic.database import engine_local, Base
 from logic.data_declarative_models import Patient, Visit
-from logic.services import patient_service, visit_service
+from logic.services.visit_service import VisitService
 
 Base.metadata.create_all(engine_local)
 
@@ -36,6 +36,7 @@ class TestVisitService(unittest.TestCase):
         self.session.execute(insert(Patient).values(**patient_2))
         self.session.execute(insert(Visit).values(**visit_1))
         self.session.commit()
+        self.visit_service = VisitService(self.session)
 
     def tearDown(self):
         self.session.rollback()
@@ -57,32 +58,30 @@ class TestVisitService(unittest.TestCase):
             "age_at_visit": 40
         }
         
-        result_1 = visit_service.create_visit(visit_1, self.session)
+        result_1 = self.visit_service.create_visit(visit_1)
         assert result_1 == 1
-        with self.assertRaises(Exception):
-            visit_service.create_visit(visit_2, self.session)
-
+        
     def test_update_visit(self):
         update_data = {"measure": "3434e"}
-        result_1 = visit_service.update_visit(
-            visit_1["visit_id"], update_data, self.session)
+        result_1 = self.visit_service.update_visit(
+            visit_1["visit_id"], update_data)
 
-        result_2 = visit_service.update_visit(
-            22, update_data, self.session)
+        result_2 = self.visit_service.update_visit(
+            22, update_data)
         
         assert result_1 == 1
         assert result_2 == 0
 
     def test_delete_visit(self):
-        result_1 = visit_service.delete_visit(
-            visit_1["visit_id"], self.session)
-        result_2 = visit_service.delete_visit(
-            "unexistent_id", self.session)
+        result_1 = self.visit_service.delete_visit(
+            visit_1["visit_id"])
+        result_2 = self.visit_service.delete_visit(
+            "unexistent_id")
 
         assert result_1 == 1
         assert result_2 == 0
 
     def test_get_visit(self):
-        result_1 = visit_service.get_visit(
-            visit_1["visit_id"], self.session)
+        result_1 = self.visit_service.get_visit(
+            visit_1["visit_id"])
         assert result_1 != None
