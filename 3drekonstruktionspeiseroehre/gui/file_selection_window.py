@@ -23,6 +23,7 @@ from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
 from sqlalchemy import insert, select, and_
+from logic.services.patient_service import PatientService
 
 
 class FileSelectionWindow(QMainWindow):
@@ -58,6 +59,7 @@ class FileSelectionWindow(QMainWindow):
         self.ui.menubar.addAction(menu_button)
         self.__check_button_activate()
         self.db = database.get_db()
+        self.patient_service = PatientService
 
     def __menu_button_clicked(self):
         """
@@ -98,11 +100,24 @@ class FileSelectionWindow(QMainWindow):
         ):
             with database.engine_local.connect() as conn:
                 try:
+                    # ToDo: Fehler, ich glaube wir müssen direkt aus der DB abfragen und nicht aus den Datamodels, da sonst immer ein Ergebnis zurückkommt
                     stmt = conn.execute(
                         data_models.patients_table.select().where(
                             data_models.patients_table.columns.patient_id == self.ui.patient_id_field.text())
                     )
-                    print("Patient existiert schon")
+                    print(f"stmt: {stmt}")
+                    conn.commit()
+                    if stmt is not None:
+                        reply = QMessageBox.question(self, 'This Patient already exists in the database.',
+                                                     "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
+                                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+
+                        # ToDo: bei Yes den Patienten updaten
+                        # if reply == QMessageBox.StandardButton.Yes:
+                        #     pat_dict = {'ancestry': self.ui.ancestry_dropdown.currentText(),
+                        #                 'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
+                        #                 'previous_therapies': self.ui.previous_therapies_check.isChecked()}
+                        #     self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
                 except Exception as e:
                     raise e
                 finally:
