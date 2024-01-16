@@ -10,3 +10,4 @@ build
 database.db
 test_database.db
 .DS_Store
+**/.DS_Store
