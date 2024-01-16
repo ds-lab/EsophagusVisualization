@@ -5,8 +5,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-#from PyQt5 import uic
-#from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
+# from PyQt5 import uic
+# from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
 from PyQt6 import uic
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
@@ -22,13 +22,13 @@ from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
-from sqlalchemy import insert
+from sqlalchemy import insert, select, and_
 
 
 class FileSelectionWindow(QMainWindow):
     """Window where the user selects the needed files"""
 
-    def __init__(self, master_window: MasterWindow, center: str,  patient_data: PatientData = PatientData()):
+    def __init__(self, master_window: MasterWindow, center: str, patient_data: PatientData = PatientData()):
         """
         init FileSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -57,6 +57,7 @@ class FileSelectionWindow(QMainWindow):
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
         self.__check_button_activate()
+        self.db = database.get_db()
 
     def __menu_button_clicked(self):
         """
@@ -75,45 +76,56 @@ class FileSelectionWindow(QMainWindow):
             measure = "diagnostics"
         elif self.ui.therapy_radio.isChecked() == 1:
             measure = "therapy"
-        elif  self.ui.follow_up_radio.isChecked() == 1:
+        elif self.ui.follow_up_radio.isChecked() == 1:
             measure = "follow_up"
 
         age = self.ui.date_calendar.date().toPyDate().year - self.ui.birthdate_calendar.date().toPyDate().year - (
-                    (self.ui.date_calendar.date().toPyDate().month, self.ui.date_calendar.date().toPyDate().day) <
-                    (self.ui.birthdate_calendar.date().toPyDate().month, self.ui.birthdate_calendar.date().toPyDate().day))
+                (self.ui.date_calendar.date().toPyDate().month, self.ui.date_calendar.date().toPyDate().day) <
+                (self.ui.birthdate_calendar.date().toPyDate().month, self.ui.birthdate_calendar.date().toPyDate().day))
+
+        stmt = None
 
         if (
                 len(self.ui.patient_id_field.text()) > 0
                 and self.ui.gender_dropdown.currentText() != "---"
                 and self.ui.ancestry_dropdown.currentText() != "---"
                 and
-                (self.ui.diagnostics_radio.isChecked() or self.ui.therapy_radio.isChecked() or self.ui.follow_up_radio.isChecked())
+                (
+                        self.ui.diagnostics_radio.isChecked() or self.ui.therapy_radio.isChecked() or self.ui.follow_up_radio.isChecked())
                 and (not self.ui.therapy_radio.isChecked() or self.ui.method_dropdown.currentText() != "---")
                 and (not self.ui.follow_up_radio.isChecked() or self.ui.months_after_therapy_spin.value() != -1)
                 and len(self.ui.center_id_field.text()) > 0
         ):
             with database.engine_local.connect() as conn:
-                conn.execute(
-                    # ToDo: check einfügen, ob die Daten wirklich eingefügt werden sollen
-                    insert(data_models.patients_table).values(
-                        patient_id=self.ui.patient_id_field.text(),
-                        ancestry=self.ui.ancestry_dropdown.currentText(),
-                        birth_year=self.ui.birthdate_calendar.date().toPyDate().year,
-                        previous_therapies=self.ui.previous_therapies_check.isChecked()
+                try:
+                    stmt = conn.execute(
+                        data_models.patients_table.select().where(
+                            data_models.patients_table.columns.patient_id == self.ui.patient_id_field.text())
                     )
-                )
+                    print("Patient existiert schon")
+                except Exception as e:
+                    raise e
+                finally:
+                    if stmt is None:
+                        conn.execute(
+                            insert(data_models.patients_table).values(
+                                patient_id=self.ui.patient_id_field.text(),
+                                ancestry=self.ui.ancestry_dropdown.currentText(),
+                                birth_year=self.ui.birthdate_calendar.date().toPyDate().year,
+                                previous_therapies=self.ui.previous_therapies_check.isChecked()
+                            )
+                        )
+                    if stmt is None:
+                        conn.execute(
+                            insert(data_models.visits_table).values(
+                                patient_id=self.ui.patient_id_field.text(),
+                                measure=measure,
+                                center=self.ui.center_id_field.text(),
+                                age_at_visit=age
+                            )
+                        )
 
-                # ToDo: check einfügen, ob die Daten wirklich eingefügt werden sollen
-                conn.execute(
-                    insert(data_models.visits_table).values(
-                        patient_id=self.ui.patient_id_field.text(),
-                        measure=measure,
-                        center=self.ui.center_id_field.text(),
-                        age_at_visit=age
-                    )
-                )
-
-                conn.commit()
+                    conn.commit()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient and visit data.")
 
