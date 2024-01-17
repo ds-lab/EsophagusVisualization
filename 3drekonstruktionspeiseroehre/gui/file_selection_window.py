@@ -26,6 +26,7 @@ from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
 from sqlalchemy import insert, select, and_, update
 from logic.services.patient_service import PatientService
+from logic.services.visit_service import VisitService
 
 
 class FileSelectionWindow(QMainWindow):
@@ -61,6 +62,8 @@ class FileSelectionWindow(QMainWindow):
         self.ui.menubar.addAction(menu_button)
         self.__check_button_activate()
         self.db = database.get_db()
+        self.patient_service = PatientService(database.get_db())
+        self.visit_service = VisitService(database.get_db())
 
     def __menu_button_clicked(self):
         """
@@ -99,36 +102,60 @@ class FileSelectionWindow(QMainWindow):
                 and (not self.ui.follow_up_radio.isChecked() or self.ui.months_after_therapy_spin.value() != -1)
                 and len(self.ui.center_id_field.text()) > 0
         ):
-            Session = sessionmaker(bind=database.engine_local.connect())
-            with Session() as session:
-                db_patient = session.query(Patient).get(self.ui.patient_id_field.text())
-                if db_patient:
-                    reply = QMessageBox.question(self, 'This Patient already exists in the database.',
-                                                 "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
-                                                 QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-                    if reply == QMessageBox.StandardButton.Yes:
-                        pat_dict = {'ancestry': self.ui.ancestry_dropdown.currentText(),
-                                    'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
-                                    'previous_therapies': self.ui.previous_therapies_check.isChecked()}
-                        update_query = update(Patient).where(Patient.patient_id == self.ui.patient_id_field.text()).values(pat_dict)
-                        session.execute(update_query)
-                else:
-                    patient = Patient(
-                        patient_id=self.ui.patient_id_field.text(),
-                        ancestry=self.ui.ancestry_dropdown.currentText(),
-                        birth_year=self.ui.birthdate_calendar.date().toPyDate().year,
-                        previous_therapies=self.ui.previous_therapies_check.isChecked()
-                    )
-                    visit = Visit(
-                        # ToDo: wie soll die VisitID festgelegt werden? Wenn man einen Visit später anpassen will muss man eigentlich die Visit-ID kennen.
-                        patient_id=self.ui.patient_id_field.text(),
-                        measure=measure,
-                        center=self.ui.center_id_field.text(),
-                        age_at_visit=age)
-
-                    session.add(patient)
-                    session.add(visit)
-                session.commit()
+            patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
+            if patient:
+                reply = QMessageBox.question(self, 'This Patient already exists in the database.',
+                                             "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
+                                             QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+                if reply == QMessageBox.StandardButton.Yes:
+                    pat_dict = {'ancestry': self.ui.ancestry_dropdown.currentText(),
+                                'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
+                                'previous_therapies': self.ui.previous_therapies_check.isChecked()}
+                    self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
+            else:
+                pat_dict = {
+                    'patient_id': self.ui.patient_id_field.text(),
+                    'ancestry': self.ui.ancestry_dropdown.currentText(),
+                    'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
+                    'previous_therapies': self.ui.previous_therapies_check.isChecked()}
+                self.patient_service.create_patient(pat_dict)
+                visit_dict = {
+                    "patient_id": self.ui.patient_id_field.text(),
+                    "measure": measure,
+                    "center": self.ui.center_id_field.text(),
+                    "age_at_visit": age
+                }
+                self.visit_service.create_visit(visit_dict)
+            # Session = sessionmaker(bind=database.engine_local.connect())
+            # with Session() as session:
+            #     db_patient = session.query(Patient).get(self.ui.patient_id_field.text())
+            #     if db_patient:
+            #         reply = QMessageBox.question(self, 'This Patient already exists in the database.',
+            #                                      "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
+            #                                      QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            #         if reply == QMessageBox.StandardButton.Yes:
+            #             pat_dict = {'ancestry': self.ui.ancestry_dropdown.currentText(),
+            #                         'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
+            #                         'previous_therapies': self.ui.previous_therapies_check.isChecked()}
+            #             update_query = update(Patient).where(Patient.patient_id == self.ui.patient_id_field.text()).values(pat_dict)
+            #             session.execute(update_query)
+            #     else:
+            #         patient = Patient(
+            #             patient_id=self.ui.patient_id_field.text(),
+            #             ancestry=self.ui.ancestry_dropdown.currentText(),
+            #             birth_year=self.ui.birthdate_calendar.date().toPyDate().year,
+            #             previous_therapies=self.ui.previous_therapies_check.isChecked()
+            #         )
+            #         visit = Visit(
+            #             # ToDo: wie soll die VisitID festgelegt werden? Wenn man einen Visit später anpassen will muss man eigentlich die Visit-ID kennen.
+            #             patient_id=self.ui.patient_id_field.text(),
+            #             measure=measure,
+            #             center=self.ui.center_id_field.text(),
+            #             age_at_visit=age)
+            #
+            #         session.add(patient)
+            #         session.add(visit)
+            #     session.commit()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient and visit data.")
 

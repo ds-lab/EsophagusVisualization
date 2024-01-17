@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from logic.data_declarative_models import Patient
 
 
-class PatientService():
+class PatientService:
 
     def __init__(self, db_session: Session):
         self.db = db_session

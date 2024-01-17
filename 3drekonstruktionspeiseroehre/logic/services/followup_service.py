@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from logic.data_declarative_models import Followup
 
 
-class FollowupService():
+class FollowupService:
     
     def __init__(self, db_session: Session):
         self.db = db_session

@@ -29,7 +29,4 @@ def create_db_and_tables_remote():  # für Postgresql-Server (oder Docker-Contai
 
 def get_db():
     db = Session()
-    try:
-        yield db
-    finally:
-        db.close()
+    return db

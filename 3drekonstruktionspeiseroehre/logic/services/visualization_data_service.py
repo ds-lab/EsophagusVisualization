@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from logic.data_declarative_models import VisualizationData
 
 
-class VisualizationDataService():
+class VisualizationDataService:
 
     def __init__(self, db_session: Session):
         self.db = db_session
