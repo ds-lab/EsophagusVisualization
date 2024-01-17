@@ -106,13 +106,12 @@ class FileSelectionWindow(QMainWindow):
                     reply = QMessageBox.question(self, 'This Patient already exists in the database.',
                                                  "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
                                                  QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-
-                    # ToDo: bei Yes den Patienten updaten
-                    # if reply == QMessageBox.StandardButton.Yes:
-                    #     pat_dict = {'ancestry': self.ui.ancestry_dropdown.currentText(),
-                    #                 'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
-                    #                 'previous_therapies': self.ui.previous_therapies_check.isChecked()}
-                    #     update(db_patient).where(db_patient.patient_id == self.ui.patient_id_field.text()).values(**pat_dict)
+                    if reply == QMessageBox.StandardButton.Yes:
+                        pat_dict = {'ancestry': self.ui.ancestry_dropdown.currentText(),
+                                    'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
+                                    'previous_therapies': self.ui.previous_therapies_check.isChecked()}
+                        update_query = update(Patient).where(Patient.patient_id == self.ui.patient_id_field.text()).values(pat_dict)
+                        session.execute(update_query)
                 else:
                     patient = Patient(
                         patient_id=self.ui.patient_id_field.text(),
