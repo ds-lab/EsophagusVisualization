@@ -100,35 +100,35 @@ class FileSelectionWindow(QMainWindow):
                 and len(self.ui.center_id_field.text()) > 0
         ):
             Session = sessionmaker(bind=database.engine_local.connect())
-            session = Session()
-            db_patient = session.query(Patient).get(self.ui.patient_id_field.text())
-            if db_patient:
-                reply = QMessageBox.question(self, 'This Patient already exists in the database.',
-                                             "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
-                                             QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            with Session() as session:
+                db_patient = session.query(Patient).get(self.ui.patient_id_field.text())
+                if db_patient:
+                    reply = QMessageBox.question(self, 'This Patient already exists in the database.',
+                                                 "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
+                                                 QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
 
-                # ToDo: bei Yes den Patienten updaten
-                # if reply == QMessageBox.StandardButton.Yes:
-                #     pat_dict = {'ancestry': self.ui.ancestry_dropdown.currentText(),
-                #                 'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
-                #                 'previous_therapies': self.ui.previous_therapies_check.isChecked()}
-                #     update(db_patient).where(db_patient.patient_id == self.ui.patient_id_field.text()).values(**pat_dict)
-            else:
-                patient = Patient(
-                    patient_id=self.ui.patient_id_field.text(),
-                    ancestry=self.ui.ancestry_dropdown.currentText(),
-                    birth_year=self.ui.birthdate_calendar.date().toPyDate().year,
-                    previous_therapies=self.ui.previous_therapies_check.isChecked()
-                )
-                visit = Visit(
-                    # ToDo: wie soll die VisitID festgelegt werden? Wenn man einen Visit später anpassen will muss man eigentlich die Visit-ID kennen.
-                    patient_id=self.ui.patient_id_field.text(),
-                    measure=measure,
-                    center=self.ui.center_id_field.text(),
-                    age_at_visit=age)
+                    # ToDo: bei Yes den Patienten updaten
+                    # if reply == QMessageBox.StandardButton.Yes:
+                    #     pat_dict = {'ancestry': self.ui.ancestry_dropdown.currentText(),
+                    #                 'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
+                    #                 'previous_therapies': self.ui.previous_therapies_check.isChecked()}
+                    #     update(db_patient).where(db_patient.patient_id == self.ui.patient_id_field.text()).values(**pat_dict)
+                else:
+                    patient = Patient(
+                        patient_id=self.ui.patient_id_field.text(),
+                        ancestry=self.ui.ancestry_dropdown.currentText(),
+                        birth_year=self.ui.birthdate_calendar.date().toPyDate().year,
+                        previous_therapies=self.ui.previous_therapies_check.isChecked()
+                    )
+                    visit = Visit(
+                        # ToDo: wie soll die VisitID festgelegt werden? Wenn man einen Visit später anpassen will muss man eigentlich die Visit-ID kennen.
+                        patient_id=self.ui.patient_id_field.text(),
+                        measure=measure,
+                        center=self.ui.center_id_field.text(),
+                        age_at_visit=age)
 
-                session.add(patient)
-                session.add(visit)
+                    session.add(patient)
+                    session.add(visit)
                 session.commit()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient and visit data.")
