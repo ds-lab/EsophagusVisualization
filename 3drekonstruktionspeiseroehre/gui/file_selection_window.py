@@ -10,6 +10,7 @@ import pandas as pd
 from PyQt6 import uic
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+from sqlalchemy.orm import sessionmaker
 
 import config
 import gui.visualization_window
@@ -18,11 +19,12 @@ from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
 from gui.previous_therapies_window import PreviousTherapiesWindow
 from logic import database, data_models
+from logic.data_declarative_models import Patient, Visit
 from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
-from sqlalchemy import insert, select, and_
+from sqlalchemy import insert, select, and_, update
 from logic.services.patient_service import PatientService
 
 
@@ -59,7 +61,6 @@ class FileSelectionWindow(QMainWindow):
         self.ui.menubar.addAction(menu_button)
         self.__check_button_activate()
         self.db = database.get_db()
-        self.patient_service = PatientService
 
     def __menu_button_clicked(self):
         """
@@ -98,49 +99,37 @@ class FileSelectionWindow(QMainWindow):
                 and (not self.ui.follow_up_radio.isChecked() or self.ui.months_after_therapy_spin.value() != -1)
                 and len(self.ui.center_id_field.text()) > 0
         ):
-            with database.engine_local.connect() as conn:
-                try:
-                    # ToDo: Fehler, ich glaube wir müssen direkt aus der DB abfragen und nicht aus den Datamodels, da sonst immer ein Ergebnis zurückkommt
-                    stmt = conn.execute(
-                        data_models.patients_table.select().where(
-                            data_models.patients_table.columns.patient_id == self.ui.patient_id_field.text())
-                    )
-                    print(f"stmt: {stmt}")
-                    conn.commit()
-                    if stmt is not None:
-                        reply = QMessageBox.question(self, 'This Patient already exists in the database.',
-                                                     "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
-                                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            Session = sessionmaker(bind=database.engine_local.connect())
+            session = Session()
+            db_patient = session.query(Patient).get(self.ui.patient_id_field.text())
+            if db_patient:
+                reply = QMessageBox.question(self, 'This Patient already exists in the database.',
+                                             "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
+                                             QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
 
-                        # ToDo: bei Yes den Patienten updaten
-                        # if reply == QMessageBox.StandardButton.Yes:
-                        #     pat_dict = {'ancestry': self.ui.ancestry_dropdown.currentText(),
-                        #                 'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
-                        #                 'previous_therapies': self.ui.previous_therapies_check.isChecked()}
-                        #     self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
-                except Exception as e:
-                    raise e
-                finally:
-                    if stmt is None:
-                        conn.execute(
-                            insert(data_models.patients_table).values(
-                                patient_id=self.ui.patient_id_field.text(),
-                                ancestry=self.ui.ancestry_dropdown.currentText(),
-                                birth_year=self.ui.birthdate_calendar.date().toPyDate().year,
-                                previous_therapies=self.ui.previous_therapies_check.isChecked()
-                            )
-                        )
-                    if stmt is None:
-                        conn.execute(
-                            insert(data_models.visits_table).values(
-                                patient_id=self.ui.patient_id_field.text(),
-                                measure=measure,
-                                center=self.ui.center_id_field.text(),
-                                age_at_visit=age
-                            )
-                        )
+                # ToDo: bei Yes den Patienten updaten
+                # if reply == QMessageBox.StandardButton.Yes:
+                #     pat_dict = {'ancestry': self.ui.ancestry_dropdown.currentText(),
+                #                 'birth_year': self.ui.birthdate_calendar.date().toPyDate().year,
+                #                 'previous_therapies': self.ui.previous_therapies_check.isChecked()}
+                #     update(db_patient).where(db_patient.patient_id == self.ui.patient_id_field.text()).values(**pat_dict)
+            else:
+                patient = Patient(
+                    patient_id=self.ui.patient_id_field.text(),
+                    ancestry=self.ui.ancestry_dropdown.currentText(),
+                    birth_year=self.ui.birthdate_calendar.date().toPyDate().year,
+                    previous_therapies=self.ui.previous_therapies_check.isChecked()
+                )
+                visit = Visit(
+                    # ToDo: wie soll die VisitID festgelegt werden? Wenn man einen Visit später anpassen will muss man eigentlich die Visit-ID kennen.
+                    patient_id=self.ui.patient_id_field.text(),
+                    measure=measure,
+                    center=self.ui.center_id_field.text(),
+                    age_at_visit=age)
 
-                    conn.commit()
+                session.add(patient)
+                session.add(visit)
+                session.commit()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient and visit data.")
 
