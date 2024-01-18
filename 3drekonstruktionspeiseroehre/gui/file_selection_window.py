@@ -62,8 +62,8 @@ class FileSelectionWindow(QMainWindow):
         self.ui.menubar.addAction(menu_button)
         self.__check_button_activate()
         self.db = database.get_db()
-        self.patient_service = PatientService(database.get_db())
-        self.visit_service = VisitService(database.get_db())
+        self.patient_service = PatientService(self.db)
+        self.visit_service = VisitService(self.db)
 
     def __menu_button_clicked(self):
         """
