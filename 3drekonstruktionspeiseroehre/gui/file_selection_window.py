@@ -5,11 +5,13 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from PyQt5.QtWidgets import QLineEdit
 # from PyQt5 import uic
 # from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
 from PyQt6 import uic
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox, QVBoxLayout, QCompleter
 from sqlalchemy.orm import sessionmaker
 
 import config
@@ -32,6 +34,7 @@ from logic.services.visit_service import VisitService
 class FileSelectionWindow(QMainWindow):
     """Window where the user selects the needed files"""
 
+
     def __init__(self, master_window: MasterWindow, center: str, patient_data: PatientData = PatientData()):
         """
         init FileSelectionWindow
@@ -39,6 +42,7 @@ class FileSelectionWindow(QMainWindow):
         :param patient_data: an instance of PatientData
         """
         super().__init__()
+        self.lineEdit = None
         self.ui = uic.loadUi("./ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
         self.patient_data: PatientData = patient_data
@@ -64,6 +68,23 @@ class FileSelectionWindow(QMainWindow):
         self.db = database.get_db()
         self.patient_service = PatientService(self.db)
         self.visit_service = VisitService(self.db)
+        self.init_ui()
+
+    def init_ui(self):
+        Session = sessionmaker(bind=database.engine_local.connect())
+        session = Session()
+
+        # Fetch all patient_id values
+        patient_ids = session.query(Patient.patient_id).all()
+
+        for patient_id in patient_ids:
+            print(patient_id[0])
+        suggestions = [patient_id[0] for patient_id in patient_ids]
+
+        # Set up QCompleter with autocomplete suggestions
+        completer = QCompleter(suggestions, self)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)  # Case-insensitive autocomplete
+        self.ui.patient_id_field.setCompleter(completer)
 
     def __menu_button_clicked(self):
         """
@@ -88,8 +109,6 @@ class FileSelectionWindow(QMainWindow):
         age = self.ui.date_calendar.date().toPyDate().year - self.ui.birthdate_calendar.date().toPyDate().year - (
                 (self.ui.date_calendar.date().toPyDate().month, self.ui.date_calendar.date().toPyDate().day) <
                 (self.ui.birthdate_calendar.date().toPyDate().month, self.ui.birthdate_calendar.date().toPyDate().day))
-
-        stmt = None
 
         if (
                 len(self.ui.patient_id_field.text()) > 0

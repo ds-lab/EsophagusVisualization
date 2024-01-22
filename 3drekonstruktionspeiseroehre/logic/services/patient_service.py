@@ -45,3 +45,11 @@ class PatientService:
         except Exception as e:
             self.db.rollback()
             raise e
+
+    def get_all_patients(self):
+        stmt = select(Patient)
+        try:
+            result = self.db.execute(stmt)
+            return result
+        except Exception as e:
+            raise e
