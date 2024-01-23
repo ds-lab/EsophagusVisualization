@@ -8,8 +8,8 @@ import pandas as pd
 from PyQt5.QtWidgets import QLineEdit
 # from PyQt5 import uic
 # from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
-from PyQt6 import uic
-from PyQt6.QtCore import Qt
+from PyQt6 import uic, QtCore
+from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox, QVBoxLayout, QCompleter
 from sqlalchemy.orm import sessionmaker
@@ -85,6 +85,14 @@ class FileSelectionWindow(QMainWindow):
         completer = QCompleter(suggestions, self)
         completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)  # Case-insensitive autocomplete
         self.ui.patient_id_field.setCompleter(completer)
+
+        self.ui.patient_id_field.editingFinished.connect(self.__patient_id_filled)
+
+    def __patient_id_filled(self):
+        # ToDo: Felder mit echten Daten aus der DB für den jeweiligen Patienten füllen, wenn vorhanden
+        d = QDate(2020, 6, 10)
+        self.ui.birthdate_calendar.setDate(d)
+        self.ui.gender_dropdown.setCurrentIndex(1)
 
     def __menu_button_clicked(self):
         """
