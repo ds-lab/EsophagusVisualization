@@ -16,6 +16,14 @@ class PatientService:
         except Exception as e:
             raise e
 
+    def get_all_patients(self):
+        stmt = select(Patient)
+        try:
+            result = self.db.execute(stmt).all()
+            return result
+        except Exception as e:
+            raise e
+
     def delete_patient(self, id: str):
         stmt = delete(Patient).where(Patient.patient_id == id)
         try:
