@@ -16,6 +16,7 @@ from sqlalchemy.orm import sessionmaker
 
 import config
 import gui.visualization_window
+from gui import list_data_windows
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
@@ -87,6 +88,9 @@ class FileSelectionWindow(QMainWindow):
         self.ui.patient_id_field.setCompleter(completer)
 
         self.ui.patient_id_field.editingFinished.connect(self.__patient_id_filled)
+
+        list_patients = list_data_windows.ListPatients()
+        list_patients.show()
 
     def __patient_id_filled(self):
         # ToDo: Felder mit echten Daten aus der DB für den jeweiligen Patienten füllen, wenn vorhanden
