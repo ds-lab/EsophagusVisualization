@@ -16,7 +16,6 @@ from sqlalchemy.orm import sessionmaker
 
 import config
 import gui.visualization_window
-from gui import list_data_windows
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
@@ -30,6 +29,7 @@ from logic.visualization_data import VisualizationData
 from sqlalchemy import insert, select, and_, update
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
+from gui.list_data_windows import ListPatients
 
 
 class FileSelectionWindow(QMainWindow):
@@ -55,6 +55,7 @@ class FileSelectionWindow(QMainWindow):
         self.endoscopy_image_positions = []
         self.endoflip_screenshot = None
         self.ui.visit_data_button.clicked.connect(self.__visit_data_button_clicked)
+        self.ui.visit_data_button.clicked.connect(self.__open_list_patients)
         self.ui.import_button.clicked.connect(self.__import_button_clicked)
         self.ui.visualization_button.clicked.connect(self.__visualization_button_clicked)
         self.ui.csv_button.clicked.connect(self.__csv_button_clicked)
@@ -89,7 +90,8 @@ class FileSelectionWindow(QMainWindow):
 
         self.ui.patient_id_field.editingFinished.connect(self.__patient_id_filled)
 
-        list_patients = list_data_windows.ListPatients()
+    def __open_list_patients(self):
+        list_patients = ListPatients(self.master_window)
         list_patients.show()
 
     def __patient_id_filled(self):
@@ -190,6 +192,9 @@ class FileSelectionWindow(QMainWindow):
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient and visit data.")
 
+        # list_patients = list_data_windows.ListPatients()
+        # list_patients.show()
+
     def __previous_therapies_check_clicked(self):
         """
         checks if the previous therapies field is checked
@@ -197,8 +202,10 @@ class FileSelectionWindow(QMainWindow):
         """
         if self.ui.previous_therapies_check.isChecked():
             print("Checkbox checked")
-            previous_therapies = PreviousTherapiesWindow(self.master_window, self.patient_data)
+            previous_therapies = PreviousTherapiesWindow(self.master_window)
             previous_therapies.show()
+            list_patients = ListPatients(self.master_window)
+            list_patients.show()
         else:
             print("Checkbox not checked")
 

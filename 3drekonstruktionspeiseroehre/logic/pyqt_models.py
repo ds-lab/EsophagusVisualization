@@ -7,5 +7,5 @@ class PatientTableModel(QSqlTableModel):
         super().__init__()
 
         self.setTable("patients")  
-        self.setEditStrategy(QSqlTableModel.OnFieldChange)
+        self.setEditStrategy(QSqlTableModel.EditStrategy.OnFieldChange)
         self.select()
