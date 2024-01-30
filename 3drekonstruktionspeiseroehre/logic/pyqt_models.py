@@ -16,7 +16,7 @@ from logic.services.visit_service import VisitService
 class PatientView(QMainWindow):
 
     def __init__(self, master_window: MasterWindow, rows):
-        super().__init__()
+        super(PatientView, self).__init__()
         self.ui = uic.loadUi("./ui-files/show_data_design.ui", self)
         self.master_window = master_window
 
@@ -26,9 +26,11 @@ class PatientView(QMainWindow):
         self.table.setHorizontalHeaderLabels(("patient_id", "ancestry", "birth_year", "previous_therapies"))
 
         self.table.setRowCount(len(rows))
+        print(len(rows))
         for row, cols in enumerate(rows):
             for col, text in enumerate(cols):
                 table_item = QTableWidgetItem(text)
+                #print(text)
                 # Optional, but very useful.
                 #table_item.setData(QtCore.Qt.UserRole+1, user)
                 self.table.setItem(row, col, table_item)
