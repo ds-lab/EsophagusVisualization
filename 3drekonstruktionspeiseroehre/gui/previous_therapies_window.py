@@ -13,7 +13,7 @@ class PreviousTherapiesWindow(QMainWindow):
     def __init__(self, master_window: MasterWindow):
         super().__init__()
         self.ui = uic.loadUi("./ui-files/previous_therapies_window_design.ui", self)
-        self.master_window: MasterWindow = master_window
+        self.master_window = master_window
         self.ui.save_button.clicked.connect(self.__save_button_clicked)
 
     def __save_button_clicked(self):

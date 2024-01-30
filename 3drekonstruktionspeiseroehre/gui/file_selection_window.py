@@ -81,7 +81,7 @@ class FileSelectionWindow(QMainWindow):
 
         print(rows)
 
-        patient_view = PatientView(rows)
+        patient_view = PatientView(self.master_window, rows)
         patient_view.show()
 
         # Fetch all patient_id values
@@ -209,6 +209,17 @@ class FileSelectionWindow(QMainWindow):
             print("Checkbox checked")
             previous_therapies = PreviousTherapiesWindow(self.master_window)
             previous_therapies.show()
+            Session = sessionmaker(bind=database.engine_local.connect())
+            session = Session()
+
+            rows = []
+            for patient in session.query(Patient).all():
+                rows.append((patient.patient_id, patient.ancestry, patient.birth_year, patient.previous_therapies))
+
+            print(rows)
+
+            patient_view = PatientView(self.master_window, rows)
+            patient_view.show()
         else:
             print("Checkbox not checked")
 
