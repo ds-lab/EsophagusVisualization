@@ -29,16 +29,16 @@ class PatientView(QMainWindow):
         print(len(rows))
         for row, cols in enumerate(rows):
             for col, text in enumerate(cols):
-                table_item = QTableWidgetItem(text)
-                #print(text)
+                table_item = QTableWidgetItem(str(text))
+                print(text)
                 # Optional, but very useful.
-                #table_item.setData(QtCore.Qt.UserRole+1, user)
+                # table_item.setData(QtCore.Qt.UserRole+1, user)
                 self.table.setItem(row, col, table_item)
 
         # Also optional. Will fit the cells to its contents.
         self.table.resizeColumnsToContents()
 
         # Just display the table here.
-        layout = QHBoxLayout()
+        layout = self.ui.horizontalLayout_2
         layout.addWidget(self.table)
         self.setLayout(layout)
