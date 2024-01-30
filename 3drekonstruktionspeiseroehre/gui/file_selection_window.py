@@ -20,6 +20,7 @@ from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
 from gui.previous_therapies_window import PreviousTherapiesWindow
+from logic.pyqt_models import PatientView
 from logic import database, data_models
 from logic.data_declarative_models import Patient, Visit
 from logic.endoflip_data_processing import process_endoflip_xlsx
@@ -29,12 +30,10 @@ from logic.visualization_data import VisualizationData
 from sqlalchemy import insert, select, and_, update
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
-from gui.list_data_windows import ListPatients
 
 
 class FileSelectionWindow(QMainWindow):
     """Window where the user selects the needed files"""
-
 
     def __init__(self, master_window: MasterWindow, center: str, patient_data: PatientData = PatientData()):
         """
@@ -55,7 +54,6 @@ class FileSelectionWindow(QMainWindow):
         self.endoscopy_image_positions = []
         self.endoflip_screenshot = None
         self.ui.visit_data_button.clicked.connect(self.__visit_data_button_clicked)
-        self.ui.visit_data_button.clicked.connect(self.__open_list_patients)
         self.ui.import_button.clicked.connect(self.__import_button_clicked)
         self.ui.visualization_button.clicked.connect(self.__visualization_button_clicked)
         self.ui.csv_button.clicked.connect(self.__csv_button_clicked)
@@ -72,9 +70,19 @@ class FileSelectionWindow(QMainWindow):
         self.visit_service = VisitService(self.db)
         self.init_ui()
 
+
     def init_ui(self):
         Session = sessionmaker(bind=database.engine_local.connect())
         session = Session()
+
+        rows = []
+        for patient in session.query(Patient).all():
+            rows.append((patient.patient_id, patient.ancestry, patient.birth_year, patient.previous_therapies))
+
+        print(rows)
+
+        patient_view = PatientView(rows)
+        patient_view.show()
 
         # Fetch all patient_id values
         patient_ids = session.query(Patient.patient_id).all()
@@ -90,9 +98,6 @@ class FileSelectionWindow(QMainWindow):
 
         self.ui.patient_id_field.editingFinished.connect(self.__patient_id_filled)
 
-    def __open_list_patients(self):
-        list_patients = ListPatients(self.master_window)
-        list_patients.show()
 
     def __patient_id_filled(self):
         # ToDo: Felder mit echten Daten aus der DB für den jeweiligen Patienten füllen, wenn vorhanden
@@ -204,8 +209,6 @@ class FileSelectionWindow(QMainWindow):
             print("Checkbox checked")
             previous_therapies = PreviousTherapiesWindow(self.master_window)
             previous_therapies.show()
-            list_patients = ListPatients(self.master_window)
-            list_patients.show()
         else:
             print("Checkbox not checked")
 

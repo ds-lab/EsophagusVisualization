@@ -1,5 +1,8 @@
+from PyQt6 import QtCore
 from PyQt6.QtCore import Qt, QAbstractTableModel, QVariant
 from PyQt6.QtSql import QSqlTableModel
+from PyQt6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHBoxLayout
+from PyQt6.lupdate import user
 from sqlalchemy.orm import sessionmaker
 
 from logic import database
@@ -9,36 +12,28 @@ from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 
 
-class PatientTableModel(QAbstractTableModel):
+class PatientView(QWidget):
 
-    def __init__(self, parent, header, *args):
-        self.db = database.get_db()
-        self.patient_service = PatientService(self.db)
-        self.visit_service = VisitService(self.db)
+    def __init__(self, rows):
+        super(PatientView, self).__init__()
 
-        QAbstractTableModel.__init__(self, parent, *args)
-        # fetch data
-        results = patient_service.get_all_patients()
-        #results = connection.execute(db.select([demoTable])).fetchall()
-        self.mylist = results
-        self.header = header
+        self.table = QTableWidget()
+        self.table.setColumnCount(3)
+        # Optional, set the labels that show on top
+        self.table.setHorizontalHeaderLabels(("patient_id", "ancestry", "birth_year", "previous_therapies"))
 
-    def rowCount(self, parent):
-        return len(self.mylist)
+        self.table.setRowCount(len(rows))
+        for row, cols in enumerate(rows):
+            for col, text in enumerate(cols):
+                table_item = QTableWidgetItem(text)
+                # Optional, but very useful.
+                #table_item.setData(QtCore.Qt.UserRole+1, user)
+                self.table.setItem(row, col, table_item)
 
-    def columnCount(self, parent):
-        return len(self.mylist[0])
+        # Also optional. Will fit the cells to its contents.
+        self.table.resizeColumnsToContents()
 
-    def data(self, index, role):
-        # populate data
-        if not index.isValid():
-            return None
-        if (role == Qt.DisplayRole):
-            return self.mylist[index.row()][index.column()]
-        else:
-            return QVariant()
-
-    def headerData(self, col, orientation, role):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return self.header[col]
-        return None
+        # Just display the table here.
+        layout = QHBoxLayout()
+        layout.addWidget(self.table)
+        self.setLayout(layout)
