@@ -4,7 +4,7 @@ from logic.data_declarative_models import Metric
 
 
 class MetricService:
-    
+
     def __init__(self, db_session: Session):
         self.db = db_session
 
@@ -14,6 +14,16 @@ class MetricService:
             result = self.db_session.execute(stmt)
             return result
         except Exception as e:
+            raise e
+
+    def create_metric(self, data: dict):
+        stmt = insert(Metric).values(**data)
+        try:
+            result = self.db.execute(stmt)
+            self.db.commit()
+            return result.rowcount
+        except Exception as e:
+            self.db.rollback()
             raise e
 
     def delete_metric(self, id: int):

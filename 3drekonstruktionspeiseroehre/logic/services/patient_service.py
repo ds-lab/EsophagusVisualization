@@ -11,7 +11,7 @@ class PatientService:
     def get_patient(self, id: str):
         stmt = select(Patient).where(Patient.patient_id == id)
         try:
-            result = self.db.execute(stmt).first()
+            result = self.db.execute(stmt).first()[0]
             return result
         except Exception as e:
             raise e
