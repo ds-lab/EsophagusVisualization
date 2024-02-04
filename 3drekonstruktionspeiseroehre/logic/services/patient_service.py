@@ -61,10 +61,3 @@ class PatientService:
         except Exception as e:
             raise e
 
-    def get_all_patients2(self):
-        patients = Patient.query.all()
-        patientsArr = []
-        for patient in patients:
-            patientsArr.append(patient.toDict())
-        print(jsonify(patientsArr))
-        return jsonify(patientsArr)

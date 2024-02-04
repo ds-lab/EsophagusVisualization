@@ -20,7 +20,7 @@ class PatientView(QMainWindow):
 
     def __init__(self, master_window: MasterWindow):
         super(PatientView, self).__init__()
-        self.ui = uic.loadUi("./ui-files/show_data_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/show_data_window_design.ui", self)
         self.tableView = self.ui.tableView
         self.master_window = master_window
         self.db = database.get_db()
@@ -44,7 +44,7 @@ class PatientView(QMainWindow):
         self.tableView.setItemDelegate(self.delegate)
         self.tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.tableView.customContextMenuRequested.connect(self.context_menu)
-        self.tableView.verticalHeader().setDefaultSectionSize(100)
+        self.tableView.verticalHeader().setDefaultSectionSize(30)
         self.tableView.setColumnWidth(0, 50)
         self.tableView.resizeColumnsToContents()
         #self.tableView.hideColumn(0)
@@ -140,8 +140,8 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
             #     icon = QtGui.QIcon()
             #     icon.addPixmap(QtGui.QPixmap.fromImage(image))
             #     return icon
-            # elif role == QtCore.Qt.DisplayRole:
-            return str(row[column])
+            if role == QtCore.Qt.ItemDataRole.DisplayRole:
+                return str(row[column])
         except KeyError:
             return None
 
