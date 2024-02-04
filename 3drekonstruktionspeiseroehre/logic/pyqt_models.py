@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt, QAbstractTableModel, QVariant
 from PyQt6.QtSql import QSqlTableModel
 from PyQt6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHBoxLayout, QMainWindow
 from PyQt6.lupdate import user
+from flask import jsonify
 from sqlalchemy.orm import sessionmaker
 
 from gui.master_window import MasterWindow
@@ -28,10 +29,11 @@ class PatientView(QMainWindow):
         Session = sessionmaker(bind=database.engine_local.connect())
         session = Session()
 
-        rows = []
+        patientsArr = []
         for patient in session.query(Patient).all():
-            rows.append((patient.patient_id, patient.ancestry, patient.birth_year, patient.previous_therapies))
-        self.user_data = rows
+            patientsArr.append(patient.toDict())
+
+        self.user_data = patientsArr
 
         # self.user_data = self.patient_service.get_all_patients()
         print(f"USER DATA: {self.user_data}")
@@ -44,6 +46,7 @@ class PatientView(QMainWindow):
         self.tableView.customContextMenuRequested.connect(self.context_menu)
         self.tableView.verticalHeader().setDefaultSectionSize(100)
         self.tableView.setColumnWidth(0, 50)
+        self.tableView.resizeColumnsToContents()
         #self.tableView.hideColumn(0)
 
     def context_menu(self):
@@ -68,10 +71,11 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
     def __init__(self, data):
         QtCore.QAbstractTableModel.__init__(self)
         self.user_data = data
-        self.columns = ["patient_id", "ancestry", "birth_year", "previous_therapies"]
+        self.columns = list(self.user_data[0].keys())
+        # self.columns = ["patient_id", "ancestry", "birth_year", "previous_therapies"]
         self.db = database.get_db()
         self.patient_service = PatientService(self.db)
-        self.colum_dict = {'patient_id': 0, 'ancestry': 1, 'birth_year': 2, 'previous_therapies': 3}
+        # self.colum_dict = {'patient_id': 0, 'ancestry': 1, 'birth_year': 2, 'previous_therapies': 3}
 
     def flags(self, index):
         """
@@ -125,7 +129,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         """
         row = self.user_data[index.row()]
         column = self.columns[index.column()]
-        column_idx = self.colum_dict[column]
+        # column_idx = self.colum_dict[column]
 
         try:
             # if index.column() == 1:
@@ -137,7 +141,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
             #     icon.addPixmap(QtGui.QPixmap.fromImage(image))
             #     return icon
             # elif role == QtCore.Qt.DisplayRole:
-            return str(row[column_idx])
+            return str(row[column])
         except KeyError:
             return None
 
@@ -151,12 +155,12 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         """
         if index.isValid():
             selected_row = self.user_data[index.row()]
-            selected_row = list(selected_row)
+            #selected_row = list(selected_row)
             selected_column = self.columns[index.column()]
-            column_idx = self.colum_dict[selected_column]
-            selected_row[column_idx] = value
+            # column_idx = self.colum_dict[selected_column]
+            selected_row[selected_column] = value
             self.dataChanged.emit(index, index, (Qt.ItemDataRole.DisplayRole,))
-            ok = self.patient_service.update_patient(selected_row[0], selected_row)
+            ok = self.patient_service.update_patient(selected_row['patient_id'], selected_row)
             # ok = databaseOperations.update_existing(selected_row['_id'], selected_row)
             if ok:
                 return True

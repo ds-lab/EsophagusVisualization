@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, ForeignKey, Integer, PickleType, String, Enum, Date, Float, create_engine
+from sqlalchemy import Boolean, ForeignKey, Integer, PickleType, String, Enum, Date, Float, create_engine, inspect
 from sqlalchemy.orm import DeclarativeBase, mapped_column, sessionmaker
 
 
@@ -12,6 +12,9 @@ class Patient(Base):
     ancestry = mapped_column(String(15))
     birth_year = mapped_column(Integer)
     previous_therapies = mapped_column(Boolean)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
 class Visit(Base):
