@@ -81,7 +81,7 @@ class FileSelectionWindow(QMainWindow):
 
         print(rows)
 
-        patient_view = PatientView(self.master_window, rows)
+        patient_view = PatientView(self.master_window)
         patient_view.show()
 
         # Fetch all patient_id values

@@ -21,8 +21,21 @@ class PatientView(QMainWindow):
         super(PatientView, self).__init__()
         self.ui = uic.loadUi("./ui-files/show_data_design.ui", self)
         self.master_window = master_window
+        self.db = database.get_db()
+        self.patient_service = PatientService(self.db)
 
-        self.user_data = databaseOperations.get_multiple_data()
+        Session = sessionmaker(bind=database.engine_local.connect())
+        session = Session()
+
+        rows = []
+        for patient in session.query(Patient).all():
+            rows.append((patient.patient_id, patient.ancestry, patient.birth_year, patient.previous_therapies))
+
+        print(rows)
+
+        #self.user_data = self.patient_service.get_all_patients()
+        print(f"USER DATA: {self.user_data}")
+        #self.user_data = databaseOperations.get_multiple_data()
         self.model = CustomPatientModel(self.user_data)
         self.delegate = InLineEditDelegate()
         self.tableView.setModel(self.model)
@@ -94,7 +107,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         """
         return len(self.columns)
 
-    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
+    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         """
         set column header data
         :param section:
@@ -102,7 +115,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         :param role:
         :return:
         """
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+        if orientation == QtCore.Qt.Horizontal and role == Qt.ItemDataRole.DisplayRole:
             return self.columns[section].title()
 
     def data(self, index, role):
@@ -128,7 +141,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         except KeyError:
             return None
 
-    def setData(self, index, value, role=QtCore.Qt.EditRole):
+    def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
         """
         Edit data in table cells
         :param index:
@@ -140,7 +153,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
             selected_row = self.user_data[index.row()]
             selected_column = self.columns[index.column()]
             selected_row[selected_column] = value
-            self.dataChanged.emit(index, index, (QtCore.Qt.DisplayRole,))
+            self.dataChanged.emit(index, index, (Qt.ItemDataRole.DisplayRole,))
             ok = self.patient_service.update_patient(selected_row['_id'], selected_row)
             # ok = databaseOperations.update_existing(selected_row['_id'], selected_row)
             if ok:
@@ -200,5 +213,5 @@ class InLineEditDelegate(QtWidgets.QItemDelegate):
         return super(InLineEditDelegate, self).createEditor(parent, option, index)
 
     def setEditorData(self, editor, index):
-        text = index.data(QtCore.Qt.EditRole) or index.data(QtCore.Qt.DisplayRole)
+        text = index.data(QtCore.Qt.EditRole) or index.data(Qt.ItemDataRole.DisplayRole)
         editor.setText(str(text))

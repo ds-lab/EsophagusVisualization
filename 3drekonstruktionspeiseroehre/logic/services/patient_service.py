@@ -12,7 +12,8 @@ class PatientService:
         stmt = select(Patient).where(Patient.patient_id == id)
         try:
             result = self.db.execute(stmt).first()
-            return result
+            if result:
+                return result[0]
         except Exception as e:
             raise e
 
@@ -47,9 +48,13 @@ class PatientService:
             raise e
 
     def get_all_patients(self):
+        rows = []
         stmt = select(Patient)
         try:
             result = self.db.execute(stmt)
-            return result
+            if result:
+                for row in result:
+                    rows.append((row[0].patient_id, row[0].ancestry, row[0].birth_year, row[0].previous_therapies))
+                    return rows
         except Exception as e:
             raise e
