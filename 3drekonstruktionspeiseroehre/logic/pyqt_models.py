@@ -20,6 +20,7 @@ class PatientView(QMainWindow):
     def __init__(self, master_window: MasterWindow):
         super(PatientView, self).__init__()
         self.ui = uic.loadUi("./ui-files/show_data_design.ui", self)
+        self.tableView = self.ui.tableView
         self.master_window = master_window
         self.db = database.get_db()
         self.patient_service = PatientService(self.db)
@@ -30,23 +31,20 @@ class PatientView(QMainWindow):
         rows = []
         for patient in session.query(Patient).all():
             rows.append((patient.patient_id, patient.ancestry, patient.birth_year, patient.previous_therapies))
+        self.user_data = rows
 
-        print(rows)
-
-        #self.user_data = self.patient_service.get_all_patients()
+        # self.user_data = self.patient_service.get_all_patients()
         print(f"USER DATA: {self.user_data}")
-        #self.user_data = databaseOperations.get_multiple_data()
+        # self.user_data = databaseOperations.get_multiple_data()
         self.model = CustomPatientModel(self.user_data)
         self.delegate = InLineEditDelegate()
         self.tableView.setModel(self.model)
         self.tableView.setItemDelegate(self.delegate)
-        self.tableView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.tableView.customContextMenuRequested.connect(self.context_menu)
-        self.tableView.verticalHeader().setDefaultSectionSize(50)
-        self.tableView.setColumnWidth(0, 30)
-        self.tableView.hideColumn(0)
-        self.tableView_2.setModel(self.model)
-        self.tableView_3.setModel(self.model)
+        self.tableView.verticalHeader().setDefaultSectionSize(100)
+        self.tableView.setColumnWidth(0, 50)
+        #self.tableView.hideColumn(0)
 
     def context_menu(self):
         menu = QtWidgets.QMenu()
@@ -67,13 +65,13 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
     Custom Table Model to handle DB-Data
     """
 
-
     def __init__(self, data):
         QtCore.QAbstractTableModel.__init__(self)
         self.user_data = data
-        self.columns = list(self.user_data[0].keys())
+        self.columns = ["patient_id", "ancestry", "birth_year", "previous_therapies"]
         self.db = database.get_db()
         self.patient_service = PatientService(self.db)
+        self.colum_dict = {'patient_id': 0, 'ancestry': 1, 'birth_year': 2, 'previous_therapies': 3}
 
     def flags(self, index):
         """
@@ -83,11 +81,11 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         :return:
         """
         if index.column() > 0:
-            return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
-        elif index.column() == 1:
-            return QtCore.Qt.DecorationRole
+            return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable
+        #elif index.column() == 1:
+        #    return Qt.ItemFlag.DecorationRole
         else:
-            return QtCore.Qt.ItemIsSelectable
+            return Qt.ItemFlag.ItemIsSelectable
 
     def rowCount(self, *args, **kwargs):
         """
@@ -115,7 +113,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         :param role:
         :return:
         """
-        if orientation == QtCore.Qt.Horizontal and role == Qt.ItemDataRole.DisplayRole:
+        if orientation == QtCore.Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
             return self.columns[section].title()
 
     def data(self, index, role):
@@ -127,6 +125,8 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         """
         row = self.user_data[index.row()]
         column = self.columns[index.column()]
+        column_idx = self.colum_dict[column]
+
         try:
             # if index.column() == 1:
             #     selected_row = self.user_data[index.row()]
@@ -137,7 +137,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
             #     icon.addPixmap(QtGui.QPixmap.fromImage(image))
             #     return icon
             # elif role == QtCore.Qt.DisplayRole:
-            return str(row[column])
+            return str(row[column_idx])
         except KeyError:
             return None
 
@@ -151,10 +151,12 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         """
         if index.isValid():
             selected_row = self.user_data[index.row()]
+            selected_row = list(selected_row)
             selected_column = self.columns[index.column()]
-            selected_row[selected_column] = value
+            column_idx = self.colum_dict[selected_column]
+            selected_row[column_idx] = value
             self.dataChanged.emit(index, index, (Qt.ItemDataRole.DisplayRole,))
-            ok = self.patient_service.update_patient(selected_row['_id'], selected_row)
+            ok = self.patient_service.update_patient(selected_row[0], selected_row)
             # ok = databaseOperations.update_existing(selected_row['_id'], selected_row)
             if ok:
                 return True
@@ -213,5 +215,5 @@ class InLineEditDelegate(QtWidgets.QItemDelegate):
         return super(InLineEditDelegate, self).createEditor(parent, option, index)
 
     def setEditorData(self, editor, index):
-        text = index.data(QtCore.Qt.EditRole) or index.data(Qt.ItemDataRole.DisplayRole)
+        text = index.data(Qt.ItemDataRole.EditRole) or index.data(Qt.ItemDataRole.DisplayRole)
         editor.setText(str(text))
