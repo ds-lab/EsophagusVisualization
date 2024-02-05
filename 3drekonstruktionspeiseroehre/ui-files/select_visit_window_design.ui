@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>511</width>
-    <height>406</height>
+    <width>410</width>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,32 +17,54 @@
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>90</y>
-      <width>361</width>
-      <height>141</height>
+      <x>10</x>
+      <y>9</y>
+      <width>71</width>
+      <height>46</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Patient Id</string>
+        <string>Patient ID</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="patient_id"/>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>80</y>
+      <width>321</width>
+      <height>134</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Select Patient Visit</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="enter_button">
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
+      <widget class="QComboBox" name="comboBox"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2">
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(0, 135, 255);
-color: rgb(255, 255, 255);
-selection-background-color: rgb(20, 120, 215);</string>
+        <string notr="true">background-color: rgb(0, 149, 255);
+color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>Enter</string>
@@ -59,18 +81,14 @@ selection-background-color: rgb(20, 120, 215);</string>
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>or</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>or</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="Line" name="line">
@@ -82,9 +100,9 @@ selection-background-color: rgb(20, 120, 215);</string>
       </layout>
      </item>
      <item>
-      <widget class="QPushButton" name="new_patient_btn">
+      <widget class="QPushButton" name="pushButton">
        <property name="text">
-        <string>New Patient</string>
+        <string>new Visit</string>
        </property>
       </widget>
      </item>
@@ -96,7 +114,7 @@ selection-background-color: rgb(20, 120, 215);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>511</width>
+     <width>410</width>
      <height>21</height>
     </rect>
    </property>

@@ -19,7 +19,7 @@ class PatientService:
     def get_all_patients(self):
         stmt = select(Patient)
         try:
-            result = self.db.execute(stmt).all()
+            result = self.db.query(Patient).all()
             return result
         except Exception as e:
             raise e
