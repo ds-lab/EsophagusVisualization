@@ -30,6 +30,14 @@
        <bool>true</bool>
       </property>
       <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>799</width>
+         <height>712</height>
+        </rect>
+       </property>
        <property name="minimumSize">
         <size>
          <width>777</width>
@@ -52,7 +60,7 @@
          </rect>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="patients">
          <attribute name="title">
@@ -237,7 +245,7 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -866,7 +874,7 @@
      <x>0</x>
      <y>0</y>
      <width>822</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>
