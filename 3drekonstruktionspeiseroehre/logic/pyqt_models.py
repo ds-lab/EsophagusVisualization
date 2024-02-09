@@ -52,14 +52,14 @@ class PatientView(QMainWindow):
     def context_menu(self):
         menu = QtWidgets.QMenu()
         add_data = menu.addAction("Add New Data")
-        add_data.setIcon(QtGui.QIcon(":/icons/images/add-icon.png"))
+        add_data.setIcon(QtGui.QIcon("./media/add-icon.png"))
         add_data.triggered.connect(lambda: self.model.insertRows())
         if self.tableView.selectedIndexes():
             remove_data = menu.addAction("Remove Data")
-            remove_data.setIcon(QtGui.QIcon(":/icons/images/remove.png"))
+            remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
             remove_data.triggered.connect(lambda: self.model.removeRows(self.tableView.currentIndex()))
         cursor = QtGui.QCursor()
-        menu.exec_(cursor.pos())
+        menu.exec(cursor.pos())
 
 
 # adapted from: https://github.com/vfxpipeline/Python-MongoDB-Example/blob/master/lib/customModel.py
@@ -184,7 +184,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         row_count -= 1
         self.beginRemoveRows(QtCore.QModelIndex(), row_count, row_count)
         row_id = position.row()
-        document_id = self.user_data[row_id]['_id']
+        document_id = self.user_data[row_id]['patient_id']
         self.patient_service.delete_patient(document_id)
         # databaseOperations.remove_data(document_id)
         self.user_data.pop(row_id)
