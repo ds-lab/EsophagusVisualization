@@ -89,7 +89,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         #elif index.column() == 1:
         #    return Qt.ItemFlag.DecorationRole
         else:
-            return Qt.ItemFlag.ItemIsSelectable
+            return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
     def rowCount(self, *args, **kwargs):
         """
@@ -169,7 +169,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
     def insertRows(self):
         row_count = len(self.user_data)
         self.beginInsertRows(QtCore.QModelIndex(), row_count, row_count)
-        empty_data = {key: None for key in self.columns if not key == '_id'}
+        empty_data = {key: None for key in self.columns if not key == 'patient_id'}
         document_id = self.patient_service.create_patient(empty_data)
         # document_id = databaseOperations.insert_data(empty_data)
         new_data = self.patient_service.get_patient(document_id)
