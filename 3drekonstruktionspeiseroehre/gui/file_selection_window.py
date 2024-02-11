@@ -5,11 +5,13 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+# from PyQt5.QtWidgets import QLineEdit
 # from PyQt5 import uic
 # from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
-from PyQt6 import uic
+from PyQt6 import uic, QtCore
+from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox, QVBoxLayout, QCompleter
 from sqlalchemy.orm import sessionmaker
 
 import config
@@ -18,6 +20,7 @@ from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
 from gui.previous_therapies_window import PreviousTherapiesWindow
+from logic.pyqt_models import PatientView
 from logic import database, data_models
 from logic.data_declarative_models import Patient, Visit
 from logic.endoflip_data_processing import process_endoflip_xlsx
@@ -39,6 +42,7 @@ class FileSelectionWindow(QMainWindow):
         :param patient_data: an instance of PatientData
         """
         super().__init__()
+        self.lineEdit = None
         self.ui = uic.loadUi("./ui-files/file_selection_window_design.ui", self)
         self.master_window: MasterWindow = master_window
         self.patient_data: PatientData = patient_data
@@ -64,6 +68,42 @@ class FileSelectionWindow(QMainWindow):
         self.db = database.get_db()
         self.patient_service = PatientService(self.db)
         self.visit_service = VisitService(self.db)
+        self.init_ui()
+
+
+    def init_ui(self):
+        Session = sessionmaker(bind=database.engine_local.connect())
+        session = Session()
+
+        rows = []
+        for patient in session.query(Patient).all():
+            rows.append((patient.patient_id, patient.ancestry, patient.birth_year, patient.previous_therapies))
+
+        print(rows)
+
+        patient_view = PatientView(self.master_window)
+        patient_view.show()
+
+        # Fetch all patient_id values
+        patient_ids = session.query(Patient.patient_id).all()
+
+        for patient_id in patient_ids:
+            print(patient_id[0])
+        suggestions = [patient_id[0] for patient_id in patient_ids]
+
+        # Set up QCompleter with autocomplete suggestions
+        completer = QCompleter(suggestions, self)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)  # Case-insensitive autocomplete
+        self.ui.patient_id_field.setCompleter(completer)
+
+        self.ui.patient_id_field.editingFinished.connect(self.__patient_id_filled)
+
+
+    def __patient_id_filled(self):
+        # ToDo: Felder mit echten Daten aus der DB für den jeweiligen Patienten füllen, wenn vorhanden
+        d = QDate(2020, 6, 10)
+        self.ui.birthdate_calendar.setDate(d)
+        self.ui.gender_dropdown.setCurrentIndex(1)
 
     def __menu_button_clicked(self):
         """
@@ -88,8 +128,6 @@ class FileSelectionWindow(QMainWindow):
         age = self.ui.date_calendar.date().toPyDate().year - self.ui.birthdate_calendar.date().toPyDate().year - (
                 (self.ui.date_calendar.date().toPyDate().month, self.ui.date_calendar.date().toPyDate().day) <
                 (self.ui.birthdate_calendar.date().toPyDate().month, self.ui.birthdate_calendar.date().toPyDate().day))
-
-        stmt = None
 
         if (
                 len(self.ui.patient_id_field.text()) > 0
@@ -159,6 +197,9 @@ class FileSelectionWindow(QMainWindow):
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient and visit data.")
 
+        # list_patients = list_data_windows.ListPatients()
+        # list_patients.show()
+
     def __previous_therapies_check_clicked(self):
         """
         checks if the previous therapies field is checked
@@ -166,8 +207,19 @@ class FileSelectionWindow(QMainWindow):
         """
         if self.ui.previous_therapies_check.isChecked():
             print("Checkbox checked")
-            previous_therapies = PreviousTherapiesWindow(self.master_window, self.patient_data)
+            previous_therapies = PreviousTherapiesWindow(self.master_window)
             previous_therapies.show()
+            Session = sessionmaker(bind=database.engine_local.connect())
+            session = Session()
+
+            rows = []
+            for patient in session.query(Patient).all():
+                rows.append((patient.patient_id, patient.ancestry, patient.birth_year, patient.previous_therapies))
+
+            print(rows)
+
+            patient_view = PatientView(self.master_window, rows)
+            patient_view.show()
         else:
             print("Checkbox not checked")
 
