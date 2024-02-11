@@ -8,10 +8,10 @@ from logic.data_declarative_models import Base
 if os.environ.get('TESTING'):
     DATABASE_URL = 'sqlite:///test_database.db'
 else:
-    DATABASE_URL = 'sqlite:///database.db'
+    DATABASE_URL = 'mysql+pymysql://admin:123+qwe@localhost:3306/3drekonstruktion'
 
 # echo in Produktion auf false setzen
-engine_local = create_engine(DATABASE_URL, echo=True)
+engine_local = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine_local)
 
 
