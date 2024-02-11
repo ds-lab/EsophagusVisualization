@@ -26,3 +26,4 @@ tcod==16.2.0
 sqlalchemy==2.0.23
 pillow==10.0.1
 pymysql==1.1.0
+cryptography==42.0.2
