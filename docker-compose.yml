@@ -1,0 +1,29 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: 3drekonstruktion
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 123+qwe
+    ports:
+      - '3306:3306'
+    volumes:
+      - vol-db:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    ports:
+      - '8080:80'
+    depends_on:
+      - db
+
+volumes:
+  vol-db:
