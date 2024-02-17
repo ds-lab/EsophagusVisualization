@@ -11,7 +11,7 @@ services:
       - 5432:5432
     
     volumes:
-      - vol-db:/var/lib/postgres
+      - vol-db:/var/lib/postgres/data
 
   pgadmin:
     image: dpage/pgadmin4
