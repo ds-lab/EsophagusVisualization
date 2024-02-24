@@ -1,3 +1,4 @@
+version: '3'
 services:
   db:
     image: postgres:16-alpine
@@ -9,9 +10,9 @@ services:
       POSTGRES_PASSWORD: 123+qwe
     ports:
       - 5432:5432
-    
     volumes:
       - vol-db:/var/lib/postgres/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   pgadmin:
     image: dpage/pgadmin4

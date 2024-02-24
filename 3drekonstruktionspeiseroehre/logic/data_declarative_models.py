@@ -31,7 +31,7 @@ class Therapy(Base):
     __tablename__ = "therapies"
     therapy_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id"), nullable=False)
-    therapy = mapped_column(Enum, nullable=False)
+    therapy = mapped_column(String(30), nullable=False)
 
 
 class Followup(Base):
@@ -46,7 +46,7 @@ class PreviousTherapy(Base):
     previous_therapy_id = mapped_column(Integer, primary_key=True)
     patient_id = mapped_column(ForeignKey(
         "patients.patient_id"), nullable=False)
-    therapy = mapped_column(Enum, nullable=False)
+    therapy = mapped_column(String, nullable=False)
     times = mapped_column(Integer, nullable=True)
     last_date = mapped_column(Date, nullable=True)
 
