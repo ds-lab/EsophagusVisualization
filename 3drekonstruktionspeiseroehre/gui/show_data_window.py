@@ -43,3 +43,15 @@ class ShowDataWindow(QMainWindow):
         self.tableView.setColumnWidth(0, 50)
         self.tableView.resizeColumnsToContents()
         #self.tableView.hideColumn(0)
+
+    def context_menu(self):
+        menu = QtWidgets.QMenu()
+        add_data = menu.addAction("Add New Data")
+        add_data.setIcon(QtGui.QIcon("./media/add-icon.png"))
+        add_data.triggered.connect(lambda: self.model.insertRows())
+        if self.tableView.selectedIndexes():
+            remove_data = menu.addAction("Remove Data")
+            remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
+            remove_data.triggered.connect(lambda: self.model.removeRows(self.tableView.currentIndex()))
+        cursor = QtGui.QCursor()
+        menu.exec(cursor.pos())
