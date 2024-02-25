@@ -2,10 +2,11 @@ import os
 import pickle
 import re
 from pathlib import Path
+from datetime import datetime
 
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHBoxLayout, QMainWindow
+from PyQt6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHBoxLayout, QMainWindow, QMessageBox
 from sqlalchemy.orm import sessionmaker
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
@@ -45,6 +46,9 @@ class DataWindow(QMainWindow):
         self.endoscopy_image_positions = []
         self.endoflip_screenshot = None
 
+        # Connect Buttons to Functions
+        self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
+
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -75,6 +79,7 @@ class DataWindow(QMainWindow):
         self.tableView.resizeColumnsToContents()
         # self.tableView.hideColumn(0)
 
+
     def context_menu(self):
         menu = QtWidgets.QMenu()
         add_data = menu.addAction("Add New Data")
@@ -94,5 +99,46 @@ class DataWindow(QMainWindow):
         info_window = InfoWindow()
         info_window.show_file_selection_info()
         info_window.show()
+
+    def __patient_add_button_clicked(self):
+        """
+        checks if all patient data are filled out
+        """
+
+        if (
+                len(self.ui.patient_id_field.text()) > 0
+                and self.ui.gender_dropdown.currentText() != "---"
+                and self.ui.ethnicity_dropdown.currentText() != "---"
+                and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
+                and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
+                and 1990 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
+        ):
+            patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
+            if patient:
+                reply = QMessageBox.question(self, 'This Patient already exists in the database.',
+                                             "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
+                                             QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+                if reply == QMessageBox.StandardButton.Yes:
+                    pat_dict = {'gender': self.ui.gender_dropdown.currentText(),
+                                'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+                                'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+                                'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                    self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
+            else:
+                pat_dict = {
+                    'patient_id': self.ui.patient_id_field.text(),
+                    'gender': self.ui.gender_dropdown.currentText(),
+                    'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+                    'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+                    'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                    'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                self.patient_service.create_patient(pat_dict)
+            self.init_ui()
+        else:
+            QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
+
+
+
 
 

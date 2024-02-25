@@ -17,7 +17,7 @@ from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
 from gui.previous_therapies_window import PreviousTherapiesWindow
-from gui.show_data_window import ShowDataWindow
+from gui.data_window import DataWindow
 from logic.database import database
 from logic.database.data_declarative_models import Patient, Visit
 from logic.endoflip_data_processing import process_endoflip_xlsx
@@ -76,7 +76,7 @@ class FileSelectionWindow(QMainWindow):
 
         print(rows)
 
-        patient_view = ShowDataWindow(self.master_window)
+        patient_view = DataWindow(self.master_window)
         patient_view.show()
 
         # Fetch all patient_id values
