@@ -152,10 +152,29 @@ class DataWindow(QMainWindow):
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
 
     def __patient_id_filled(self):
-        # ToDo: Felder mit echten Daten aus der DB für den jeweiligen Patienten füllen, wenn vorhanden
-        d = QDate(2020, 6, 10)
-        self.ui.birthdate_calendar.setDate(d)
-        self.ui.gender_dropdown.setCurrentIndex(1)
+        patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
+        if patient:
+            self.ui.birthyear_calendar.setDate(QDate(patient.birth_year, 1, 1))
+            self.ui.firstdiagnosis_calendar.setDate(QDate(patient.year_first_diagnosis, 1, 1))
+            self.ui.firstsymptoms_calendar.setDate(QDate(patient.year_first_symptoms, 1, 1))
+            if patient.gender == "male":
+                self.ui.gender_dropdown.setCurrentIndex(1)
+            elif patient.gender == "female":
+                self.ui.gender_dropdown.setCurrentIndex(2)
+            else:
+                self.ui.gender_dropdown.setCurrentIndex(3)
+            if patient.ethnicity == "American Indian or Alaska Native":
+                self.ui.ethnicity_dropdown.setCurrentIndex(1)
+            elif patient.ethnicity == "Asian":
+                self.ui.ethnicity_dropdown.setCurrentIndex(2)
+            elif patient.ethnicity == "Black or African American":
+                self.ui.ethnicity_dropdown.setCurrentIndex(3)
+            elif patient.ethnicity == "Native Hawaiian or Other Pacific Islander":
+                self.ui.ethnicity_dropdown.setCurrentIndex(4)
+            elif patient.ethnicity == "White":
+                self.ui.ethnicity_dropdown.setCurrentIndex(5)
+            else:
+                self.ui.ethnicity_dropdown.setCurrentIndex(6)
 
 
 
