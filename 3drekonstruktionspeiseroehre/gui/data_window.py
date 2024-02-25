@@ -84,6 +84,7 @@ class DataWindow(QMainWindow):
         self.tableView.resizeColumnsToContents()
         self.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.tableView.clicked.connect(self.__show_selected_row_data)
         # self.tableView.hideColumn(0)
 
         # Collect all patient_ids in a list to make auto-complete suggestions
@@ -219,7 +220,27 @@ class DataWindow(QMainWindow):
             else:
                 self.ui.ethnicity_dropdown.setCurrentIndex(6)
 
+    def __show_selected_row_data(self):
+        selected_indexes = self.tableView.selectedIndexes()  # Get the indexes of all selected cells
+        if selected_indexes:
+            selected_row = selected_indexes[0].row()  # Get the row number of the first selected index
 
+            # Access data for all columns in the selected row
+            data = []
+            for column in range(self.tableView.model().columnCount()):
+                index = self.tableView.model().index(selected_row, column)
+                data.append(str(index.data()))
 
+            print(data)
+
+            # Show the data in QTextEdit
+            labels = self.model.columns
+            print(labels)
+
+            output = ""
+            for key, value in zip(labels, data):
+                output += f"{key}: {value}\n"
+
+            self.ui.selected_patient_text.setText(output)
 
 

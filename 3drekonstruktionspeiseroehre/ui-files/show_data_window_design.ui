@@ -346,7 +346,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_14">
            <item row="0" column="0">
-            <widget class="QTextEdit" name="textEdit_3"/>
+            <widget class="QTextEdit" name="selected_patient_text"/>
            </item>
           </layout>
          </widget>
