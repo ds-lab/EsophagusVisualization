@@ -82,6 +82,8 @@ class DataWindow(QMainWindow):
         self.tableView.verticalHeader().setDefaultSectionSize(30)
         self.tableView.setColumnWidth(0, 50)
         self.tableView.resizeColumnsToContents()
+        self.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         # self.tableView.hideColumn(0)
 
         # Collect all patient_ids in a list to make auto-complete suggestions
