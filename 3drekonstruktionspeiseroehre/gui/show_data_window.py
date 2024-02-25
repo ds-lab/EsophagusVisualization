@@ -36,7 +36,7 @@ class ShowDataWindow(QMainWindow):
         self.model = CustomPatientModel(self.user_data)
         # self.delegate = InLineEditDelegate() # for inline editing
         self.tableView.setModel(self.model)
-        self.tableView.setItemDelegate(self.delegate)
+        #self.tableView.setItemDelegate(self.delegate)
         self.tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.tableView.customContextMenuRequested.connect(self.context_menu)
         self.tableView.verticalHeader().setDefaultSectionSize(30)

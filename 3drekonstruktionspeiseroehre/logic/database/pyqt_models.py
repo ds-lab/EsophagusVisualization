@@ -1,6 +1,6 @@
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtCore import Qt
-from logic import database
+from logic.database import database
 from logic.services.patient_service import PatientService
 
 
