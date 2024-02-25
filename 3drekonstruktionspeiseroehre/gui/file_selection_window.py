@@ -35,7 +35,7 @@ from logic.services.visit_service import VisitService
 class FileSelectionWindow(QMainWindow):
     """Window where the user selects the needed files"""
 
-    def __init__(self, master_window: MasterWindow, center: str, patient_data: PatientData = PatientData()):
+    def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
         """
         init FileSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -47,7 +47,6 @@ class FileSelectionWindow(QMainWindow):
         self.master_window: MasterWindow = master_window
         self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
-        self.center = center
         self.import_filenames = []
         self.endoscopy_filenames = []
         self.xray_filenames = []

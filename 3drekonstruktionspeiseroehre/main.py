@@ -22,10 +22,8 @@ if __name__ == '__main__':
     master_window = MasterWindow()
     master_window.show()
     master_window.activate()
-    select_patient_window = SelectPatientWindow(master_window)
-    master_window.switch_to(select_patient_window)
-    #file_selection_window = FileSelectionWindow(master_window)
-    #master_window.switch_to(file_selection_window)
+    file_selection_window = FileSelectionWindow(master_window)
+    master_window.switch_to(file_selection_window)
     create_db_and_tables_local_declarative()
     try:
         # close the splash screen if running as pyinstaller-exe
