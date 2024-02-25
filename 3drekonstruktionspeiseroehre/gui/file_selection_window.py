@@ -213,7 +213,7 @@ class FileSelectionWindow(QMainWindow):
 
             print(rows)
 
-            patient_view = ShowDataWindow(self.master_window, rows)
+            patient_view = DataWindow(self.master_window, rows)
             patient_view.show()
         else:
             print("Checkbox not checked")

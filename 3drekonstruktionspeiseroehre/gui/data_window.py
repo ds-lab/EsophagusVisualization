@@ -7,6 +7,10 @@ from datetime import datetime
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHBoxLayout, QMainWindow, QMessageBox
+from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox, QVBoxLayout, QCompleter
+
 from sqlalchemy.orm import sessionmaker
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
@@ -79,6 +83,15 @@ class DataWindow(QMainWindow):
         self.tableView.resizeColumnsToContents()
         # self.tableView.hideColumn(0)
 
+        # Collect all patient_ids in a list to make auto-complete suggestions
+        self.patient_suggestions = [entry['patient_id'] for entry in self.user_data]
+
+        # Set up QCompleter with autocomplete suggestions
+        completer = QCompleter(self.patient_suggestions, self)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)  # Case-insensitive autocomplete
+        self.ui.patient_id_field.setCompleter(completer)
+
+        self.ui.patient_id_field.editingFinished.connect(self.__patient_id_filled)
 
     def context_menu(self):
         menu = QtWidgets.QMenu()
@@ -137,6 +150,12 @@ class DataWindow(QMainWindow):
             self.init_ui()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
+
+    def __patient_id_filled(self):
+        # ToDo: Felder mit echten Daten aus der DB für den jeweiligen Patienten füllen, wenn vorhanden
+        d = QDate(2020, 6, 10)
+        self.ui.birthdate_calendar.setDate(d)
+        self.ui.gender_dropdown.setCurrentIndex(1)
 
 
 
