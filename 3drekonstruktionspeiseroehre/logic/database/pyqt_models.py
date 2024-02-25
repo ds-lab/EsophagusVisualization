@@ -28,7 +28,8 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         :return:
         """
         if index.column() > 0:
-            return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable
+            #return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable
+            return Qt.ItemFlag.ItemIsEnabled
         #elif index.column() == 1:
         #    return Qt.ItemFlag.DecorationRole
         else:
