@@ -231,16 +231,16 @@ class DataWindow(QMainWindow):
                 index = self.tableView.model().index(selected_row, column)
                 data.append(str(index.data()))
 
-            print(data)
+            labels = self.model.columns
 
             # Show the data in QTextEdit
-            labels = self.model.columns
-            print(labels)
-
             output = ""
             for key, value in zip(labels, data):
                 output += f"{key}: {value}\n"
 
             self.ui.selected_patient_text.setText(output)
+
+            self.ui.patient_id_field.setText(str(self.tableView.model().index(selected_row, 0).data()))
+            self.__patient_id_filled()
 
 
