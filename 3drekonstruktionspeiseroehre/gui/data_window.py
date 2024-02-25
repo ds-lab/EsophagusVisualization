@@ -179,7 +179,7 @@ class DataWindow(QMainWindow):
                                 'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                                 'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                                 'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
-                    self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
+                    self.patient_service.create_patient(pat_dict)
             else:
                 pat_dict = {
                     'gender': self.ui.gender_dropdown.currentText(),
@@ -187,7 +187,7 @@ class DataWindow(QMainWindow):
                     'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                     'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                     'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
-                self.patient_service.create_patient(pat_dict)
+                self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
             self.init_ui()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
