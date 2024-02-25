@@ -9,9 +9,11 @@ class Base(DeclarativeBase):
 class Patient(Base):
     __tablename__ = "patients"
     patient_id = mapped_column(String(30), primary_key=True)
-    ancestry = mapped_column(String(15))
+    gender = mapped_column(String(6))
+    ethnicity = mapped_column(String(50))
     birth_year = mapped_column(Integer)
-    previous_therapies = mapped_column(Boolean)
+    year_first_diagnosis = mapped_column(Integer)
+    year_first_symptoms = mapped_column(Integer)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}

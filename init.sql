@@ -1,9 +1,13 @@
 CREATE TABLE patients (
     patient_id VARCHAR(30) PRIMARY KEY,
-    ancestry VARCHAR(15),
+    gender VARCHAR(6),
+    ethnicity VARCHAR(50),
     birth_year INT,
-    previous_therapies BOOLEAN
+    year_first_diagnosis INT,
+    year_first_symptoms INT
 );
+
+INSERT into patients values('Testpatient', 'male', 'Native Hawaiian or Other Pacific Islander', 2000, 2020, 2015);
 
 CREATE TABLE visits (
     visit_id SERIAL PRIMARY KEY,
