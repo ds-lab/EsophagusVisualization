@@ -12,8 +12,6 @@ from scipy import spatial
 from PIL import Image
 from matplotlib import cm
 from logic.visualization_data import VisualizationData
-from logic import database, data_models
-from sqlalchemy import insert
 
 
 class FigureCreator(ABC):

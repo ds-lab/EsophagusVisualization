@@ -26,6 +26,9 @@ class Visit(Base):
     center = mapped_column(String(20), nullable=False)
     age_at_visit = mapped_column(Integer, nullable=False)
 
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class Therapy(Base):
     __tablename__ = "therapies"
@@ -33,12 +36,18 @@ class Therapy(Base):
     visit_id = mapped_column(ForeignKey("visits.visit_id"), nullable=False)
     therapy = mapped_column(String(30), nullable=False)
 
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class Followup(Base):
     __tablename__ = "followups"
     folloup_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id"), nullable=False)
     followup = mapped_column(Integer, nullable=False)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
 class PreviousTherapy(Base):
@@ -49,6 +58,9 @@ class PreviousTherapy(Base):
     therapy = mapped_column(String, nullable=False)
     times = mapped_column(Integer, nullable=True)
     last_date = mapped_column(Date, nullable=True)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
 class Metric(Base):
@@ -69,6 +81,9 @@ class Metric(Base):
     volume_sphincter = mapped_column(Float, nullable=False)
     esophagus_length_cm = mapped_column(Float, nullable=False)
 
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class VisualizationData(Base):
     __tablename__ = "visualization_data_list"
@@ -76,4 +91,7 @@ class VisualizationData(Base):
         Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id"), nullable=False)
     visualization_data = mapped_column(PickleType, nullable=False)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 

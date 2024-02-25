@@ -20,9 +20,9 @@ from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.xray_window_managment import ManageXrayWindows
 from gui.previous_therapies_window import PreviousTherapiesWindow
-from logic.pyqt_models import PatientView
-from logic import database, data_models
-from logic.data_declarative_models import Patient, Visit
+from gui.show_data_window import ShowDataWindow
+from logic.database import database
+from logic.database.data_declarative_models import Patient, Visit
 from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
@@ -80,7 +80,7 @@ class FileSelectionWindow(QMainWindow):
 
         print(rows)
 
-        patient_view = PatientView(self.master_window)
+        patient_view = ShowDataWindow(self.master_window)
         patient_view.show()
 
         # Fetch all patient_id values
@@ -217,7 +217,7 @@ class FileSelectionWindow(QMainWindow):
 
             print(rows)
 
-            patient_view = PatientView(self.master_window, rows)
+            patient_view = ShowDataWindow(self.master_window, rows)
             patient_view.show()
         else:
             print("Checkbox not checked")

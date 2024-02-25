@@ -1,6 +1,6 @@
 from sqlalchemy import select, delete, update, insert
 from sqlalchemy.orm import Session
-from logic.data_declarative_models import Visit
+from logic.database.data_declarative_models import Visit
 
 class VisitService:
     

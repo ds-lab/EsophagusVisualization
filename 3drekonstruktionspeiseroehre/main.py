@@ -2,9 +2,7 @@ import sys
 
 from gui.file_selection_window import FileSelectionWindow
 from gui.master_window import MasterWindow
-from logic.database import create_db_and_tables_local, create_db_and_tables_local_declarative
-from gui.select_center_window import SelectCenterWindow
-from gui.select_patient_window import SelectPatientWindow
+from logic.database.database import create_db_and_tables_local_declarative
 from PyQt6.QtWidgets import QApplication
 
 # Upgrade to Qt6 https://www.pythonguis.com/faq/pyqt5-vs-pyqt6/#:~:text=The%20upgrade%20path%20from%20PyQt5,both%20PyQt%20and%20Qt%20itself.

@@ -8,7 +8,7 @@ from logic.visit_data import VisitData
 #from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt6.QtCore import QThread, pyqtSignal
 
-from logic import database, data_models
+from logic.database import database, data_declarative_models
 from sqlalchemy import insert
 
 
