@@ -4,7 +4,6 @@ import pickle
 import numpy as np
 
 import gui.file_selection_window
-import logic.visit_data
 from dash_server import DashServer
 from gui.drag_and_drop import *
 from gui.info_window import InfoWindow
@@ -12,13 +11,7 @@ from gui.master_window import MasterWindow
 from logic.figure_creator.figure_creation_thread import FigureCreationThread
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
-#from PyQt5 import uic
-#from PyQt5.QtCore import QUrl
-#from PyQt5.QtGui import QFont
-#from PyQt5.QtWebEngineWidgets import QWebEngineView
-#from PyQt5.QtWidgets import (QAction, QFileDialog, QLabel, QMainWindow,
-                             #QMessageBox, QProgressDialog, QPushButton,
-                             #QSizePolicy, QStyle, QVBoxLayout)
+
 from PyQt6 import uic
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QFont, QAction

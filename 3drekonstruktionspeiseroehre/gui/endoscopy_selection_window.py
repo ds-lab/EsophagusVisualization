@@ -8,8 +8,6 @@ from logic.visit_data import VisitData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
-#from PyQt5 import QtWidgets, uic
-#from PyQt5.QtWidgets import QAction, QMessageBox
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMessageBox

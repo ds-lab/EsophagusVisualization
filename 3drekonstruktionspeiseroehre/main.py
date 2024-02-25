@@ -4,6 +4,7 @@ from gui.file_selection_window import FileSelectionWindow
 from gui.master_window import MasterWindow
 from logic.database.database import create_db_and_tables_local_declarative
 from PyQt6.QtWidgets import QApplication
+from gui.show_data_window import ShowDataWindow
 
 # Upgrade to Qt6 https://www.pythonguis.com/faq/pyqt5-vs-pyqt6/#:~:text=The%20upgrade%20path%20from%20PyQt5,both%20PyQt%20and%20Qt%20itself.
 # The high DPI (dots per inch) scaling attributes 
@@ -20,8 +21,10 @@ if __name__ == '__main__':
     master_window = MasterWindow()
     master_window.show()
     master_window.activate()
-    file_selection_window = FileSelectionWindow(master_window)
-    master_window.switch_to(file_selection_window)
+    #file_selection_window = FileSelectionWindow(master_window)
+    #master_window.switch_to(file_selection_window)
+    show_data_window = ShowDataWindow(master_window)
+    master_window.switch_to(show_data_window)
     create_db_and_tables_local_declarative()
     try:
         # close the splash screen if running as pyinstaller-exe

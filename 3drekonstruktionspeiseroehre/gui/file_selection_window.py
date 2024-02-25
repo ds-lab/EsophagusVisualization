@@ -5,9 +5,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-# from PyQt5.QtWidgets import QLineEdit
-# from PyQt5 import uic
-# from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QMessageBox
 from PyQt6 import uic, QtCore
 from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QAction
@@ -27,7 +24,6 @@ from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
-from sqlalchemy import insert, select, and_, update
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 
