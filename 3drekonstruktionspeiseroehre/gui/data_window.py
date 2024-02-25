@@ -52,6 +52,7 @@ class DataWindow(QMainWindow):
 
         # Connect Buttons to Functions
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
+        self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -116,6 +117,7 @@ class DataWindow(QMainWindow):
     def __patient_add_button_clicked(self):
         """
         checks if all patient data are filled out
+        adds patient data to database
         """
 
         if (
@@ -141,6 +143,45 @@ class DataWindow(QMainWindow):
             else:
                 pat_dict = {
                     'patient_id': self.ui.patient_id_field.text(),
+                    'gender': self.ui.gender_dropdown.currentText(),
+                    'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+                    'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+                    'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                    'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                self.patient_service.create_patient(pat_dict)
+            self.init_ui()
+        else:
+            QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
+
+    def __patient_update_button_clicked(self):
+        """
+        checks if all patient data are filled out
+        updates patient data in database
+        """
+
+        if (
+                len(self.ui.patient_id_field.text()) > 0
+                and self.ui.gender_dropdown.currentText() != "---"
+                and self.ui.ethnicity_dropdown.currentText() != "---"
+                and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
+                and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
+                and 1990 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
+        ):
+            patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
+            if not patient:
+                reply = QMessageBox.question(self, 'This Patient not yet exists in the database.',
+                                             "Should the patient be created?", QMessageBox.StandardButton.Yes |
+                                             QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+                if reply == QMessageBox.StandardButton.Yes:
+                    pat_dict = {'patient_id': self.ui.patient_id_field.text(),
+                                'gender': self.ui.gender_dropdown.currentText(),
+                                'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+                                'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+                                'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                    self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
+            else:
+                pat_dict = {
                     'gender': self.ui.gender_dropdown.currentText(),
                     'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                     'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>824</width>
-    <height>751</height>
+    <width>822</width>
+    <height>744</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -41,7 +41,7 @@
          <x>0</x>
          <y>0</y>
          <width>799</width>
-         <height>719</height>
+         <height>712</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -295,10 +295,31 @@
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="1">
-            <widget class="QPushButton" name="patient_search_button">
+           <item row="0" column="4">
+            <widget class="QPushButton" name="patient_update_button">
              <property name="text">
-              <string>Suchen nach Id</string>
+              <string>Updaten</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="patient_delete_button">
+             <property name="text">
+              <string>Löschen</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="patient_select_button">
+             <property name="text">
+              <string>Auswählen</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="patient_add_button">
+             <property name="text">
+              <string>Hinzufügen</string>
              </property>
             </widget>
            </item>
@@ -306,34 +327,6 @@
             <widget class="QPushButton" name="patient_show_all_button">
              <property name="text">
               <string>Alle Anzeigen</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QPushButton" name="patient_add_button">
-             <property name="text">
-              <string>Hinzufügen</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QPushButton" name="patient_delete_button">
-             <property name="text">
-              <string>Löschen</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QPushButton" name="patient_select_button">
-             <property name="text">
-              <string>Auswählen</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="5">
-            <widget class="QPushButton" name="pushButton">
-             <property name="text">
-              <string>Updaten</string>
              </property>
             </widget>
            </item>
@@ -913,7 +906,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>824</width>
+     <width>822</width>
      <height>18</height>
     </rect>
    </property>
