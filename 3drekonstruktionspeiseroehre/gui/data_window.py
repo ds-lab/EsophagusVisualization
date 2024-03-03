@@ -261,7 +261,7 @@ class DataWindow(QMainWindow):
             session = Session()
 
             therapyArr = []
-            for therapy in session.query(PreviousTherapy).all():
+            for therapy in session.query(PreviousTherapy).filter(PreviousTherapy.patient_id == str(self.patient_tableView.model().index(selected_row, 0).data())).all():
                 therapyArr.append(therapy.toDict())
 
             self.previous_therapies_array = therapyArr
