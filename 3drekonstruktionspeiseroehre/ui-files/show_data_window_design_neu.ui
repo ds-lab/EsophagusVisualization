@@ -1,0 +1,1236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>981</width>
+    <height>697</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>1000</height>
+   </size>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>824</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="patients">
+       <attribute name="title">
+        <string>Patienten</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_19">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBox_8">
+          <property name="title">
+           <string>Ausgewählter Patient</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_14">
+           <item row="0" column="0">
+            <widget class="QTextEdit" name="selected_patient_text"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>Patienten Daten</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="1" column="1">
+              <widget class="QDateEdit" name="birthyear_calendar">
+               <property name="dateTime">
+                <datetime>
+                 <hour>0</hour>
+                 <minute>0</minute>
+                 <second>0</second>
+                 <year>1900</year>
+                 <month>1</month>
+                 <day>1</day>
+                </datetime>
+               </property>
+               <property name="displayFormat">
+                <string>yyyy</string>
+               </property>
+               <property name="calendarPopup">
+                <bool>false</bool>
+               </property>
+               <property name="date">
+                <date>
+                 <year>1900</year>
+                 <month>1</month>
+                 <day>1</day>
+                </date>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Jahr der ersten Symptome</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QComboBox" name="gender_dropdown">
+               <item>
+                <property name="text">
+                 <string>---</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>male</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>female</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>divers</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QComboBox" name="ethnicity_dropdown">
+               <item>
+                <property name="text">
+                 <string>---</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>American Indian or Alaska Native</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Asian</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Black or African American</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Native Hawaiian or Other Pacific Islander</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>White</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Other </string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Geburtsjahr</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QDateEdit" name="firstdiagnosis_calendar">
+               <property name="displayFormat">
+                <string>yyyy</string>
+               </property>
+               <property name="date">
+                <date>
+                 <year>1900</year>
+                 <month>1</month>
+                 <day>1</day>
+                </date>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLineEdit" name="patient_id_field">
+               <property name="maximumSize">
+                <size>
+                 <width>185</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>insert Patient Id</string>
+               </property>
+               <property name="maxLength">
+                <number>100</number>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Jahr der Erstdiagnose</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Patienten-Id</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QDateEdit" name="firstsymptoms_calendar">
+               <property name="displayFormat">
+                <string>yyyy</string>
+               </property>
+               <property name="date">
+                <date>
+                 <year>1900</year>
+                 <month>1</month>
+                 <day>1</day>
+                </date>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Enthnizität</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Geschlecht</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>Patienten Liste</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="0">
+            <widget class="QTableView" name="tableView"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="2" rowspan="4">
+         <widget class="QGroupBox" name="groupBox_11">
+          <property name="title">
+           <string>Vortherapien des ausgewählten Patienten</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_22">
+           <item row="5" column="0">
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="text">
+              <string>augewählte Vortherapie löschen</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <layout class="QGridLayout" name="gridLayout_21">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>Vortherapie</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="label_20">
+               <property name="text">
+                <string>Jahr der Vortherapie</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_21">
+               <property name="text">
+                <string>oder Jahr unbekannt</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QCheckBox" name="checkBox_2">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QDateEdit" name="dateEdit_3">
+               <property name="displayFormat">
+                <string>yyyy</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QComboBox" name="comboBox_9">
+               <item>
+                <property name="text">
+                 <string>Botox</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Pneumatische Dilatation 30ml</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Pneumatische Dilatation 35ml</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Pneumatische Dilatation 40ml</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>POEM</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Laparoskopische Myotomie</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>andere</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="4" column="0">
+            <widget class="QGroupBox" name="groupBox_12">
+             <property name="title">
+              <string>Ausgewähle Vortherapie</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_24">
+              <item row="1" column="0">
+               <widget class="QTextEdit" name="textEdit_3"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <layout class="QGridLayout" name="gridLayout_23">
+             <item row="0" column="0">
+              <widget class="QPushButton" name="pushButton_2">
+               <property name="text">
+                <string>Vortherapie hinzufügen</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="3" column="0">
+            <widget class="QGroupBox" name="groupBox_13">
+             <property name="title">
+              <string>Vortherapien des ausgewählten Patienten</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_25">
+              <item row="0" column="0">
+               <widget class="QTableView" name="tableView_3"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="3">
+           <widget class="QPushButton" name="patient_update_button">
+            <property name="text">
+             <string>Updaten</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="patient_delete_button">
+            <property name="text">
+             <string>Löschen</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="patient_add_button">
+            <property name="text">
+             <string>Hinzufügen</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QPushButton" name="patient_select_button">
+            <property name="text">
+             <string>Auswählen</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="visits">
+       <attribute name="title">
+        <string>Visits</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="1" rowspan="3">
+         <widget class="QGroupBox" name="groupBox_9">
+          <property name="title">
+           <string>Ausgewählter Visit</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_16">
+           <item row="0" column="0">
+            <widget class="QTextEdit" name="textEdit_4"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="0" rowspan="3">
+         <widget class="QGroupBox" name="groupBox_6">
+          <property name="title">
+           <string>Ausgewählter Patient</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_11">
+           <item row="0" column="0">
+            <widget class="QTextEdit" name="textEdit_2"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="3">
+         <widget class="QGroupBox" name="groupBox_3">
+          <property name="title">
+           <string>Alle Visits des ausgewählten Patienten</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="0" column="0">
+            <widget class="QListView" name="listView"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QGroupBox" name="groupBox_10">
+          <property name="title">
+           <string>Eckardt Score des Visits</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_17">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="gridLayout_18">
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_15">
+               <property name="text">
+                <string>Dysphagie</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_14">
+               <property name="text">
+                <string>Regurgitationen</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QComboBox" name="comboBox_5">
+               <item>
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QComboBox" name="comboBox_4">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <item>
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_17">
+               <property name="text">
+                <string>Gewichtsverlust</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_18">
+               <property name="text">
+                <string>Gesamtschore</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QComboBox" name="comboBox_6">
+               <item>
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QComboBox" name="comboBox_7">
+               <item>
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QComboBox" name="comboBox_8">
+               <item>
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>4</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>5</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>6</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>7</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>8</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>9</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>10</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>11</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>12</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_16">
+               <property name="text">
+                <string>Retrosternale Schmerzen</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QGroupBox" name="groupBox_7">
+          <property name="title">
+           <string>Visit Daten</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_12">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="gridLayout_13">
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string>Therapie-Art</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QComboBox" name="comboBox_3">
+               <item>
+                <property name="text">
+                 <string>Initiale Diagnostik</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Therapie</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Follow-Up-Diagnostik</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QComboBox" name="comboBox_2">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <item>
+                <property name="text">
+                 <string>---</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Botox</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Pneumatische Dilitation</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>POEM</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>LHM</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDateEdit" name="dateEdit_2">
+               <property name="displayFormat">
+                <string>yyyy</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="lineEdit"/>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Visit-Typ</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Jahr des Visits</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Center</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Monate nach Therapie</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QComboBox" name="comboBox">
+               <item>
+                <property name="text">
+                 <string>---</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>&lt;2 Monate</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2-4 Monate</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>5-10 Monate</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1-1,5 Jahre</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2-4 Jahre</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>5-6 Jahre</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>&gt;6 Jahre</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="3">
+         <layout class="QGridLayout" name="gridLayout_15">
+          <item row="0" column="3">
+           <widget class="QPushButton" name="patient_select_button_2">
+            <property name="text">
+             <string>Auswählen</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="patient_add_button_3">
+            <property name="text">
+             <string>Hinzufügen</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="pushButton">
+            <property name="text">
+             <string>Löschen</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="pushButton_4">
+            <property name="text">
+             <string>Updaten</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="visit_data">
+       <attribute name="title">
+        <string>Visit-Daten</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="3">
+         <widget class="QStackedWidget" name="stackedWidget">
+          <property name="currentIndex">
+           <number>3</number>
+          </property>
+          <widget class="QWidget" name="page">
+           <layout class="QGridLayout" name="gridLayout_9">
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_4">
+              <property name="title">
+               <string>Therapie: Botox</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_32">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_31">
+                 <property name="text">
+                  <string>Botoxeinheiten:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_32">
+                 <property name="text">
+                  <string>Lokalisation:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="comboBox_12"/>
+               </item>
+               <item row="0" column="1">
+                <widget class="QSpinBox" name="spinBox"/>
+               </item>
+               <item row="2" column="0" colspan="2">
+                <widget class="QGroupBox" name="groupBox_25">
+                 <property name="title">
+                  <string>gespeicherte Therapie des Patienten:</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_20">
+                  <item row="0" column="0">
+                   <widget class="QLineEdit" name="lineEdit_3"/>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <spacer name="verticalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_2">
+           <layout class="QGridLayout" name="gridLayout_10">
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_5">
+              <property name="title">
+               <string>Therapie: Pneumatische Dilitation</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_28"/>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_3">
+           <layout class="QGridLayout" name="gridLayout_34">
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_23">
+              <property name="title">
+               <string>Therapie: LHM</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_4">
+           <layout class="QGridLayout" name="gridLayout_35">
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_24">
+              <property name="title">
+               <string>Therapie: POEM</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QGroupBox" name="groupBox_15">
+          <property name="title">
+           <string>Ausgewählter Visit</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_27">
+           <item row="0" column="0">
+            <widget class="QTextEdit" name="textEdit_6">
+             <property name="baseSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBox_14">
+          <property name="title">
+           <string>Ausgewählter Patient</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_26">
+           <item row="0" column="0">
+            <widget class="QTextEdit" name="textEdit_5"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="4">
+         <widget class="QGroupBox" name="groupBox_17">
+          <property name="title">
+           <string>Diagnostik</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_33">
+           <item row="6" column="0" colspan="2">
+            <widget class="QGroupBox" name="groupBox_21">
+             <property name="title">
+              <string>Endosonographie</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="2">
+            <widget class="QGroupBox" name="groupBox_18">
+             <property name="title">
+              <string>Breischluck</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QGroupBox" name="groupBox_16">
+             <property name="title">
+              <string>Manometrie</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_29">
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_23">
+                <property name="text">
+                 <string>IPR4:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_5"/>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="label_29">
+                <property name="text">
+                 <string>UÖS untere Grenze:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
+              </item>
+              <item row="10" column="0">
+               <widget class="QLabel" name="label_30">
+                <property name="text">
+                 <string>Manometrie File:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="1">
+               <widget class="QLineEdit" name="lineEdit_2"/>
+              </item>
+              <item row="7" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_6"/>
+              </item>
+              <item row="9" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_26">
+                <property name="text">
+                 <string>OÖS obere Grenze:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_24">
+                <property name="text">
+                 <string>DCI:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="comboBox_10"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_9">
+                <property name="text">
+                 <string>Patientenlage:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_25">
+                <property name="text">
+                 <string>DL:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
+              </item>
+              <item row="4" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_27">
+                <property name="text">
+                 <string>OÖS untere Grenze:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="comboBox_11"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>Sondentyp:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="label_28">
+                <property name="text">
+                 <string>UÖS obere Grenze:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_22">
+                <property name="text">
+                 <string>Ruhedruck am UÖS:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QGroupBox" name="groupBox_22">
+             <property name="title">
+              <string>gespeicherte Manometrie Daten:</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_30">
+              <item row="0" column="0">
+               <widget class="QTextEdit" name="textEdit"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="2">
+            <widget class="QGroupBox" name="groupBox_19">
+             <property name="title">
+              <string>Endoskopie</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" colspan="2">
+            <widget class="QGroupBox" name="groupBox_20">
+             <property name="title">
+              <string>Endoflip</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QPushButton" name="pushButton_6">
+               <property name="text">
+                <string>Manometrie Daten updaten</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="manometrie_add_button">
+               <property name="text">
+                <string>Manometrie Daten hinzufügen</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="manometrie_delete_button">
+               <property name="text">
+                <string>Manomatrie Daten löschen</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>981</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -34,7 +34,7 @@ class DataWindow(QMainWindow):
         super(DataWindow, self).__init__()
         self.model = None
         self.user_data = None
-        self.ui = uic.loadUi("./ui-files/show_data_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
         self.tableView = self.ui.tableView
         self.master_window = master_window
         self.db = database.get_db()
