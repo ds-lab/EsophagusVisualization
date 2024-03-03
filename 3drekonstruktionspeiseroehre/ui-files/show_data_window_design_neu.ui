@@ -261,7 +261,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="0">
-            <widget class="QTableView" name="tableView"/>
+            <widget class="QTableView" name="patient_tableView"/>
            </item>
           </layout>
          </widget>
@@ -303,21 +303,21 @@
               </widget>
              </item>
              <item row="2" column="2">
-              <widget class="QCheckBox" name="checkBox_2">
+              <widget class="QCheckBox" name="therapy_year_unknown_checkbox">
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QDateEdit" name="dateEdit_3">
+              <widget class="QDateEdit" name="therapy_calendar">
                <property name="displayFormat">
                 <string>yyyy</string>
                </property>
               </widget>
              </item>
              <item row="2" column="0">
-              <widget class="QComboBox" name="comboBox_9">
+              <widget class="QComboBox" name="therapy_dropdown">
                <item>
                 <property name="text">
                  <string>Botox</string>
@@ -364,7 +364,7 @@
              </property>
              <layout class="QGridLayout" name="gridLayout_24">
               <item row="1" column="0">
-               <widget class="QTextEdit" name="textEdit_3"/>
+               <widget class="QTextEdit" name="selected_therapy_text"/>
               </item>
              </layout>
             </widget>
@@ -372,9 +372,16 @@
            <item row="2" column="0">
             <layout class="QGridLayout" name="gridLayout_23">
              <item row="0" column="0">
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="therapy_add_button">
                <property name="text">
                 <string>Vortherapie hinzufügen</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="therapy_delete_button">
+               <property name="text">
+                <string>Vortherapie löschen</string>
                </property>
               </widget>
              </item>
@@ -387,7 +394,7 @@
              </property>
              <layout class="QGridLayout" name="gridLayout_25">
               <item row="0" column="0">
-               <widget class="QTableView" name="tableView_3"/>
+               <widget class="QTableView" name="therapy_tableView"/>
               </item>
              </layout>
             </widget>
