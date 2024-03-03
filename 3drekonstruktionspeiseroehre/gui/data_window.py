@@ -265,17 +265,19 @@ class DataWindow(QMainWindow):
                 therapyArr.append(therapy.toDict())
 
             self.previous_therapies_array = therapyArr
+            self.init_previous_therapies()
 
-            self.previous_therapies_model = CustomPreviousTherapyModel(self.previous_therapies_array)
-            self.therapy_tableView.setModel(self.previous_therapies_model)
-            self.therapy_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-            self.therapy_tableView.customContextMenuRequested.connect(self.__context_menu_therapies)
-            self.therapy_tableView.verticalHeader().setDefaultSectionSize(30)
-            self.therapy_tableView.setColumnWidth(0, 50)
-            self.therapy_tableView.resizeColumnsToContents()
-            self.therapy_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
-            self.therapy_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-            self.therapy_tableView.clicked.connect(self.__show_selected_therapy_data)
+    def init_previous_therapies(self):
+        self.previous_therapies_model = CustomPreviousTherapyModel(self.previous_therapies_array)
+        self.therapy_tableView.setModel(self.previous_therapies_model)
+        self.therapy_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.therapy_tableView.customContextMenuRequested.connect(self.__context_menu_therapies)
+        self.therapy_tableView.verticalHeader().setDefaultSectionSize(30)
+        self.therapy_tableView.setColumnWidth(0, 50)
+        self.therapy_tableView.resizeColumnsToContents()
+        self.therapy_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.therapy_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.therapy_tableView.clicked.connect(self.__show_selected_therapy_data)
 
     def __context_menu_therapies(self):
         menu = QtWidgets.QMenu()
@@ -300,10 +302,10 @@ class DataWindow(QMainWindow):
             therapy_dict = {
                 'patient_id': self.selected_patient,
                 'therapy': self.ui.therapy_dropdown.currentText(),
-                'times': 1, #ToDo: Model für previous_therapies ändern
-                'last_date': self.ui.therapy_calendar.date().toPyDate()} #ToDo: Model für previous_therapies ändern
+                'times': 1,  # ToDo: Model für previous_therapies ändern
+                'last_date': self.ui.therapy_calendar.date().toPyDate()}  # ToDo: Model für previous_therapies ändern
             self.previous_therapies_service.create_previous_therapy(therapy_dict)
-            self.init_ui()
+            self.init_previous_therapies()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all therapy data and make sure they are "
                                                            "valid.")
