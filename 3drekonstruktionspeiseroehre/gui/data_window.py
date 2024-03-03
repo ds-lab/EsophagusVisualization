@@ -33,7 +33,7 @@ class DataWindow(QMainWindow):
     def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
         super(DataWindow, self).__init__()
         self.model = None
-        self.user_data = None
+        self.patient_array = None
         self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
         self.tableView = self.ui.tableView
         self.master_window = master_window
@@ -68,12 +68,12 @@ class DataWindow(QMainWindow):
         for patient in session.query(Patient).all():
             patientsArr.append(patient.toDict())
 
-        self.user_data = patientsArr
+        self.patient_array = patientsArr
 
         # self.user_data = self.patient_service.get_all_patients()
-        print(f"USER DATA: {self.user_data}")
+        print(f"USER DATA: {self.patient_array}")
         # self.user_data = databaseOperations.get_multiple_data()
-        self.model = CustomPatientModel(self.user_data)
+        self.model = CustomPatientModel(self.patient_array)
         # self.delegate = InLineEditDelegate() # for inline editing
         self.tableView.setModel(self.model)
         # self.tableView.setItemDelegate(self.delegate)
@@ -88,7 +88,7 @@ class DataWindow(QMainWindow):
         # self.tableView.hideColumn(0)
 
         # Collect all patient_ids in a list to make auto-complete suggestions
-        self.patient_suggestions = [entry['patient_id'] for entry in self.user_data]
+        self.patient_suggestions = [entry['patient_id'] for entry in self.patient_array]
 
         # Set up QCompleter with autocomplete suggestions
         completer = QCompleter(self.patient_suggestions, self)

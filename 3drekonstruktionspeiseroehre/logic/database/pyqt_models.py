@@ -13,8 +13,8 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
 
     def __init__(self, data):
         QtCore.QAbstractTableModel.__init__(self)
-        self.user_data = data
-        self.columns = list(self.user_data[0].keys()) if self.user_data != [] else []
+        self.patient_data = data
+        self.columns = list(self.patient_data[0].keys()) if self.patient_data != [] else []
         self.db = database.get_db()
         self.patient_service = PatientService(self.db)
 
@@ -37,7 +37,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         :param kwargs:
         :return:
         """
-        return len(self.user_data)
+        return len(self.patient_data)
 
     def columnCount(self, *args, **kwargs):
         """
@@ -66,7 +66,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         :param role:
         :return:
         """
-        row = self.user_data[index.row()]
+        row = self.patient_data[index.row()]
         column = self.columns[index.column()]
         # column_idx = self.colum_dict[column]
 
@@ -93,7 +93,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         :return:
         """
         if index.isValid():
-            selected_row = self.user_data[index.row()]
+            selected_row = self.patient_data[index.row()]
             selected_column = self.columns[index.column()]
             selected_row[selected_column] = value
             self.dataChanged.emit(index, index, (Qt.ItemDataRole.DisplayRole,))
@@ -103,12 +103,12 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         return False
 
     def insertRows(self):
-        row_count = len(self.user_data)
+        row_count = len(self.patient_data)
         self.beginInsertRows(QtCore.QModelIndex(), row_count, row_count)
         empty_data = {key: None for key in self.columns if not key == 'patient_id'}
         document_id = self.patient_service.create_patient(empty_data)
         new_data = self.patient_service.get_patient(document_id)
-        self.user_data.append(new_data)
+        self.patient_data.append(new_data)
         row_count += 1
         self.endInsertRows()
         return True
@@ -118,9 +118,9 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         row_count -= 1
         self.beginRemoveRows(QtCore.QModelIndex(), row_count, row_count)
         row_id = position.row()
-        document_id = self.user_data[row_id]['patient_id']
+        document_id = self.patient_data[row_id]['patient_id']
         self.patient_service.delete_patient(document_id)
-        self.user_data.pop(row_id)
+        self.patient_data.pop(row_id)
         self.endRemoveRows()
         return True
 
