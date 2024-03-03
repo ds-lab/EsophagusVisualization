@@ -35,6 +35,7 @@ class DataWindow(QMainWindow):
 
     def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
         super(DataWindow, self).__init__()
+        self.selected_patient = None
         self.patient_model = None
         self.patient_array = None
         self.previous_therapies_model = None
@@ -252,6 +253,7 @@ class DataWindow(QMainWindow):
 
             # Show the data of the selected patient in the drop-down/selection menu
             self.ui.patient_id_field.setText(str(self.patient_tableView.model().index(selected_row, 0).data()))
+            self.selected_patient = str(self.patient_tableView.model().index(selected_row, 0).data())
             self.__patient_id_filled()
 
             # Show all therapies of the selected patient
@@ -294,11 +296,12 @@ class DataWindow(QMainWindow):
                 and (1900 < self.ui.therapy_calendar.date().toPyDate().year <= datetime.now().year or
                      self.ui.therapy_year_unknown_checkbox == 1)
         ):
+            print(self.selected_patient)
             therapy_dict = {
-                'patient_id': self.ui.gender_dropdown.currentText(),
+                'patient_id': self.selected_patient,
                 'therapy': self.ui.therapy_dropdown.currentText(),
                 'times': 1, #ToDo: Model für previous_therapies ändern
-                'last_date': self.ui.therapy_calendar.date().toPyDate().year} #ToDo: Model für previous_therapies ändern
+                'last_date': self.ui.therapy_calendar.date().toPyDate()} #ToDo: Model für previous_therapies ändern
             self.previous_therapies_service.create_previous_therapy(therapy_dict)
             self.init_ui()
         else:
