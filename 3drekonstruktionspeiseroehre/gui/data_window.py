@@ -75,11 +75,8 @@ class DataWindow(QMainWindow):
 
         # self.user_data = self.patient_service.get_all_patients()
         print(f"USER DATA: {self.patient_array}")
-        # self.user_data = databaseOperations.get_multiple_data()
         self.patient_model = CustomPatientModel(self.patient_array)
-        # self.delegate = InLineEditDelegate() # for inline editing
         self.patient_tableView.setModel(self.patient_model)
-        # self.tableView.setItemDelegate(self.delegate)
         self.patient_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.patient_tableView.customContextMenuRequested.connect(self.context_menu)
         self.patient_tableView.verticalHeader().setDefaultSectionSize(30)
@@ -248,14 +245,14 @@ class DataWindow(QMainWindow):
             self.__patient_id_filled()
 
             # Show all therapies of the selected patient
-            # Session = sessionmaker(bind=database.engine_local.connect())
-            # session = Session()
-            #
-            # therapyArr = []
-            # for therapy in session.query(PreviousTherapy).all():
-            #     therapyArr.append(therapy.toDict())
-            #
-            # self.therapy_array = therapyArr
+            Session = sessionmaker(bind=database.engine_local.connect())
+            session = Session()
+
+            therapyArr = []
+            for therapy in session.query(PreviousTherapy).all():
+                therapyArr.append(therapy.toDict())
+
+            self.therapy_array = therapyArr
 
 
 
