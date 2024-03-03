@@ -206,6 +206,8 @@ class DataWindow(QMainWindow):
     def __patient_delete_button_clicked(self):
         self.patient_service.delete_patient(self.ui.patient_id_field.text())
         self.init_ui()
+        self.selected_patient = None
+        self.ui.selected_patient_text.setText("")
 
     def __patient_id_filled(self):
         patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
@@ -305,7 +307,7 @@ class DataWindow(QMainWindow):
 
             labels = self.previous_therapies_model.columns
 
-            self.previous_therapy_id = str(self.therapy_tableView.model().index(selected_row, 0).data())
+            self.selected_previous_therapy = str(self.therapy_tableView.model().index(selected_row, 0).data())
 
             # Show the data of the selected patient in QTextEdit
             output = ""
@@ -338,5 +340,7 @@ class DataWindow(QMainWindow):
                                                            "valid.")
 
     def __therapy_delete_button_clicked(self):
-        self.previous_therapies_service.delete_previous_therapy(self.previous_therapy_id)
+        self.previous_therapies_service.delete_previous_therapy(self.selected_previous_therapy_id)
         self.init_previous_therapies()
+        self.selected_previous_therapy = None
+        self.ui.selected_therapy_text.setText("")
