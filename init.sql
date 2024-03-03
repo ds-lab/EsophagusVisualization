@@ -31,8 +31,8 @@ CREATE TABLE previous_therapies (
     previous_therapy_id SERIAL PRIMARY KEY,
     patient_id VARCHAR(30) REFERENCES patients(patient_id) ON DELETE CASCADE NOT NULL,
     therapy VARCHAR NOT NULL,
-    times INT,
-    last_date DATE
+    year INT,
+    year_not_known BOOLEAN
 );
 
 CREATE TABLE metrics (

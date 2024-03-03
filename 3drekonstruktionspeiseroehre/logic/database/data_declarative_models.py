@@ -58,8 +58,8 @@ class PreviousTherapy(Base):
     patient_id = mapped_column(ForeignKey(
         "patients.patient_id", ondelete="CASCADE"), nullable=False)
     therapy = mapped_column(String, nullable=False)
-    times = mapped_column(Integer, nullable=True)
-    last_date = mapped_column(Date, nullable=True)
+    year = mapped_column(Integer, nullable=True)
+    year_not_known = mapped_column(Boolean, nullable=True)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
