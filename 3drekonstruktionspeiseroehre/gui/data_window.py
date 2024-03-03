@@ -22,6 +22,7 @@ from gui.xray_window_managment import ManageXrayWindows
 from gui.previous_therapies_window import PreviousTherapiesWindow
 from logic.database import database
 from logic.database.data_declarative_models import Patient
+from logic.database.data_declarative_models import PreviousTherapy
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 
@@ -32,10 +33,10 @@ class DataWindow(QMainWindow):
 
     def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
         super(DataWindow, self).__init__()
-        self.model = None
+        self.patient_model = None
         self.patient_array = None
         self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
-        self.tableView = self.ui.tableView
+        self.patient_tableView = self.ui.patient_tableView
         self.master_window = master_window
         self.db = database.get_db()
         self.patient_service = PatientService(self.db)
@@ -75,18 +76,18 @@ class DataWindow(QMainWindow):
         # self.user_data = self.patient_service.get_all_patients()
         print(f"USER DATA: {self.patient_array}")
         # self.user_data = databaseOperations.get_multiple_data()
-        self.model = CustomPatientModel(self.patient_array)
+        self.patient_model = CustomPatientModel(self.patient_array)
         # self.delegate = InLineEditDelegate() # for inline editing
-        self.tableView.setModel(self.model)
+        self.patient_tableView.setModel(self.patient_model)
         # self.tableView.setItemDelegate(self.delegate)
-        self.tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.tableView.customContextMenuRequested.connect(self.context_menu)
-        self.tableView.verticalHeader().setDefaultSectionSize(30)
-        self.tableView.setColumnWidth(0, 50)
-        self.tableView.resizeColumnsToContents()
-        self.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
-        self.tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.tableView.clicked.connect(self.__show_selected_row_data)
+        self.patient_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.patient_tableView.customContextMenuRequested.connect(self.context_menu)
+        self.patient_tableView.verticalHeader().setDefaultSectionSize(30)
+        self.patient_tableView.setColumnWidth(0, 50)
+        self.patient_tableView.resizeColumnsToContents()
+        self.patient_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.patient_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.patient_tableView.clicked.connect(self.__show_selected_row_data)
         # self.tableView.hideColumn(0)
 
         # Collect all patient_ids in a list to make auto-complete suggestions
@@ -101,10 +102,10 @@ class DataWindow(QMainWindow):
 
     def context_menu(self):
         menu = QtWidgets.QMenu()
-        if self.tableView.selectedIndexes():
+        if self.patient_tableView.selectedIndexes():
             remove_data = menu.addAction("Remove Data")
             remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
-            remove_data.triggered.connect(lambda: self.model.removeRows(self.tableView.currentIndex()))
+            remove_data.triggered.connect(lambda: self.model.removeRows(self.patient_tableView.currentIndex()))
         cursor = QtGui.QCursor()
         menu.exec(cursor.pos())
 
@@ -224,26 +225,37 @@ class DataWindow(QMainWindow):
                 self.ui.ethnicity_dropdown.setCurrentIndex(6)
 
     def __show_selected_row_data(self):
-        selected_indexes = self.tableView.selectedIndexes()  # Get the indexes of all selected cells
+        selected_indexes = self.patient_tableView.selectedIndexes()  # Get the indexes of all selected cells
         if selected_indexes:
             selected_row = selected_indexes[0].row()  # Get the row number of the first selected index
 
             # Access data for all columns in the selected row
             data = []
-            for column in range(self.tableView.model().columnCount()):
-                index = self.tableView.model().index(selected_row, column)
+            for column in range(self.patient_tableView.model().columnCount()):
+                index = self.patient_tableView.model().index(selected_row, column)
                 data.append(str(index.data()))
 
-            labels = self.model.columns
+            labels = self.patient_model.columns
 
-            # Show the data in QTextEdit
+            # Show the data of the selected patient in QTextEdit
             output = ""
             for key, value in zip(labels, data):
                 output += f"{key}: {value}\n"
-
             self.ui.selected_patient_text.setText(output)
 
-            self.ui.patient_id_field.setText(str(self.tableView.model().index(selected_row, 0).data()))
+            # Show the data of the selected patient in the drop-down/selection menu
+            self.ui.patient_id_field.setText(str(self.patient_tableView.model().index(selected_row, 0).data()))
             self.__patient_id_filled()
+
+            # Show all therapies of the selected patient
+            # Session = sessionmaker(bind=database.engine_local.connect())
+            # session = Session()
+            #
+            # therapyArr = []
+            # for therapy in session.query(PreviousTherapy).all():
+            #     therapyArr.append(therapy.toDict())
+            #
+            # self.therapy_array = therapyArr
+
 
 
