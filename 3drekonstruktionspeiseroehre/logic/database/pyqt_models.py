@@ -143,14 +143,4 @@ class ProfilePictureDelegate(QtWidgets.QStyledItemDelegate):
         model.setData(index, image)
 
 
-class InLineEditDelegate(QtWidgets.QItemDelegate):
-    """
-    Delegate is important for inline editing of cells
-    """
 
-    def createEditor(self, parent, option, index):
-        return super(InLineEditDelegate, self).createEditor(parent, option, index)
-
-    def setEditorData(self, editor, index):
-        text = index.data(Qt.ItemDataRole.EditRole) or index.data(Qt.ItemDataRole.DisplayRole)
-        editor.setText(str(text))
