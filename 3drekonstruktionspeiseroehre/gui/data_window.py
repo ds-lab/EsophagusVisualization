@@ -18,6 +18,7 @@ from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.database.pyqt_models import CustomPatientModel
 
+
 class DataWindow(QMainWindow):
 
     def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
@@ -120,15 +121,15 @@ class DataWindow(QMainWindow):
 
             pat_dict = None
 
-            if self.patient_exists() and self.to_update_patient():
-
-                pat_dict = {'gender': self.ui.gender_dropdown.currentText(),
-                            'ethnicity': self.ui.ethnicity_dropdown.currentText(),
-                            'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
-                            'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                            'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
-                self.patient_service.update_patient(
-                    self.ui.patient_id_field.text(), pat_dict)
+            if self.patient_exists():
+                if self.to_update_patient():
+                    pat_dict = {'gender': self.ui.gender_dropdown.currentText(),
+                                'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+                                'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+                                'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                    self.patient_service.update_patient(
+                        self.ui.patient_id_field.text(), pat_dict)
             else:
                 pat_dict = {
                     'patient_id': self.ui.patient_id_field.text(),
@@ -149,24 +150,23 @@ class DataWindow(QMainWindow):
 
             pat_dict = None
 
-            if not self.patient_exists() and self.to_create_patient():
-
-                pat_dict = {'patient_id': self.ui.patient_id_field.text(),
-                            'gender': self.ui.gender_dropdown.currentText(),
-                            'ethnicity': self.ui.ethnicity_dropdown.currentText(),
-                            'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
-                            'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                            'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
-                self.patient_service.create_patient(pat_dict)
+            if not self.patient_exists():
+                if self.to_create_patient():
+                    pat_dict = {'patient_id': self.ui.patient_id_field.text(),
+                                'gender': self.ui.gender_dropdown.currentText(),
+                                'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+                                'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+                                'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                    self.patient_service.create_patient(pat_dict)
             else:
-
                 pat_dict = {
                     'gender': self.ui.gender_dropdown.currentText(),
                     'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                     'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                     'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                     'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
-
+                
                 self.patient_service.update_patient(
                     self.ui.patient_id_field.text(), pat_dict)
 
@@ -269,14 +269,12 @@ class DataWindow(QMainWindow):
                                      QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
             return True
-        else:
-            return False
+        return False
 
     def to_create_patient(self):
         reply = QMessageBox.question(self, 'This Patient not yet exists in the database.',
                                      "Should the patient be created?", QMessageBox.StandardButton.Yes |
                                      QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-        if (reply == QMessageBox.StandardButton.Yes):
+        if reply == QMessageBox.StandardButton.Yes:
             return True
-        else:
-            return False
+        return False
