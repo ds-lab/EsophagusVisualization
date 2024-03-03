@@ -251,23 +251,27 @@ class DataWindow(QMainWindow):
                 output += f"{key}: {value}\n"
             self.ui.selected_patient_text.setText(output)
 
+            self.selected_patient = str(self.patient_tableView.model().index(selected_row, 0).data())
+
             # Show the data of the selected patient in the drop-down/selection menu
-            self.ui.patient_id_field.setText(str(self.patient_tableView.model().index(selected_row, 0).data()))
+            self.ui.patient_id_field.setText(self.selected_patient)
             self.selected_patient = str(self.patient_tableView.model().index(selected_row, 0).data())
             self.__patient_id_filled()
 
             # Show all therapies of the selected patient
-            Session = sessionmaker(bind=database.engine_local.connect())
-            session = Session()
-
-            therapyArr = []
-            for therapy in session.query(PreviousTherapy).filter(PreviousTherapy.patient_id == str(self.patient_tableView.model().index(selected_row, 0).data())).all():
-                therapyArr.append(therapy.toDict())
-
-            self.previous_therapies_array = therapyArr
             self.init_previous_therapies()
 
     def init_previous_therapies(self):
+        Session = sessionmaker(bind=database.engine_local.connect())
+        session = Session()
+
+        therapyArr = []
+        for therapy in session.query(PreviousTherapy).filter(
+                PreviousTherapy.patient_id == self.selected_patient).all():
+            therapyArr.append(therapy.toDict())
+
+        self.previous_therapies_array = therapyArr
+        print(f"THERAPY DATA: {self.previous_therapies_array}")
         self.previous_therapies_model = CustomPreviousTherapyModel(self.previous_therapies_array)
         self.therapy_tableView.setModel(self.previous_therapies_model)
         self.therapy_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -290,7 +294,23 @@ class DataWindow(QMainWindow):
         menu.exec(cursor.pos())
 
     def __show_selected_therapy_data(self):
-        pass
+        selected_indexes = self.therapy_tableView.selectedIndexes()  # Get the indexes of all selected cells
+        if selected_indexes:
+            selected_row = selected_indexes[0].row()  # Get the row number of the first selected index
+
+            # Access data for all columns in the selected row
+            data = []
+            for column in range(self.therapy_tableView.model().columnCount()):
+                index = self.therapy_tableView.model().index(selected_row, column)
+                data.append(str(index.data()))
+
+            labels = self.previous_therapies_model.columns
+
+            # Show the data of the selected patient in QTextEdit
+            output = ""
+            for key, value in zip(labels, data):
+                output += f"{key}: {value}\n"
+            self.ui.selected_therapy_text.setText(output)
 
     def __therapy_add_button_clicked(self):
         if (
@@ -312,4 +332,4 @@ class DataWindow(QMainWindow):
 
     def __therapy_delete_button_clicked(self):
         self.previous_therapies_service.delete_previous_therapy(self.ui.patient_id_field.text())
-        self.init_ui()
+        self.init_previous_therapies()
