@@ -25,8 +25,10 @@ from logic.database.data_declarative_models import Patient
 from logic.database.data_declarative_models import PreviousTherapy
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
+from logic.services.previous_therapy_service import PreviousTherapyService
 
 from logic.database.pyqt_models import CustomPatientModel
+from logic.database.pyqt_models import CustomPreviousTherapyModel
 
 
 class DataWindow(QMainWindow):
@@ -35,10 +37,14 @@ class DataWindow(QMainWindow):
         super(DataWindow, self).__init__()
         self.patient_model = None
         self.patient_array = None
+        self.previous_therapies_model = None
+        self.previous_therapies_array = None
         self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
         self.patient_tableView = self.ui.patient_tableView
+        self.therapy_tableView = self.ui.therapy_tableView
         self.master_window = master_window
         self.db = database.get_db()
+        self.previous_therapies_service = PreviousTherapyService(self.db)
         self.patient_service = PatientService(self.db)
         self.visit_service = VisitService(self.db)
 
@@ -56,12 +62,22 @@ class DataWindow(QMainWindow):
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
         self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
         self.ui.patient_delete_button.clicked.connect(self.__patient_delete_button_clicked)
+        self.ui.therapy_add_button.clicked.connect(self.__therapy_add_button_clicked)
+        self.ui.therapy_delete_button.clicked.connect(self.__therapy_delete_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
 
         self.init_ui()
+
+    def __menu_button_clicked(self):
+        """
+        Info button callback. Shows information about file selection.
+        """
+        info_window = InfoWindow()
+        info_window.show_file_selection_info()
+        info_window.show()
 
     def init_ui(self):
         Session = sessionmaker(bind=database.engine_local.connect())
@@ -78,13 +94,13 @@ class DataWindow(QMainWindow):
         self.patient_model = CustomPatientModel(self.patient_array)
         self.patient_tableView.setModel(self.patient_model)
         self.patient_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.patient_tableView.customContextMenuRequested.connect(self.context_menu)
+        self.patient_tableView.customContextMenuRequested.connect(self.__context_menu_patient)
         self.patient_tableView.verticalHeader().setDefaultSectionSize(30)
         self.patient_tableView.setColumnWidth(0, 50)
         self.patient_tableView.resizeColumnsToContents()
         self.patient_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.patient_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.patient_tableView.clicked.connect(self.__show_selected_row_data)
+        self.patient_tableView.clicked.connect(self.__show_selected_patient_data)
         # self.tableView.hideColumn(0)
 
         # Collect all patient_ids in a list to make auto-complete suggestions
@@ -97,22 +113,14 @@ class DataWindow(QMainWindow):
 
         self.ui.patient_id_field.editingFinished.connect(self.__patient_id_filled)
 
-    def context_menu(self):
+    def __context_menu_patient(self):
         menu = QtWidgets.QMenu()
         if self.patient_tableView.selectedIndexes():
             remove_data = menu.addAction("Remove Data")
             remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
-            remove_data.triggered.connect(lambda: self.model.removeRows(self.patient_tableView.currentIndex()))
+            remove_data.triggered.connect(lambda: self.patient_model.removeRows(self.patient_tableView.currentIndex()))
         cursor = QtGui.QCursor()
         menu.exec(cursor.pos())
-
-    def __menu_button_clicked(self):
-        """
-        Info button callback. Shows information about file selection.
-        """
-        info_window = InfoWindow()
-        info_window.show_file_selection_info()
-        info_window.show()
 
     def __patient_add_button_clicked(self):
         """
@@ -151,7 +159,8 @@ class DataWindow(QMainWindow):
                 self.patient_service.create_patient(pat_dict)
             self.init_ui()
         else:
-            QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
+            QMessageBox.warning(self, "Insufficient Data",
+                                "Please fill out all patient data and make sure they are valid.")
 
     def __patient_update_button_clicked(self):
         """
@@ -190,7 +199,8 @@ class DataWindow(QMainWindow):
                 self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
             self.init_ui()
         else:
-            QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
+            QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are "
+                                                           "valid.")
 
     def __patient_delete_button_clicked(self):
         self.patient_service.delete_patient(self.ui.patient_id_field.text())
@@ -221,7 +231,7 @@ class DataWindow(QMainWindow):
             else:
                 self.ui.ethnicity_dropdown.setCurrentIndex(6)
 
-    def __show_selected_row_data(self):
+    def __show_selected_patient_data(self):
         selected_indexes = self.patient_tableView.selectedIndexes()  # Get the indexes of all selected cells
         if selected_indexes:
             selected_row = selected_indexes[0].row()  # Get the row number of the first selected index
@@ -252,7 +262,49 @@ class DataWindow(QMainWindow):
             for therapy in session.query(PreviousTherapy).all():
                 therapyArr.append(therapy.toDict())
 
-            self.therapy_array = therapyArr
+            self.previous_therapies_array = therapyArr
 
+            self.previous_therapies_model = CustomPreviousTherapyModel(self.previous_therapies_array)
+            self.therapy_tableView.setModel(self.previous_therapies_model)
+            self.therapy_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+            self.therapy_tableView.customContextMenuRequested.connect(self.__context_menu_therapies)
+            self.therapy_tableView.verticalHeader().setDefaultSectionSize(30)
+            self.therapy_tableView.setColumnWidth(0, 50)
+            self.therapy_tableView.resizeColumnsToContents()
+            self.therapy_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+            self.therapy_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+            self.therapy_tableView.clicked.connect(self.__show_selected_therapy_data)
 
+    def __context_menu_therapies(self):
+        menu = QtWidgets.QMenu()
+        if self.patient_tableView.selectedIndexes():
+            remove_data = menu.addAction("Remove Data")
+            remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
+            remove_data.triggered.connect(
+                lambda: self.previous_therapies_model.removeRows(self.therapy_tableView.currentIndex()))
+        cursor = QtGui.QCursor()
+        menu.exec(cursor.pos())
 
+    def __show_selected_therapy_data(self):
+        pass
+
+    def __therapy_add_button_clicked(self):
+        if (
+                self.ui.therapy_dropdown.currentText() != "---"
+                and (1900 < self.ui.therapy_calendar.date().toPyDate().year <= datetime.now().year or
+                     self.ui.therapy_year_unknown_checkbox == 1)
+        ):
+            therapy_dict = {
+                'patient_id': self.ui.gender_dropdown.currentText(),
+                'therapy': self.ui.therapy_dropdown.currentText(),
+                'times': 1, #ToDo: Model für previous_therapies ändern
+                'last_date': self.ui.therapy_calendar.date().toPyDate().year} #ToDo: Model für previous_therapies ändern
+            self.previous_therapies_service.create_previous_therapy(therapy_dict)
+            self.init_ui()
+        else:
+            QMessageBox.warning(self, "Insufficient Data", "Please fill out all therapy data and make sure they are "
+                                                           "valid.")
+
+    def __therapy_delete_button_clicked(self):
+        self.previous_therapies_service.delete_previous_therapy(self.ui.patient_id_field.text())
+        self.init_ui()

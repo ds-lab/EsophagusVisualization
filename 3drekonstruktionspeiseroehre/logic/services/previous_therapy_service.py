@@ -1,9 +1,9 @@
 from sqlalchemy import select, delete, update, insert
 from sqlalchemy.orm import Session
-from logic.data_declarative_models import PreviousTherapy
+from logic.database.data_declarative_models import PreviousTherapy
 
 
-class previousTherapyService:
+class PreviousTherapyService:
 
     def __init__(self, db_session: Session):
         self.db = db_session
