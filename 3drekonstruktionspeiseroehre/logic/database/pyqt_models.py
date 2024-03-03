@@ -94,13 +94,10 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         """
         if index.isValid():
             selected_row = self.user_data[index.row()]
-            #selected_row = list(selected_row)
             selected_column = self.columns[index.column()]
-            # column_idx = self.colum_dict[selected_column]
             selected_row[selected_column] = value
             self.dataChanged.emit(index, index, (Qt.ItemDataRole.DisplayRole,))
             ok = self.patient_service.update_patient(selected_row['patient_id'], selected_row)
-            # ok = databaseOperations.update_existing(selected_row['_id'], selected_row)
             if ok:
                 return True
         return False
@@ -110,9 +107,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         self.beginInsertRows(QtCore.QModelIndex(), row_count, row_count)
         empty_data = {key: None for key in self.columns if not key == 'patient_id'}
         document_id = self.patient_service.create_patient(empty_data)
-        # document_id = databaseOperations.insert_data(empty_data)
         new_data = self.patient_service.get_patient(document_id)
-        # new_data = databaseOperations.get_single_data(document_id)
         self.user_data.append(new_data)
         row_count += 1
         self.endInsertRows()
@@ -125,7 +120,6 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         row_id = position.row()
         document_id = self.user_data[row_id]['patient_id']
         self.patient_service.delete_patient(document_id)
-        # databaseOperations.remove_data(document_id)
         self.user_data.pop(row_id)
         self.endRemoveRows()
         return True
