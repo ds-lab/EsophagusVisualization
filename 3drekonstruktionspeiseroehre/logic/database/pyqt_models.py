@@ -14,11 +14,9 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
     def __init__(self, data):
         QtCore.QAbstractTableModel.__init__(self)
         self.user_data = data
-        self.columns = list(self.user_data[0].keys())
-        # self.columns = ["patient_id", "ancestry", "birth_year", "previous_therapies"]
+        self.columns = list(self.user_data[0].keys()) if self.user_data != [] else []
         self.db = database.get_db()
         self.patient_service = PatientService(self.db)
-        # self.colum_dict = {'patient_id': 0, 'ancestry': 1, 'birth_year': 2, 'previous_therapies': 3}
 
     def flags(self, index):
         """
@@ -28,10 +26,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         :return:
         """
         if index.column() > 0:
-            #return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable
             return Qt.ItemFlag.ItemIsEnabled
-        #elif index.column() == 1:
-        #    return Qt.ItemFlag.DecorationRole
         else:
             return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 

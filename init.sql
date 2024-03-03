@@ -7,8 +7,6 @@ CREATE TABLE patients (
     year_first_symptoms INT
 );
 
-INSERT into patients values('Testpatient', 'male', 'Native Hawaiian or Other Pacific Islander', 2000, 2020, 2015);
-
 CREATE TABLE visits (
     visit_id SERIAL PRIMARY KEY,
     patient_id VARCHAR(30) REFERENCES patients(patient_id) NOT NULL,
