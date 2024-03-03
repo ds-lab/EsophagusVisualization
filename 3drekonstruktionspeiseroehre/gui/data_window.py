@@ -41,6 +41,7 @@ class DataWindow(QMainWindow):
         self.patient_service = PatientService(self.db)
         self.visit_service = VisitService(self.db)
 
+        # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
         self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
@@ -53,6 +54,7 @@ class DataWindow(QMainWindow):
         # Connect Buttons to Functions
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
         self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
+        self.ui.patient_delete_button.clicked.connect(self.__patient_delete_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -129,7 +131,7 @@ class DataWindow(QMainWindow):
                 and self.ui.ethnicity_dropdown.currentText() != "---"
                 and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
                 and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
-                and 1990 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
+                and 1900 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
         ):
             patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
             if patient:
@@ -194,6 +196,10 @@ class DataWindow(QMainWindow):
             self.init_ui()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
+
+    def __patient_delete_button_clicked(self):
+        self.patient_service.delete_patient(self.ui.patient_id_field.text())
+        self.init_ui()
 
     def __patient_id_filled(self):
         patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
