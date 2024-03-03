@@ -319,11 +319,14 @@ class DataWindow(QMainWindow):
                      self.ui.therapy_year_unknown_checkbox == 1)
         ):
             print(self.selected_patient)
+
+
+
+
             therapy_dict = {
                 'patient_id': self.selected_patient,
                 'therapy': self.ui.therapy_dropdown.currentText(),
-                'times': 1,  # ToDo: Model für previous_therapies ändern
-                'last_date': self.ui.therapy_calendar.date().toPyDate()}  # ToDo: Model für previous_therapies ändern
+                'year': self.ui.therapy_calendar.date().toPyDate().year}
             self.previous_therapies_service.create_previous_therapy(therapy_dict)
             self.init_previous_therapies()
         else:
