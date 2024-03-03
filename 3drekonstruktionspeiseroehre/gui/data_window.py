@@ -53,9 +53,12 @@ class DataWindow(QMainWindow):
         self.endoflip_screenshot = None
 
         # Connect Buttons to Functions
-        self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
-        self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
-        self.ui.patient_delete_button.clicked.connect(self.__patient_delete_button_clicked)
+        self.ui.patient_add_button.clicked.connect(
+            self.__patient_add_button_clicked)
+        self.ui.patient_update_button.clicked.connect(
+            self.__patient_update_button_clicked)
+        self.ui.patient_delete_button.clicked.connect(
+            self.__patient_delete_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -77,32 +80,40 @@ class DataWindow(QMainWindow):
         print(f"USER DATA: {self.patient_array}")
         self.patient_model = CustomPatientModel(self.patient_array)
         self.patient_tableView.setModel(self.patient_model)
-        self.patient_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.patient_tableView.customContextMenuRequested.connect(self.context_menu)
+        self.patient_tableView.setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.patient_tableView.customContextMenuRequested.connect(
+            self.context_menu)
         self.patient_tableView.verticalHeader().setDefaultSectionSize(30)
         self.patient_tableView.setColumnWidth(0, 50)
         self.patient_tableView.resizeColumnsToContents()
-        self.patient_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
-        self.patient_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.patient_tableView.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.patient_tableView.setSelectionMode(
+            QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.patient_tableView.clicked.connect(self.__show_selected_row_data)
         # self.tableView.hideColumn(0)
 
         # Collect all patient_ids in a list to make auto-complete suggestions
-        self.patient_suggestions = [entry['patient_id'] for entry in self.patient_array]
+        self.patient_suggestions = [entry['patient_id']
+                                    for entry in self.patient_array]
 
         # Set up QCompleter with autocomplete suggestions
         completer = QCompleter(self.patient_suggestions, self)
-        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)  # Case-insensitive autocomplete
+        # Case-insensitive autocomplete
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.ui.patient_id_field.setCompleter(completer)
 
-        self.ui.patient_id_field.editingFinished.connect(self.__patient_id_filled)
+        self.ui.patient_id_field.editingFinished.connect(
+            self.__patient_id_filled)
 
     def context_menu(self):
         menu = QtWidgets.QMenu()
         if self.patient_tableView.selectedIndexes():
             remove_data = menu.addAction("Remove Data")
             remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
-            remove_data.triggered.connect(lambda: self.model.removeRows(self.patient_tableView.currentIndex()))
+            remove_data.triggered.connect(lambda: self.model.removeRows(
+                self.patient_tableView.currentIndex()))
         cursor = QtGui.QCursor()
         menu.exec(cursor.pos())
 
@@ -119,17 +130,9 @@ class DataWindow(QMainWindow):
         checks if all patient data are filled out
         adds patient data to database
         """
-
-        if (
-                len(self.ui.patient_id_field.text()) > 0
-                and self.ui.gender_dropdown.currentText() != "---"
-                and self.ui.ethnicity_dropdown.currentText() != "---"
-                and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
-                and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
-                and 1900 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
-        ):
-            patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
-            if patient:
+        if self.validate_patient():
+            pat_dict = None
+            if self.patient_exists():
                 reply = QMessageBox.question(self, 'This Patient already exists in the database.',
                                              "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
                                              QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
@@ -139,7 +142,8 @@ class DataWindow(QMainWindow):
                                 'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                                 'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                                 'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
-                    self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
+                    self.patient_service.update_patient(
+                        self.ui.patient_id_field.text(), pat_dict)
             else:
                 pat_dict = {
                     'patient_id': self.ui.patient_id_field.text(),
@@ -151,24 +155,17 @@ class DataWindow(QMainWindow):
                 self.patient_service.create_patient(pat_dict)
             self.init_ui()
         else:
-            QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
+            QMessageBox.warning(
+                self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
 
     def __patient_update_button_clicked(self):
         """
         checks if all patient data are filled out
         updates patient data in database
         """
-
-        if (
-                len(self.ui.patient_id_field.text()) > 0
-                and self.ui.gender_dropdown.currentText() != "---"
-                and self.ui.ethnicity_dropdown.currentText() != "---"
-                and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
-                and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
-                and 1900 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
-        ):
-            patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
-            if not patient:
+        if self.validate_patient():
+            pat_dict = None
+            if not self.patient_exists():
                 reply = QMessageBox.question(self, 'This Patient not yet exists in the database.',
                                              "Should the patient be created?", QMessageBox.StandardButton.Yes |
                                              QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
@@ -187,21 +184,26 @@ class DataWindow(QMainWindow):
                     'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                     'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                     'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
-                self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
+                self.patient_service.update_patient(
+                    self.ui.patient_id_field.text(), pat_dict)
             self.init_ui()
         else:
-            QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
+            QMessageBox.warning(
+                self, "Insufficient Data", "Please fill out all patient data and make sure they are valid.")
 
     def __patient_delete_button_clicked(self):
         self.patient_service.delete_patient(self.ui.patient_id_field.text())
         self.init_ui()
 
     def __patient_id_filled(self):
-        patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
+        patient = self.patient_service.get_patient(
+            self.ui.patient_id_field.text())
         if patient:
             self.ui.birthyear_calendar.setDate(QDate(patient.birth_year, 1, 1))
-            self.ui.firstdiagnosis_calendar.setDate(QDate(patient.year_first_diagnosis, 1, 1))
-            self.ui.firstsymptoms_calendar.setDate(QDate(patient.year_first_symptoms, 1, 1))
+            self.ui.firstdiagnosis_calendar.setDate(
+                QDate(patient.year_first_diagnosis, 1, 1))
+            self.ui.firstsymptoms_calendar.setDate(
+                QDate(patient.year_first_symptoms, 1, 1))
             if patient.gender == "male":
                 self.ui.gender_dropdown.setCurrentIndex(1)
             elif patient.gender == "female":
@@ -222,9 +224,11 @@ class DataWindow(QMainWindow):
                 self.ui.ethnicity_dropdown.setCurrentIndex(6)
 
     def __show_selected_row_data(self):
-        selected_indexes = self.patient_tableView.selectedIndexes()  # Get the indexes of all selected cells
+        # Get the indexes of all selected cells
+        selected_indexes = self.patient_tableView.selectedIndexes()
         if selected_indexes:
-            selected_row = selected_indexes[0].row()  # Get the row number of the first selected index
+            # Get the row number of the first selected index
+            selected_row = selected_indexes[0].row()
 
             # Access data for all columns in the selected row
             data = []
@@ -241,7 +245,8 @@ class DataWindow(QMainWindow):
             self.ui.selected_patient_text.setText(output)
 
             # Show the data of the selected patient in the drop-down/selection menu
-            self.ui.patient_id_field.setText(str(self.patient_tableView.model().index(selected_row, 0).data()))
+            self.ui.patient_id_field.setText(
+                str(self.patient_tableView.model().index(selected_row, 0).data()))
             self.__patient_id_filled()
 
             # Show all therapies of the selected patient
@@ -254,5 +259,21 @@ class DataWindow(QMainWindow):
 
             self.therapy_array = therapyArr
 
+    def validate_patient(self):
+        if (
+            len(self.ui.patient_id_field.text()) > 0
+            and self.ui.gender_dropdown.currentText() != "---"
+            and self.ui.ethnicity_dropdown.currentText() != "---"
+            and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
+            and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
+            and 1900 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
+        ):
+            return True
+        return False
 
-
+    def patient_exists(self):
+        patient = self.patient_service.get_patient(
+            self.ui.patient_id_field.text())
+        if patient:
+            return True
+        return False
