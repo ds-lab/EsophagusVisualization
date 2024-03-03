@@ -168,7 +168,7 @@ class DataWindow(QMainWindow):
                 and self.ui.ethnicity_dropdown.currentText() != "---"
                 and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
                 and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
-                and 1990 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
+                and 1900 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
         ):
             patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
             if not patient:
