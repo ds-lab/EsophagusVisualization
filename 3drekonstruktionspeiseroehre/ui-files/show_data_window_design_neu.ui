@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1116</width>
-    <height>697</height>
+    <width>1083</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="patients">
        <attribute name="title">
@@ -882,11 +882,42 @@
        <attribute name="title">
         <string>Visit-Daten</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_8">
-        <item row="0" column="3">
+       <layout class="QGridLayout" name="gridLayout_8" rowstretch="0,1" columnstretch="0,0,0" rowminimumheight="0,0">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBox_14">
+          <property name="title">
+           <string>Ausgewählter Patient</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_26">
+           <item row="0" column="0">
+            <widget class="QTextEdit" name="textEdit_5"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="groupBox_15">
+          <property name="title">
+           <string>Ausgewählter Visit</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_27">
+           <item row="0" column="0">
+            <widget class="QTextEdit" name="textEdit_6">
+             <property name="baseSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>3</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="page">
            <layout class="QGridLayout" name="gridLayout_9">
@@ -982,241 +1013,842 @@
           </widget>
          </widget>
         </item>
-        <item row="0" column="2">
-         <widget class="QGroupBox" name="groupBox_15">
-          <property name="title">
-           <string>Ausgewählter Visit</string>
+        <item row="1" column="0" colspan="3">
+         <widget class="QToolBox" name="toolBox">
+          <property name="currentIndex">
+           <number>4</number>
           </property>
-          <layout class="QGridLayout" name="gridLayout_27">
-           <item row="0" column="0">
-            <widget class="QTextEdit" name="textEdit_6">
-             <property name="baseSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QGroupBox" name="groupBox_14">
-          <property name="title">
-           <string>Ausgewählter Patient</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_26">
-           <item row="0" column="0">
-            <widget class="QTextEdit" name="textEdit_5"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="4">
-         <widget class="QGroupBox" name="groupBox_17">
-          <property name="title">
-           <string>Diagnostik</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_33">
-           <item row="6" column="0" colspan="2">
-            <widget class="QGroupBox" name="groupBox_21">
-             <property name="title">
-              <string>Endosonographie</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="2">
-            <widget class="QGroupBox" name="groupBox_18">
-             <property name="title">
-              <string>Breischluck</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QGroupBox" name="groupBox_16">
-             <property name="title">
-              <string>Manometrie</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_29">
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_23">
+          <widget class="QWidget" name="manometry">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1041</width>
+             <height>351</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Manometrie</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_30">
+            <item row="0" column="0" rowspan="3">
+             <widget class="QGroupBox" name="groupBox_26">
+              <property name="title">
+               <string>Manometrie</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_31">
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_33">
+                 <property name="text">
+                  <string>IPR4:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_34">
+                 <property name="text">
+                  <string>UÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_35">
+                 <property name="text">
+                  <string>Manometrie File:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="QLineEdit" name="lineEdit_4"/>
+               </item>
+               <item row="7" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_11"/>
+               </item>
+               <item row="9" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_12"/>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_36">
+                 <property name="text">
+                  <string>OÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_37">
+                 <property name="text">
+                  <string>DCI:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_13"/>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_13"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_38">
+                 <property name="text">
+                  <string>Patientenlage:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_39">
+                 <property name="text">
+                  <string>DL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_14"/>
+               </item>
+               <item row="4" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_15"/>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_40">
+                 <property name="text">
+                  <string>OÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="comboBox_14"/>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_41">
+                 <property name="text">
+                  <string>Sondentyp:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_42">
+                 <property name="text">
+                  <string>UÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_43">
+                 <property name="text">
+                  <string>Ruhedruck am UÖS:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_16"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_27">
+              <property name="title">
+               <string>gespeicherte Manometrie Daten:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_36">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="textEdit_3"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QPushButton" name="pushButton_7">
                 <property name="text">
-                 <string>IPR4:</string>
+                 <string>Manometrie Daten updaten</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_5"/>
-              </item>
-              <item row="9" column="0">
-               <widget class="QLabel" name="label_29">
+              <item>
+               <widget class="QPushButton" name="manometrie_add_button_2">
                 <property name="text">
-                 <string>UÖS untere Grenze:</string>
+                 <string>Manometrie Daten hinzufügen</string>
                 </property>
                </widget>
               </item>
-              <item row="8" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
-              </item>
-              <item row="10" column="0">
-               <widget class="QLabel" name="label_30">
+              <item>
+               <widget class="QPushButton" name="manometrie_delete_button_2">
                 <property name="text">
-                 <string>Manometrie File:</string>
+                 <string>Manomatrie Daten löschen</string>
                 </property>
                </widget>
-              </item>
-              <item row="10" column="1">
-               <widget class="QLineEdit" name="lineEdit_2"/>
-              </item>
-              <item row="7" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_6"/>
-              </item>
-              <item row="9" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
-              </item>
-              <item row="6" column="0">
-               <widget class="QLabel" name="label_26">
-                <property name="text">
-                 <string>OÖS obere Grenze:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="label_24">
-                <property name="text">
-                 <string>DCI:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="comboBox_10"/>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_9">
-                <property name="text">
-                 <string>Patientenlage:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="label_25">
-                <property name="text">
-                 <string>DL:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
-              </item>
-              <item row="4" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
-              </item>
-              <item row="7" column="0">
-               <widget class="QLabel" name="label_27">
-                <property name="text">
-                 <string>OÖS untere Grenze:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="comboBox_11"/>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_8">
-                <property name="text">
-                 <string>Sondentyp:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0">
-               <widget class="QLabel" name="label_28">
-                <property name="text">
-                 <string>UÖS obere Grenze:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_22">
-                <property name="text">
-                 <string>Ruhedruck am UÖS:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
               </item>
              </layout>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QGroupBox" name="groupBox_22">
-             <property name="title">
-              <string>gespeicherte Manometrie Daten:</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_30">
-              <item row="0" column="0">
-               <widget class="QTextEdit" name="textEdit"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="xray">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1041</width>
+             <height>351</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Breischluck</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_33">
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_29">
+              <property name="title">
+               <string>gespeicherte Breischluck Daten:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_38">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="textEdit_7"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="QPushButton" name="pushButton_8">
+                <property name="text">
+                 <string>Breischluck Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_add_button_3">
+                <property name="text">
+                 <string>Breischluck Daten hinzufügen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_delete_button_3">
+                <property name="text">
+                 <string>Breischluck Daten löschen</string>
+                </property>
+               </widget>
               </item>
              </layout>
-            </widget>
-           </item>
-           <item row="3" column="0" colspan="2">
-            <widget class="QGroupBox" name="groupBox_19">
-             <property name="title">
-              <string>Endoskopie</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0" colspan="2">
-            <widget class="QGroupBox" name="groupBox_20">
-             <property name="title">
-              <string>Endoflip</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <layout class="QVBoxLayout" name="verticalLayout">
-             <item>
-              <widget class="QPushButton" name="pushButton_6">
-               <property name="text">
-                <string>Manometrie Daten updaten</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="manometrie_add_button">
-               <property name="text">
-                <string>Manometrie Daten hinzufügen</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="manometrie_delete_button">
-               <property name="text">
-                <string>Manomatrie Daten löschen</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-          </layout>
+            </item>
+            <item row="0" column="0" rowspan="2">
+             <widget class="QGroupBox" name="groupBox_28">
+              <property name="title">
+               <string>Breischluck</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_37">
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_44">
+                 <property name="text">
+                  <string>IPR4:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_17"/>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_45">
+                 <property name="text">
+                  <string>UÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_18"/>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_46">
+                 <property name="text">
+                  <string>Manometrie File:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="QLineEdit" name="lineEdit_5"/>
+               </item>
+               <item row="7" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_19"/>
+               </item>
+               <item row="9" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_20"/>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_47">
+                 <property name="text">
+                  <string>OÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_48">
+                 <property name="text">
+                  <string>DCI:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_21"/>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_15"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_49">
+                 <property name="text">
+                  <string>Patientenlage:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_50">
+                 <property name="text">
+                  <string>DL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_22"/>
+               </item>
+               <item row="4" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_23"/>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_51">
+                 <property name="text">
+                  <string>OÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="comboBox_16"/>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_52">
+                 <property name="text">
+                  <string>Sondentyp:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_53">
+                 <property name="text">
+                  <string>UÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_54">
+                 <property name="text">
+                  <string>Ruhedruck am UÖS:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_24"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="endoskopy">
+           <attribute name="label">
+            <string>Endoskopie</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_45">
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_31">
+              <property name="title">
+               <string>gespeicherte Manometrie Daten:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_40">
+               <item row="0" column="1">
+                <widget class="QTextEdit" name="textEdit_8"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="QPushButton" name="pushButton_9">
+                <property name="text">
+                 <string>Manometrie Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_add_button_4">
+                <property name="text">
+                 <string>Manometrie Daten hinzufügen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_delete_button_4">
+                <property name="text">
+                 <string>Manomatrie Daten löschen</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0" rowspan="2">
+             <widget class="QGroupBox" name="groupBox_30">
+              <property name="title">
+               <string>Manometrie</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_39">
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_55">
+                 <property name="text">
+                  <string>IPR4:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_25"/>
+               </item>
+               <item row="8" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_26"/>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_56">
+                 <property name="text">
+                  <string>UÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="QLineEdit" name="lineEdit_6"/>
+               </item>
+               <item row="7" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_27"/>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_57">
+                 <property name="text">
+                  <string>Manometrie File:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_28"/>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_29"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_60">
+                 <property name="text">
+                  <string>Patientenlage:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_17"/>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_58">
+                 <property name="text">
+                  <string>OÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_59">
+                 <property name="text">
+                  <string>DCI:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_30"/>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_62">
+                 <property name="text">
+                  <string>OÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="comboBox_18"/>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_61">
+                 <property name="text">
+                  <string>DL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_31"/>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_64">
+                 <property name="text">
+                  <string>UÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_32"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_65">
+                 <property name="text">
+                  <string>Ruhedruck am UÖS:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_63">
+                 <property name="text">
+                  <string>Sondentyp:</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="endoflip">
+           <attribute name="label">
+            <string>Endoflip</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_46">
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_33">
+              <property name="title">
+               <string>gespeicherte Manometrie Daten:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_42">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="textEdit_9"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <widget class="QPushButton" name="pushButton_10">
+                <property name="text">
+                 <string>Manometrie Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_add_button_5">
+                <property name="text">
+                 <string>Manometrie Daten hinzufügen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_delete_button_5">
+                <property name="text">
+                 <string>Manomatrie Daten löschen</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0" rowspan="2">
+             <widget class="QGroupBox" name="groupBox_32">
+              <property name="title">
+               <string>Manometrie</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_41">
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_73">
+                 <property name="text">
+                  <string>OÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_74">
+                 <property name="text">
+                  <string>Sondentyp:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_39"/>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_75">
+                 <property name="text">
+                  <string>UÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_40"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_76">
+                 <property name="text">
+                  <string>Ruhedruck am UÖS:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="QLineEdit" name="lineEdit_7"/>
+               </item>
+               <item row="7" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_35"/>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_69">
+                 <property name="text">
+                  <string>OÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_36"/>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_37"/>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_70">
+                 <property name="text">
+                  <string>DCI:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_19"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_71">
+                 <property name="text">
+                  <string>Patientenlage:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_72">
+                 <property name="text">
+                  <string>DL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_38"/>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_66">
+                 <property name="text">
+                  <string>IPR4:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_33"/>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_67">
+                 <property name="text">
+                  <string>UÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_34"/>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_68">
+                 <property name="text">
+                  <string>Manometrie File:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="comboBox_20"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="ednosonography">
+           <attribute name="label">
+            <string>Endosonographie</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_29">
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_35">
+              <property name="title">
+               <string>gespeicherte Manometrie Daten:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_44">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="textEdit_10"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QPushButton" name="pushButton_11">
+                <property name="text">
+                 <string>Manometrie Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_add_button_6">
+                <property name="text">
+                 <string>Manometrie Daten hinzufügen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_delete_button_6">
+                <property name="text">
+                 <string>Manomatrie Daten löschen</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0" rowspan="2">
+             <widget class="QGroupBox" name="groupBox_34">
+              <property name="title">
+               <string>Manometrie</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_43">
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_77">
+                 <property name="text">
+                  <string>IPR4:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_41"/>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_78">
+                 <property name="text">
+                  <string>UÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_42"/>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_79">
+                 <property name="text">
+                  <string>Manometrie File:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="QLineEdit" name="lineEdit_8"/>
+               </item>
+               <item row="7" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_43"/>
+               </item>
+               <item row="9" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_44"/>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_80">
+                 <property name="text">
+                  <string>OÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_81">
+                 <property name="text">
+                  <string>DCI:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_45"/>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_21"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_82">
+                 <property name="text">
+                  <string>Patientenlage:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_83">
+                 <property name="text">
+                  <string>DL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_46"/>
+               </item>
+               <item row="4" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_47"/>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_84">
+                 <property name="text">
+                  <string>OÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="comboBox_22"/>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_85">
+                 <property name="text">
+                  <string>Sondentyp:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_86">
+                 <property name="text">
+                  <string>UÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_87">
+                 <property name="text">
+                  <string>Ruhedruck am UÖS:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_48"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -1230,7 +1862,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1116</width>
+     <width>1083</width>
      <height>21</height>
     </rect>
    </property>
