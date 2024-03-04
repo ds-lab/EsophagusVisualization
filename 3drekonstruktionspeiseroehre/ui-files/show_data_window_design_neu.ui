@@ -1016,7 +1016,7 @@
         <item row="1" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>4</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -1245,115 +1245,115 @@
                <string>Breischluck</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_37">
-               <item row="3" column="0">
+               <item row="2" column="0">
                 <widget class="QLabel" name="label_44">
                  <property name="text">
-                  <string>IPR4:</string>
+                  <string>Höhe Breischlucksäule 1 min:</string>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_17"/>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_45">
-                 <property name="text">
-                  <string>UÖS untere Grenze:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_18"/>
-               </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_46">
-                 <property name="text">
-                  <string>Manometrie File:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="1">
+               <item row="9" column="2">
                 <widget class="QLineEdit" name="lineEdit_5"/>
                </item>
-               <item row="7" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_19"/>
-               </item>
-               <item row="9" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_20"/>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_47">
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_46">
                  <property name="text">
-                  <string>OÖS obere Grenze:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_48">
-                 <property name="text">
-                  <string>DCI:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_21"/>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="comboBox_15"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_49">
-                 <property name="text">
-                  <string>Patientenlage:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_50">
-                 <property name="text">
-                  <string>DL:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_22"/>
-               </item>
-               <item row="4" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_23"/>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_51">
-                 <property name="text">
-                  <string>OÖS untere Grenze:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QComboBox" name="comboBox_16"/>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_52">
-                 <property name="text">
-                  <string>Sondentyp:</string>
+                  <string>Breischluck file 2 min:</string>
                  </property>
                 </widget>
                </item>
                <item row="8" column="0">
+                <widget class="QLabel" name="label_45">
+                 <property name="text">
+                  <string>Breischluck file 1 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="2">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_17"/>
+               </item>
+               <item row="7" column="2">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_18"/>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_48">
+                 <property name="text">
+                  <string>Höhe Breischlucksäule 2 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="2">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_19"/>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_47">
+                 <property name="text">
+                  <string>Breite Breischlucksäule 1 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_21"/>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_50">
+                 <property name="text">
+                  <string>Höhe Breischlucksäule 5 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QComboBox" name="comboBox_15"/>
+               </item>
+               <item row="4" column="2">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_22"/>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_52">
+                 <property name="text">
+                  <string>KM-Typ:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_51">
+                 <property name="text">
+                  <string>Breite Breischlucksäule 2 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_23"/>
+               </item>
+               <item row="7" column="0">
                 <widget class="QLabel" name="label_53">
                  <property name="text">
-                  <string>UÖS obere Grenze:</string>
+                  <string>Breite Breischlucksäule 5 min:</string>
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
+               <item row="1" column="0">
                 <widget class="QLabel" name="label_54">
                  <property name="text">
-                  <string>Ruhedruck am UÖS:</string>
+                  <string>KM amount:</string>
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1">
+               <item row="2" column="2">
                 <widget class="QDoubleSpinBox" name="doubleSpinBox_24"/>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>Breischluck File 5 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="2">
+                <widget class="QLineEdit" name="lineEdit_2"/>
+               </item>
+               <item row="10" column="2">
+                <widget class="QLineEdit" name="lineEdit_9"/>
                </item>
               </layout>
              </widget>
