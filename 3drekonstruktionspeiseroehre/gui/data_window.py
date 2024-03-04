@@ -16,6 +16,7 @@ from logic.database.data_declarative_models import Patient
 from logic.database.data_declarative_models import PreviousTherapy
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
+from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.database.pyqt_models import CustomPatientModel
 
 
@@ -31,6 +32,7 @@ class DataWindow(QMainWindow):
         self.db = database.get_db()
         self.patient_service = PatientService(self.db)
         self.visit_service = VisitService(self.db)
+        self.previous_therapy_service = PreviousTherapyService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -166,7 +168,7 @@ class DataWindow(QMainWindow):
                     'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                     'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                     'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
-                
+
                 self.patient_service.update_patient(
                     self.ui.patient_id_field.text(), pat_dict)
 
@@ -235,14 +237,8 @@ class DataWindow(QMainWindow):
             self.__patient_id_filled()
 
             # Show all therapies of the selected patient
-            Session = sessionmaker(bind=database.engine_local.connect())
-            session = Session()
-
-            therapyArr = []
-            for therapy in session.query(PreviousTherapy).all():
-                therapyArr.append(therapy.toDict())
-
-            self.therapy_array = therapyArr
+            self.therapy_array = self.previous_therapy_service.get_prev_therapies_for_patient(
+                int(self.ui.patient_id_field.text()))
 
     def validate_patient(self):
         if (

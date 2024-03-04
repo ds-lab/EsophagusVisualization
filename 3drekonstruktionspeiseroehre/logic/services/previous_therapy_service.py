@@ -1,9 +1,9 @@
 from sqlalchemy import select, delete, update, insert
 from sqlalchemy.orm import Session
-from logic.data_declarative_models import PreviousTherapy
+from logic.database.data_declarative_models import PreviousTherapy
 
 
-class previousTherapyService:
+class PreviousTherapyService:
 
     def __init__(self, db_session: Session):
         self.db = db_session
@@ -14,6 +14,15 @@ class previousTherapyService:
             result = self.db.execute(stmt).first()
             if result:
                 return result[0]
+        except Exception as e:
+            raise e
+
+    def get_prev_therapies_for_patient(self, patient_id: int):
+        stmt = select(PreviousTherapy).where(patient_id == patient_id)
+        try:
+            result = self.db.execute(stmt).all()
+            print("prev_ter", result)
+            return result
         except Exception as e:
             raise e
 
@@ -28,7 +37,8 @@ class previousTherapyService:
             raise e
 
     def update_previous_therapy(self, id: str, data: dict):
-        stmt = update(PreviousTherapy).where(PreviousTherapy.patient_id == id).values(**data)
+        stmt = update(PreviousTherapy).where(
+            PreviousTherapy.patient_id == id).values(**data)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
