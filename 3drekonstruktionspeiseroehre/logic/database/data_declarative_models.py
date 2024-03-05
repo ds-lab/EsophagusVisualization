@@ -23,7 +23,7 @@ class Visit(Base):
     __tablename__ = "visits"
     visit_id = mapped_column(Integer, primary_key=True)
     patient_id = mapped_column(ForeignKey(
-        "patients.patient_id"), nullable=False)
+        "patients.patient_id", ondelete="CASCADE"), nullable=False)
     measure = mapped_column(String(11), nullable=False)
     center = mapped_column(String(20), nullable=False)
     age_at_visit = mapped_column(Integer, nullable=False)
@@ -35,7 +35,7 @@ class Visit(Base):
 class Therapy(Base):
     __tablename__ = "therapies"
     therapy_id = mapped_column(Integer, primary_key=True)
-    visit_id = mapped_column(ForeignKey("visits.visit_id"), nullable=False)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     therapy = mapped_column(String(30), nullable=False)
 
     def toDict(self):
@@ -45,7 +45,7 @@ class Therapy(Base):
 class Followup(Base):
     __tablename__ = "followups"
     folloup_id = mapped_column(Integer, primary_key=True)
-    visit_id = mapped_column(ForeignKey("visits.visit_id"), nullable=False)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     followup = mapped_column(Integer, nullable=False)
 
     def toDict(self):
@@ -56,10 +56,10 @@ class PreviousTherapy(Base):
     __tablename__ = "previous_therapies"
     previous_therapy_id = mapped_column(Integer, primary_key=True)
     patient_id = mapped_column(ForeignKey(
-        "patients.patient_id"), nullable=False)
+        "patients.patient_id", ondelete="CASCADE"), nullable=False)
     therapy = mapped_column(String, nullable=False)
-    times = mapped_column(Integer, nullable=True)
-    last_date = mapped_column(Date, nullable=True)
+    year = mapped_column(Integer, nullable=True)
+    year_not_known = mapped_column(Boolean, nullable=True)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
@@ -68,7 +68,7 @@ class PreviousTherapy(Base):
 class Metric(Base):
     __tablename__ = "metrics"
     metric_id = mapped_column(Integer, primary_key=True, autoincrement=True)
-    visit_id = mapped_column(ForeignKey("visits.visit_id"), nullable=False)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     # Zeitpunkt des Breischluckbildes
     time = mapped_column(Integer, nullable=False)
     metric_tubular_mean = mapped_column(Float, nullable=False)
@@ -91,7 +91,7 @@ class VisualizationData(Base):
     __tablename__ = "visualization_data_list"
     visualization_id = mapped_column(
         Integer, primary_key=True, autoincrement=True)
-    visit_id = mapped_column(ForeignKey("visits.visit_id"), nullable=False)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     visualization_data = mapped_column(PickleType, nullable=False)
 
     def toDict(self):

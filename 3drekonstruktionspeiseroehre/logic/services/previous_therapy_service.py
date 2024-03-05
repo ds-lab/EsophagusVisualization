@@ -9,7 +9,7 @@ class PreviousTherapyService:
         self.db = db_session
 
     def get_previous_therapy(self, id: int):
-        stmt = select(PreviousTherapy).where(PreviousTherapy.therapy_id == id)
+        stmt = select(PreviousTherapy).where(PreviousTherapy.previous_therapy_id == id)
         try:
             result = self.db.execute(stmt).first()
             if result:
@@ -27,7 +27,7 @@ class PreviousTherapyService:
             raise e
 
     def delete_previous_therapy(self, id: int):
-        stmt = delete(PreviousTherapy).where(PreviousTherapy.patient_id == id)
+        stmt = delete(PreviousTherapy).where(PreviousTherapy.previous_therapy_id == id)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
@@ -37,8 +37,7 @@ class PreviousTherapyService:
             raise e
 
     def update_previous_therapy(self, id: str, data: dict):
-        stmt = update(PreviousTherapy).where(
-            PreviousTherapy.patient_id == id).values(**data)
+        stmt = update(PreviousTherapy).where(PreviousTherapy.previous_therapy_id == id).values(**data)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
