@@ -1544,7 +1544,7 @@
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>0</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -1722,8 +1722,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1090</width>
-             <height>408</height>
+             <width>1285</width>
+             <height>385</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1889,7 +1889,7 @@
             <item row="0" column="2" rowspan="2">
              <widget class="QStackedWidget" name="stackedWidget_2">
               <property name="currentIndex">
-               <number>2</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="xray_pic1">
                <layout class="QGridLayout" name="gridLayout_61">
@@ -1911,6 +1911,24 @@
                       <string>hier soll Breischluckbild 1 zu sehen sein</string>
                      </property>
                     </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_2">
+                     <item>
+                      <widget class="QPushButton" name="manometrie_delete_button_8">
+                       <property name="text">
+                        <string>zurück</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_24">
+                       <property name="text">
+                        <string>weiter</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>
@@ -1938,6 +1956,24 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_3">
+                     <item>
+                      <widget class="QPushButton" name="manometrie_delete_button_9">
+                       <property name="text">
+                        <string>zurück</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_25">
+                       <property name="text">
+                        <string>weiter</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
                   </layout>
                  </widget>
                 </item>
@@ -1964,6 +2000,24 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout">
+                     <item>
+                      <widget class="QPushButton" name="manometrie_delete_button_7">
+                       <property name="text">
+                        <string>zurück</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_23">
+                       <property name="text">
+                        <string>weiter</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
                   </layout>
                  </widget>
                 </item>
@@ -1974,6 +2028,14 @@
            </layout>
           </widget>
           <widget class="QWidget" name="endoskopy">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1285</width>
+             <height>385</height>
+            </rect>
+           </property>
            <attribute name="label">
             <string>Endoskopie</string>
            </attribute>
@@ -2110,6 +2172,24 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_4">
+                     <item>
+                      <widget class="QPushButton" name="manometrie_delete_button_10">
+                       <property name="text">
+                        <string>zurück</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_26">
+                       <property name="text">
+                        <string>weiter</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
                   </layout>
                  </widget>
                 </item>
@@ -2121,6 +2201,14 @@
            </layout>
           </widget>
           <widget class="QWidget" name="endoflip">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1285</width>
+             <height>385</height>
+            </rect>
+           </property>
            <attribute name="label">
             <string>Endoflip</string>
            </attribute>
@@ -2237,6 +2325,14 @@
            </layout>
           </widget>
           <widget class="QWidget" name="ednosonography">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1285</width>
+             <height>385</height>
+            </rect>
+           </property>
            <attribute name="label">
             <string>Endosonographie</string>
            </attribute>
@@ -2372,6 +2468,24 @@
                       <string>hier sollen die Endosonographie Bilder dynamisch angezeigt werden</string>
                      </property>
                     </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_5">
+                     <item>
+                      <widget class="QPushButton" name="manometrie_delete_button_11">
+                       <property name="text">
+                        <string>zurück</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_27">
+                       <property name="text">
+                        <string>weiter</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>
