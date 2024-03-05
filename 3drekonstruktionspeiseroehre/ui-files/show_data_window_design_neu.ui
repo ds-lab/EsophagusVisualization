@@ -1435,6 +1435,12 @@
                   </item>
                   <item row="0" column="2">
                    <widget class="QCheckBox" name="checkBox_10">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="layoutDirection">
                      <enum>Qt::RightToLeft</enum>
                     </property>
@@ -1889,7 +1895,7 @@
             <item row="0" column="2" rowspan="2">
              <widget class="QStackedWidget" name="stackedWidget_2">
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="xray_pic1">
                <layout class="QGridLayout" name="gridLayout_61">
@@ -1899,19 +1905,6 @@
                    <string>Breischluckbild nach 1 min</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_64">
-                   <item row="0" column="0">
-                    <widget class="QPushButton" name="pushButton_17">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>hier soll Breischluckbild 1 zu sehen sein</string>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="1" column="0">
                     <layout class="QHBoxLayout" name="horizontalLayout_2">
                      <item>
@@ -1930,6 +1923,19 @@
                      </item>
                     </layout>
                    </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_83">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Anzeige Breischluck Bilder</string>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </widget>
                 </item>
@@ -1943,19 +1949,6 @@
                    <string>Breischluckbild nach 2 min</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_65">
-                   <item row="0" column="0">
-                    <widget class="QPushButton" name="pushButton_18">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>hier soll Breischluckbild 2 zu sehen sein</string>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="1" column="0">
                     <layout class="QHBoxLayout" name="horizontalLayout_3">
                      <item>
@@ -1974,6 +1967,19 @@
                      </item>
                     </layout>
                    </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_81">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>TextLabel</string>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </widget>
                 </item>
@@ -1987,19 +1993,6 @@
                    <string>Breischluckbild nach 5 min</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_66">
-                   <item row="0" column="0">
-                    <widget class="QPushButton" name="pushButton_19">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>hier soll Breischluckbild 5 zu sehen sein</string>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="1" column="0">
                     <layout class="QHBoxLayout" name="horizontalLayout">
                      <item>
@@ -2017,6 +2010,19 @@
                       </widget>
                      </item>
                     </layout>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_84">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>TextLabel</string>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </widget>
@@ -2159,19 +2165,6 @@
                    <string>Endoskopie Bilder</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_68">
-                   <item row="0" column="0">
-                    <widget class="QPushButton" name="pushButton_20">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>hier sollen dynamisch die Endoskopie Bilder zu sehen sein</string>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="1" column="0">
                     <layout class="QHBoxLayout" name="horizontalLayout_4">
                      <item>
@@ -2189,6 +2182,19 @@
                       </widget>
                      </item>
                     </layout>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_86">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Anzeige Endoskopie Bilder</string>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </widget>
@@ -2456,19 +2462,6 @@
                    <string>Endosonographie Bilder</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_70">
-                   <item row="0" column="0">
-                    <widget class="QPushButton" name="pushButton_22">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>hier sollen die Endosonographie Bilder dynamisch angezeigt werden</string>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="1" column="0">
                     <layout class="QHBoxLayout" name="horizontalLayout_5">
                      <item>
@@ -2486,6 +2479,19 @@
                       </widget>
                      </item>
                     </layout>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_80">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Anzeige Endoskopie Bilder</string>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </widget>
