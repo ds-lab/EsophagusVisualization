@@ -73,18 +73,8 @@ class DataWindow(QMainWindow):
         info_window.show()
 
     def init_ui(self):
-        Session = sessionmaker(bind=database.engine_local.connect())
-        session = Session()
-
-        patientsArr = []
-        for patient in session.query(Patient).all():
-            patientsArr.append(patient.toDict())
-
-        self.patient_array = patientsArr
-
-        # self.user_data = self.patient_service.get_all_patients()
-        print(f"USER DATA: {self.patient_array}")
-        self.patient_model = CustomPatientModel(self.patient_array)
+        self.patients = self.patient_service.get_all_patients()
+        self.patient_model = CustomPatientModel(self.patients)
         self.patient_tableView.setModel(self.patient_model)
         self.patient_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.patient_tableView.customContextMenuRequested.connect(self.__context_menu_patient)
@@ -98,7 +88,7 @@ class DataWindow(QMainWindow):
 
         # Collect all patient_ids in a list to make auto-complete suggestions
         self.patient_suggestions = [entry['patient_id']
-                                    for entry in self.patient_array]
+                                    for entry in self.patients]
 
         # Set up QCompleter with autocomplete suggestions
         completer = QCompleter(self.patient_suggestions, self)
@@ -120,12 +110,12 @@ class DataWindow(QMainWindow):
 
     def __patient_add_button_clicked(self):
 
-        if self.validate_patient():
+        if self.__validate_patient():
 
             pat_dict = None
 
-            if self.patient_exists():
-                if self.to_update_patient():
+            if self.__patient_exists():
+                if self.__to_update_patient():
                     pat_dict = {'gender': self.ui.gender_dropdown.currentText(),
                                 'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                                 'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
@@ -149,12 +139,12 @@ class DataWindow(QMainWindow):
 
     def __patient_update_button_clicked(self):
 
-        if self.validate_patient():
+        if self.__validate_patient():
 
             pat_dict = None
 
-            if not self.patient_exists():
-                if self.to_create_patient():
+            if not self.__patient_exists():
+                if self.__to_create_patient():
                     pat_dict = {'patient_id': self.ui.patient_id_field.text(),
                                 'gender': self.ui.gender_dropdown.currentText(),
                                 'ethnicity': self.ui.ethnicity_dropdown.currentText(),
@@ -245,7 +235,7 @@ class DataWindow(QMainWindow):
 
             self.init_previous_therapies()
 
-    def validate_patient(self):
+    def __validate_patient(self):
         if (
             len(self.ui.patient_id_field.text()) > 0
             and self.ui.gender_dropdown.currentText() != "---"
@@ -257,14 +247,14 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-    def patient_exists(self):
+    def __patient_exists(self):
         patient = self.patient_service.get_patient(
             self.ui.patient_id_field.text())
         if patient:
             return True
         return False
 
-    def to_update_patient(self):
+    def __to_update_patient(self):
         reply = QMessageBox.question(self, 'This Patient already exists in the database.',
                                      "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
                                      QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
@@ -272,7 +262,7 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-    def to_create_patient(self):
+    def __to_create_patient(self):
         reply = QMessageBox.question(self, 'This Patient not yet exists in the database.',
                                      "Should the patient be created?", QMessageBox.StandardButton.Yes |
                                      QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)

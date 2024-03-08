@@ -49,15 +49,11 @@ class PatientService:
             self.db.rollback()
             raise e
 
-    def get_all_patients(self):
-        rows = []
+    def get_all_patients(self) -> list[Patient, None]:
         stmt = select(Patient)
         try:
-            result = self.db.execute(stmt)
-            if result:
-                for row in result:
-                    rows.append((row[0].patient_id, row[0].ancestry, row[0].birth_year, row[0].previous_therapies))
-                    return rows
+            result = self.db.execute(stmt).all()
+            return list(map(lambda row: row[0].toDict(), result))
         except Exception as e:
             raise e
 
