@@ -240,7 +240,9 @@ class DataWindow(QMainWindow):
 
             # Show all therapies of the selected patient
             self.therapy_array = self.previous_therapy_service.get_prev_therapies_for_patient(
-                int(self.ui.patient_id_field.text()))
+                self.ui.patient_id_field.text())
+
+            self.init_previous_therapies()
 
     def validate_patient(self):
         if (
