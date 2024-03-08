@@ -30,6 +30,7 @@ class DataWindow(QMainWindow):
         self.patient_array = None
         self.previous_therapies_model = None
         self.previous_therapies_array = None
+        self.selected_previous_therapy = None
         self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
         self.patient_tableView = self.ui.patient_tableView
         self.therapy_tableView = self.ui.therapy_tableView
@@ -239,8 +240,8 @@ class DataWindow(QMainWindow):
             self.__patient_id_filled()
 
             # Show all therapies of the selected patient
-            self.therapy_array = self.previous_therapy_service.get_prev_therapies_for_patient(
-                self.ui.patient_id_field.text())
+            #self.therapy_array = self.previous_therapy_service.get_prev_therapies_for_patient(
+            #    self.ui.patient_id_field.text())
 
             self.init_previous_therapies()
 
@@ -357,7 +358,7 @@ class DataWindow(QMainWindow):
                                                            "valid.")
 
     def __therapy_delete_button_clicked(self):
-        self.previous_therapies_service.delete_previous_therapy(self.selected_previous_therapy_id)
+        self.previous_therapies_service.delete_previous_therapy(self.selected_previous_therapy)
         self.init_previous_therapies()
         self.selected_previous_therapy = None
         self.ui.selected_therapy_text.setText("")
