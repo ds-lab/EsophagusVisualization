@@ -220,7 +220,9 @@ class DataWindow(QMainWindow):
             output = ""
             for key, value in zip(labels, data):
                 output += f"{key}: {value}\n"
-            self.ui.selected_patient_text.setText(output)
+            self.ui.selected_patient_text_patientview.setText(output)
+            self.ui.selected_patient_text_visitview.setText(output)
+            self.ui.selected_patient_text_visitdataview.setText(output)
 
             self.selected_patient = str(self.patient_tableView.model().index(selected_row, 0).data())
 
@@ -312,7 +314,7 @@ class DataWindow(QMainWindow):
             output = ""
             for key, value in zip(labels, data):
                 output += f"{key}: {value}\n"
-            self.ui.selected_therapy_text.setText(output)
+            self.ui.selected_therapy_text_patientview.setText(output)
 
     def __therapy_add_button_clicked(self):
         if (
@@ -342,4 +344,4 @@ class DataWindow(QMainWindow):
         self.previous_therapies_service.delete_previous_therapy(self.selected_previous_therapy)
         self.init_previous_therapies()
         self.selected_previous_therapy = None
-        self.ui.selected_therapy_text.setText("")
+        self.ui.selected_therapy_text_patientview.setText("")

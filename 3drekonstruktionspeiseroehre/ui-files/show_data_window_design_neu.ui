@@ -47,7 +47,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_14">
            <item row="0" column="0">
-            <widget class="QTextEdit" name="selected_patient_text"/>
+            <widget class="QTextEdit" name="selected_patient_text_patientview"/>
            </item>
           </layout>
          </widget>
@@ -298,7 +298,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_24">
            <item row="1" column="0">
-            <widget class="QTextEdit" name="selected_therapy_text"/>
+            <widget class="QTextEdit" name="selected_therapy_text_patientview"/>
            </item>
           </layout>
          </widget>
@@ -459,7 +459,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_16">
            <item row="0" column="0">
-            <widget class="QTextEdit" name="textEdit_4"/>
+            <widget class="QTextEdit" name="selected_visit_text_visitview"/>
            </item>
           </layout>
          </widget>
@@ -471,7 +471,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
            <item row="0" column="0">
-            <widget class="QTextEdit" name="textEdit_2"/>
+            <widget class="QTextEdit" name="selected_patient_text_visitview"/>
            </item>
           </layout>
          </widget>
@@ -852,7 +852,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_7">
            <item row="0" column="0">
-            <widget class="QListView" name="listView"/>
+            <widget class="QListView" name="visits_tableView"/>
            </item>
           </layout>
          </widget>
@@ -910,7 +910,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_26">
            <item row="0" column="0">
-            <widget class="QTextEdit" name="textEdit_5"/>
+            <widget class="QTextEdit" name="selected_patient_text_visitdataview"/>
            </item>
           </layout>
          </widget>
@@ -922,7 +922,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_27">
            <item row="0" column="0">
-            <widget class="QTextEdit" name="textEdit_6">
+            <widget class="QTextEdit" name="selected_visit_text_visitdataview">
              <property name="baseSize">
               <size>
                <width>0</width>
@@ -937,8 +937,9 @@
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
+          <widget class="QWidget" name="page_5"/>
           <widget class="QWidget" name="botox">
            <layout class="QGridLayout" name="gridLayout_9">
             <item row="1" column="0">
@@ -1557,8 +1558,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1285</width>
-             <height>385</height>
+             <width>393</width>
+             <height>331</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1728,8 +1729,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1285</width>
-             <height>385</height>
+             <width>633</width>
+             <height>331</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2038,8 +2039,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1285</width>
-             <height>385</height>
+             <width>592</width>
+             <height>211</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2211,8 +2212,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1285</width>
-             <height>385</height>
+             <width>338</width>
+             <height>211</height>
             </rect>
            </property>
            <attribute name="label">
