@@ -17,12 +17,11 @@ class PreviousTherapyService:
         except Exception as e:
             raise e
 
-    def get_prev_therapies_for_patient(self, patient_id: int):
+    def get_prev_therapies_for_patient(self, patient_id: int) -> list[PreviousTherapy, None]:
         stmt = select(PreviousTherapy).where(patient_id == patient_id)
         try:
             result = self.db.execute(stmt).all()
-            print("prev_ter", result)
-            return result
+            return list(map(lambda row: row[0].toDict(), result))
         except Exception as e:
             raise e
 

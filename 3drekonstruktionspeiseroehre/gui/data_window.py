@@ -271,16 +271,7 @@ class DataWindow(QMainWindow):
         return False
 
     def init_previous_therapies(self):
-        Session = sessionmaker(bind=database.engine_local.connect())
-        session = Session()
-
-        therapyArr = []
-        for therapy in session.query(PreviousTherapy).filter(
-                PreviousTherapy.patient_id == self.selected_patient).all():
-            therapyArr.append(therapy.toDict())
-
-        self.previous_therapies_array = therapyArr
-        print(f"THERAPY DATA: {self.previous_therapies_array}")
+        self.previous_therapies_array = self.previous_therapy_service.get_prev_therapies_for_patient(self.selected_patient)
         self.previous_therapies_model = CustomPreviousTherapyModel(self.previous_therapies_array)
         self.therapy_tableView.setModel(self.previous_therapies_model)
         self.therapy_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
