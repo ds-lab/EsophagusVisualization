@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="patients">
        <attribute name="title">
@@ -948,9 +948,19 @@
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
-          <widget class="QWidget" name="page_5"/>
+          <widget class="QWidget" name="page_5">
+           <layout class="QGridLayout" name="gridLayout_71">
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_39">
+              <property name="title">
+               <string>Clinical Questions</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
           <widget class="QWidget" name="botox">
            <layout class="QGridLayout" name="gridLayout_9">
             <item row="1" column="0">
@@ -1149,7 +1159,24 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="2">
+                 <item row="0" column="1">
+                  <widget class="QLabel" name="label_26">
+                   <property name="text">
+                    <string>keine Komplikationen</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="checkBox">
+                   <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
                   <widget class="QCheckBox" name="checkBox_2">
                    <property name="layoutDirection">
                     <enum>Qt::RightToLeft</enum>
@@ -1159,7 +1186,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="2">
+                 <item row="2" column="0">
                   <widget class="QCheckBox" name="checkBox_3">
                    <property name="layoutDirection">
                     <enum>Qt::RightToLeft</enum>
@@ -1169,7 +1196,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="2">
+                 <item row="3" column="0">
                   <widget class="QCheckBox" name="checkBox_4">
                    <property name="layoutDirection">
                     <enum>Qt::RightToLeft</enum>
@@ -1179,25 +1206,8 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="2">
+                 <item row="5" column="0">
                   <widget class="QCheckBox" name="checkBox_5">
-                   <property name="layoutDirection">
-                    <enum>Qt::RightToLeft</enum>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="label_26">
-                   <property name="text">
-                    <string>keine Komplikationen</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QCheckBox" name="checkBox">
                    <property name="layoutDirection">
                     <enum>Qt::RightToLeft</enum>
                    </property>
@@ -1307,7 +1317,150 @@
                <string>Therapie: POEM</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_60">
-               <item row="0" column="0">
+               <item row="1" column="0" rowspan="2" colspan="2">
+                <widget class="QGroupBox" name="groupBox_19">
+                 <property name="title">
+                  <string>gespeicherte Therapie des Patienten:</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_57">
+                  <item row="0" column="0">
+                   <widget class="QTextEdit" name="textEdit_13"/>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <layout class="QVBoxLayout" name="verticalLayout_7">
+                 <item>
+                  <spacer name="verticalSpacer_8">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_14">
+                   <property name="text">
+                    <string>Therapie löschen</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_15">
+                   <property name="text">
+                    <string>Therapie hinzufügen</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="0" column="2">
+                <widget class="QGroupBox" name="groupBox_20">
+                 <property name="title">
+                  <string>Komplikationen:</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_58">
+                  <item row="5" column="1">
+                   <widget class="QLabel" name="label_58">
+                    <property name="text">
+                     <string>andere Komplikation</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QLabel" name="label_55">
+                    <property name="text">
+                     <string>Capnoperitoneum</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLabel" name="label_59">
+                    <property name="text">
+                     <string>Blutung</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLabel" name="label_49">
+                    <property name="text">
+                     <string>Perforation</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLabel" name="label_61">
+                    <property name="text">
+                     <string>keine Komplikationen</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QCheckBox" name="checkBox_10">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="layoutDirection">
+                     <enum>Qt::RightToLeft</enum>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QCheckBox" name="checkBox_6">
+                    <property name="layoutDirection">
+                     <enum>Qt::RightToLeft</enum>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QCheckBox" name="checkBox_7">
+                    <property name="layoutDirection">
+                     <enum>Qt::RightToLeft</enum>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QCheckBox" name="checkBox_8">
+                    <property name="layoutDirection">
+                     <enum>Qt::RightToLeft</enum>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QCheckBox" name="checkBox_9">
+                    <property name="layoutDirection">
+                     <enum>Qt::RightToLeft</enum>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="2">
                 <layout class="QGridLayout" name="gridLayout_59">
                  <item row="4" column="0">
                   <widget class="QLabel" name="label_62">
@@ -1409,149 +1562,6 @@
                  </item>
                 </layout>
                </item>
-               <item row="0" column="1" colspan="2">
-                <widget class="QGroupBox" name="groupBox_20">
-                 <property name="title">
-                  <string>Komplikationen:</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_58">
-                  <item row="2" column="2">
-                   <widget class="QCheckBox" name="checkBox_7">
-                    <property name="layoutDirection">
-                     <enum>Qt::RightToLeft</enum>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="2">
-                   <widget class="QCheckBox" name="checkBox_9">
-                    <property name="layoutDirection">
-                     <enum>Qt::RightToLeft</enum>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="2">
-                   <widget class="QCheckBox" name="checkBox_6">
-                    <property name="layoutDirection">
-                     <enum>Qt::RightToLeft</enum>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
-                   <widget class="QCheckBox" name="checkBox_10">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="layoutDirection">
-                     <enum>Qt::RightToLeft</enum>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="2">
-                   <widget class="QCheckBox" name="checkBox_8">
-                    <property name="layoutDirection">
-                     <enum>Qt::RightToLeft</enum>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="1">
-                   <widget class="QLabel" name="label_58">
-                    <property name="text">
-                     <string>andere Komplikation</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QLabel" name="label_55">
-                    <property name="text">
-                     <string>Capnoperitoneum</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QLabel" name="label_59">
-                    <property name="text">
-                     <string>Blutung</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QLabel" name="label_49">
-                    <property name="text">
-                     <string>Perforation</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLabel" name="label_61">
-                    <property name="text">
-                     <string>keine Komplikationen</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="0" rowspan="2" colspan="2">
-                <widget class="QGroupBox" name="groupBox_19">
-                 <property name="title">
-                  <string>gespeicherte Therapie des Patienten:</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_57">
-                  <item row="0" column="0">
-                   <widget class="QTextEdit" name="textEdit_13"/>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="2" column="2">
-                <layout class="QVBoxLayout" name="verticalLayout_7">
-                 <item>
-                  <spacer name="verticalSpacer_8">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_14">
-                   <property name="text">
-                    <string>Therapie löschen</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_15">
-                   <property name="text">
-                    <string>Therapie hinzufügen</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
               </layout>
              </widget>
             </item>
@@ -1569,8 +1579,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>393</width>
-             <height>331</height>
+             <width>293</width>
+             <height>285</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1740,8 +1750,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>633</width>
-             <height>331</height>
+             <width>473</width>
+             <height>285</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2050,8 +2060,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>592</width>
-             <height>211</height>
+             <width>439</width>
+             <height>159</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2223,8 +2233,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>338</width>
-             <height>211</height>
+             <width>254</width>
+             <height>159</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2347,8 +2357,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1285</width>
-             <height>385</height>
+             <width>1297</width>
+             <height>429</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2543,7 +2553,7 @@
      <x>0</x>
      <y>0</y>
      <width>1327</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>
