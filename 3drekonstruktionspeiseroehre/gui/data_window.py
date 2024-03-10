@@ -87,8 +87,10 @@ class DataWindow(QMainWindow):
         # self.tableView.hideColumn(0)
 
         # Collect all patient_ids in a list to make auto-complete suggestions
-        self.patient_suggestions = [entry['patient_id']
-                                    for entry in self.patients]
+        if self.patients is not None:
+            self.patient_suggestions = [entry['patient_id'] for entry in self.patients]
+        else:
+            self.patient_suggestions = []
 
         # Set up QCompleter with autocomplete suggestions
         completer = QCompleter(self.patient_suggestions, self)
@@ -111,8 +113,6 @@ class DataWindow(QMainWindow):
     def __patient_add_button_clicked(self):
 
         if self.__validate_patient():
-
-            pat_dict = None
 
             if self.__patient_exists():
                 if self.__to_update_patient():
@@ -140,8 +140,6 @@ class DataWindow(QMainWindow):
     def __patient_update_button_clicked(self):
 
         if self.__validate_patient():
-
-            pat_dict = None
 
             if not self.__patient_exists():
                 if self.__to_create_patient():

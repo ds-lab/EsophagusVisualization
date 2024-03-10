@@ -13,8 +13,12 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
 
     def __init__(self, data):
         QtCore.QAbstractTableModel.__init__(self)
-        self.patient_array = data
-        self.columns = list(self.patient_array[0].keys()) if self.patient_array != [] else []
+        if data is None: # in case a database-connection could not be established
+            self.patient_array = []
+            self.columns = []
+        else:
+            self.patient_array = data
+            self.columns = list(self.patient_array[0].keys()) if self.patient_array else [] # in case there are no data in the database
         self.db = database.get_db()
         self.patient_service = PatientService(self.db)
 
