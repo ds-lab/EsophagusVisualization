@@ -233,7 +233,7 @@ class DataWindow(QMainWindow):
             #self.therapy_array = self.previous_therapy_service.get_prev_therapies_for_patient(
             #    self.ui.patient_id_field.text())
 
-            self.init_previous_therapies()
+        self.__init_previous_therapies()
 
     def __validate_patient(self):
         if (
@@ -270,7 +270,7 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-    def init_previous_therapies(self):
+    def __init_previous_therapies(self):
         self.previous_therapies_array = self.previous_therapy_service.get_prev_therapies_for_patient(self.selected_patient)
         self.previous_therapies_model = CustomPreviousTherapyModel(self.previous_therapies_array)
         self.therapy_tableView.setModel(self.previous_therapies_model)
@@ -282,6 +282,9 @@ class DataWindow(QMainWindow):
         self.therapy_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.therapy_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.therapy_tableView.clicked.connect(self.__show_selected_therapy_data)
+
+    def __init_visits_of_patient(self):
+        self.visits_of_patient_array = self.visit_service.get_visit_for_patient(self.selected_patient)
 
     def __context_menu_therapies(self):
         menu = QtWidgets.QMenu()
@@ -326,20 +329,20 @@ class DataWindow(QMainWindow):
                     'therapy': self.ui.therapy_dropdown.currentText(),
                     'year_not_known': True}
                 self.previous_therapies_service.create_previous_therapy(therapy_dict)
-                self.init_previous_therapies()
+                self.__init_previous_therapies()
             else:
                 therapy_dict = {
                     'patient_id': self.selected_patient,
                     'therapy': self.ui.therapy_dropdown.currentText(),
                     'year': self.ui.therapy_calendar.date().toPyDate().year}
                 self.previous_therapies_service.create_previous_therapy(therapy_dict)
-                self.init_previous_therapies()
+                self.__init_previous_therapies()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all therapy data and make sure they are "
                                                            "valid.")
 
     def __therapy_delete_button_clicked(self):
         self.previous_therapies_service.delete_previous_therapy(self.selected_previous_therapy)
-        self.init_previous_therapies()
+        self.__init_previous_therapies()
         self.selected_previous_therapy = None
         self.ui.selected_therapy_text_patientview.setText("")

@@ -16,6 +16,9 @@ class VisitService:
             return result
         except OperationalError as e:
             self.show_error_msg()
+
+    def get_visit_for_patient(self, patient_id):
+        pass
         
     def delete_visit(self, id: int):
         stmt = delete(Visit).where(Visit.visit_id == id)
