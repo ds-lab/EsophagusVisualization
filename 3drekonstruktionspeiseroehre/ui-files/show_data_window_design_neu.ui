@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="patients">
        <attribute name="title">
@@ -871,21 +871,21 @@
         <item row="3" column="0" colspan="3">
          <layout class="QGridLayout" name="gridLayout_15">
           <item row="0" column="1">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="delete_visit_button">
             <property name="text">
              <string>Löschen</string>
             </property>
            </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QPushButton" name="pushButton_4">
+           <widget class="QPushButton" name="update_visit_button">
             <property name="text">
              <string>Updaten</string>
             </property>
            </widget>
           </item>
           <item row="0" column="0">
-           <widget class="QPushButton" name="patient_add_button_3">
+           <widget class="QPushButton" name="visit_add_button">
             <property name="text">
              <string>Hinzufügen</string>
             </property>
@@ -2013,21 +2013,21 @@
                <item row="1" column="1">
                 <layout class="QGridLayout" name="gridLayout_75">
                  <item row="1" column="0">
-                  <widget class="QPushButton" name="pushButton_19">
+                  <widget class="QPushButton" name="add_clinicaldata_button">
                    <property name="text">
                     <string>Add Clinical Data</string>
                    </property>
                   </widget>
                  </item>
                  <item row="3" column="0">
-                  <widget class="QPushButton" name="pushButton_17">
+                  <widget class="QPushButton" name="update_clinicaldata_button">
                    <property name="text">
                     <string>Update Clinical Data</string>
                    </property>
                   </widget>
                  </item>
                  <item row="2" column="0">
-                  <widget class="QPushButton" name="pushButton_20">
+                  <widget class="QPushButton" name="delete_clinicaldata_button">
                    <property name="text">
                     <string>Delete Clinical Data</string>
                    </property>
@@ -2100,14 +2100,14 @@
                <item row="1" column="1">
                 <layout class="QGridLayout" name="gridLayout_32">
                  <item row="1" column="0">
-                  <widget class="QPushButton" name="pushButton_2">
+                  <widget class="QPushButton" name="add_therapy_botox_button">
                    <property name="text">
                     <string>Therapie hinzufügen</string>
                    </property>
                   </widget>
                  </item>
                  <item row="2" column="0">
-                  <widget class="QPushButton" name="pushButton_3">
+                  <widget class="QPushButton" name="delete_therapy_botox_button">
                    <property name="text">
                     <string>Therapie löschen</string>
                    </property>
@@ -2180,14 +2180,14 @@
                <item row="1" column="1">
                 <layout class="QGridLayout" name="gridLayout_28">
                  <item row="2" column="0">
-                  <widget class="QPushButton" name="pushButton_5">
+                  <widget class="QPushButton" name="delete_therapy_pneu_button">
                    <property name="text">
                     <string>Therapie löschen</string>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
-                  <widget class="QPushButton" name="pushButton_6">
+                  <widget class="QPushButton" name="add_therapy_pneu_button">
                    <property name="text">
                     <string>Therapie hinzufügen</string>
                    </property>
@@ -2380,14 +2380,14 @@
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_13">
+               <widget class="QPushButton" name="delete_therapy_lhm_button">
                 <property name="text">
                  <string>Therapie löschen</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_12">
+               <widget class="QPushButton" name="add_therapy_lhm_button">
                 <property name="text">
                  <string>Therapie hinzufügen</string>
                 </property>
@@ -2535,14 +2535,14 @@
                   </spacer>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_14">
+                  <widget class="QPushButton" name="delete_therapy_poem_button">
                    <property name="text">
                     <string>Therapie löschen</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_15">
+                  <widget class="QPushButton" name="add_therapy_poem_button">
                    <property name="text">
                     <string>Therapie hinzufügen</string>
                    </property>
