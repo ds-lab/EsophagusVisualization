@@ -17,8 +17,7 @@ from logic.database.data_declarative_models import PreviousTherapy
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.previous_therapy_service import PreviousTherapyService
-from logic.database.pyqt_models import CustomPatientModel
-from logic.database.pyqt_models import CustomPreviousTherapyModel
+from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 
 
 class DataWindow(QMainWindow):
