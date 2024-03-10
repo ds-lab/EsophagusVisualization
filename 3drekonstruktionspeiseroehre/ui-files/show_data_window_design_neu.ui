@@ -1929,172 +1929,124 @@
               <property name="title">
                <string>Clinical Questions &amp; Medication Use</string>
               </property>
-              <layout class="QGridLayout" name="gridLayout_78">
+              <layout class="QGridLayout" name="gridLayout_72">
                <item row="0" column="0">
-                <widget class="QGroupBox" name="groupBox_42">
+                <layout class="QGridLayout" name="gridLayout_60">
+                 <item row="0" column="1">
+                  <widget class="QSpinBox" name="spinBox_5"/>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QTimeEdit" name="timeEdit_3"/>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_90">
+                   <property name="text">
+                    <string>Refluxösophagitisgrad</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_89">
+                   <property name="text">
+                    <string>PPI-Gebrauch</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_91">
+                   <property name="text">
+                    <string>Sodbrennen</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_95">
+                   <property name="text">
+                    <string>Medication-List (Names &amp; Dosages):</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_96">
+                   <property name="text">
+                    <string>Acid Expusure Time</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QCheckBox" name="checkBox_15">
+                   <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QCheckBox" name="checkBox_16">
+                   <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QLineEdit" name="lineEdit"/>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0">
+                <widget class="QGroupBox" name="groupBox_43">
                  <property name="title">
-                  <string>Clinical Questions</string>
+                  <string>Clinical Data List:</string>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout_77">
-                  <item row="0" column="0">
-                   <layout class="QGridLayout" name="gridLayout_60">
-                    <item row="0" column="1">
-                     <widget class="QSpinBox" name="spinBox_5"/>
-                    </item>
-                    <item row="6" column="1">
-                     <widget class="QTimeEdit" name="timeEdit_3"/>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_90">
-                      <property name="text">
-                       <string>Refluxösophagitisgrad</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_89">
-                      <property name="text">
-                       <string>PPI-Gebrauch</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_91">
-                      <property name="text">
-                       <string>Sodbrennen</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="0">
-                     <widget class="QLabel" name="label_95">
-                      <property name="text">
-                       <string>Medication use:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="0">
-                     <widget class="QLabel" name="label_96">
-                      <property name="text">
-                       <string>Acid Expusure Time</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="1">
-                     <widget class="QCheckBox" name="checkBox_14">
-                      <property name="layoutDirection">
-                       <enum>Qt::LeftToRight</enum>
-                      </property>
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QCheckBox" name="checkBox_15">
-                      <property name="layoutDirection">
-                       <enum>Qt::LeftToRight</enum>
-                      </property>
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QCheckBox" name="checkBox_16">
-                      <property name="layoutDirection">
-                       <enum>Qt::LeftToRight</enum>
-                      </property>
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
+                 <layout class="QGridLayout" name="gridLayout_76">
                   <item row="1" column="0">
-                   <layout class="QGridLayout" name="gridLayout_75">
-                    <item row="0" column="0">
-                     <widget class="QPushButton" name="pushButton_19">
-                      <property name="text">
-                       <string>Add Clinical Data</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QPushButton" name="pushButton_20">
-                      <property name="text">
-                       <string>Delete Clinical Data</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QGroupBox" name="groupBox_43">
-                    <property name="title">
-                     <string>Clinical Data List:</string>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_76">
-                     <item row="0" column="0">
-                      <widget class="QTextEdit" name="textEdit_4"/>
-                     </item>
-                    </layout>
-                   </widget>
+                   <widget class="QTextEdit" name="textEdit_4"/>
                   </item>
                  </layout>
                 </widget>
                </item>
-               <item row="0" column="1">
-                <widget class="QGroupBox" name="groupBox_40">
-                 <property name="enabled">
-                  <bool>true</bool>
-                 </property>
-                 <property name="title">
-                  <string>Medication</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_74">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_92">
-                    <property name="text">
-                     <string>Medication (name &amp; dosage):</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLineEdit" name="lineEdit"/>
-                  </item>
-                  <item row="1" column="0" colspan="2">
-                   <layout class="QGridLayout" name="gridLayout_73">
-                    <item row="0" column="0">
-                     <widget class="QPushButton" name="pushButton_17">
-                      <property name="text">
-                       <string>Add Medication</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QPushButton" name="pushButton_18">
-                      <property name="text">
-                       <string>Delete Medication</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="2" column="0" colspan="2">
-                   <widget class="QGroupBox" name="groupBox_41">
-                    <property name="title">
-                     <string>Medication List:</string>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_72">
-                     <item row="0" column="0">
-                      <widget class="QTextEdit" name="textEdit_2"/>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
+               <item row="1" column="1">
+                <layout class="QGridLayout" name="gridLayout_75">
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="pushButton_19">
+                   <property name="text">
+                    <string>Add Clinical Data</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QPushButton" name="pushButton_17">
+                   <property name="text">
+                    <string>Update Clinical Data</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QPushButton" name="pushButton_20">
+                   <property name="text">
+                    <string>Delete Clinical Data</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <spacer name="verticalSpacer_10">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
