@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QMessageBox
 from sqlalchemy import select, delete, update, insert
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
-from logic.database.data_declarative_models import PreviousTherapy
+from logic.database.data_declarative_models import PreviousTherapy, Patient
 
 
 class PreviousTherapyService:
@@ -19,8 +19,8 @@ class PreviousTherapyService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def get_prev_therapies_for_patient(self, patient_id: int) -> list[PreviousTherapy, None]:
-        stmt = select(PreviousTherapy).where(patient_id == patient_id)
+    def get_prev_therapies_for_patient(self, patient_id: str) -> list[PreviousTherapy, None]:
+        stmt = select(PreviousTherapy).join(Patient).where(Patient.patient_id == patient_id)
         try:
             result = self.db.execute(stmt).all()
             return list(map(lambda row: row[0].toDict(), result))
