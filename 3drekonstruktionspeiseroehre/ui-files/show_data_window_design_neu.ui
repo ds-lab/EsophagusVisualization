@@ -580,7 +580,7 @@
              <item row="6" column="0">
               <widget class="QLabel" name="label_18">
                <property name="text">
-                <string>Gesamtschore</string>
+                <string>Gesamtscore</string>
                </property>
               </widget>
              </item>
@@ -722,7 +722,7 @@
            <item row="0" column="0">
             <layout class="QGridLayout" name="gridLayout_13">
              <item row="3" column="1">
-              <widget class="QComboBox" name="comboBox_3">
+              <widget class="QComboBox" name="visit_typ_dropdown">
                <item>
                 <property name="text">
                  <string>Initiale Diagnostik</string>
@@ -755,7 +755,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QDateEdit" name="dateEdit_2">
+              <widget class="QDateEdit" name="year_of_visit_calendar">
                <property name="displayFormat">
                 <string>yyyy</string>
                </property>
@@ -769,7 +769,7 @@
               </widget>
              </item>
              <item row="4" column="1">
-              <widget class="QComboBox" name="comboBox_2">
+              <widget class="QComboBox" name="therapy_typ_dropdown">
                <property name="enabled">
                 <bool>true</bool>
                </property>
@@ -808,48 +808,7 @@
               </widget>
              </item>
              <item row="5" column="1">
-              <widget class="QComboBox" name="comboBox">
-               <item>
-                <property name="text">
-                 <string>---</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>&lt;2 Monate</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>2-4 Monate</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>5-10 Monate</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>1-1,5 Jahre</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>2-4 Jahre</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>5-6 Jahre</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>&gt;6 Jahre</string>
-                </property>
-               </item>
-              </widget>
+              <widget class="QSpinBox" name="month_after_therapy_spin"/>
              </item>
             </layout>
            </item>
@@ -955,8 +914,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>293</width>
-             <height>285</height>
+             <width>393</width>
+             <height>331</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1126,8 +1085,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>473</width>
-             <height>285</height>
+             <width>633</width>
+             <height>331</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1436,8 +1395,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>439</width>
-             <height>159</height>
+             <width>592</width>
+             <height>211</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1609,8 +1568,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>254</width>
-             <height>159</height>
+             <width>338</width>
+             <height>211</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1733,8 +1692,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1297</width>
-             <height>429</height>
+             <width>1285</width>
+             <height>385</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2663,7 +2622,7 @@
      <x>0</x>
      <y>0</y>
      <width>1327</width>
-     <height>18</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

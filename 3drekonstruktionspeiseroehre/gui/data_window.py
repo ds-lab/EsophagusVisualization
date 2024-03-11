@@ -54,14 +54,16 @@ class DataWindow(QMainWindow):
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
         self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
         self.ui.patient_delete_button.clicked.connect(self.__patient_delete_button_clicked)
-        self.ui.therapy_add_button.clicked.connect(self.__therapy_add_button_clicked)
-        self.ui.therapy_delete_button.clicked.connect(self.__therapy_delete_button_clicked)
+        self.ui.therapy_add_button.clicked.connect(self.__previous_therapy_add_button_clicked)
+        self.ui.therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
 
         self.init_ui()
+
+    # Function of the UI
 
     def __menu_button_clicked(self):
         """
@@ -100,6 +102,8 @@ class DataWindow(QMainWindow):
         self.ui.patient_id_field.editingFinished.connect(
             self.__patient_id_filled)
 
+    # Patient Functions
+
     def __context_menu_patient(self):
         menu = QtWidgets.QMenu()
         if self.patient_tableView.selectedIndexes():
@@ -110,9 +114,7 @@ class DataWindow(QMainWindow):
         menu.exec(cursor.pos())
 
     def __patient_add_button_clicked(self):
-
         if self.__validate_patient():
-
             if self.__patient_exists():
                 if self.__to_update_patient():
                     pat_dict = {'gender': self.ui.gender_dropdown.currentText(),
@@ -137,9 +139,7 @@ class DataWindow(QMainWindow):
                                 "Please fill out all patient data and make sure they are valid.")
 
     def __patient_update_button_clicked(self):
-
         if self.__validate_patient():
-
             if not self.__patient_exists():
                 if self.__to_create_patient():
                     pat_dict = {'patient_id': self.ui.patient_id_field.text(),
@@ -159,7 +159,6 @@ class DataWindow(QMainWindow):
 
                 self.patient_service.update_patient(
                     self.ui.patient_id_field.text(), pat_dict)
-
             self.init_ui()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are "
@@ -229,19 +228,19 @@ class DataWindow(QMainWindow):
             self.__patient_id_filled()
 
             # Show all therapies of the selected patient
-            #self.therapy_array = self.previous_therapy_service.get_prev_therapies_for_patient(
+            # self.therapy_array = self.previous_therapy_service.get_prev_therapies_for_patient(
             #    self.ui.patient_id_field.text())
 
-            self.init_previous_therapies()
+            self.__init_previous_therapies()
 
     def __validate_patient(self):
         if (
-            len(self.ui.patient_id_field.text()) > 0
-            and self.ui.gender_dropdown.currentText() != "---"
-            and self.ui.ethnicity_dropdown.currentText() != "---"
-            and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
-            and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
-            and 1900 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
+                len(self.ui.patient_id_field.text()) > 0
+                and self.ui.gender_dropdown.currentText() != "---"
+                and self.ui.ethnicity_dropdown.currentText() != "---"
+                and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
+                and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
+                and 1900 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
         ):
             return True
         return False
@@ -269,33 +268,23 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-    def init_previous_therapies(self):
-        self.previous_therapies_array = self.previous_therapy_service.get_prev_therapies_for_patient(self.selected_patient)
+    # Previous Therapy Functions
+
+    def __init_previous_therapies(self):
+        self.previous_therapies_array = self.previous_therapy_service.get_prev_therapies_for_patient(
+            self.selected_patient)
         self.previous_therapies_model = CustomPreviousTherapyModel(self.previous_therapies_array)
         self.therapy_tableView.setModel(self.previous_therapies_model)
         self.therapy_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.therapy_tableView.customContextMenuRequested.connect(self.__context_menu_therapies)
+        self.therapy_tableView.customContextMenuRequested.connect(self.__context_menu_previous_therapies)
         self.therapy_tableView.verticalHeader().setDefaultSectionSize(30)
         self.therapy_tableView.setColumnWidth(0, 50)
         self.therapy_tableView.resizeColumnsToContents()
         self.therapy_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.therapy_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.therapy_tableView.clicked.connect(self.__show_selected_therapy_data)
+        self.therapy_tableView.clicked.connect(self.__show_selected_previous_therapy_data)
 
-    def __init_visits_of_patient(self):
-        self.visits_of_patient_array = self.visit_service.get_visit_for_patient(self.selected_patient)
-        self.visits_of_patient_model = CustomVisitsModel(self.visits_of_patient_array)
-        self.visits_tableView.setModel(self.previous_therapies_model)
-        self.visits_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.visits_tableView.customContextMenuRequested.connect(self.__context_menu_therapies)
-        self.visits_tableView.verticalHeader().setDefaultSectionSize(30)
-        self.visits_tableView.setColumnWidth(0, 50)
-        self.visits_tableView.resizeColumnsToContents()
-        self.visits_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
-        self.visits_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.visits_tableView.clicked.connect(self.__show_selected_therapy_data)
-
-    def __context_menu_therapies(self):
+    def __context_menu_previous_therapies(self):
         menu = QtWidgets.QMenu()
         if self.patient_tableView.selectedIndexes():
             remove_data = menu.addAction("Remove Data")
@@ -305,7 +294,7 @@ class DataWindow(QMainWindow):
         cursor = QtGui.QCursor()
         menu.exec(cursor.pos())
 
-    def __show_selected_therapy_data(self):
+    def __show_selected_previous_therapy_data(self):
         selected_indexes = self.therapy_tableView.selectedIndexes()  # Get the indexes of all selected cells
         if selected_indexes:
             selected_row = selected_indexes[0].row()  # Get the row number of the first selected index
@@ -326,7 +315,7 @@ class DataWindow(QMainWindow):
                 output += f"{key}: {value}\n"
             self.ui.selected_therapy_text_patientview.setText(output)
 
-    def __therapy_add_button_clicked(self):
+    def __previous_therapy_add_button_clicked(self):
         if (
                 self.ui.therapy_dropdown.currentText() != "---"
                 and (1900 < self.ui.therapy_calendar.date().toPyDate().year <= datetime.now().year or
@@ -338,20 +327,97 @@ class DataWindow(QMainWindow):
                     'therapy': self.ui.therapy_dropdown.currentText(),
                     'year_not_known': True}
                 self.previous_therapies_service.create_previous_therapy(therapy_dict)
-                self.init_previous_therapies()
+                self.__init_previous_therapies()
             else:
                 therapy_dict = {
                     'patient_id': self.selected_patient,
                     'therapy': self.ui.therapy_dropdown.currentText(),
                     'year': self.ui.therapy_calendar.date().toPyDate().year}
                 self.previous_therapies_service.create_previous_therapy(therapy_dict)
-                self.init_previous_therapies()
+                self.__init_previous_therapies()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all therapy data and make sure they are "
                                                            "valid.")
 
-    def __therapy_delete_button_clicked(self):
+    def __previous_therapy_delete_button_clicked(self):
         self.previous_therapies_service.delete_previous_therapy(self.selected_previous_therapy)
-        self.init_previous_therapies()
+        self.__init_previous_therapies()
         self.selected_previous_therapy = None
         self.ui.selected_therapy_text_patientview.setText("")
+
+    # Visit Functions
+    def __init_visits_of_patient(self):
+        self.visits_of_patient_array = self.visit_service.get_visit_for_patient(self.selected_patient)
+        self.visits_of_patient_model = CustomVisitsModel(self.visits_of_patient_array)
+        self.visits_tableView.setModel(self.previous_therapies_model)
+        self.visits_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.visits_tableView.customContextMenuRequested.connect(self.__context_menu_previous_therapies)
+        self.visits_tableView.verticalHeader().setDefaultSectionSize(30)
+        self.visits_tableView.setColumnWidth(0, 50)
+        self.visits_tableView.resizeColumnsToContents()
+        self.visits_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.visits_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.visits_tableView.clicked.connect(self.__show_selected_previous_therapy_data)
+
+    def __context_menu_visit(self):
+        menu = QtWidgets.QMenu()
+        if self.visits_tableView.selectedIndexes():
+            remove_data = menu.addAction("Remove Data")
+            remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
+            remove_data.triggered.connect(lambda: self.visit_model.removeRows(self.visit_tableView.currentIndex()))
+        cursor = QtGui.QCursor()
+        menu.exec(cursor.pos())
+
+    def __visit_add_button_clicked(self):
+        if self.__validate_visit():
+            if self.__visit_exists():
+                if self.__to_update_visit():
+                    visit_dict = {'patient_id': self.selected_patient,
+                                  'year_of_visit_calendar': self.ui.year_of_visit_calendar.date().toPyDate().year,
+                                  'visit_type': self.ui.visit_type_dropdown.currentText(),
+                                  'therapy_typ': self.ui.therapy_type_dropdow.currentText(),
+                                  'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
+                    self.visit_service.update_visit(
+                        self.ui.patient_id_field.text(), visit_dict)
+            else:
+                visit_dict = {'patient_id': self.selected_patient,
+                              'year_of_visit_calendar': self.ui.year_of_visit_calendar.date().toPyDate().year,
+                              'visit_type': self.ui.visit_type_dropdown.currentText(),
+                              'therapy_typ': self.ui.therapy_type_dropdow.currentText(),
+                              'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
+                self.visit_service.create_visit(visit_dict)
+            self.init_ui()
+        else:
+            QMessageBox.warning(self, "Insufficient Data",
+                                "Please fill out all visit data and make sure they are valid.")
+
+    def __visit_update_button_clicked(self):
+        pass
+
+    def __visit_delete_button_clicked(self):
+        pass
+
+    def __show_selected_visit_data(self):
+        pass
+
+    def __validate_visit(self):
+        pass
+
+    def __visit_exists(self):
+        pass
+
+    def __to_update_visit(self):
+        reply = QMessageBox.question(self, 'This Visit already exists in the database.',
+                                     "Should the Visit data be updated?", QMessageBox.StandardButton.Yes |
+                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            return True
+        return False
+
+    def __to_create_visit(self):
+        reply = QMessageBox.question(self, 'This Visit not yet exists in the database.',
+                                     "Should the Visit be created?", QMessageBox.StandardButton.Yes |
+                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            return True
+        return False

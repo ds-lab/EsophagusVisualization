@@ -30,9 +30,9 @@ class Visit(Base):
     visit_id = mapped_column(Integer, primary_key=True)
     patient_id = mapped_column(ForeignKey(
         "patients.patient_id", ondelete="CASCADE"), nullable=False)
-    measure = mapped_column(String(11), nullable=False)
-    center = mapped_column(String(20), nullable=False)
-    age_at_visit = mapped_column(Integer, nullable=False)
+    year_of_visit = mapped_column(Integer, nullable=False)
+    visit_typ = mapped_column(String(50), nullable=False),
+    therapy_typ = mapped_column(String(50), nullable=False)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
