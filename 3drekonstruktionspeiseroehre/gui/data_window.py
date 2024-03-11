@@ -175,7 +175,7 @@ class DataWindow(QMainWindow):
                                                            "valid.")
 
     def __patient_delete_button_clicked(self):
-        self.patient_service.delete_patient(self.ui.patient_id_field.text())
+        self.patient_service.delete_patient(self.ui.patient_id_field.text()) # ToDo vorher checken ob der Patient existiert
         self.init_ui()
         self.selected_patient = None
         self.ui.selected_patient_text.setText("")
@@ -379,22 +379,17 @@ class DataWindow(QMainWindow):
         menu.exec(cursor.pos())
 
     def __visit_add_button_clicked(self):
+        visit_dict = {'patient_id': self.selected_patient,
+                      'year_of_visit_calendar': self.ui.year_of_visit_calendar.date().toPyDate().year,
+                      'visit_type': self.ui.visit_type_dropdown.currentText(),
+                      'therapy_typ': self.ui.therapy_type_dropdow.currentText(),
+                      'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
         if self.__validate_visit():
             if self.__visit_exists():
                 if self.__to_update_visit():
-                    visit_dict = {'patient_id': self.selected_patient,
-                                  'year_of_visit_calendar': self.ui.year_of_visit_calendar.date().toPyDate().year,
-                                  'visit_type': self.ui.visit_type_dropdown.currentText(),
-                                  'therapy_typ': self.ui.therapy_type_dropdow.currentText(),
-                                  'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
                     self.visit_service.update_visit(
-                        self.ui.patient_id_field.text(), visit_dict)
+                        self.selected_visit, visit_dict) #ToDo auch bei Patient und Previous Therapies auf diese Art updaten
             else:
-                visit_dict = {'patient_id': self.selected_patient,
-                              'year_of_visit_calendar': self.ui.year_of_visit_calendar.date().toPyDate().year,
-                              'visit_type': self.ui.visit_type_dropdown.currentText(),
-                              'therapy_typ': self.ui.therapy_type_dropdow.currentText(),
-                              'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
                 self.visit_service.create_visit(visit_dict)
             self.init_ui()
         else:
@@ -402,10 +397,32 @@ class DataWindow(QMainWindow):
                                 "Please fill out all visit data and make sure they are valid.")
 
     def __visit_update_button_clicked(self):
-        pass
+        visit_dict = {'patient_id': self.selected_patient,
+                      'year_of_visit_calendar': self.ui.year_of_visit_calendar.date().toPyDate().year,
+                      'visit_type': self.ui.visit_type_dropdown.currentText(),
+                      'therapy_typ': self.ui.therapy_type_dropdow.currentText(),
+                      'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
+        if self.__validate_visit():
+            if not self.__visit_exists():
+                if self.__to_create_visit():
+                    self.visit_service.create_visit(visit_dict)
+            else:
+                self.visit_service.update_visit(
+                    self.ui.patient_id_field.text(), visit_dict)
+            self.init_ui()
+        else:
+            QMessageBox.warning(self, "Insufficient Data", "Please fill out all visit data and make sure they are "
+                                                           "valid.")
 
     def __visit_delete_button_clicked(self):
-        pass
+        if self.visit_exists():
+            self.visit_service.delete_visit(
+                self.selected_visit)
+            self.init_ui()
+            self.selected_patient = None
+            self.ui.selected_patient_text.setText("")
+        else:
+            QMessageBox.warning(self, "Select Visit to Delete", "Please select a visit you wish to delete.")
 
     def __show_selected_visit_data(self):
         selected_indexes = self.visits_tableView.selectedIndexes()  # Get the indexes of all selected cells
@@ -445,7 +462,12 @@ class DataWindow(QMainWindow):
         pass
 
     def __visit_exists(self):
-        pass
+        if self.selected_visit:
+            visit = self.visit_service.get_visit(
+                self.selected_visit)
+            if visit:
+                return True
+        return False
 
     def __to_update_visit(self):
         reply = QMessageBox.question(self, 'This Visit already exists in the database.',
