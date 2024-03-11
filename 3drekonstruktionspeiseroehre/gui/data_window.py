@@ -63,8 +63,11 @@ class DataWindow(QMainWindow):
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
         self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
         self.ui.patient_delete_button.clicked.connect(self.__patient_delete_button_clicked)
-        self.ui.therapy_add_button.clicked.connect(self.__previous_therapy_add_button_clicked)
-        self.ui.therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
+        self.ui.previous_therapy_add_button.clicked.connect(self.__previous_therapy_add_button_clicked)
+        self.ui.previous_therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
+        self.ui.visit_add_button.clicked.connect(self.__visit_add_button_clicked)
+        self.ui.visit_delete_button.clicked.connect(self.__visit_delete_button_clicked)
+        self.ui.visit_update_button.clicked.connect(self.__visit_update_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -241,6 +244,7 @@ class DataWindow(QMainWindow):
             #    self.ui.patient_id_field.text())
 
             self.__init_previous_therapies()
+            self.__init_visits_of_patient()
 
     def __validate_patient(self):
         if (
@@ -356,7 +360,7 @@ class DataWindow(QMainWindow):
 
     # Visit Functions
     def __init_visits_of_patient(self):
-        self.visits_array = self.visit_service.get_visit_for_patient(self.selected_patient)
+        self.visits_array = self.visit_service.get_visits_for_patient(self.selected_patient)
         self.visits_of_patient_model = CustomVisitsModel(self.visits_array)
         self.visits_tableView.setModel(self.visit_model)
         self.visits_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -379,9 +383,9 @@ class DataWindow(QMainWindow):
 
     def __visit_add_button_clicked(self):
         visit_dict = {'patient_id': self.selected_patient,
-                      'year_of_visit_calendar': self.ui.year_of_visit_calendar.date().toPyDate().year,
+                      'year_of_visit': self.ui.year_of_visit_calendar.date().toPyDate().year,
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
-                      'therapy_type': self.ui.therapy_type_dropdow.currentText(),
+                      'therapy_type': self.ui.therapy_type_dropdown.currentText(),
                       'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
         if self.__validate_visit():
             if self.__visit_exists():
@@ -390,14 +394,14 @@ class DataWindow(QMainWindow):
                         self.selected_visit, visit_dict) #ToDo auch bei Patient und Previous Therapies auf diese Art updaten
             else:
                 self.visit_service.create_visit(visit_dict)
-            self.init_ui()
+            self.__init_visits_of_patient()
         else:
             QMessageBox.warning(self, "Insufficient Data",
                                 "Please fill out all visit data and make sure they are valid.")
 
     def __visit_update_button_clicked(self):
         visit_dict = {'patient_id': self.selected_patient,
-                      'year_of_visit_calendar': self.ui.year_of_visit_calendar.date().toPyDate().year,
+                      'year_of_visit': self.ui.year_of_visit_calendar.date().toPyDate().year,
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
                       'therapy_type': self.ui.therapy_type_dropdow.currentText(),
                       'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
@@ -408,7 +412,7 @@ class DataWindow(QMainWindow):
             else:
                 self.visit_service.update_visit(
                     self.ui.patient_id_field.text(), visit_dict)
-            self.init_ui()
+            self.__init_visits_of_patient()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all visit data and make sure they are "
                                                            "valid.")
@@ -417,9 +421,9 @@ class DataWindow(QMainWindow):
         if self.visit_exists():
             self.visit_service.delete_visit(
                 self.selected_visit)
-            self.init_ui()
-            self.selected_patient = None
-            self.ui.selected_patient_text.setText("")
+            self.__init_visits_of_patient()
+            self.selected_visit = None
+            self.ui.selected_visit_text.setText("")
         else:
             QMessageBox.warning(self, "Select Visit to Delete", "Please select a visit you wish to delete.")
 

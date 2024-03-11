@@ -12,7 +12,8 @@ CREATE TABLE visits (
     patient_id VARCHAR(30) REFERENCES patients(patient_id) ON DELETE CASCADE NOT NULL,
     year_of_visit INTEGER NOT NULL,
     visit_type VARCHAR(50) NOT NULL,
-    therapy_type VARCHAR(50) NOT NULL
+    therapy_type VARCHAR(50) NOT NULL,
+    year_first_symptoms INTEGER NOT NULL
 );
 
 CREATE TABLE therapies (
