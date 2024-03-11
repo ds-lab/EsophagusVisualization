@@ -9,7 +9,7 @@ CREATE TABLE patients (
 
 CREATE TABLE visits (
     visit_id SERIAL PRIMARY KEY,
-    patient_id INTEGER REFERENCES patients(patient_id) ON DELETE CASCADE NOT NULL,
+    patient_id VARCHAR(30) REFERENCES patients(patient_id) ON DELETE CASCADE NOT NULL,
     year_of_visit INTEGER NOT NULL,
     visit_type VARCHAR(50) NOT NULL,
     therapy_type VARCHAR(50) NOT NULL
