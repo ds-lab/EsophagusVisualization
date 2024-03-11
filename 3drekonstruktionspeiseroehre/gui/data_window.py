@@ -25,14 +25,24 @@ class DataWindow(QMainWindow):
     def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData()):
         super(DataWindow, self).__init__()
         self.selected_patient = None
-        self.patient_model = None
-        self.patient_array = None
-        self.previous_therapies_model = None
-        self.previous_therapies_array = None
+        self.selected_visit = None
         self.selected_previous_therapy = None
-        self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
+
+        self.patient_model = None
+        self.previous_therapies_model = None
+        self.visit_model = None
+
+        self.patient_array = None
+        self.previous_therapies_array = None
+        self.visits_array = None
+
         self.patient_tableView = self.ui.patient_tableView
         self.therapy_tableView = self.ui.therapy_tableView
+        self.visits_tableView = self.ui.visits_tableView
+
+
+        self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
+
         self.master_window = master_window
         self.db = database.get_db()
         self.previous_therapies_service = PreviousTherapyService(self.db)
@@ -347,17 +357,17 @@ class DataWindow(QMainWindow):
 
     # Visit Functions
     def __init_visits_of_patient(self):
-        self.visits_of_patient_array = self.visit_service.get_visit_for_patient(self.selected_patient)
-        self.visits_of_patient_model = CustomVisitsModel(self.visits_of_patient_array)
-        self.visits_tableView.setModel(self.previous_therapies_model)
+        self.visits_array = self.visit_service.get_visit_for_patient(self.selected_patient)
+        self.visits_of_patient_model = CustomVisitsModel(self.visits_array)
+        self.visits_tableView.setModel(self.visit_model)
         self.visits_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.visits_tableView.customContextMenuRequested.connect(self.__context_menu_previous_therapies)
+        self.visits_tableView.customContextMenuRequested.connect(self.__context_menu_visit)
         self.visits_tableView.verticalHeader().setDefaultSectionSize(30)
         self.visits_tableView.setColumnWidth(0, 50)
         self.visits_tableView.resizeColumnsToContents()
         self.visits_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.visits_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.visits_tableView.clicked.connect(self.__show_selected_previous_therapy_data)
+        self.visits_tableView.clicked.connect(self.__show_selected_visit_data)
 
     def __context_menu_visit(self):
         menu = QtWidgets.QMenu()
@@ -398,7 +408,38 @@ class DataWindow(QMainWindow):
         pass
 
     def __show_selected_visit_data(self):
-        pass
+        selected_indexes = self.visits_tableView.selectedIndexes()  # Get the indexes of all selected cells
+        if selected_indexes:
+            # Get the row number of the first selected index
+            selected_row = selected_indexes[0].row()
+
+            # Access data for all columns in the selected row
+            data = []
+            for column in range(self.visits_tableView.model().columnCount()):
+                index = self.visits_tableView.model().index(selected_row, column)
+                data.append(str(index.data()))
+
+            labels = self.visit_model.columns
+
+            # Show the data of the selected patient in QTextEdit
+            output = ""
+            for key, value in zip(labels, data):
+                output += f"{key}: {value}\n"
+            self.ui.selected_visit_text_visitview.setText(output)
+            self.ui.selected_visit_text_visitdataview.setText(output)
+
+            self.selected_visit = str(self.visit_tableView.model().index(selected_row, 0).data())
+
+            # Show the data of the selected visit in the drop-down/selection menu
+            # ToDo anpassen auf Visit
+            self.ui.patient_id_field.setText(
+                str(self.patient_tableView.model().index(selected_row, 0).data()))
+            self.__patient_id_filled()
+
+            # Show all therapies of the selected patient
+            # self.therapy_array = self.previous_therapy_service.get_prev_therapies_for_patient(
+            #    self.ui.patient_id_field.text())
+
 
     def __validate_visit(self):
         pass
