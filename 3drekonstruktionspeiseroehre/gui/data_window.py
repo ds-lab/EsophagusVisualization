@@ -44,10 +44,9 @@ class DataWindow(QMainWindow):
 
         self.master_window = master_window
         self.db = database.get_db()
-        self.previous_therapies_service = PreviousTherapyService(self.db)
+        self.previous_therapy_service = PreviousTherapyService(self.db)
         self.patient_service = PatientService(self.db)
         self.visit_service = VisitService(self.db)
-        self.previous_therapy_service = PreviousTherapyService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -180,7 +179,9 @@ class DataWindow(QMainWindow):
         self.patient_service.delete_patient(self.ui.patient_id_field.text()) # ToDo vorher checken ob der Patient existiert
         self.init_ui()
         self.selected_patient = None
-        self.ui.selected_patient_text.setText("")
+        self.ui.selected_patient_text_patientview.setText("")
+        self.ui.selected_patient_text_visitview.setText("")
+        self.ui.selected_patient_text_visitdataview.setText("")
 
     def __patient_id_filled(self):
         patient = self.patient_service.get_patient(
@@ -361,8 +362,9 @@ class DataWindow(QMainWindow):
     # Visit Functions
     def __init_visits_of_patient(self):
         self.visits_array = self.visit_service.get_visits_for_patient(self.selected_patient)
-        self.visits_of_patient_model = CustomVisitsModel(self.visits_array)
-        self.visits_tableView.setModel(self.visit_model)
+        print(self.visits_array)
+        self.visits_model = CustomVisitsModel(self.visits_array)
+        self.visits_tableView.setModel(self.visits_model)
         self.visits_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.visits_tableView.customContextMenuRequested.connect(self.__context_menu_visit)
         self.visits_tableView.verticalHeader().setDefaultSectionSize(30)
@@ -439,7 +441,7 @@ class DataWindow(QMainWindow):
                 index = self.visits_tableView.model().index(selected_row, column)
                 data.append(str(index.data()))
 
-            labels = self.visit_model.columns
+            labels = self.visits_model.columns
 
             # Show the data of the selected patient in QTextEdit
             output = ""
@@ -448,11 +450,12 @@ class DataWindow(QMainWindow):
             self.ui.selected_visit_text_visitview.setText(output)
             self.ui.selected_visit_text_visitdataview.setText(output)
 
-            self.selected_visit = str(self.visit_tableView.model().index(selected_row, 0).data())
+            self.selected_visit = str(self.visits_tableView.model().index(selected_row, 0).data())
 
             # Show the data of the selected visit in the drop-down/selection menu
             visit = self.visit_service.get_visit(
                 self.selected_visit)
+            print(visit.year_of_visit)
             if visit:
                 self.ui.year_of_visit_calendar.setDate(QDate(visit.year_of_visit, 1, 1))
                 if visit.visit_type == "Initial Diagnostic":

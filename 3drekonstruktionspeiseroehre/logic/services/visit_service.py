@@ -13,7 +13,7 @@ class VisitService:
         stmt = select(Visit).where(Visit.visit_id == id)
         try:
             result = self.db.execute(stmt).first()
-            return result
+            return result[0]
         except OperationalError as e:
             self.show_error_msg()
 
