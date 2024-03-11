@@ -449,11 +449,30 @@ class DataWindow(QMainWindow):
 
             # Show the data of the selected visit in the drop-down/selection menu
             # ToDo anpassen auf Visit
-            self.ui.patient_id_field.setText(
-                str(self.patient_tableView.model().index(selected_row, 0).data()))
-            self.__patient_id_filled()
+            visit = self.visit_service.get_visit(
+                self.selected_visit)
+            if visit:
+                self.ui.year_of_visit_calendar.setDate(QDate(visit.year_of_visit, 1, 1))
+                if visit.visit_typ == "male":
+                    self.ui.gender_dropdown.setCurrentIndex(1)
+                elif patient.gender == "female":
+                    self.ui.gender_dropdown.setCurrentIndex(2)
+                else:
+                    self.ui.gender_dropdown.setCurrentIndex(3)
+                if patient.ethnicity == "American Indian or Alaska Native":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(1)
+                elif patient.ethnicity == "Asian":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(2)
+                elif patient.ethnicity == "Black or African American":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(3)
+                elif patient.ethnicity == "Native Hawaiian or Other Pacific Islander":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(4)
+                elif patient.ethnicity == "White":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(5)
+                else:
+                    self.ui.ethnicity_dropdown.setCurrentIndex(6)
 
-            # Show all therapies of the selected patient
+        # Show all therapies of the selected patient
             # self.therapy_array = self.previous_therapy_service.get_prev_therapies_for_patient(
             #    self.ui.patient_id_field.text())
 
