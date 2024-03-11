@@ -382,7 +382,7 @@ class DataWindow(QMainWindow):
         visit_dict = {'patient_id': self.selected_patient,
                       'year_of_visit_calendar': self.ui.year_of_visit_calendar.date().toPyDate().year,
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
-                      'therapy_typ': self.ui.therapy_type_dropdow.currentText(),
+                      'therapy_type': self.ui.therapy_type_dropdow.currentText(),
                       'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
         if self.__validate_visit():
             if self.__visit_exists():
@@ -400,7 +400,7 @@ class DataWindow(QMainWindow):
         visit_dict = {'patient_id': self.selected_patient,
                       'year_of_visit_calendar': self.ui.year_of_visit_calendar.date().toPyDate().year,
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
-                      'therapy_typ': self.ui.therapy_type_dropdow.currentText(),
+                      'therapy_type': self.ui.therapy_type_dropdow.currentText(),
                       'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
         if self.__validate_visit():
             if not self.__visit_exists():
@@ -448,37 +448,34 @@ class DataWindow(QMainWindow):
             self.selected_visit = str(self.visit_tableView.model().index(selected_row, 0).data())
 
             # Show the data of the selected visit in the drop-down/selection menu
-            # ToDo anpassen auf Visit
             visit = self.visit_service.get_visit(
                 self.selected_visit)
             if visit:
                 self.ui.year_of_visit_calendar.setDate(QDate(visit.year_of_visit, 1, 1))
-                if visit.visit_typ == "male":
-                    self.ui.gender_dropdown.setCurrentIndex(1)
-                elif patient.gender == "female":
-                    self.ui.gender_dropdown.setCurrentIndex(2)
-                else:
-                    self.ui.gender_dropdown.setCurrentIndex(3)
-                if patient.ethnicity == "American Indian or Alaska Native":
-                    self.ui.ethnicity_dropdown.setCurrentIndex(1)
-                elif patient.ethnicity == "Asian":
-                    self.ui.ethnicity_dropdown.setCurrentIndex(2)
-                elif patient.ethnicity == "Black or African American":
-                    self.ui.ethnicity_dropdown.setCurrentIndex(3)
-                elif patient.ethnicity == "Native Hawaiian or Other Pacific Islander":
-                    self.ui.ethnicity_dropdown.setCurrentIndex(4)
-                elif patient.ethnicity == "White":
-                    self.ui.ethnicity_dropdown.setCurrentIndex(5)
-                else:
-                    self.ui.ethnicity_dropdown.setCurrentIndex(6)
-
-        # Show all therapies of the selected patient
-            # self.therapy_array = self.previous_therapy_service.get_prev_therapies_for_patient(
-            #    self.ui.patient_id_field.text())
-
+                if visit.visit_type == "Initial Diagnostic":
+                    self.ui.visit_type_dropdown.setCurrentIndex(1)
+                elif visit.visit_type == "Therapy":
+                    self.ui.visit_type_dropdown.setCurrentIndex(2)
+                elif visit.visit_type == "Follow-Up Diagnostic":
+                    self.ui.visit_type_dropdown.setCurrentIndex(3)
+                if visit.therapy_type == "Botox":
+                    self.ui.therapy_type_dropdown.setCurrentIndex(1)
+                elif visit.therapy_type == "Pneumatic Dilitation":
+                    self.ui.therapy_type_dropdown.setCurrentIndex(2)
+                elif visit.therapy_type == "POEM":
+                    self.ui.therapy_type_dropdown.setCurrentIndex(3)
+                elif visit.therapy_type == "LHM":
+                    self.ui.therapy_type_dropdown.setCurrentIndex(4)
 
     def __validate_visit(self):
-        pass
+        if (
+                1900 < self.ui.year_of_visit_calendar.date().toPyDate().year <= datetime.now().year
+                and self.ui.visit_type_dropdown.currentText() != "---"
+                and self.ui.therapy_type_dropdown.currentText() != "---"
+                and self.ui.month_after_therapy_spin.value() != -1
+        ):
+            return True
+        return False
 
     def __visit_exists(self):
         if self.selected_visit:
