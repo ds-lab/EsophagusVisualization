@@ -36,12 +36,11 @@ class DataWindow(QMainWindow):
         self.previous_therapies_array = None
         self.visits_array = None
 
+        self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
+
         self.patient_tableView = self.ui.patient_tableView
         self.therapy_tableView = self.ui.therapy_tableView
         self.visits_tableView = self.ui.visits_tableView
-
-
-        self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
 
         self.master_window = master_window
         self.db = database.get_db()

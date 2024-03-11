@@ -9,10 +9,10 @@ CREATE TABLE patients (
 
 CREATE TABLE visits (
     visit_id SERIAL PRIMARY KEY,
-    patient_id VARCHAR(30) REFERENCES patients(patient_id) ON DELETE CASCADE NOT NULL,
-    measure VARCHAR(11) NOT NULL,
-    center VARCHAR(20) NOT NULL,
-    age_at_visit INT NOT NULL
+    patient_id INTEGER REFERENCES patients(patient_id) ON DELETE CASCADE NOT NULL,
+    year_of_visit INTEGER NOT NULL,
+    visit_type VARCHAR(50) NOT NULL,
+    therapy_type VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE therapies (
