@@ -494,7 +494,7 @@
            <item row="0" column="0">
             <layout class="QGridLayout" name="gridLayout_13">
              <item row="3" column="1">
-              <widget class="QComboBox" name="visit_typ_dropdown">
+              <widget class="QComboBox" name="visit_type_dropdown">
                <item>
                 <property name="text">
                  <string>---</string>
@@ -512,7 +512,7 @@
                </item>
                <item>
                 <property name="text">
-                 <string>Follow-Up-Diagnostic</string>
+                 <string>Follow-Up Diagnostic</string>
                 </property>
                </item>
               </widget>
@@ -553,7 +553,7 @@
               </widget>
              </item>
              <item row="4" column="1">
-              <widget class="QComboBox" name="therapy_typ_dropdown">
+              <widget class="QComboBox" name="therapy_type_dropdown">
                <property name="enabled">
                 <bool>true</bool>
                </property>
@@ -569,7 +569,7 @@
                </item>
                <item>
                 <property name="text">
-                 <string>Pneumatische Dilitation</string>
+                 <string>Pneumatic Dilitation</string>
                 </property>
                </item>
                <item>
