@@ -288,8 +288,8 @@ class VisualizationWindow(QMainWindow):
                 writer = csv.writer(csv_file)
                 writer.writerow(
                     ["Id", "Breischluckbild", "Tubular Index (Mean)", "Sphinkter Index (Mean)", "Volume Tubular",
-                     "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)", "Index Tublar (Max)",
-                     "Index Sphinkter (Max)", "Index Tublar (Min)", "Index Sphinkter (Min)", "Esophagus Length (cm)"])
+                     "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)", "Index Tubular (Max)",
+                     "Index Sphinkter (Max)", "Index Tubular (Min)", "Index Sphinkter (Min)", "Esophagus Length (cm)"])
 
                 # loop through all visits.items (these are figures which are displayed in different threads)
                 for i, (name, visit_data) in enumerate(self.visits.items()):
