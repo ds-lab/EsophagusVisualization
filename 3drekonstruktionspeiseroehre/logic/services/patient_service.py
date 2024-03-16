@@ -12,7 +12,7 @@ class PatientService:
     def __init__(self, db_session: Session):
         self.db = db_session
 
-    def get_patient(self, id: str):
+    def get_patient_by_id(self, id: str):
         stmt = select(Patient).where(Patient.patient_id == id)
         try:
             result = self.db.execute(stmt).first()
@@ -59,6 +59,29 @@ class PatientService:
         except OperationalError as e:
             self.show_error_msg()
 
+    def get_patients_by_birthyear(self, birth_year: int):
+        stmt = select(Patient).where(Patient.birth_year == birth_year)
+        try:
+            result = self.db.execute(stmt).all()
+            if result:
+                return list(map(lambda row: row[0].toDict(), result))
+        except OperationalError as e:
+            self.show_error_msg()
+
+    def get_patients_by_gender(self):
+        pass
+
+    def get_patients_by_ethnicity(self):
+        pass
+
+    def get_patients_by_yearfirstdiagnosis(self):
+        pass
+
+    def get_patients_by_yearfirstsymptoms(self):
+        pass
+
+    def get_patients_by_center(self):
+        pass
 
 
     def show_error_msg(self):

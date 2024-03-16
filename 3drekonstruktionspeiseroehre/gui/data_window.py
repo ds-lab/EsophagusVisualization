@@ -3,7 +3,7 @@ from datetime import datetime
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
-from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QCompleter
 from sqlalchemy.orm import sessionmaker
@@ -29,6 +29,7 @@ class DataWindow(QMainWindow):
         self.selected_previous_therapy = None
 
         self.patient_model = None
+        self.patient_proxyModel = None
         self.previous_therapies_model = None
         self.visit_model = None
 
@@ -62,8 +63,11 @@ class DataWindow(QMainWindow):
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
         self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
         self.ui.patient_delete_button.clicked.connect(self.__patient_delete_button_clicked)
+        self.ui.patient_search_button.clicked.connect(self.__patient_search_button_clicked)
+
         self.ui.previous_therapy_add_button.clicked.connect(self.__previous_therapy_add_button_clicked)
         self.ui.previous_therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
+
         self.ui.visit_add_button.clicked.connect(self.__visit_add_button_clicked)
         self.ui.visit_delete_button.clicked.connect(self.__visit_delete_button_clicked)
 
@@ -86,7 +90,10 @@ class DataWindow(QMainWindow):
     def init_ui(self):
         self.patients = self.patient_service.get_all_patients()
         self.patient_model = CustomPatientModel(self.patients)
-        self.patient_tableView.setModel(self.patient_model)
+        self.patient_proxyModel = QSortFilterProxyModel()
+        self.patient_proxyModel.setSourceModel(self.patient_model)
+        self.patient_tableView.setModel(self.patient_proxyModel)
+        self.patient_tableView.setSortingEnabled(True)
         self.patient_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.patient_tableView.customContextMenuRequested.connect(self.__context_menu_patient)
         self.patient_tableView.verticalHeader().setDefaultSectionSize(30)
@@ -95,6 +102,7 @@ class DataWindow(QMainWindow):
         self.patient_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.patient_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.patient_tableView.clicked.connect(self.__show_selected_patient_data)
+
         # self.tableView.hideColumn(0)
 
         # Collect all patient_ids in a list to make auto-complete suggestions
@@ -233,7 +241,7 @@ class DataWindow(QMainWindow):
         self.ui.selected_therapy_text_patientview.setText("")
 
     def __patient_id_filled(self):
-        patient = self.patient_service.get_patient(
+        patient = self.patient_service.get_patient_by_id(
             self.ui.patient_id_field.text())
         if patient:
             self.ui.birthyear_calendar.setDate(QDate(patient.birth_year, 1, 1))
@@ -316,7 +324,7 @@ class DataWindow(QMainWindow):
         return False
 
     def __patient_exists(self):
-        patient = self.patient_service.get_patient(
+        patient = self.patient_service.get_patient_by_id(
             self.ui.patient_id_field.text())
         if patient:
             return True
@@ -337,6 +345,10 @@ class DataWindow(QMainWindow):
         if reply == QMessageBox.StandardButton.Yes:
             return True
         return False
+
+    def __patient_search_button_clicked(self):
+        if self.ui.patient_id_radio.isChecked():
+            print("Checked")
 
     # Previous Therapy Functions
 

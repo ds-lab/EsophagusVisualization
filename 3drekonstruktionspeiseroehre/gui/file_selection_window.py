@@ -135,7 +135,7 @@ class FileSelectionWindow(QMainWindow):
                 and (not self.ui.follow_up_radio.isChecked() or self.ui.months_after_therapy_spin.value() != -1)
                 and len(self.ui.center_id_field.text()) > 0
         ):
-            patient = self.patient_service.get_patient(self.ui.patient_id_field.text())
+            patient = self.patient_service.get_patient_by_id(self.ui.patient_id_field.text())
             if patient:
                 reply = QMessageBox.question(self, 'This Patient already exists in the database.',
                                              "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
