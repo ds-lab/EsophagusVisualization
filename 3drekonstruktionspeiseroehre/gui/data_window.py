@@ -584,19 +584,16 @@ class DataWindow(QMainWindow):
             # Show the data of the selected visits in the visitsdata Tab
             if visit:
                 if visit.visit_type == "Follow-Up Diagnostic":
-                    print("Follow-Up")
+                    self.ui.stackedWidget.setCurrentIndex(0)
+                elif visit.visit_type == "Initial Diagnostic":
                     self.ui.stackedWidget.setCurrentIndex(0)
                 if visit.therapy_type == "Botox":
-                    print("Botox")
                     self.ui.stackedWidget.setCurrentIndex(1)
                 elif visit.therapy_type == "Pneumatic Dilitation":
-                    print("Pneu")
                     self.ui.stackedWidget.setCurrentIndex(2)
                 elif visit.therapy_type == "POEM":
-                    print("POEM")
                     self.ui.stackedWidget.setCurrentIndex(4)
                 elif visit.therapy_type == "LHM":
-                    print("LHM")
                     self.ui.stackedWidget.setCurrentIndex(3)
 
 
@@ -604,7 +601,8 @@ class DataWindow(QMainWindow):
         if (
                 1900 < self.ui.year_of_visit_calendar.date().toPyDate().year <= datetime.now().year
                 and self.ui.visit_type_dropdown.currentText() != "---"
-                and self.ui.therapy_type_dropdown.currentText() != "---"
+                and (self.ui.visit_type_dropdown.currentText() != "Therapy" or self.ui.therapy_type_dropdown.currentText() != "---")
+                and (self.ui.therapy_type_dropdown.currentText() == "---" or self.ui.visit_type_dropdown.currentText() == "Therapy")
                 and self.ui.month_after_therapy_spin.value() != -1
         ):
             return True
