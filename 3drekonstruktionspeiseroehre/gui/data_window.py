@@ -145,14 +145,29 @@ class DataWindow(QMainWindow):
                     'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
                 self.patient_service.create_patient(pat_dict)
             self.init_ui()
+            # Show the data of the selected patient in QTextEdit
+            # pat_dict is needed again in case the patient was only updated
+            pat_dict = {
+                'patient_id': self.ui.patient_id_field.text(),
+                'gender': self.ui.gender_dropdown.currentText(),
+                'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+                'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+                'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+            output = ""
+            for key, value in pat_dict.items():
+                output += f"{key}: {value}\n"
+            self.ui.selected_patient_text_patientview.setText(output)
+            self.ui.selected_patient_text_visitview.setText(output)
+            self.ui.selected_patient_text_visitdataview.setText(output)
         else:
             QMessageBox.warning(self, "Insufficient Data",
                                 "Please fill out all patient data and make sure they are valid.")
 
     def __patient_update_button_clicked(self):
-        if self.__validate_patient():
-            if not self.__patient_exists():
-                if self.__to_create_patient():
+        if self.__validate_patient(): # check if patient data are valid
+            if not self.__patient_exists(): # check if patient exists in database, execute if this is not the case
+                if self.__to_create_patient(): # ask user if patient should be created
                     pat_dict = {'patient_id': self.ui.patient_id_field.text(),
                                 'gender': self.ui.gender_dropdown.currentText(),
                                 'ethnicity': self.ui.ethnicity_dropdown.currentText(),
@@ -160,17 +175,31 @@ class DataWindow(QMainWindow):
                                 'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                                 'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
                     self.patient_service.create_patient(pat_dict)
-            else:
+            else: # if patient exists in database, patient data can be updated
                 pat_dict = {
                     'gender': self.ui.gender_dropdown.currentText(),
                     'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                     'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                     'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                     'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
-
                 self.patient_service.update_patient(
                     self.ui.patient_id_field.text(), pat_dict)
             self.init_ui()
+            # Show the data of the selected patient in QTextEdit
+            # pat_dict is needed again in case the patient was only updated
+            pat_dict = {
+                'patient_id': self.ui.patient_id_field.text(),
+                'gender': self.ui.gender_dropdown.currentText(),
+                'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+                'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+                'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+            output = ""
+            for key, value in pat_dict.items():
+                output += f"{key}: {value}\n"
+            self.ui.selected_patient_text_patientview.setText(output)
+            self.ui.selected_patient_text_visitview.setText(output)
+            self.ui.selected_patient_text_visitdataview.setText(output)
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are "
                                                            "valid.")
@@ -234,6 +263,7 @@ class DataWindow(QMainWindow):
             self.ui.selected_patient_text_visitdataview.setText(output)
 
             self.selected_patient = str(self.patient_tableView.model().index(selected_row, 0).data())
+            print(self.selected_patient)
 
             # Show the data of the selected patient in the drop-down/selection menu
             self.ui.patient_id_field.setText(
@@ -362,7 +392,6 @@ class DataWindow(QMainWindow):
     # Visit Functions
     def __init_visits_of_patient(self):
         self.visits_array = self.visit_service.get_visits_for_patient(self.selected_patient)
-        print(self.visits_array)
         self.visits_model = CustomVisitsModel(self.visits_array)
         self.visits_tableView.setModel(self.visits_model)
         self.visits_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -455,7 +484,6 @@ class DataWindow(QMainWindow):
             # Show the data of the selected visit in the drop-down/selection menu
             visit = self.visit_service.get_visit(
                 self.selected_visit)
-            print(visit.year_of_visit)
             if visit:
                 self.ui.year_of_visit_calendar.setDate(QDate(visit.year_of_visit, 1, 1))
                 if visit.visit_type == "Initial Diagnostic":
