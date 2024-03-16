@@ -154,7 +154,8 @@ class DataWindow(QMainWindow):
                 'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                 'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                 'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
+                'center': self.ui.center_text.text()}
             output = ""
             for key, value in pat_dict.items():
                 output += f"{key}: {value}\n"
@@ -179,7 +180,8 @@ class DataWindow(QMainWindow):
                                 'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                                 'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                                 'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
+                                'center': self.ui.center_text.text()}
                     self.patient_service.create_patient(pat_dict)
             else: # if patient exists in database, patient data can be updated
                 pat_dict = {
@@ -187,7 +189,8 @@ class DataWindow(QMainWindow):
                     'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                     'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                     'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                    'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                    'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
+                    'center': self.ui.center_text.text()}
                 self.patient_service.update_patient(
                     self.ui.patient_id_field.text(), pat_dict)
             self.init_ui()
@@ -199,7 +202,8 @@ class DataWindow(QMainWindow):
                 'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                 'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                 'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
+                'center': self.ui.center_text.text()}
             output = ""
             for key, value in pat_dict.items():
                 output += f"{key}: {value}\n"
@@ -390,22 +394,24 @@ class DataWindow(QMainWindow):
                 therapy_dict = {
                     'patient_id': self.selected_patient,
                     'therapy': self.ui.therapy_dropdown.currentText(),
-                    'year_not_known': True}
-                self.previous_therapies_service.create_previous_therapy(therapy_dict)
+                    'year_not_known': True,
+                    'center': self.ui.center_previous_therapy_text.text()}
+                self.previous_therapy_service.create_previous_therapy(therapy_dict)
                 self.__init_previous_therapies()
             else:
                 therapy_dict = {
                     'patient_id': self.selected_patient,
                     'therapy': self.ui.therapy_dropdown.currentText(),
-                    'year': self.ui.therapy_calendar.date().toPyDate().year}
-                self.previous_therapies_service.create_previous_therapy(therapy_dict)
+                    'year': self.ui.therapy_calendar.date().toPyDate().year,
+                    'center': self.ui.center_previous_therapy_text.text()}
+                self.previous_therapy_service.create_previous_therapy(therapy_dict)
                 self.__init_previous_therapies()
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all therapy data and make sure they are "
                                                            "valid.")
 
     def __previous_therapy_delete_button_clicked(self):
-        self.previous_therapies_service.delete_previous_therapy(self.selected_previous_therapy)
+        self.previous_therapy_service.delete_previous_therapy(self.selected_previous_therapy)
         self.__init_previous_therapies()
         self.selected_previous_therapy = None
         self.ui.selected_therapy_text_patientview.setText("")
