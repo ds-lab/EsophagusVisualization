@@ -18,7 +18,6 @@ from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
-import re
 
 
 class DataWindow(QMainWindow):
@@ -64,7 +63,7 @@ class DataWindow(QMainWindow):
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
         self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
         self.ui.patient_delete_button.clicked.connect(self.__patient_delete_button_clicked)
-        self.ui.patients_filter_button.clicked.connect(self.__patients_filter_button_clicked)
+        self.ui.patient_reset_filter_button.clicked.connect(self.__patients_reset_filter_button_clicked)
 
         self.ui.previous_therapy_add_button.clicked.connect(self.__previous_therapy_add_button_clicked)
         self.ui.previous_therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
@@ -72,11 +71,19 @@ class DataWindow(QMainWindow):
         self.ui.visit_add_button.clicked.connect(self.__visit_add_button_clicked)
         self.ui.visit_delete_button.clicked.connect(self.__visit_delete_button_clicked)
 
+        self.ui.patient_id_radio.toggled.connect(self.__patients_apply_filter)
+        self.ui.birthyear_radio.toggled.connect(self.__patients_apply_filter)
+        self.ui.gender_radio.toggled.connect(self.__patients_apply_filter)
+        self.ui.ethnicity_radio.toggled.connect(self.__patients_apply_filter)
+        self.ui.firstdiagnosis_radio.toggled.connect(self.__patients_apply_filter)
+        self.ui.firstsymptoms_radio.toggled.connect(self.__patients_apply_filter)
+        self.ui.center_radio.toggled.connect(self.__patients_apply_filter)
+
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
 
-        self.init_ui()
+        self.__init_ui()
 
     # Function of the UI
 
@@ -88,13 +95,16 @@ class DataWindow(QMainWindow):
         info_window.show_file_selection_info()
         info_window.show()
 
-    def init_ui(self):
+    def __initialize_patient_model(self, filter_column: int = 6, filter_expression: str = '.*'):
         self.patients = self.patient_service.get_all_patients()
         self.patient_model = CustomPatientModel(self.patients)
         self.patient_proxyModel = QSortFilterProxyModel()
         self.patient_proxyModel.setSourceModel(self.patient_model)
-        self.patient_proxyModel.setFilterKeyColumn(6)
-        self.patient_proxyModel.setFilterFixedString('augs')
+        self.patient_proxyModel.setFilterKeyColumn(filter_column)
+        self.patient_proxyModel.setFilterRegularExpression(filter_expression)
+
+    def __init_ui(self, filter_column: int = 6, filter_expression: str = '.*'):
+        self.__initialize_patient_model(filter_column, filter_expression)
         self.patient_tableView.setModel(self.patient_proxyModel)
         self.patient_tableView.setSortingEnabled(True)
         self.patient_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -105,7 +115,6 @@ class DataWindow(QMainWindow):
         self.patient_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.patient_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.patient_tableView.clicked.connect(self.__show_selected_patient_data)
-
         # self.tableView.hideColumn(0)
 
         # Collect all patient_ids in a list to make auto-complete suggestions
@@ -156,7 +165,7 @@ class DataWindow(QMainWindow):
                     'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
                     'center': self.ui.center_text.text()}
                 self.patient_service.create_patient(pat_dict)
-            self.init_ui()
+            self.__init_ui()
             # Show the data of the selected patient in QTextEdit
             # pat_dict is needed again in case the patient was only updated
             pat_dict = {
@@ -183,9 +192,9 @@ class DataWindow(QMainWindow):
                                 "Please fill out all patient data and make sure they are valid.")
 
     def __patient_update_button_clicked(self):
-        if self.__validate_patient(): # check if patient data are valid
-            if not self.__patient_exists(): # check if patient exists in database, execute if this is not the case
-                if self.__to_create_patient(): # ask user if patient should be created
+        if self.__validate_patient():  # check if patient data are valid
+            if not self.__patient_exists():  # check if patient exists in database, execute if this is not the case
+                if self.__to_create_patient():  # ask user if patient should be created
                     pat_dict = {'patient_id': self.ui.patient_id_field.text(),
                                 'gender': self.ui.gender_dropdown.currentText(),
                                 'ethnicity': self.ui.ethnicity_dropdown.currentText(),
@@ -194,7 +203,7 @@ class DataWindow(QMainWindow):
                                 'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
                                 'center': self.ui.center_text.text()}
                     self.patient_service.create_patient(pat_dict)
-            else: # if patient exists in database, patient data can be updated
+            else:  # if patient exists in database, patient data can be updated
                 pat_dict = {
                     'gender': self.ui.gender_dropdown.currentText(),
                     'ethnicity': self.ui.ethnicity_dropdown.currentText(),
@@ -204,7 +213,7 @@ class DataWindow(QMainWindow):
                     'center': self.ui.center_text.text()}
                 self.patient_service.update_patient(
                     self.ui.patient_id_field.text(), pat_dict)
-            self.init_ui()
+            self.__init_ui()
             # Show the data of the selected patient in QTextEdit
             # pat_dict is needed again in case the patient was only updated
             pat_dict = {
@@ -231,8 +240,9 @@ class DataWindow(QMainWindow):
                                                            "valid.")
 
     def __patient_delete_button_clicked(self):
-        self.patient_service.delete_patient(self.ui.patient_id_field.text()) # ToDo vorher checken ob der Patient existiert
-        self.init_ui()
+        self.patient_service.delete_patient(
+            self.ui.patient_id_field.text())  # ToDo vorher checken ob der Patient existiert
+        self.__init_ui()
         self.selected_patient = None
         self.ui.selected_patient_text_patientview.setText("")
         self.ui.selected_patient_text_visitview.setText("")
@@ -349,9 +359,59 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-    def __patients_filter_button_clicked(self):
+    def __patients_apply_filter(self):
         if self.ui.patient_id_radio.isChecked():
-            print("Checked")
+            filter_exp = '^' + self.ui.patient_id_field.text() # all patient that start with this id are shown
+            self.__init_ui(filter_column=0, filter_expression=filter_exp)
+        if self.ui.birthyear_radio.isChecked():
+            filter_exp = str(self.ui.birthyear_calendar.date().toPyDate().year)
+            self.__init_ui(filter_column=3, filter_expression=filter_exp)
+        if self.ui.gender_radio.isChecked():
+            filter_exp = '^' + self.ui.gender_dropdown.currentText() + '$'
+            self.__init_ui(filter_column=1, filter_expression=filter_exp)
+        if self.ui.ethnicity_radio.isChecked():
+            filter_exp = '^' + self.ui.ethnicity_dropdown.currentText() + '$'
+            self.__init_ui(filter_column=2, filter_expression=filter_exp)
+        if self.ui.firstdiagnosis_radio.isChecked():
+            filter_exp = str(self.ui.firstdiagnosis_calendar.date().toPyDate().year)
+            self.__init_ui(filter_column=4, filter_expression=filter_exp)
+        if self.ui.firstsymptoms_radio.isChecked():
+            filter_exp = str(self.ui.firstsymptoms_calendar.date().toPyDate().year)
+            self.__init_ui(filter_column=5, filter_expression=filter_exp)
+        if self.ui.center_radio.isChecked():
+            filter_exp = '^' + self.ui.center_text.text() # all patients whos centers start with this string
+            self.__init_ui(filter_column=6, filter_expression=filter_exp)
+
+    def __patients_reset_filter_button_clicked(self):
+        self.__init_ui(filter_column=6, filter_expression='.*')
+        # Uncheck Patient Id
+        self.ui.patient_id_radio.setAutoExclusive(False)
+        self.ui.patient_id_radio.setChecked(False)
+        self.ui.patient_id_radio.setAutoExclusive(True)
+        # Uncheck birthyear
+        self.ui.birthyear_radio.setAutoExclusive(False)
+        self.ui.birthyear_radio.setChecked(False)
+        self.ui.birthyear_radio.setAutoExclusive(True)
+        # Uncheck gender
+        self.ui.gender_radio.setAutoExclusive(False)
+        self.ui.gender_radio.setChecked(False)
+        self.ui.gender_radio.setAutoExclusive(True)
+        # Uncheck ethnicity
+        self.ui.ethnicity_radio.setAutoExclusive(False)
+        self.ui.ethnicity_radio.setChecked(False)
+        self.ui.ethnicity_radio.setAutoExclusive(True)
+        # Uncheck first diagnosis
+        self.ui.firstdiagnosis_radio.setAutoExclusive(False)
+        self.ui.firstdiagnosis_radio.setChecked(False)
+        self.ui.firstdiagnosis_radio.setAutoExclusive(True)
+        # Uncheck first symptoms
+        self.ui.firstsymptoms_radio.setAutoExclusive(False)
+        self.ui.firstsymptoms_radio.setChecked(False)
+        self.ui.firstsymptoms_radio.setAutoExclusive(True)
+        # Uncheck center
+        self.ui.center_radio.setAutoExclusive(False)
+        self.ui.center_radio.setChecked(False)
+        self.ui.center_radio.setAutoExclusive(True)
 
     # Previous Therapy Functions
 
@@ -461,7 +521,7 @@ class DataWindow(QMainWindow):
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
                       'therapy_type': self.ui.therapy_type_dropdown.currentText(),
                       'months_after_therapy': self.ui.month_after_therapy_spin.value()}
-        if self.__validate_visit(): # check if visit-data are valid
+        if self.__validate_visit():  # check if visit-data are valid
             self.visit_service.create_visit(visit_dict)
             self.__init_visits_of_patient()
         else:
@@ -530,4 +590,3 @@ class DataWindow(QMainWindow):
         ):
             return True
         return False
-

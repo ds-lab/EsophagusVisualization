@@ -343,9 +343,9 @@
               </widget>
              </item>
              <item row="0" column="0">
-              <widget class="QPushButton" name="patients_filter_button">
+              <widget class="QPushButton" name="patient_reset_filter_button">
                <property name="text">
-                <string>Filter Patients</string>
+                <string>Reset Filter</string>
                </property>
               </widget>
              </item>
