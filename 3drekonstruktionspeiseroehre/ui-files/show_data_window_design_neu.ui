@@ -944,7 +944,7 @@
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -1092,6 +1092,13 @@
             </item>
             <item row="1" column="1">
              <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QPushButton" name="pushButton_7">
+                <property name="text">
+                 <string>Manometrie Daten updaten</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QPushButton" name="manometrie_add_button_2">
                 <property name="text">
@@ -1244,6 +1251,13 @@
             </item>
             <item row="1" column="1">
              <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="QPushButton" name="pushButton_8">
+                <property name="text">
+                 <string>Breischluck Daten updaten</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QPushButton" name="manometrie_add_button_3">
                 <property name="text">
@@ -1441,6 +1455,13 @@
             <item row="1" column="2">
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
+               <widget class="QPushButton" name="pushButton_9">
+                <property name="text">
+                 <string>Endoskopie Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="manometrie_add_button_4">
                 <property name="text">
                  <string>Endoskopie Daten hinzufügen</string>
@@ -1607,6 +1628,13 @@
             <item row="1" column="2">
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
+               <widget class="QPushButton" name="pushButton_10">
+                <property name="text">
+                 <string>Endoflip Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="manometrie_add_button_5">
                 <property name="text">
                  <string>Endoflip Daten hinzufügen</string>
@@ -1723,6 +1751,13 @@
             </item>
             <item row="1" column="2">
              <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QPushButton" name="pushButton_11">
+                <property name="text">
+                 <string>Endosonographie Daten updaten</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QPushButton" name="manometrie_add_button_6">
                 <property name="text">
@@ -1881,14 +1916,14 @@
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="page_5">
            <layout class="QGridLayout" name="gridLayout_71">
             <item row="0" column="0">
              <widget class="QGroupBox" name="groupBox_39">
               <property name="title">
-               <string>Clinical Questions and Medication Use</string>
+               <string>Clinical Questions &amp; Medication Use</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_72">
                <item row="0" column="0">
@@ -2000,6 +2035,13 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="3" column="0">
+                  <widget class="QPushButton" name="update_clinicaldata_button">
+                   <property name="text">
+                    <string>Update Clinical Data</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </item>
               </layout>
@@ -2053,6 +2095,19 @@
                </item>
                <item row="1" column="1">
                 <layout class="QGridLayout" name="gridLayout_32">
+                 <item row="0" column="0">
+                  <spacer name="verticalSpacer_6">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                  <item row="1" column="0">
                   <widget class="QPushButton" name="add_therapy_botox_button">
                    <property name="text">
@@ -2067,18 +2122,12 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="0">
-                  <spacer name="verticalSpacer_6">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
+                 <item row="3" column="0">
+                  <widget class="QPushButton" name="pushButton">
+                   <property name="text">
+                    <string>Update Therapy</string>
                    </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -2159,6 +2208,13 @@
                     </size>
                    </property>
                   </spacer>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QPushButton" name="pushButton_2">
+                   <property name="text">
+                    <string>Update Therapy</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -2347,6 +2403,13 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_3">
+                <property name="text">
+                 <string>Update Therapy</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -2499,6 +2562,13 @@
                   <widget class="QPushButton" name="add_therapy_poem_button">
                    <property name="text">
                     <string>Therapie hinzufügen</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_4">
+                   <property name="text">
+                    <string>Update Therapy</string>
                    </property>
                   </widget>
                  </item>
