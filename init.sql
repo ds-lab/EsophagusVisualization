@@ -13,7 +13,7 @@ CREATE TABLE visits (
     year_of_visit INTEGER NOT NULL,
     visit_type VARCHAR(50) NOT NULL,
     therapy_type VARCHAR(50) NOT NULL,
-    year_first_symptoms INTEGER NOT NULL
+    months_after_therapy INTEGER NOT NULL
 );
 
 CREATE TABLE therapies (

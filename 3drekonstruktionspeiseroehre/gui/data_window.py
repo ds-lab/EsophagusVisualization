@@ -437,7 +437,7 @@ class DataWindow(QMainWindow):
                       'year_of_visit': self.ui.year_of_visit_calendar.date().toPyDate().year,
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
                       'therapy_type': self.ui.therapy_type_dropdown.currentText(),
-                      'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
+                      'months_after_therapy': self.ui.month_after_therapy_spin.value()}
         if self.__validate_visit():
             if self.__visit_exists():
                 if self.__to_update_visit():
@@ -455,7 +455,7 @@ class DataWindow(QMainWindow):
                       'year_of_visit': self.ui.year_of_visit_calendar.date().toPyDate().year,
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
                       'therapy_type': self.ui.therapy_type_dropdow.currentText(),
-                      'year_first_symptoms': self.ui.month_after_therapy_spin.value()}
+                      'months_after_therapy': self.ui.month_after_therapy_spin.value()}
         if self.__validate_visit():
             if not self.__visit_exists():
                 if self.__to_create_visit():
