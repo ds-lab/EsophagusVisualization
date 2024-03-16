@@ -310,6 +310,7 @@ class DataWindow(QMainWindow):
                 and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
                 and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
                 and 1900 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
+                and self.ui.center_text.text() != ""
         ):
             return True
         return False
@@ -445,45 +446,12 @@ class DataWindow(QMainWindow):
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
                       'therapy_type': self.ui.therapy_type_dropdown.currentText(),
                       'months_after_therapy': self.ui.month_after_therapy_spin.value()}
-        if self.__validate_visit():
-            if self.__visit_exists():
-                if self.__to_update_visit():
-                    self.visit_service.update_visit(
-                        self.selected_visit, visit_dict)
-            else:
-                self.visit_service.create_visit(visit_dict)
+        if self.__validate_visit(): # check if visit-data are valid
+            self.visit_service.create_visit(visit_dict)
             self.__init_visits_of_patient()
-            output = ""
-            for key, value in visit_dict.items():
-                output += f"{key}: {value}\n"
-            self.ui.selected_visit_text_visitview.setText(output)
-            self.ui.selected_visit_text_visitdataview.setText(output)
         else:
             QMessageBox.warning(self, "Insufficient Data",
                                 "Please fill out all visit data and make sure they are valid.")
-
-    def __visit_update_button_clicked(self):
-        visit_dict = {'patient_id': self.selected_patient,
-                      'year_of_visit': self.ui.year_of_visit_calendar.date().toPyDate().year,
-                      'visit_type': self.ui.visit_type_dropdown.currentText(),
-                      'therapy_type': self.ui.therapy_type_dropdown.currentText(),
-                      'months_after_therapy': self.ui.month_after_therapy_spin.value()}
-        if self.__validate_visit():
-            if not self.__visit_exists():
-                if self.__to_create_visit():
-                    self.visit_service.create_visit(visit_dict)
-            else:
-                self.visit_service.update_visit(
-                    self.selected_visit, visit_dict)
-            self.__init_visits_of_patient()
-            output = ""
-            for key, value in visit_dict.items():
-                output += f"{key}: {value}\n"
-            self.ui.selected_visit_text_visitview.setText(output)
-            self.ui.selected_visit_text_visitdataview.setText(output)
-        else:
-            QMessageBox.warning(self, "Insufficient Data", "Please fill out all visit data and make sure they are "
-                                                           "valid.")
 
     def __visit_delete_button_clicked(self):
         if self.visit_exists():
@@ -548,26 +516,3 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-    def __visit_exists(self):
-        if self.selected_visit:
-            visit = self.visit_service.get_visit(
-                self.selected_visit)
-            if visit:
-                return True
-        return False
-
-    def __to_update_visit(self):
-        reply = QMessageBox.question(self, 'This Visit already exists in the database.',
-                                     "Should the Visit data be updated?", QMessageBox.StandardButton.Yes |
-                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
-            return True
-        return False
-
-    def __to_create_visit(self):
-        reply = QMessageBox.question(self, 'This Visit not yet exists in the database.',
-                                     "Should the Visit be created?", QMessageBox.StandardButton.Yes |
-                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
-            return True
-        return False
