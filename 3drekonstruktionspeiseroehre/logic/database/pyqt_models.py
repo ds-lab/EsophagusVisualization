@@ -58,36 +58,10 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         row = self.patient_array[index.row()]
         column = self.columns[index.column()]
         try:
-            # if index.column() == 1:
-            #     selected_row = self.user_data[index.row()]
-            #     image_data = selected_row['photo']
-            #     image = QtGui.QImage()
-            #     image.loadFromData(image_data)
-            #     icon = QtGui.QIcon()
-            #     icon.addPixmap(QtGui.QPixmap.fromImage(image))
-            #     return icon
             if role == QtCore.Qt.ItemDataRole.DisplayRole:
                 return str(row[column])
         except KeyError:
             return None
-
-    # def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
-    #     """
-    #     Edit data in table cells
-    #     :param index:
-    #     :param value:
-    #     :param role:
-    #     :return:
-    #     """
-    #     if index.isValid():
-    #         selected_row = self.patient_array[index.row()]
-    #         selected_column = self.columns[index.column()]
-    #         selected_row[selected_column] = value
-    #         self.dataChanged.emit(index, index, (Qt.ItemDataRole.DisplayRole,))
-    #         ok = self.patient_service.update_patient(selected_row['patient_id'], selected_row)
-    #         if ok:
-    #             return True
-    #     return False
 
     def insertRows(self):
         row_count = len(self.patient_array)
@@ -177,36 +151,11 @@ class CustomPreviousTherapyModel(QtCore.QAbstractTableModel):
         row = self.previous_therapies_array[index.row()]
         column = self.columns[index.column()]
         try:
-            # if index.column() == 1:
-            #     selected_row = self.user_data[index.row()]
-            #     image_data = selected_row['photo']
-            #     image = QtGui.QImage()
-            #     image.loadFromData(image_data)
-            #     icon = QtGui.QIcon()
-            #     icon.addPixmap(QtGui.QPixmap.fromImage(image))
-            #     return icon
             if role == QtCore.Qt.ItemDataRole.DisplayRole:
                 return str(row[column])
         except KeyError:
             return None
 
-    # def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
-    #     """
-    #     Edit data in table cells
-    #     :param index:
-    #     :param value:
-    #     :param role:
-    #     :return:
-    #     """
-    #     if index.isValid():
-    #         selected_row = self.patient_array[index.row()]
-    #         selected_column = self.columns[index.column()]
-    #         selected_row[selected_column] = value
-    #         self.dataChanged.emit(index, index, (Qt.ItemDataRole.DisplayRole,))
-    #         ok = self.patient_service.update_patient(selected_row['patient_id'], selected_row)
-    #         if ok:
-    #             return True
-    #     return False
 
     def insertRows(self):
         row_count = len(self.previous_therapies_array)
@@ -278,36 +227,11 @@ class CustomVisitsModel(QtCore.QAbstractTableModel):
         row = self.visits_array[index.row()]
         column = self.columns[index.column()]
         try:
-            # if index.column() == 1:
-            #     selected_row = self.user_data[index.row()]
-            #     image_data = selected_row['photo']
-            #     image = QtGui.QImage()
-            #     image.loadFromData(image_data)
-            #     icon = QtGui.QIcon()
-            #     icon.addPixmap(QtGui.QPixmap.fromImage(image))
-            #     return icon
             if role == QtCore.Qt.ItemDataRole.DisplayRole:
                 return str(row[column])
         except KeyError:
             return None
 
-    # def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
-    #     """
-    #     Edit data in table cells
-    #     :param index:
-    #     :param value:
-    #     :param role:
-    #     :return:
-    #     """
-    #     if index.isValid():
-    #         selected_row = self.patient_array[index.row()]
-    #         selected_column = self.columns[index.column()]
-    #         selected_row[selected_column] = value
-    #         self.dataChanged.emit(index, index, (Qt.ItemDataRole.DisplayRole,))
-    #         ok = self.patient_service.update_patient(selected_row['patient_id'], selected_row)
-    #         if ok:
-    #             return True
-    #     return False
 
     def insertRows(self):
         row_count = len(self.visits_array)
