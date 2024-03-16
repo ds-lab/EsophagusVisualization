@@ -18,6 +18,7 @@ from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
+import re
 
 
 class DataWindow(QMainWindow):
@@ -63,7 +64,7 @@ class DataWindow(QMainWindow):
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
         self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
         self.ui.patient_delete_button.clicked.connect(self.__patient_delete_button_clicked)
-        self.ui.patient_search_button.clicked.connect(self.__patient_search_button_clicked)
+        self.ui.patients_filter_button.clicked.connect(self.__patients_filter_button_clicked)
 
         self.ui.previous_therapy_add_button.clicked.connect(self.__previous_therapy_add_button_clicked)
         self.ui.previous_therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
@@ -92,6 +93,8 @@ class DataWindow(QMainWindow):
         self.patient_model = CustomPatientModel(self.patients)
         self.patient_proxyModel = QSortFilterProxyModel()
         self.patient_proxyModel.setSourceModel(self.patient_model)
+        self.patient_proxyModel.setFilterKeyColumn(6)
+        self.patient_proxyModel.setFilterFixedString('augs')
         self.patient_tableView.setModel(self.patient_proxyModel)
         self.patient_tableView.setSortingEnabled(True)
         self.patient_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -346,7 +349,7 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-    def __patient_search_button_clicked(self):
+    def __patients_filter_button_clicked(self):
         if self.ui.patient_id_radio.isChecked():
             print("Checked")
 
