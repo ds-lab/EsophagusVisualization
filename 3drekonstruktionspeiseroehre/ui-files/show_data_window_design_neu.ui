@@ -1068,7 +1068,7 @@
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>1</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -1089,48 +1089,25 @@
                <string>Manometrie</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_31">
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_33">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_41">
                  <property name="text">
-                  <string>IPR4:</string>
+                  <string>Sondentyp:</string>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="comboBox_14"/>
                </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_34">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_43">
                  <property name="text">
-                  <string>UÖS untere Grenze:</string>
+                  <string>Ruhedruck am UÖS:</string>
                  </property>
                 </widget>
                </item>
-               <item row="8" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
-               </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_35">
-                 <property name="text">
-                  <string>Manometrie File:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="1">
-                <widget class="QLineEdit" name="lineEdit_4"/>
-               </item>
-               <item row="7" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_11"/>
-               </item>
-               <item row="9" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_12"/>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_36">
-                 <property name="text">
-                  <string>OÖS obere Grenze:</string>
-                 </property>
-                </widget>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_16"/>
                </item>
                <item row="4" column="0">
                 <widget class="QLabel" name="label_37">
@@ -1139,18 +1116,11 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_13"/>
+               <item row="4" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_15"/>
                </item>
                <item row="0" column="1">
                 <widget class="QComboBox" name="comboBox_13"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_38">
-                 <property name="text">
-                  <string>Patientenlage:</string>
-                 </property>
-                </widget>
                </item>
                <item row="5" column="0">
                 <widget class="QLabel" name="label_39">
@@ -1162,8 +1132,41 @@
                <item row="5" column="1">
                 <widget class="QDoubleSpinBox" name="doubleSpinBox_14"/>
                </item>
-               <item row="4" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_15"/>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_38">
+                 <property name="text">
+                  <string>Patientenlage:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_13"/>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_33">
+                 <property name="text">
+                  <string>IPR4:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
+               </item>
+               <item row="6" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_34">
+                 <property name="text">
+                  <string>UÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_11"/>
+               </item>
+               <item row="9" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_12"/>
                </item>
                <item row="7" column="0">
                 <widget class="QLabel" name="label_40">
@@ -1172,13 +1175,10 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QComboBox" name="comboBox_14"/>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_41">
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_36">
                  <property name="text">
-                  <string>Sondentyp:</string>
+                  <string>OÖS obere Grenze:</string>
                  </property>
                 </widget>
                </item>
@@ -1189,15 +1189,15 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_43">
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_35">
                  <property name="text">
-                  <string>Ruhedruck am UÖS:</string>
+                  <string>Manometrie File:</string>
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_16"/>
+               <item row="10" column="1">
+                <widget class="QLineEdit" name="lineEdit_4"/>
                </item>
               </layout>
              </widget>
@@ -1556,8 +1556,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1297</width>
-             <height>429</height>
+             <width>439</width>
+             <height>159</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1911,27 +1911,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_87">
-                 <property name="text">
-                  <string>Abstand Bilder:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_79">
-                 <property name="text">
-                  <string>Endosonographie Files:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="2">
-                <widget class="QLineEdit" name="lineEdit_8"/>
-               </item>
-               <item row="2" column="2">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_45"/>
-               </item>
-               <item row="0" column="2">
+               <item row="0" column="1">
                 <widget class="QComboBox" name="comboBox_21"/>
                </item>
                <item row="1" column="0">
@@ -1941,8 +1921,18 @@
                  </property>
                 </widget>
                </item>
-               <item row="3" column="2">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_48"/>
+               <item row="1" column="1">
+                <widget class="QSpinBox" name="spinBox_3"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_87">
+                 <property name="text">
+                  <string>Abstand Bilder:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_45"/>
                </item>
                <item row="3" column="0">
                 <widget class="QLabel" name="label_77">
@@ -1951,10 +1941,31 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="2">
-                <widget class="QSpinBox" name="spinBox_3"/>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_48"/>
                </item>
-               <item row="7" column="2">
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_79">
+                 <property name="text">
+                  <string>Endosonographie Files:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_8"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_5">
+                   <property name="text">
+                    <string>Upload Files</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="5" column="1">
                 <spacer name="verticalSpacer_5">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
