@@ -653,13 +653,6 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="visit_update_button">
-            <property name="text">
-             <string>Updaten</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="1">
            <widget class="QPushButton" name="visit_delete_button">
             <property name="text">
@@ -951,15 +944,15 @@
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>4</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>293</width>
-             <height>285</height>
+             <width>1297</width>
+             <height>429</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1100,13 +1093,6 @@
             <item row="1" column="1">
              <layout class="QVBoxLayout" name="verticalLayout_2">
               <item>
-               <widget class="QPushButton" name="pushButton_7">
-                <property name="text">
-                 <string>Manometrie Daten updaten</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QPushButton" name="manometrie_add_button_2">
                 <property name="text">
                  <string>Manometrie Daten hinzufügen</string>
@@ -1129,8 +1115,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>473</width>
-             <height>285</height>
+             <width>1297</width>
+             <height>429</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1258,13 +1244,6 @@
             </item>
             <item row="1" column="1">
              <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <widget class="QPushButton" name="pushButton_8">
-                <property name="text">
-                 <string>Breischluck Daten updaten</string>
-                </property>
-               </widget>
-              </item>
               <item>
                <widget class="QPushButton" name="manometrie_add_button_3">
                 <property name="text">
@@ -1439,8 +1418,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>439</width>
-             <height>155</height>
+             <width>1297</width>
+             <height>429</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1461,13 +1440,6 @@
             </item>
             <item row="1" column="2">
              <layout class="QVBoxLayout" name="verticalLayout_4">
-              <item>
-               <widget class="QPushButton" name="pushButton_9">
-                <property name="text">
-                 <string>Endoskopie Daten updaten</string>
-                </property>
-               </widget>
-              </item>
               <item>
                <widget class="QPushButton" name="manometrie_add_button_4">
                 <property name="text">
@@ -1612,8 +1584,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>254</width>
-             <height>155</height>
+             <width>1297</width>
+             <height>429</height>
             </rect>
            </property>
            <attribute name="label">
@@ -1634,13 +1606,6 @@
             </item>
             <item row="1" column="2">
              <layout class="QVBoxLayout" name="verticalLayout_5">
-              <item>
-               <widget class="QPushButton" name="pushButton_10">
-                <property name="text">
-                 <string>Endoflip Daten updaten</string>
-                </property>
-               </widget>
-              </item>
               <item>
                <widget class="QPushButton" name="manometrie_add_button_5">
                 <property name="text">
@@ -1758,13 +1723,6 @@
             </item>
             <item row="1" column="2">
              <layout class="QVBoxLayout" name="verticalLayout_6">
-              <item>
-               <widget class="QPushButton" name="pushButton_11">
-                <property name="text">
-                 <string>Endosonographie Daten updaten</string>
-                </property>
-               </widget>
-              </item>
               <item>
                <widget class="QPushButton" name="manometrie_add_button_6">
                 <property name="text">
@@ -1930,7 +1888,7 @@
             <item row="0" column="0">
              <widget class="QGroupBox" name="groupBox_39">
               <property name="title">
-               <string>Clinical Questions &amp; Medication Use</string>
+               <string>Clinical Questions and Medication Use</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_72">
                <item row="0" column="0">
@@ -2015,20 +1973,6 @@
                </item>
                <item row="1" column="1">
                 <layout class="QGridLayout" name="gridLayout_75">
-                 <item row="1" column="0">
-                  <widget class="QPushButton" name="add_clinicaldata_button">
-                   <property name="text">
-                    <string>Add Clinical Data</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QPushButton" name="update_clinicaldata_button">
-                   <property name="text">
-                    <string>Update Clinical Data</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="2" column="0">
                   <widget class="QPushButton" name="delete_clinicaldata_button">
                    <property name="text">
@@ -2048,6 +1992,13 @@
                     </size>
                    </property>
                   </spacer>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="add_clinicaldata_button">
+                   <property name="text">
+                    <string>Add Clinical Data</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>

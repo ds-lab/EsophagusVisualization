@@ -428,7 +428,7 @@ class DataWindow(QMainWindow):
         if self.visits_tableView.selectedIndexes():
             remove_data = menu.addAction("Remove Data")
             remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
-            remove_data.triggered.connect(lambda: self.visit_model.removeRows(self.visit_tableView.currentIndex()))
+            remove_data.triggered.connect(lambda: self.visits_model.removeRows(self.visits_tableView.currentIndex()))
         cursor = QtGui.QCursor()
         menu.exec(cursor.pos())
 

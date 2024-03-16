@@ -314,7 +314,7 @@ class CustomVisitsModel(QtCore.QAbstractTableModel):
         self.beginInsertRows(QtCore.QModelIndex(), row_count, row_count)
         empty_data = {key: None for key in self.columns if not key == 'visit_id'}
         document_id = self.visit_service.create_visit(empty_data)
-        new_data = self.visit_service.get_visity(document_id)
+        new_data = self.visit_service.get_visit(document_id)
         self.visits_array.append(new_data)
         row_count += 1
         self.endInsertRows()
@@ -325,8 +325,8 @@ class CustomVisitsModel(QtCore.QAbstractTableModel):
         row_count -= 1
         self.beginRemoveRows(QtCore.QModelIndex(), row_count, row_count)
         row_id = position.row()
-        document_id = self.visit_array[row_id]['visit_id']
+        document_id = self.visits_array[row_id]['visit_id']
         self.visit_service.delete_visit(document_id)
-        self.visit_array.pop(row_id)
+        self.visits_array.pop(row_id)
         self.endRemoveRows()
         return True
