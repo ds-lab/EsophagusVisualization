@@ -442,10 +442,15 @@ class DataWindow(QMainWindow):
             if self.__visit_exists():
                 if self.__to_update_visit():
                     self.visit_service.update_visit(
-                        self.selected_visit, visit_dict) #ToDo auch bei Patient und Previous Therapies auf diese Art updaten
+                        self.selected_visit, visit_dict)
             else:
                 self.visit_service.create_visit(visit_dict)
             self.__init_visits_of_patient()
+            output = ""
+            for key, value in visit_dict.items():
+                output += f"{key}: {value}\n"
+            self.ui.selected_visit_text_visitview.setText(output)
+            self.ui.selected_visit_text_visitdataview.setText(output)
         else:
             QMessageBox.warning(self, "Insufficient Data",
                                 "Please fill out all visit data and make sure they are valid.")
@@ -454,7 +459,7 @@ class DataWindow(QMainWindow):
         visit_dict = {'patient_id': self.selected_patient,
                       'year_of_visit': self.ui.year_of_visit_calendar.date().toPyDate().year,
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
-                      'therapy_type': self.ui.therapy_type_dropdow.currentText(),
+                      'therapy_type': self.ui.therapy_type_dropdown.currentText(),
                       'months_after_therapy': self.ui.month_after_therapy_spin.value()}
         if self.__validate_visit():
             if not self.__visit_exists():
@@ -462,8 +467,13 @@ class DataWindow(QMainWindow):
                     self.visit_service.create_visit(visit_dict)
             else:
                 self.visit_service.update_visit(
-                    self.ui.patient_id_field.text(), visit_dict)
+                    self.selected_visit, visit_dict)
             self.__init_visits_of_patient()
+            output = ""
+            for key, value in visit_dict.items():
+                output += f"{key}: {value}\n"
+            self.ui.selected_visit_text_visitview.setText(output)
+            self.ui.selected_visit_text_visitdataview.setText(output)
         else:
             QMessageBox.warning(self, "Insufficient Data", "Please fill out all visit data and make sure they are "
                                                            "valid.")
