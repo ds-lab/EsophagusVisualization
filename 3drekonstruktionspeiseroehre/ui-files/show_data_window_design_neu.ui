@@ -60,24 +60,31 @@
           <layout class="QGridLayout" name="gridLayout_5">
            <item row="0" column="0">
             <layout class="QGridLayout" name="gridLayout_2">
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_2">
+             <item row="9" column="1">
+              <widget class="QLabel" name="label_6">
                <property name="text">
-                <string>Geburtsjahr</string>
+                <string>Jahr der ersten Symptome</string>
                </property>
               </widget>
              </item>
-             <item row="4" column="0">
+             <item row="10" column="2">
+              <widget class="QLineEdit" name="center_text"/>
+             </item>
+             <item row="6" column="1">
               <widget class="QLabel" name="label_4">
                <property name="text">
                 <string>Enthnizität</string>
                </property>
               </widget>
              </item>
-             <item row="8" column="1">
-              <widget class="QLineEdit" name="center_text"/>
+             <item row="4" column="1">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Geburtsjahr</string>
+               </property>
+              </widget>
              </item>
-             <item row="2" column="1">
+             <item row="4" column="2">
               <widget class="QDateEdit" name="birthyear_calendar">
                <property name="dateTime">
                 <datetime>
@@ -104,14 +111,7 @@
                </property>
               </widget>
              </item>
-             <item row="7" column="0">
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Jahr der ersten Symptome</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
+             <item row="5" column="2">
               <widget class="QComboBox" name="gender_dropdown">
                <item>
                 <property name="text">
@@ -135,7 +135,7 @@
                </item>
               </widget>
              </item>
-             <item row="7" column="1">
+             <item row="9" column="2">
               <widget class="QDateEdit" name="firstsymptoms_calendar">
                <property name="displayFormat">
                 <string>yyyy</string>
@@ -149,7 +149,14 @@
                </property>
               </widget>
              </item>
-             <item row="6" column="1">
+             <item row="2" column="1">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Patienten-Id</string>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="2">
               <widget class="QDateEdit" name="firstdiagnosis_calendar">
                <property name="displayFormat">
                 <string>yyyy</string>
@@ -163,7 +170,7 @@
                </property>
               </widget>
              </item>
-             <item row="4" column="1">
+             <item row="6" column="2">
               <widget class="QComboBox" name="ethnicity_dropdown">
                <item>
                 <property name="text">
@@ -202,28 +209,14 @@
                </item>
               </widget>
              </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>Patienten-Id</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
+             <item row="5" column="1">
               <widget class="QLabel" name="label_3">
                <property name="text">
                 <string>Geschlecht</string>
                </property>
               </widget>
              </item>
-             <item row="6" column="0">
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Jahr der Erstdiagnose</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
+             <item row="2" column="2">
               <widget class="QLineEdit" name="patient_id_field">
                <property name="text">
                 <string>insert Patient Id</string>
@@ -233,10 +226,94 @@
                </property>
               </widget>
              </item>
-             <item row="8" column="0">
+             <item row="10" column="1">
               <widget class="QLabel" name="label_11">
                <property name="text">
                 <string>Center</string>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="1">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Jahr der Erstdiagnose</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_93">
+               <property name="text">
+                <string>Search by...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QRadioButton" name="patient_id_radio">
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QRadioButton" name="birthyear_radio">
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QRadioButton" name="gender_radio">
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="QRadioButton" name="ethnicity_radio">
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="0">
+              <widget class="QRadioButton" name="firstdiagnosis_radio">
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="0">
+              <widget class="QRadioButton" name="firstsymptoms_radio">
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="10" column="0">
+              <widget class="QRadioButton" name="center_radio">
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
+               <property name="text">
+                <string/>
                </property>
               </widget>
              </item>
@@ -245,30 +322,23 @@
            <item row="1" column="0">
             <layout class="QGridLayout" name="gridLayout_3">
              <item row="0" column="1">
-              <widget class="QPushButton" name="patient_add_button">
-               <property name="text">
-                <string>Hinzufügen</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
               <widget class="QPushButton" name="patient_delete_button">
                <property name="text">
-                <string>Löschen</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="4">
-              <widget class="QPushButton" name="patient_update_button">
-               <property name="text">
-                <string>Updaten</string>
+                <string>Delete Patient</string>
                </property>
               </widget>
              </item>
              <item row="0" column="0">
-              <widget class="QPushButton" name="patient_search_button">
+              <widget class="QPushButton" name="patient_add_button">
                <property name="text">
-                <string>Suchen</string>
+                <string>Add Patient</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QPushButton" name="patient_update_button">
+               <property name="text">
+                <string>Update Patient</string>
                </property>
               </widget>
              </item>
@@ -425,14 +495,14 @@
              <item row="0" column="0">
               <widget class="QPushButton" name="previous_therapy_add_button">
                <property name="text">
-                <string>Vortherapie hinzufügen</string>
+                <string>Add Previous Therapy</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
               <widget class="QPushButton" name="previous_therapy_delete_button">
                <property name="text">
-                <string>Vortherapie löschen</string>
+                <string>Delete Previous Therapy</string>
                </property>
               </widget>
              </item>
@@ -649,14 +719,14 @@
           <item row="0" column="0">
            <widget class="QPushButton" name="visit_add_button">
             <property name="text">
-             <string>Hinzufügen</string>
+             <string>Add Visit</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
            <widget class="QPushButton" name="visit_delete_button">
             <property name="text">
-             <string>Löschen</string>
+             <string>Delete Visit</string>
             </property>
            </widget>
           </item>
