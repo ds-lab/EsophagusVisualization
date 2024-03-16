@@ -221,6 +221,11 @@ class DataWindow(QMainWindow):
         self.ui.selected_patient_text_patientview.setText("")
         self.ui.selected_patient_text_visitview.setText("")
         self.ui.selected_patient_text_visitdataview.setText("")
+        # Set the text of the selected visit to ""
+        self.ui.selected_visit_text_visitview.setText("")
+        self.ui.selected_visit_text_visitdataview.setText("")
+        # Set the text of the select previous therapy to ""
+        self.ui.selected_therapy_text_patientview.setText("")
 
     def __patient_id_filled(self):
         patient = self.patient_service.get_patient(
