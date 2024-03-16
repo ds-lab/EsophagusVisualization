@@ -261,6 +261,11 @@ class DataWindow(QMainWindow):
             self.ui.selected_patient_text_patientview.setText(output)
             self.ui.selected_patient_text_visitview.setText(output)
             self.ui.selected_patient_text_visitdataview.setText(output)
+            # Set the text of the select visit to "" until a visit for the patient is selected
+            self.ui.selected_visit_text_visitview.setText("")
+            self.ui.selected_visit_text_visitdataview.setText("")
+            # Set the text of the select previous therapy to "" until a previous therapy is selected
+            self.ui.selected_therapy_text_patientview.setText("")
 
             self.selected_patient = str(self.patient_tableView.model().index(selected_row, 0).data())
             print(self.selected_patient)
