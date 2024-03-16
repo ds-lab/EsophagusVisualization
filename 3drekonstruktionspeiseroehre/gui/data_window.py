@@ -581,6 +581,25 @@ class DataWindow(QMainWindow):
                 elif visit.therapy_type == "LHM":
                     self.ui.therapy_type_dropdown.setCurrentIndex(4)
 
+            # Show the data of the selected visits in the visitsdata Tab
+            if visit:
+                if visit.visit_type == "Follow-Up Diagnostic":
+                    print("Follow-Up")
+                    self.ui.stackedWidget.setCurrentIndex(0)
+                if visit.therapy_type == "Botox":
+                    print("Botox")
+                    self.ui.stackedWidget.setCurrentIndex(1)
+                elif visit.therapy_type == "Pneumatic Dilitation":
+                    print("Pneu")
+                    self.ui.stackedWidget.setCurrentIndex(2)
+                elif visit.therapy_type == "POEM":
+                    print("POEM")
+                    self.ui.stackedWidget.setCurrentIndex(4)
+                elif visit.therapy_type == "LHM":
+                    print("LHM")
+                    self.ui.stackedWidget.setCurrentIndex(3)
+
+
     def __validate_visit(self):
         if (
                 1900 < self.ui.year_of_visit_calendar.date().toPyDate().year <= datetime.now().year

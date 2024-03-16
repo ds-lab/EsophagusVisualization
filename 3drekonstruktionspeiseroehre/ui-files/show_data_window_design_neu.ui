@@ -252,6 +252,9 @@
                <property name="layoutDirection">
                 <enum>Qt::RightToLeft</enum>
                </property>
+               <property name="autoFillBackground">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -2037,14 +2040,14 @@
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>3</number>
+           <number>4</number>
           </property>
-          <widget class="QWidget" name="page_5">
+          <widget class="QWidget" name="clinical_questions">
            <layout class="QGridLayout" name="gridLayout_71">
             <item row="0" column="0">
              <widget class="QGroupBox" name="groupBox_39">
               <property name="title">
-               <string>Clinical Questions &amp; Medication Use</string>
+               <string>Clinical Questions and Medication Use</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_72">
                <item row="0" column="0">
