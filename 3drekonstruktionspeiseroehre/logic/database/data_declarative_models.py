@@ -14,6 +14,7 @@ class Patient(Base):
     birth_year = mapped_column(Integer)
     year_first_diagnosis = mapped_column(Integer)
     year_first_symptoms = mapped_column(Integer)
+    center = mapped_column(String(20))
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
@@ -67,6 +68,7 @@ class PreviousTherapy(Base):
     therapy = mapped_column(String, nullable=False)
     year = mapped_column(Integer, nullable=True)
     year_not_known = mapped_column(Boolean, nullable=True)
+    center = mapped_column(String(20), nullable=True)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}

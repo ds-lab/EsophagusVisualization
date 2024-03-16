@@ -66,7 +66,6 @@ class DataWindow(QMainWindow):
         self.ui.previous_therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
         self.ui.visit_add_button.clicked.connect(self.__visit_add_button_clicked)
         self.ui.visit_delete_button.clicked.connect(self.__visit_delete_button_clicked)
-        self.ui.visit_update_button.clicked.connect(self.__visit_update_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -132,7 +131,8 @@ class DataWindow(QMainWindow):
                                 'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                                 'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                                 'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
+                                'center': self.ui.center_text.text()}
                     self.patient_service.update_patient(
                         self.ui.patient_id_field.text(), pat_dict)
             else:
@@ -142,7 +142,8 @@ class DataWindow(QMainWindow):
                     'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                     'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                     'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                    'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year}
+                    'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
+                    'center': self.ui.center_text.text()}
                 self.patient_service.create_patient(pat_dict)
             self.init_ui()
             # Show the data of the selected patient in QTextEdit

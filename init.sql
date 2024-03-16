@@ -4,7 +4,8 @@ CREATE TABLE patients (
     ethnicity VARCHAR(50),
     birth_year INT,
     year_first_diagnosis INT,
-    year_first_symptoms INT
+    year_first_symptoms INT,
+    center VARCHAR(50)
 );
 
 CREATE TABLE visits (
@@ -33,7 +34,8 @@ CREATE TABLE previous_therapies (
     patient_id VARCHAR(30) REFERENCES patients(patient_id) ON DELETE CASCADE NOT NULL,
     therapy VARCHAR NOT NULL,
     year INT,
-    year_not_known BOOLEAN
+    year_not_known BOOLEAN,
+    center VARCHAR(50)
 );
 
 CREATE TABLE metrics (
