@@ -60,6 +60,6 @@ class TestPatientService(unittest.TestCase):
     
     def test_get_patient(self):
         self.patient_service.create_patient(patient_1)
-        result_1 = self.patient_service.get_patient_by_id(patient_1["patient_id"])
+        result_1 = self.patient_service.get_patient(patient_1["patient_id"])
         print(f"patient: {result_1}")
         assert result_1 != None

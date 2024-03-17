@@ -68,7 +68,7 @@ class CustomPatientModel(QtCore.QAbstractTableModel):
         self.beginInsertRows(QtCore.QModelIndex(), row_count, row_count)
         empty_data = {key: None for key in self.columns if not key == 'patient_id'}
         document_id = self.patient_service.create_patient(empty_data)
-        new_data = self.patient_service.get_patient_by_id(document_id)
+        new_data = self.patient_service.get_patient(document_id)
         self.patient_array.append(new_data)
         row_count += 1
         self.endInsertRows()

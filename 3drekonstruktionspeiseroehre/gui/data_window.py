@@ -1,6 +1,7 @@
 import os
 import pickle
 import re
+from io import BytesIO
 from pathlib import Path
 from datetime import datetime
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
@@ -20,8 +21,9 @@ from logic.database.data_declarative_models import PreviousTherapy
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.previous_therapy_service import PreviousTherapyService
+from logic.services.endoscopy_service import EndoscopyFileService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
-
+from PIL import Image
 
 class DataWindow(QMainWindow):
 
@@ -51,6 +53,7 @@ class DataWindow(QMainWindow):
         self.previous_therapy_service = PreviousTherapyService(self.db)
         self.patient_service = PatientService(self.db)
         self.visit_service = VisitService(self.db)
+        self.endoscopy_file_service = EndoscopyFileService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -84,7 +87,8 @@ class DataWindow(QMainWindow):
 
         #self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
         #self.ui.endosono_upload_button.clicked.connect(self.__endosono_upload_button_clicked)
-        self.ui.endoscopy_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
+        self.ui.endoscopy_upload_button.clicked.connect(self.__endoscopy_upload_button_clicked)
+        #self.ui.endoflip_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
         #self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
 
         menu_button = QAction("Info", self)
@@ -262,7 +266,7 @@ class DataWindow(QMainWindow):
         self.ui.selected_therapy_text_patientview.setText("")
 
     def __patient_id_filled(self):
-        patient = self.patient_service.get_patient_by_id(
+        patient = self.patient_service.get_patient(
             self.ui.patient_id_field.text())
         if patient:
             self.ui.birthyear_calendar.setDate(QDate(patient.birth_year, 1, 1))
@@ -345,7 +349,7 @@ class DataWindow(QMainWindow):
         return False
 
     def __patient_exists(self):
-        patient = self.patient_service.get_patient_by_id(
+        patient = self.patient_service.get_patient(
             self.ui.patient_id_field.text())
         if patient:
             return True
@@ -616,18 +620,23 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-    def __endoflip_upload_button_clicked(self):
+    def __endoscopy_upload_button_clicked(self):
         """
         Endoscopy button callback. Handles endoscopy image selection.
         """
         filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                     "Images (*.jpg *.JPG *.png *.PNG)")
+        print(filenames)
+        print(_)
         positions = []
+        fileextensions = []
         error = False
         for filename in filenames:
             match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
             if match:
                 positions.append(int(match.group('pos')))
+                fileextensions.append(os.path.splitext(filename)[1][1:])
+                print(fileextensions)
             else:
                 error = True
                 QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -635,6 +644,20 @@ class DataWindow(QMainWindow):
                 break
         if not error:
             self.ui.endoscopy_textfield.setText(str(len(filenames)) + " Files selected")
-            self.endoscopy_image_positions = positions
-            self.endoscopy_filenames = filenames
-        print(self.endoscopy_filenames)
+            for i in range(len(filenames)):
+                if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or fileextensions[i] == 'JPEG':
+                    extension = 'JPEG'
+                elif fileextensions[i] == 'png' or fileextensions[i] == 'PNG':
+                    extension = 'PNG'
+                file = Image.open(filenames[i])
+                file_bytes = BytesIO()
+                file.save(file_bytes, format=extension)
+                file_bytes = file_bytes.getvalue()
+                endoscopy_file_dict = {
+                    'visit_id': self.selected_visit, # Todo Button für Upload nur aktivieren, wenn ein Visit selektiert ist
+                    'image_position': positions[i],
+                    'filename': filenames[i],
+                    'file': file_bytes
+                }
+                self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
+
