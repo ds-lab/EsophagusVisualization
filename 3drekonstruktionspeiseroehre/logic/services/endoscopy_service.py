@@ -88,7 +88,7 @@ class EndoscopyFileService:
             pixmaps = []
             for endoscopy_file in results:
                 # Erstellen eines Pixmaps für jedes Endoscopy-Bild
-                image = endoscopy_file.file
+                image = endoscopy_file[0].file
                 pixmap = QtGui.QPixmap()
                 pixmap.loadFromData(image, 'jpeg')
                 pixmaps.append(pixmap)

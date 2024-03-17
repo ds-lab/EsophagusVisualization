@@ -42,6 +42,10 @@ class DataWindow(QMainWindow):
         self.previous_therapies_array = None
         self.visits_array = None
 
+        # For displaying images
+        self.endoscopy_image_index = None
+
+
         self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
 
         self.patient_tableView = self.ui.patient_tableView
@@ -90,6 +94,10 @@ class DataWindow(QMainWindow):
         self.ui.endoscopy_upload_button.clicked.connect(self.__endoscopy_upload_button_clicked)
         #self.ui.endoflip_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
         #self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
+
+        # Buttons of the Image Viewers
+        self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
+        self.ui.endoscopy_next_button.clicked.connect(self.__endoscopy_next_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -611,11 +619,10 @@ class DataWindow(QMainWindow):
             if visit:
                 # ToDo überprüfen ob ein Pixmap existiert
                 # ToDo alle Pixmaps laden statt nur einen
-                pixmap = self.endoscopy_file_service.retrieve_endoscopy_image(1)
-                scaled_pixmap = pixmap.scaledToWidth(200)
-                scaled_size = scaled_pixmap.size()
-                self.ui.endoscopy_imageview.setPixmap(scaled_pixmap)
-                self.ui.endoscopy_imageview.setFixedSize(scaled_size)
+                self.endoscopy_pixmaps = self.endoscopy_file_service.retrieve_endoscopy_images_for_visit(visit.visit_id)
+                self.endoscopy_image_index = 0
+                self.__load_endoscopy_image()
+
 
 
     def __validate_visit(self):
@@ -672,19 +679,20 @@ class DataWindow(QMainWindow):
 
     def __load_endoscopy_image(self):
         # Load and display the current image
-        if 0 <= self.image_index < len(self.image_paths):
-            image_path = self.image_paths[self.image_index]
-            pixmap = QPixmap(image_path)
-            self.image_label.setPixmap(pixmap)
+        if 0 <= self.endoscopy_image_index < len(self.endoscopy_pixmaps):
+            scaled_pixmap = self.endoscopy_pixmaps[self.endoscopy_image_index].scaledToWidth(200)
+            scaled_size = scaled_pixmap.size()
+            self.ui.endoscopy_imageview.setPixmap(scaled_pixmap)
+            self.ui.endoscopy_imageview.setFixedSize(scaled_size)
 
-    def __previous_endoscopy_image(self):
+    def __endoscopy_previous_button_clicked(self):
         # Show the previous image
-        if self.image_index > 0:
-            self.image_index -= 1
-            self.load_image()
+        if self.endoscopy_image_index > 0:
+            self.endoscopy_image_index -= 1
+            self.__load_endoscopy_image()
 
-    def __next_endoscopy_image(self):
+    def __endoscopy_next_button_clicked(self):
         # Show the next image
-        if self.image_index < len(self.image_paths) - 1:
-            self.image_index += 1
-            self.load_image()
+        if self.endoscopy_image_index < len(self.endoscopy_pixmaps) - 1:
+            self.endoscopy_image_index += 1
+            self.__load_endoscopy_image()

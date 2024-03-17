@@ -1033,38 +1033,7 @@
        <attribute name="title">
         <string>Visit-Daten</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,1,4,1,1" columnstretch="1,0,2">
-        <item row="0" column="0">
-         <widget class="QGroupBox" name="groupBox_14">
-          <property name="title">
-           <string>Ausgewählter Patient</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_26">
-           <item row="0" column="0">
-            <widget class="QTextEdit" name="selected_patient_text_visitdataview"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QGroupBox" name="groupBox_15">
-          <property name="title">
-           <string>Ausgewählter Visit</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_27">
-           <item row="0" column="0">
-            <widget class="QTextEdit" name="selected_visit_text_visitdataview">
-             <property name="baseSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
+       <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,1,6,1,1" columnstretch="1,0,3">
         <item row="4" column="0" colspan="3">
          <widget class="QPushButton" name="pushButton_21">
           <property name="text">
@@ -2361,7 +2330,7 @@
              <x>0</x>
              <y>0</y>
              <width>1297</width>
-             <height>489</height>
+             <height>558</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2501,16 +2470,16 @@
                    <item row="1" column="0">
                     <layout class="QHBoxLayout" name="horizontalLayout_4">
                      <item>
-                      <widget class="QPushButton" name="manometrie_delete_button_10">
+                      <widget class="QPushButton" name="endoscopy_previous_button">
                        <property name="text">
-                        <string>zurück</string>
+                        <string>previous</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="pushButton_26">
+                      <widget class="QPushButton" name="endoscopy_next_button">
                        <property name="text">
-                        <string>weiter</string>
+                        <string>next</string>
                        </property>
                       </widget>
                      </item>
@@ -2858,6 +2827,37 @@
             </item>
            </layout>
           </widget>
+         </widget>
+        </item>
+        <item row="0" column="0" rowspan="2">
+         <widget class="QGroupBox" name="groupBox_14">
+          <property name="title">
+           <string>Ausgewählter Patient</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_26">
+           <item row="0" column="0">
+            <widget class="QTextEdit" name="selected_patient_text_visitdataview"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="1" rowspan="2">
+         <widget class="QGroupBox" name="groupBox_15">
+          <property name="title">
+           <string>Ausgewählter Visit</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_27">
+           <item row="0" column="0">
+            <widget class="QTextEdit" name="selected_visit_text_visitdataview">
+             <property name="baseSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
