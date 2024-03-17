@@ -91,16 +91,6 @@ class DataWindow(QMainWindow):
         #self.ui.endoflip_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
         #self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
 
-
-        # ToDo dies nur aufrufen, wenn ein Visit ausgewählt wurde
-        # ToDo überprüfen ob ein Pixmap existiert
-        # ToDo alle Pixmaps laden statt nur einen
-        pixmap = self.endoscopy_file_service.retrieve_endoscopy_image(1)
-        scaled_pixmap = pixmap.scaledToWidth(200)
-        scaled_size = scaled_pixmap.size()
-        self.ui.endoscopy_imageview.setPixmap(scaled_pixmap)
-        self.ui.endoscopy_imageview.setFixedSize(scaled_size)
-
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -617,6 +607,15 @@ class DataWindow(QMainWindow):
                     self.ui.stackedWidget.setCurrentIndex(4)
                 elif visit.therapy_type == "LHM":
                     self.ui.stackedWidget.setCurrentIndex(3)
+
+            if visit:
+                # ToDo überprüfen ob ein Pixmap existiert
+                # ToDo alle Pixmaps laden statt nur einen
+                pixmap = self.endoscopy_file_service.retrieve_endoscopy_image(1)
+                scaled_pixmap = pixmap.scaledToWidth(200)
+                scaled_size = scaled_pixmap.size()
+                self.ui.endoscopy_imageview.setPixmap(scaled_pixmap)
+                self.ui.endoscopy_imageview.setFixedSize(scaled_size)
 
 
     def __validate_visit(self):

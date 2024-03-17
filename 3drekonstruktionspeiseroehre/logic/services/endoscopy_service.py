@@ -82,18 +82,16 @@ class EndoscopyFileService:
 
     def retrieve_endoscopy_images_for_visit(self, visit_id: int):
         try:
-            # Abfrage, um alle Endoscopy-Dateien für den bestimmten Besuch zu erhalten
+            # Abfrage, um alle Endoscopy-Dateien für den bestimmten Visit zu erhalten
             stmt = select(EndoscopyFile).join(Visit).filter(Visit.visit_id == visit_id)
             results = self.db.execute(stmt).all()
-
             pixmaps = []
             for endoscopy_file in results:
-                # Erstellen eines Pixmaps für jede Endoscopy-Datei
+                # Erstellen eines Pixmaps für jedes Endoscopy-Bild
                 image = endoscopy_file.file
                 pixmap = QtGui.QPixmap()
                 pixmap.loadFromData(image, 'jpeg')
                 pixmaps.append(pixmap)
-
             return pixmaps
         except OperationalError as e:
             self.show_error_msg()
