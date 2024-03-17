@@ -92,7 +92,10 @@ class DataWindow(QMainWindow):
         #self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
 
         pixmap = self.endoscopy_file_service.retrieve_endoscopy_image(1)
-        self.ui.endoscopy_imageview.setPixmap(pixmap)
+        scaled_pixmap = pixmap.scaledToWidth(200)
+        scaled_size = scaled_pixmap.size()
+        self.ui.endoscopy_imageview.setPixmap(scaled_pixmap)
+        self.ui.endoscopy_imageview.setFixedSize(scaled_size)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)

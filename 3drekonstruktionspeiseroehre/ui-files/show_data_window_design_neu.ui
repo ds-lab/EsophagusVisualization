@@ -33,7 +33,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="patients">
        <attribute name="title">
@@ -2367,7 +2367,7 @@
            <attribute name="label">
             <string>Endoskopie</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_45">
+           <layout class="QGridLayout" name="gridLayout_45" columnstretch="1,0,1,1">
             <item row="0" column="2">
              <widget class="QGroupBox" name="groupBox_31">
               <property name="title">
