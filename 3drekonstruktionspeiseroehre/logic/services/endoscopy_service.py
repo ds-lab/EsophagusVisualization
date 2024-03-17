@@ -1,8 +1,9 @@
+from PyQt6 import QtGui
 from PyQt6.QtWidgets import QMessageBox
 from flask import jsonify
-from sqlalchemy import select, delete, update, insert
+from sqlalchemy import select, delete, update, insert, func
 from sqlalchemy.orm import Session
-from logic.database.data_declarative_models import EndoscopyFile
+from logic.database.data_declarative_models import EndoscopyFile, Visit
 from sqlalchemy import inspect
 from sqlalchemy.exc import OperationalError
 
@@ -12,7 +13,7 @@ class EndoscopyFileService:
     def __init__(self, db_session: Session):
         self.db = db_session
 
-    def get_endoscopy_file(self, id: str):
+    def get_endoscopy_file(self, id: int):
         stmt = select(EndoscopyFile).where(EndoscopyFile.endoscopy_id == id)
         try:
             result = self.db.execute(stmt).first()
@@ -59,6 +60,25 @@ class EndoscopyFileService:
         except OperationalError as e:
             self.show_error_msg()
 
+    def count_endoscopy_files(self) -> int:
+        stmt = select(func.count()).select_from(EndoscopyFile).join(Visit).where(Visit.visit_id == id)
+        try:
+            result = self.db.execute(stmt).scalar()
+            return result
+        except OperationalError as e:
+            self.show_error_msg()
+
+    def retrieve_endoscopy_image(self, id: int):
+        stmt = select(EndoscopyFile).where(EndoscopyFile.endoscopy_id == id)
+        try:
+            result = self.db.execute(stmt).first()
+            if result:
+                image = result[0].file
+                pixmap = QtGui.QPixmap()
+                pixmap.loadFromData(image, 'jpeg')
+                return pixmap
+        except OperationalError as e:
+            self.show_error_msg()
 
     def show_error_msg(self):
         msg = QMessageBox()

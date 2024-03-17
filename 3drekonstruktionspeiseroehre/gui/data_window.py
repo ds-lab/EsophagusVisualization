@@ -5,7 +5,7 @@ from io import BytesIO
 from pathlib import Path
 from datetime import datetime
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QPixmap
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog
 from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
 from PyQt6.QtGui import QAction
@@ -90,6 +90,9 @@ class DataWindow(QMainWindow):
         self.ui.endoscopy_upload_button.clicked.connect(self.__endoscopy_upload_button_clicked)
         #self.ui.endoflip_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
         #self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
+
+        pixmap = self.endoscopy_file_service.retrieve_endoscopy_image(1)
+        self.ui.endoscopy_imageview.setPixmap(pixmap)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -656,8 +659,26 @@ class DataWindow(QMainWindow):
                 endoscopy_file_dict = {
                     'visit_id': self.selected_visit, # Todo Button für Upload nur aktivieren, wenn ein Visit selektiert ist
                     'image_position': positions[i],
-                    'filename': filenames[i],
+                    'filename': filenames[i], # ToDo Filename langfristig besser nicht abspeichern
                     'file': file_bytes
                 }
                 self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
 
+    def __load_endoscopy_image(self):
+        # Load and display the current image
+        if 0 <= self.image_index < len(self.image_paths):
+            image_path = self.image_paths[self.image_index]
+            pixmap = QPixmap(image_path)
+            self.image_label.setPixmap(pixmap)
+
+    def __previous_endoscopy_image(self):
+        # Show the previous image
+        if self.image_index > 0:
+            self.image_index -= 1
+            self.load_image()
+
+    def __next_endoscopy_image(self):
+        # Show the next image
+        if self.image_index < len(self.image_paths) - 1:
+            self.image_index += 1
+            self.load_image()

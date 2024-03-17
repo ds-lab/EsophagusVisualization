@@ -2517,7 +2517,7 @@
                     </layout>
                    </item>
                    <item row="0" column="0">
-                    <widget class="QLabel" name="label_86">
+                    <widget class="QLabel" name="endoscopy_imageview">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                        <horstretch>0</horstretch>
