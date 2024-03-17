@@ -91,6 +91,10 @@ class DataWindow(QMainWindow):
         #self.ui.endoflip_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
         #self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
 
+
+        # ToDo dies nur aufrufen, wenn ein Visit ausgewählt wurde
+        # ToDo überprüfen ob ein Pixmap existiert
+        # ToDo alle Pixmaps laden statt nur einen
         pixmap = self.endoscopy_file_service.retrieve_endoscopy_image(1)
         scaled_pixmap = pixmap.scaledToWidth(200)
         scaled_size = scaled_pixmap.size()
