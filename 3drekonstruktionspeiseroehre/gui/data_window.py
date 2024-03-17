@@ -1,8 +1,11 @@
+import os
+import pickle
+import re
 from pathlib import Path
 from datetime import datetime
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog
 from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QCompleter
@@ -79,8 +82,8 @@ class DataWindow(QMainWindow):
         self.ui.firstsymptoms_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.center_radio.toggled.connect(self.__patients_apply_filter)
 
-        self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
-        self.ui.endosono_upload_button.clicked.connect(self.__endosono_upload_button_clicked)
+        #self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
+        #self.ui.endosono_upload_button.clicked.connect(self.__endosono_upload_button_clicked)
         self.ui.endoscopy_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
         #self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
 
@@ -612,3 +615,26 @@ class DataWindow(QMainWindow):
         ):
             return True
         return False
+
+    def __endoflip_upload_button_clicked(self):
+        """
+        Endoscopy button callback. Handles endoscopy image selection.
+        """
+        filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
+                                                    "Bilder (*.jpg *.JPG *.png *.PNG)")
+        positions = []
+        error = False
+        for filename in filenames:
+            match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+            if match:
+                positions.append(int(match.group('pos')))
+            else:
+                error = True
+                QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
+                                     "' does not contain the required positional information, for example, 'name_10cm.png' (Format: Underscore + Integer + cm)")
+                break
+        if not error:
+            self.ui.endoscopy_textfield.setText(str(len(filenames)) + " Files selected")
+            self.endoscopy_image_positions = positions
+            self.endoscopy_filenames = filenames
+        print(self.endoscopy_filenames)

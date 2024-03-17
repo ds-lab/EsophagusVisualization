@@ -33,7 +33,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="patients">
        <attribute name="title">
@@ -1844,7 +1844,7 @@
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>4</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -2461,7 +2461,7 @@
                <item row="4" column="1">
                 <layout class="QHBoxLayout" name="horizontalLayout_7">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_6"/>
+                  <widget class="QLineEdit" name="endoscopy_textfield"/>
                  </item>
                  <item>
                   <widget class="QPushButton" name="endoscopy_upload_button">
@@ -2780,7 +2780,7 @@
                <item row="4" column="1">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_8"/>
+                  <widget class="QLineEdit" name="endoscno_textfield"/>
                  </item>
                  <item>
                   <widget class="QPushButton" name="endosono_upload_button">

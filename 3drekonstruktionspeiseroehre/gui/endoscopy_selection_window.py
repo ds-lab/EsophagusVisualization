@@ -49,6 +49,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
 
         # Get endoscopy images (same for all visualisation data since only xray differ)
+        # ToDo Endoscopy Images von der DB einlesen
         self.endoscopy_images = [io.imread(filename) for filename in visit.visualization_data_list[0].endoscopy_filenames]
 
         self.__load_image(self.endoscopy_images[0])
