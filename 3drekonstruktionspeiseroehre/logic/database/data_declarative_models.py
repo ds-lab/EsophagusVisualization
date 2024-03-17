@@ -18,10 +18,10 @@ class Patient(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
-    
+
     def __str__(self) -> str:
         return f"[patient_id: {self.patient_id}, birth_year: {self.birth_year}]"
-    
+
     def __repr__(self) -> str:
         return f"[patient_id: {self.patient_id}, birth_year: {self.birth_year}]"
 
@@ -40,8 +40,6 @@ class Visit(Base):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
-
-
 class PreviousTherapy(Base):
     __tablename__ = "previous_therapies"
     previous_therapy_id = mapped_column(Integer, primary_key=True)
@@ -55,10 +53,12 @@ class PreviousTherapy(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+
 class EndoscopyFile(Base):
-    __tablename__ = "endoscopyfiles"
+    __tablename__ = "endoscopy_files"
     endoscopy_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    image_position = mapped_column(Integer, nullable=False)
     filename = mapped_column(String(50), nullable=False)
     file = mapped_column(PickleType, nullable=False)
 
@@ -94,4 +94,3 @@ class VisualizationData(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
-

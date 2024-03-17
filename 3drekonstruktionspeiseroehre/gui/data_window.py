@@ -620,8 +620,8 @@ class DataWindow(QMainWindow):
         """
         Endoscopy button callback. Handles endoscopy image selection.
         """
-        filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
-                                                    "Bilder (*.jpg *.JPG *.png *.PNG)")
+        filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
+                                                    "Images (*.jpg *.JPG *.png *.PNG)")
         positions = []
         error = False
         for filename in filenames:

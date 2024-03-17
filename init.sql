@@ -26,6 +26,14 @@ CREATE TABLE previous_therapies (
     center VARCHAR(50)
 );
 
+CREATE TABLE endoscopy_files(
+    endoscopy_id SERIAL PRIMARY KEY,
+    visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
+    image_position INT NOT NULL,
+    filename VARCHAR NOT NULL,
+    file BYTEA NOT NULL
+);
+
 CREATE TABLE metrics (
     metric_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
