@@ -79,6 +79,11 @@ class DataWindow(QMainWindow):
         self.ui.firstsymptoms_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.center_radio.toggled.connect(self.__patients_apply_filter)
 
+        self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
+        self.ui.endosono_upload_button.clicked.connect(self.__endosono_upload_button_clicked)
+        self.ui.endoscopy_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
+        #self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
+
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)

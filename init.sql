@@ -17,18 +17,6 @@ CREATE TABLE visits (
     months_after_therapy INTEGER NOT NULL
 );
 
-CREATE TABLE therapies (
-    therapy_id SERIAL PRIMARY KEY,
-    visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    therapy VARCHAR(30) NOT NULL
-);
-
-CREATE TABLE followups (
-    followup_id SERIAL PRIMARY KEY,
-    visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    followup INT NOT NULL
-);
-
 CREATE TABLE previous_therapies (
     previous_therapy_id SERIAL PRIMARY KEY,
     patient_id VARCHAR(30) REFERENCES patients(patient_id) ON DELETE CASCADE NOT NULL,

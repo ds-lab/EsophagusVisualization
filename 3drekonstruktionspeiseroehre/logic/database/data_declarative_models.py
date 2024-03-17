@@ -40,24 +40,6 @@ class Visit(Base):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
-class Therapy(Base):
-    __tablename__ = "therapies"
-    therapy_id = mapped_column(Integer, primary_key=True)
-    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    therapy = mapped_column(String(30), nullable=False)
-
-    def toDict(self):
-        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
-
-
-class Followup(Base):
-    __tablename__ = "followups"
-    folloup_id = mapped_column(Integer, primary_key=True)
-    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    followup = mapped_column(Integer, nullable=False)
-
-    def toDict(self):
-        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
 class PreviousTherapy(Base):
@@ -72,6 +54,13 @@ class PreviousTherapy(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class EndoscopyFile(Base):
+    __tablename__ = "endoscopyfiles"
+    endoscopy_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    filename = mapped_column(String(50), nullable=False)
+    file = mapped_column(PickleType, nullable=False)
 
 
 class Metric(Base):

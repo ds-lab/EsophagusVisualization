@@ -1033,7 +1033,19 @@
        <attribute name="title">
         <string>Visit-Daten</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,1,3,0,0" columnstretch="1,0,2" rowminimumheight="0,0,0,0,0">
+       <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,1,4,1,1" columnstretch="1,0,2">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBox_14">
+          <property name="title">
+           <string>Ausgewählter Patient</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_26">
+           <item row="0" column="0">
+            <widget class="QTextEdit" name="selected_patient_text_visitdataview"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
         <item row="1" column="0">
          <widget class="QGroupBox" name="groupBox_15">
           <property name="title">
@@ -1053,985 +1065,11 @@
           </layout>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QGroupBox" name="groupBox_14">
-          <property name="title">
-           <string>Ausgewählter Patient</string>
+        <item row="4" column="0" colspan="3">
+         <widget class="QPushButton" name="pushButton_21">
+          <property name="text">
+           <string>Visualisierung für ausgewählten Patienten und Visit erstellen</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_26">
-           <item row="0" column="0">
-            <widget class="QTextEdit" name="selected_patient_text_visitdataview"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="3">
-         <widget class="QToolBox" name="toolBox">
-          <property name="currentIndex">
-           <number>4</number>
-          </property>
-          <widget class="QWidget" name="manometry">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1297</width>
-             <height>429</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Manometrie</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_30">
-            <item row="0" column="0" rowspan="3">
-             <widget class="QGroupBox" name="groupBox_26">
-              <property name="title">
-               <string>Manometrie</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_31">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_41">
-                 <property name="text">
-                  <string>Sondentyp:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QComboBox" name="comboBox_14"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_43">
-                 <property name="text">
-                  <string>Ruhedruck am UÖS:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_16"/>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_37">
-                 <property name="text">
-                  <string>DCI:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_15"/>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="comboBox_13"/>
-               </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_39">
-                 <property name="text">
-                  <string>DL:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_14"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_38">
-                 <property name="text">
-                  <string>Patientenlage:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_13"/>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_33">
-                 <property name="text">
-                  <string>IPR4:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
-               </item>
-               <item row="6" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_34">
-                 <property name="text">
-                  <string>UÖS untere Grenze:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_11"/>
-               </item>
-               <item row="9" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_12"/>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_40">
-                 <property name="text">
-                  <string>OÖS untere Grenze:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_36">
-                 <property name="text">
-                  <string>OÖS obere Grenze:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_42">
-                 <property name="text">
-                  <string>UÖS obere Grenze:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_35">
-                 <property name="text">
-                  <string>Manometrie File:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="1">
-                <widget class="QLineEdit" name="lineEdit_4"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_27">
-              <property name="title">
-               <string>gespeicherte Manometrie Daten:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_36">
-               <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_3"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <item>
-               <widget class="QPushButton" name="pushButton_7">
-                <property name="text">
-                 <string>Manometrie Daten updaten</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_add_button_2">
-                <property name="text">
-                 <string>Manometrie Daten hinzufügen</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_delete_button_2">
-                <property name="text">
-                 <string>Manomatrie Daten löschen</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="xray">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1297</width>
-             <height>429</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Breischluck</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_33">
-            <item row="0" column="0" rowspan="2">
-             <widget class="QGroupBox" name="groupBox_28">
-              <property name="title">
-               <string>Breischluck</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_37">
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_44">
-                 <property name="text">
-                  <string>Höhe Breischlucksäule 1 min:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="2">
-                <widget class="QLineEdit" name="lineEdit_5"/>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_46">
-                 <property name="text">
-                  <string>Breischluck Fiile 2 min:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_45">
-                 <property name="text">
-                  <string>Breischluck File 1 min:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="2">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_17"/>
-               </item>
-               <item row="7" column="2">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_18"/>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_48">
-                 <property name="text">
-                  <string>Höhe Breischlucksäule 2 min:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="2">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_19"/>
-               </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_47">
-                 <property name="text">
-                  <string>Breite Breischlucksäule 1 min:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_21"/>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_50">
-                 <property name="text">
-                  <string>Höhe Breischlucksäule 5 min:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QComboBox" name="comboBox_15"/>
-               </item>
-               <item row="4" column="2">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_22"/>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_52">
-                 <property name="text">
-                  <string>KM-Typ:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_51">
-                 <property name="text">
-                  <string>Breite Breischlucksäule 2 min:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="2">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_23"/>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_53">
-                 <property name="text">
-                  <string>Breite Breischlucksäule 5 min:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_54">
-                 <property name="text">
-                  <string>KM amount:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="2">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_24"/>
-               </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="text">
-                  <string>Breischluck File 5 min:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="2">
-                <widget class="QLineEdit" name="lineEdit_2"/>
-               </item>
-               <item row="10" column="2">
-                <widget class="QLineEdit" name="lineEdit_9"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <widget class="QPushButton" name="pushButton_8">
-                <property name="text">
-                 <string>Breischluck Daten updaten</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_add_button_3">
-                <property name="text">
-                 <string>Breischluck Daten hinzufügen</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_delete_button_3">
-                <property name="text">
-                 <string>Breischluck Daten löschen</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_29">
-              <property name="title">
-               <string>gespeicherte Breischluck Daten:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_38">
-               <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_7"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="2" rowspan="2">
-             <widget class="QStackedWidget" name="stackedWidget_2">
-              <property name="currentIndex">
-               <number>0</number>
-              </property>
-              <widget class="QWidget" name="xray_pic1">
-               <layout class="QGridLayout" name="gridLayout_61">
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_21">
-                  <property name="title">
-                   <string>Breischluckbild nach 1 min</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_64">
-                   <item row="1" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout_2">
-                     <item>
-                      <widget class="QPushButton" name="manometrie_delete_button_8">
-                       <property name="text">
-                        <string>zurück</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="pushButton_24">
-                       <property name="text">
-                        <string>weiter</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_83">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>Anzeige Breischluck Bilder</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="xray_pic2">
-               <layout class="QGridLayout" name="gridLayout_62">
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_22">
-                  <property name="title">
-                   <string>Breischluckbild nach 2 min</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_65">
-                   <item row="1" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout_3">
-                     <item>
-                      <widget class="QPushButton" name="manometrie_delete_button_9">
-                       <property name="text">
-                        <string>zurück</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="pushButton_25">
-                       <property name="text">
-                        <string>weiter</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_81">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="page_3">
-               <layout class="QGridLayout" name="gridLayout_63">
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_36">
-                  <property name="title">
-                   <string>Breischluckbild nach 5 min</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_66">
-                   <item row="1" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout">
-                     <item>
-                      <widget class="QPushButton" name="manometrie_delete_button_7">
-                       <property name="text">
-                        <string>zurück</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="pushButton_23">
-                       <property name="text">
-                        <string>weiter</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_84">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="endoskopy">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>439</width>
-             <height>159</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Endoskopie</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_45">
-            <item row="0" column="2">
-             <widget class="QGroupBox" name="groupBox_31">
-              <property name="title">
-               <string>gespeicherte Endoskopie Daten:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_40">
-               <item row="0" column="1">
-                <widget class="QTextEdit" name="textEdit_8"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <layout class="QVBoxLayout" name="verticalLayout_4">
-              <item>
-               <widget class="QPushButton" name="pushButton_9">
-                <property name="text">
-                 <string>Endoskopie Daten updaten</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_add_button_4">
-                <property name="text">
-                 <string>Endoskopie Daten hinzufügen</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_delete_button_4">
-                <property name="text">
-                 <string>Endoskopie Daten löschen</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="0" column="0" rowspan="2">
-             <widget class="QGroupBox" name="groupBox_30">
-              <property name="title">
-               <string>Endoskopie</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_39">
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_56">
-                 <property name="text">
-                  <string>UÖS untere Grenze:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QLineEdit" name="lineEdit_6"/>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_57">
-                 <property name="text">
-                  <string>Endoskopie Files:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_28"/>
-               </item>
-               <item row="2" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_29"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_60">
-                 <property name="text">
-                  <string>Anzahl Bilder:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="comboBox_17"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_65">
-                 <property name="text">
-                  <string>Abstand Bilder:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_63">
-                 <property name="text">
-                  <string>Lage UÖS:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QSpinBox" name="spinBox_2"/>
-               </item>
-               <item row="5" column="1">
-                <spacer name="verticalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="3" rowspan="2">
-             <widget class="QStackedWidget" name="stackedWidget_3">
-              <widget class="QWidget" name="endoscopy_pics">
-               <layout class="QGridLayout" name="gridLayout_67">
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_37">
-                  <property name="title">
-                   <string>Endoskopie Bilder</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_68">
-                   <item row="1" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout_4">
-                     <item>
-                      <widget class="QPushButton" name="manometrie_delete_button_10">
-                       <property name="text">
-                        <string>zurück</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="pushButton_26">
-                       <property name="text">
-                        <string>weiter</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_86">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>Anzeige Endoskopie Bilder</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="page_2"/>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="endoflip">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1297</width>
-             <height>429</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Endoflip</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_46">
-            <item row="0" column="2">
-             <widget class="QGroupBox" name="groupBox_33">
-              <property name="title">
-               <string>gespeicherte Endoflip Daten:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_42">
-               <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_9"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <layout class="QVBoxLayout" name="verticalLayout_5">
-              <item>
-               <widget class="QPushButton" name="pushButton_10">
-                <property name="text">
-                 <string>Endoflip Daten updaten</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_add_button_5">
-                <property name="text">
-                 <string>Endoflip Daten hinzufügen</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_delete_button_5">
-                <property name="text">
-                 <string>Endoflip Daten löschen</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="0" column="0" rowspan="2">
-             <widget class="QGroupBox" name="groupBox_32">
-              <property name="title">
-               <string>Endoflip</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_41">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_74">
-                 <property name="text">
-                  <string>CSA:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_40"/>
-               </item>
-               <item row="1" column="1">
-                <widget class="QComboBox" name="comboBox_20"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_76">
-                 <property name="text">
-                  <string>Dmin:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QLineEdit" name="lineEdit_7"/>
-               </item>
-               <item row="2" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_37"/>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="comboBox_19"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_71">
-                 <property name="text">
-                  <string>DI:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_66">
-                 <property name="text">
-                  <string>IBP:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_68">
-                 <property name="text">
-                  <string>Endoflip File:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <spacer name="verticalSpacer_4">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="ednosonography">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1297</width>
-             <height>429</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Endosonographie</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_29">
-            <item row="0" column="2">
-             <widget class="QGroupBox" name="groupBox_35">
-              <property name="title">
-               <string>gespeicherte Endosonographie Daten:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_44">
-               <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_10"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <layout class="QVBoxLayout" name="verticalLayout_6">
-              <item>
-               <widget class="QPushButton" name="pushButton_11">
-                <property name="text">
-                 <string>Endosonographie Daten updaten</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_add_button_6">
-                <property name="text">
-                 <string>Endosonographie Daten hinzufügen</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_delete_button_6">
-                <property name="text">
-                 <string>Endosonographie Daten löschen</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="0" column="0" rowspan="2">
-             <widget class="QGroupBox" name="groupBox_34">
-              <property name="title">
-               <string>Endosonographie</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_43">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_85">
-                 <property name="text">
-                  <string>Lage UÖS:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="comboBox_21"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_82">
-                 <property name="text">
-                  <string>Anzahl Bilder:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QSpinBox" name="spinBox_3"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_87">
-                 <property name="text">
-                  <string>Abstand Bilder:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_45"/>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_77">
-                 <property name="text">
-                  <string>Wanddicke:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_48"/>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_79">
-                 <property name="text">
-                  <string>Endosonographie Files:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <item>
-                  <widget class="QLineEdit" name="lineEdit_8"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_5">
-                   <property name="text">
-                    <string>Upload Files</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="5" column="1">
-                <spacer name="verticalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="3" rowspan="2">
-             <widget class="QStackedWidget" name="stackedWidget_4">
-              <widget class="QWidget" name="page">
-               <layout class="QGridLayout" name="gridLayout_69">
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="groupBox_38">
-                  <property name="title">
-                   <string>Endosonographie Bilder</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_70">
-                   <item row="1" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout_5">
-                     <item>
-                      <widget class="QPushButton" name="manometrie_delete_button_11">
-                       <property name="text">
-                        <string>zurück</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="pushButton_27">
-                       <property name="text">
-                        <string>weiter</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_80">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>Anzeige Endoskopie Bilder</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="page_4"/>
-             </widget>
-            </item>
-           </layout>
-          </widget>
          </widget>
         </item>
         <item row="3" column="0" colspan="3">
@@ -2041,17 +1079,10 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0" colspan="3">
-         <widget class="QPushButton" name="pushButton_21">
-          <property name="text">
-           <string>Visualisierung für ausgewählten Patienten und Visit erstellen</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>4</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="clinical_questions">
            <layout class="QGridLayout" name="gridLayout_71">
@@ -2804,6 +1835,1025 @@
                 </widget>
                </item>
               </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QToolBox" name="toolBox">
+          <property name="currentIndex">
+           <number>4</number>
+          </property>
+          <widget class="QWidget" name="manometry">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1297</width>
+             <height>489</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Manometrie</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_30">
+            <item row="0" column="0" rowspan="3">
+             <widget class="QGroupBox" name="groupBox_26">
+              <property name="title">
+               <string>Manometrie</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_31">
+               <item row="10" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_4"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="manometry_upload_button">
+                   <property name="text">
+                    <string>Upload File</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_41">
+                 <property name="text">
+                  <string>Sondentyp:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_13"/>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="comboBox_14"/>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_13"/>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_37">
+                 <property name="text">
+                  <string>DCI:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_38">
+                 <property name="text">
+                  <string>Patientenlage:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_43">
+                 <property name="text">
+                  <string>Ruhedruck am UÖS:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_33">
+                 <property name="text">
+                  <string>IPR4:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_16"/>
+               </item>
+               <item row="4" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_15"/>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_39">
+                 <property name="text">
+                  <string>DL:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_36">
+                 <property name="text">
+                  <string>OÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_11"/>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_42">
+                 <property name="text">
+                  <string>UÖS obere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_14"/>
+               </item>
+               <item row="8" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_34">
+                 <property name="text">
+                  <string>UÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_12"/>
+               </item>
+               <item row="6" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_40">
+                 <property name="text">
+                  <string>OÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_35">
+                 <property name="text">
+                  <string>Manometrie File:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="1">
+                <spacer name="verticalSpacer_14">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_27">
+              <property name="title">
+               <string>gespeicherte Manometrie Daten:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_36">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="textEdit_3"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QPushButton" name="pushButton_7">
+                <property name="text">
+                 <string>Manometrie Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_add_button_2">
+                <property name="text">
+                 <string>Manometrie Daten hinzufügen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_delete_button_2">
+                <property name="text">
+                 <string>Manomatrie Daten löschen</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="xray">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1297</width>
+             <height>489</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Breischluck</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_33">
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_29">
+              <property name="title">
+               <string>gespeicherte Breischluck Daten:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_38">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="textEdit_7"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="QPushButton" name="pushButton_8">
+                <property name="text">
+                 <string>Breischluck Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_add_button_3">
+                <property name="text">
+                 <string>Breischluck Daten hinzufügen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_delete_button_3">
+                <property name="text">
+                 <string>Breischluck Daten löschen</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2" rowspan="2">
+             <widget class="QStackedWidget" name="stackedWidget_2">
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <widget class="QWidget" name="xray_pic1">
+               <layout class="QGridLayout" name="gridLayout_61">
+                <item row="0" column="0">
+                 <widget class="QGroupBox" name="groupBox_21">
+                  <property name="title">
+                   <string>Breischluckbild nach 1 min</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_64">
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_2">
+                     <item>
+                      <widget class="QPushButton" name="manometrie_delete_button_8">
+                       <property name="text">
+                        <string>zurück</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_24">
+                       <property name="text">
+                        <string>weiter</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_83">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Anzeige Breischluck Bilder</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="xray_pic2">
+               <layout class="QGridLayout" name="gridLayout_62">
+                <item row="0" column="0">
+                 <widget class="QGroupBox" name="groupBox_22">
+                  <property name="title">
+                   <string>Breischluckbild nach 2 min</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_65">
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_3">
+                     <item>
+                      <widget class="QPushButton" name="manometrie_delete_button_9">
+                       <property name="text">
+                        <string>zurück</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_25">
+                       <property name="text">
+                        <string>weiter</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_81">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>TextLabel</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="page_3">
+               <layout class="QGridLayout" name="gridLayout_63">
+                <item row="0" column="0">
+                 <widget class="QGroupBox" name="groupBox_36">
+                  <property name="title">
+                   <string>Breischluckbild nach 5 min</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_66">
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout">
+                     <item>
+                      <widget class="QPushButton" name="manometrie_delete_button_7">
+                       <property name="text">
+                        <string>zurück</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_23">
+                       <property name="text">
+                        <string>weiter</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_84">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>TextLabel</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+            <item row="0" column="0" rowspan="2">
+             <widget class="QGroupBox" name="groupBox_28">
+              <property name="title">
+               <string>Breischluck</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_37">
+               <item row="8" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_9">
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_2"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="xray_upload_button">
+                   <property name="text">
+                    <string>Upload File</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_51">
+                 <property name="text">
+                  <string>Breite Breischlucksäule 2 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_45">
+                 <property name="text">
+                  <string>Breischluck Files:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_54">
+                 <property name="text">
+                  <string>KM amount:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_44">
+                 <property name="text">
+                  <string>Höhe Breischlucksäule 1 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_15"/>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_24"/>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_23"/>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_52">
+                 <property name="text">
+                  <string>KM-Typ:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_50">
+                 <property name="text">
+                  <string>Höhe Breischlucksäule 5 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_21"/>
+               </item>
+               <item row="4" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_22"/>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_47">
+                 <property name="text">
+                  <string>Breite Breischlucksäule 1 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_48">
+                 <property name="text">
+                  <string>Höhe Breischlucksäule 2 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_17"/>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_53">
+                 <property name="text">
+                  <string>Breite Breischlucksäule 5 min:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_18"/>
+               </item>
+               <item row="6" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_19"/>
+               </item>
+               <item row="9" column="1">
+                <spacer name="verticalSpacer_13">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="endoskopy">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1297</width>
+             <height>489</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Endoskopie</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_45">
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_31">
+              <property name="title">
+               <string>gespeicherte Endoskopie Daten:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_40">
+               <item row="0" column="1">
+                <widget class="QTextEdit" name="textEdit_8"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="QPushButton" name="pushButton_9">
+                <property name="text">
+                 <string>Endoskopie Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_add_button_4">
+                <property name="text">
+                 <string>Endoskopie Daten hinzufügen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_delete_button_4">
+                <property name="text">
+                 <string>Endoskopie Daten löschen</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0" rowspan="2">
+             <widget class="QGroupBox" name="groupBox_30">
+              <property name="title">
+               <string>Endoskopie</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_39">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_63">
+                 <property name="text">
+                  <string>Lage UÖS:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_17"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_60">
+                 <property name="text">
+                  <string>Anzahl Bilder:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QSpinBox" name="spinBox_2"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_65">
+                 <property name="text">
+                  <string>Abstand Bilder:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_29"/>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_56">
+                 <property name="text">
+                  <string>UÖS untere Grenze:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_28"/>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_57">
+                 <property name="text">
+                  <string>Endoskopie Files:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_6"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="endoscopy_upload_button">
+                   <property name="text">
+                    <string>Upload Files</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="5" column="1">
+                <spacer name="verticalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="3" rowspan="2">
+             <widget class="QStackedWidget" name="stackedWidget_3">
+              <widget class="QWidget" name="endoscopy_pics">
+               <layout class="QGridLayout" name="gridLayout_67">
+                <item row="0" column="0">
+                 <widget class="QGroupBox" name="groupBox_37">
+                  <property name="title">
+                   <string>Endoskopie Bilder</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_68">
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_4">
+                     <item>
+                      <widget class="QPushButton" name="manometrie_delete_button_10">
+                       <property name="text">
+                        <string>zurück</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_26">
+                       <property name="text">
+                        <string>weiter</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_86">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Anzeige Endoskopie Bilder</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="page_2"/>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="endoflip">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1297</width>
+             <height>489</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Endoflip</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_46">
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_33">
+              <property name="title">
+               <string>gespeicherte Endoflip Daten:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_42">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="textEdit_9"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <widget class="QPushButton" name="pushButton_10">
+                <property name="text">
+                 <string>Endoflip Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_add_button_5">
+                <property name="text">
+                 <string>Endoflip Daten hinzufügen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_delete_button_5">
+                <property name="text">
+                 <string>Endoflip Daten löschen</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0" rowspan="2">
+             <widget class="QGroupBox" name="groupBox_32">
+              <property name="title">
+               <string>Endoflip</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_41">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_74">
+                 <property name="text">
+                  <string>CSA:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_19"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_71">
+                 <property name="text">
+                  <string>DI:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="comboBox_20"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_76">
+                 <property name="text">
+                  <string>Dmin:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_37"/>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_66">
+                 <property name="text">
+                  <string>IBP:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_40"/>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_68">
+                 <property name="text">
+                  <string>Endoflip File:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_10">
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_7"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="endoflip_upload_button">
+                   <property name="text">
+                    <string>Upload File</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="5" column="1">
+                <spacer name="verticalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="ednosonography">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1297</width>
+             <height>489</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Endosonographie</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_29">
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_35">
+              <property name="title">
+               <string>gespeicherte Endosonographie Daten:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_44">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="textEdit_10"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QPushButton" name="pushButton_11">
+                <property name="text">
+                 <string>Endosonographie Daten updaten</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_add_button_6">
+                <property name="text">
+                 <string>Endosonographie Daten hinzufügen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="manometrie_delete_button_6">
+                <property name="text">
+                 <string>Endosonographie Daten löschen</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0" rowspan="2">
+             <widget class="QGroupBox" name="groupBox_34">
+              <property name="title">
+               <string>Endosonographie</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_43">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_85">
+                 <property name="text">
+                  <string>Lage UÖS:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_21"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_82">
+                 <property name="text">
+                  <string>Anzahl Bilder:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QSpinBox" name="spinBox_3"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_87">
+                 <property name="text">
+                  <string>Abstand Bilder:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_45"/>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_77">
+                 <property name="text">
+                  <string>Wanddicke:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_48"/>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_79">
+                 <property name="text">
+                  <string>Endosonographie Files:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_8"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="endosono_upload_button">
+                   <property name="text">
+                    <string>Upload Files</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="5" column="1">
+                <spacer name="verticalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="3" rowspan="2">
+             <widget class="QStackedWidget" name="stackedWidget_4">
+              <widget class="QWidget" name="page">
+               <layout class="QGridLayout" name="gridLayout_69">
+                <item row="0" column="0">
+                 <widget class="QGroupBox" name="groupBox_38">
+                  <property name="title">
+                   <string>Endosonographie Bilder</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_70">
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_5">
+                     <item>
+                      <widget class="QPushButton" name="manometrie_delete_button_11">
+                       <property name="text">
+                        <string>zurück</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_27">
+                       <property name="text">
+                        <string>weiter</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_80">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Anzeige Endoskopie Bilder</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="page_4"/>
              </widget>
             </item>
            </layout>
