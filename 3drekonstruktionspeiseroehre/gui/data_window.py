@@ -1,23 +1,16 @@
 import os
-import pickle
 import re
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
-from PyQt6.QtGui import QAction, QPixmap
-from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog
-from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QMainWindow, QMessageBox, QCompleter
-from sqlalchemy.orm import sessionmaker
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QCompleter
+from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel 
 from logic.patient_data import PatientData
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
-from gui.master_window import MasterWindow
 from logic.database import database
-from logic.database.data_declarative_models import Patient
-from logic.database.data_declarative_models import PreviousTherapy
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.previous_therapy_service import PreviousTherapyService
