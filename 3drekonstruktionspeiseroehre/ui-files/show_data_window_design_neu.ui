@@ -1102,9 +1102,6 @@ p, li { white-space: pre-wrap; }
         </item>
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
           <property name="currentIndex">
            <number>0</number>
           </property>
@@ -1112,9 +1109,6 @@ p, li { white-space: pre-wrap; }
            <layout class="QGridLayout" name="gridLayout_71">
             <item row="0" column="0">
              <widget class="QGroupBox" name="groupBox_39">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
               <property name="title">
                <string>GERD and Medication:</string>
               </property>

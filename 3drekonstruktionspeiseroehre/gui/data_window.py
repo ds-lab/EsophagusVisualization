@@ -594,7 +594,6 @@ class DataWindow(QMainWindow):
                 self.ui.eckardt_score.setEnabled(True)
                 self.ui.visit_data.setEnabled(True)
                 # for some reason the stacked widget needs to be enabled if the tab was disabled before
-                self.ui.stackedWidget.setEnabled(True)
 
             if visit:
                 endoscopy_images = self.endoscopy_file_service.retrieve_endoscopy_images_for_visit(visit.visit_id)
