@@ -170,11 +170,53 @@ class Manometry(Base):
     les_lower_boundary = mapped_column(Integer)
     les_length = mapped_column(Integer)
 
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 class ManometryFile(Base):
     __tablename__ = "manometry_files"
     manometry_file_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     file = mapped_column(PickleType, nullable=False)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class BariumSwallow(Base):
+    __tablename__ = "barium_swallows"
+    tbe_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    type_contrast_medium = mapped_column(String(50))
+    amount_contrast_medium = mapped_column(Integer)
+    height_contast_medium_1min = mapped_column(Integer)
+    height_contast_medium_2min = mapped_column(Integer)
+    height_contast_medium_5min = mapped_column(Integer)
+    width_contast_medium_1min = mapped_column(Integer)
+    width_contast_medium_2min = mapped_column(Integer)
+    width_contast_medium_5min = mapped_column(Integer)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class BariumSwollowFile(Base):
+    __tablename__ = "barium_swallow_files"
+    tbe_file_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    filename = mapped_column(String(6))
+    file = mapped_column(PickleType)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class Endoscopy(Base):
+    __tablename__ = "endoscopies"
+    egd_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    position_les = mapped_column(Integer)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class EndoscopyFile(Base):
     __tablename__ = "endoscopy_files"
@@ -184,6 +226,49 @@ class EndoscopyFile(Base):
     filename = mapped_column(String(50), nullable=False)
     file = mapped_column(PickleType, nullable=False)
 
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+
+class Endoflip(Base):
+    __tablename__ = "endoflips"
+    endoflip_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    csa = mapped_column(Float)
+    dist = mapped_column(Float)
+    dmin = mapped_column(Float)
+    ibp = mapped_column(Float)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class EndoflipFile(Base):
+    __tablename__ = "endoflip_files"
+    endoflip_file_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    file = mapped_column(PickleType, nullable=False)
+    screenshot = mapped_column(PickleType)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class Endosonography(Base):
+    __tablename__ = "endosonographies"
+    endosonography_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    esophageal_wall_thickness = mapped_column(Integer)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class EndosonographyFile(Base):
+    __tablename__ = "endosonography_files"
+    endosonography_file_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    file = mapped_column(PickleType, nullable=False)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 class Metric(Base):
     __tablename__ = "metrics"
