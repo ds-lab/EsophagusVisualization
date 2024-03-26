@@ -139,7 +139,7 @@ class POEM(Base):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 class Complication(Base):
-    __tablename = "complications"
+    __tablename__ = "complications"
     complication_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     no_complications = mapped_column(Boolean)
@@ -153,6 +153,28 @@ class Complication(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class Manometry(Base):
+    __tablename__ = "manometries"
+    manometry_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    catheder_type = mapped_column(String(20))
+    patient_position = mapped_column(String(20))
+    resting_pressure = mapped_column(Integer)
+    ipr4 = mapped_column(Integer)
+    dci = mapped_column(Integer)
+    dl = mapped_column(Integer)
+    ues_upper_boundary = mapped_column(Integer)
+    ues_lower_boundary = mapped_column(Integer)
+    les_upper_boundary = mapped_column(Integer)
+    les_lower_boundary = mapped_column(Integer)
+    les_length = mapped_column(Integer)
+
+class ManometryFile(Base):
+    __tablename__ = "manometry_files"
+    manometry_file_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    file = mapped_column(PickleType, nullable=False)
 
 class EndoscopyFile(Base):
     __tablename__ = "endoscopy_files"
