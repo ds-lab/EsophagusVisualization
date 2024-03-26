@@ -127,7 +127,7 @@ class DataWindow(QMainWindow):
         self.patient_tableView.resizeColumnsToContents()
         self.patient_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.patient_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.patient_tableView.clicked.connect(self.__show_selected_patient_data)
+        self.patient_tableView.clicked.connect(self.__select_patient)
         # self.tableView.hideColumn(0)
 
         # Collect all patient_ids in a list to make auto-complete suggestions
@@ -195,8 +195,8 @@ class DataWindow(QMainWindow):
             self.ui.selected_patient_text_patientview.setText(output)
             self.ui.selected_patient_text_visitview.setText(output)
             self.ui.selected_patient_text_visitdataview.setText(output)
-            # Set the text of the select visit to "" until a visit for the patient is selected
-            self.ui.selected_visit_text_visitview.setText("")
+            # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
+            self.ui.selected_visit_text_visitview.setText("please select a visit")
             self.ui.selected_visit_text_visitdataview.setText("")
             # Set the text of the select previous therapy to "" until a previous therapy is selected
             self.ui.selected_therapy_text_patientview.setText("")
@@ -294,7 +294,7 @@ class DataWindow(QMainWindow):
             else:
                 self.ui.ethnicity_dropdown.setCurrentIndex(6)
 
-    def __show_selected_patient_data(self):
+    def __select_patient(self):
         selected_indexes = self.patient_tableView.selectedIndexes()  # Get the indexes of all selected cells
         if selected_indexes:
             # Get the row number of the first selected index
@@ -310,30 +310,38 @@ class DataWindow(QMainWindow):
 
             labels = self.patient_model.columns
 
-            # Show the data of the selected patient in QTextEdit
+            # Fetch the data of the selected patient to show it in various places of the app
             output = ""
             for key, value in zip(labels, data):
                 output += f"{key}: {value}\n"
-            self.ui.selected_patient_text_patientview.setText(output)
-            self.ui.selected_patient_text_visitview.setText(output)
-            self.ui.selected_patient_text_visitdataview.setText(output)
+
+            self.__patient_selected(output)
 
             # Show the data of the selected patient in the drop-down/selection menu
             self.ui.patient_id_field.setText(
                 str(self.patient_tableView.model().index(selected_row, 0).data()))
             self.__patient_id_filled()
 
-            # Show the data of the selected patient in the other tabs
-            self.__init_previous_therapies()
-            self.__init_visits_of_patient()
 
-            # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
-            self.ui.selected_visit_text_visitview.setText("please select a visit")
-            self.ui.selected_visit_text_visitdataview.setText("please select a visit")
-            # Set the text of the select previous therapy to "" until a previous therapy is selected
-            self.ui.selected_therapy_text_patientview.setText("")
 
-            self.ui.visits.setEnabled(True)
+
+    def __patient_selected(self, patient_data):
+        self.ui.selected_patient_text_patientview.setText(patient_data)
+        self.ui.selected_patient_text_visitview.setText(patient_data)
+        self.ui.selected_patient_text_visitdataview.setText(patient_data)
+
+        # Show the data of the selected patient in the other tabs
+        self.__init_previous_therapies()
+        self.__init_visits_of_patient()
+
+        # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
+        self.ui.selected_visit_text_visitview.setText("please select a visit")
+        self.ui.selected_visit_text_visitdataview.setText("please select a visit")
+        # Set the text of the select previous therapy to "" until a previous therapy is selected
+        self.ui.selected_therapy_text_patientview.setText("")
+
+        self.ui.visits.setEnabled(True)
+
 
     def __validate_patient(self):
         if (
