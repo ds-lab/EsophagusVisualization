@@ -35,15 +35,30 @@
       <property name="currentIndex">
        <number>2</number>
       </property>
+      <property name="usesScrollButtons">
+       <bool>true</bool>
+      </property>
+      <property name="documentMode">
+       <bool>false</bool>
+      </property>
+      <property name="tabsClosable">
+       <bool>false</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+      <property name="tabBarAutoHide">
+       <bool>true</bool>
+      </property>
       <widget class="QWidget" name="patients">
        <attribute name="title">
-        <string>Patienten</string>
+        <string>Patients</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_19" rowstretch="0,0,0,1" columnstretch="0,0,0,0">
         <item row="0" column="0">
          <widget class="QGroupBox" name="groupBox_8">
           <property name="title">
-           <string>Ausgewählter Patient</string>
+           <string>Selected Patient</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_14">
            <item row="0" column="0">
@@ -373,7 +388,7 @@
         <item row="3" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBox_2">
           <property name="title">
-           <string>Patienten Liste</string>
+           <string>List of Patients</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="0">
@@ -385,7 +400,7 @@
         <item row="0" column="2">
          <widget class="QGroupBox" name="groupBox_12">
           <property name="title">
-           <string>Ausgewähle Vortherapie</string>
+           <string>Selected Previous Therapy</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_24">
            <item row="1" column="0">
@@ -397,7 +412,7 @@
         <item row="0" column="3" rowspan="2">
          <widget class="QGroupBox" name="groupBox_11">
           <property name="title">
-           <string>Vortherapien des ausgewählten Patienten</string>
+           <string>Previous Therapies</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_22">
            <item row="0" column="0">
@@ -405,7 +420,7 @@
              <item row="0" column="0">
               <widget class="QLabel" name="label_19">
                <property name="text">
-                <string>Vortherapie</string>
+                <string>Previous Therapy:</string>
                </property>
               </widget>
              </item>
@@ -423,17 +438,17 @@
                </item>
                <item>
                 <property name="text">
-                 <string>Pneumatische Dilatation 30ml</string>
+                 <string>Pneumatic Dilatation 30ml</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>Pneumatische Dilatation 35ml</string>
+                 <string>Pneumatic Dilatation 35ml</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>Pneumatische Dilatation 40ml</string>
+                 <string>Pneumatic Dilatation 40ml</string>
                 </property>
                </item>
                <item>
@@ -470,14 +485,14 @@
              <item row="1" column="0">
               <widget class="QLabel" name="label_20">
                <property name="text">
-                <string>Jahr der Vortherapie</string>
+                <string>Year of the previous therapy:</string>
                </property>
               </widget>
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="label_21">
                <property name="text">
-                <string>oder Jahr unbekannt</string>
+                <string>or: year is unknown</string>
                </property>
               </widget>
              </item>
@@ -491,7 +506,7 @@
              <item row="5" column="0">
               <widget class="QLabel" name="label_88">
                <property name="text">
-                <string>Center</string>
+                <string>Center:</string>
                </property>
               </widget>
              </item>
@@ -537,7 +552,7 @@
         <item row="3" column="2" colspan="2">
          <widget class="QGroupBox" name="groupBox_13">
           <property name="title">
-           <string>Vortherapien des ausgewählten Patienten</string>
+           <string>Previous Therapies of the selected patient</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_25">
            <item row="0" column="0">
@@ -708,7 +723,7 @@
         <item row="0" column="0" rowspan="3">
          <widget class="QGroupBox" name="groupBox_6">
           <property name="title">
-           <string>Ausgewählter Patient</string>
+           <string>Selected patient</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
            <item row="0" column="0">
@@ -720,7 +735,7 @@
         <item row="0" column="1" rowspan="3">
          <widget class="QGroupBox" name="groupBox_9">
           <property name="title">
-           <string>Ausgewählter Visit</string>
+           <string>Selected visit</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_16">
            <item row="0" column="0">
@@ -1004,7 +1019,7 @@
         <item row="4" column="0" colspan="4">
          <widget class="QGroupBox" name="groupBox_3">
           <property name="title">
-           <string>Alle Visits des ausgewählten Patienten</string>
+           <string>All visits of the selected patient</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_7">
            <item row="0" column="0">
@@ -1034,7 +1049,7 @@
         <bool>true</bool>
        </property>
        <attribute name="title">
-        <string>Visit-Daten</string>
+        <string>Visit-Data</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,1,6,1,1" columnstretch="1,0,3">
         <item row="4" column="0" colspan="3">
@@ -2847,7 +2862,7 @@
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>0</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -3154,7 +3169,7 @@
               <item>
                <widget class="QPushButton" name="pushButton_7">
                 <property name="text">
-                 <string>Update or Add Manomentry Data</string>
+                 <string>Add / Update Manomentry Data</string>
                 </property>
                </widget>
               </item>
@@ -3175,7 +3190,7 @@
              <x>0</x>
              <y>0</y>
              <width>1297</width>
-             <height>562</height>
+             <height>469</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3350,14 +3365,14 @@
                  <item>
                   <widget class="QPushButton" name="manometrie_delete_button_8">
                    <property name="text">
-                    <string>zurück</string>
+                    <string>previous</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="pushButton_24">
                    <property name="text">
-                    <string>weiter</string>
+                    <string>next</string>
                    </property>
                   </widget>
                  </item>
@@ -3404,8 +3419,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>138</height>
+             <width>1297</width>
+             <height>469</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3561,18 +3576,18 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>303</width>
-             <height>159</height>
+             <width>1297</width>
+             <height>469</height>
             </rect>
            </property>
            <attribute name="label">
-            <string>Endoflip</string>
+            <string>Impedance planimetry (EndoFlip)</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_46">
             <item row="0" column="2">
              <widget class="QGroupBox" name="groupBox_33">
               <property name="title">
-               <string>gespeicherte Endoflip Daten:</string>
+               <string>saved Impedance planimetry (EndoFlip) data:</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_42">
                <item row="0" column="0">
@@ -3584,23 +3599,16 @@
             <item row="1" column="2">
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
-               <widget class="QPushButton" name="pushButton_10">
-                <property name="text">
-                 <string>Endoflip Daten updaten</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QPushButton" name="manometrie_add_button_5">
                 <property name="text">
-                 <string>Endoflip Daten hinzufügen</string>
+                 <string>Add / Update Impedance planimetry (EndoFlip) data</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="manometrie_delete_button_5">
                 <property name="text">
-                 <string>Endoflip Daten löschen</string>
+                 <string>Delete Impedance planimetry (EndoFlip) data</string>
                 </property>
                </widget>
               </item>
@@ -3615,27 +3623,21 @@
                <item row="0" column="0">
                 <widget class="QLabel" name="label_74">
                  <property name="text">
-                  <string>CSA:</string>
+                  <string>Cross sectional Area (CSA) in mm²:</string>
                  </property>
                 </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="comboBox_19"/>
                </item>
                <item row="1" column="0">
                 <widget class="QLabel" name="label_71">
                  <property name="text">
-                  <string>DI:</string>
+                  <string>Distensibility Index (DI) in mm²/mmHg:</string>
                  </property>
                 </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QComboBox" name="comboBox_20"/>
                </item>
                <item row="2" column="0">
                 <widget class="QLabel" name="label_76">
                  <property name="text">
-                  <string>Dmin:</string>
+                  <string>Diameter minimal (Dmin) in mm:</string>
                  </property>
                 </widget>
                </item>
@@ -3645,7 +3647,7 @@
                <item row="3" column="0">
                 <widget class="QLabel" name="label_66">
                  <property name="text">
-                  <string>IBP:</string>
+                  <string>Intraballon pressure (IBP) in mmHg:</string>
                  </property>
                 </widget>
                </item>
@@ -3655,7 +3657,7 @@
                <item row="4" column="0">
                 <widget class="QLabel" name="label_68">
                  <property name="text">
-                  <string>Endoflip File:</string>
+                  <string>Impedance planimetry (EndoFlip) File:</string>
                  </property>
                 </widget>
                </item>
@@ -3686,6 +3688,12 @@
                  </property>
                 </spacer>
                </item>
+               <item row="0" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
+               </item>
+               <item row="1" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+               </item>
               </layout>
              </widget>
             </item>
@@ -3696,8 +3704,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>524</width>
-             <height>159</height>
+             <width>1297</width>
+             <height>467</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3721,21 +3729,14 @@
               <item>
                <widget class="QPushButton" name="pushButton_11">
                 <property name="text">
-                 <string>Endosonographie Daten updaten</string>
+                 <string>Add / Update Endosonography data</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="manometrie_add_button_6">
                 <property name="text">
-                 <string>Endosonographie Daten hinzufügen</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="manometrie_delete_button_6">
-                <property name="text">
-                 <string>Endosonographie Daten löschen</string>
+                 <string>Delete Endosonography data</string>
                 </property>
                </widget>
               </item>
