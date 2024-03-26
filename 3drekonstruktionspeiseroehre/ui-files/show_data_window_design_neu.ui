@@ -36,7 +36,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -1086,7 +1086,7 @@ p, li { white-space: pre-wrap; }
       </widget>
       <widget class="QWidget" name="visit_data">
        <property name="enabled">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <attribute name="title">
         <string>Visit-Data</string>
@@ -1109,7 +1109,7 @@ p, li { white-space: pre-wrap; }
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="currentIndex">
            <number>2</number>
@@ -1119,7 +1119,7 @@ p, li { white-space: pre-wrap; }
             <item row="0" column="0">
              <widget class="QGroupBox" name="groupBox_39">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="title">
                <string>GERD and Medication:</string>
@@ -1318,7 +1318,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="1">
                    <widget class="QCheckBox" name="checkBox_2">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string/>
@@ -2977,14 +2977,14 @@ p, li { white-space: pre-wrap; }
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>0</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1297</width>
+             <width>1299</width>
              <height>467</height>
             </rect>
            </property>
@@ -3304,7 +3304,7 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1297</width>
+             <width>1299</width>
              <height>467</height>
             </rect>
            </property>
@@ -3419,7 +3419,7 @@ p, li { white-space: pre-wrap; }
                  <item>
                   <widget class="QPushButton" name="xray_upload_button">
                    <property name="text">
-                    <string>Upload File</string>
+                    <string>Upload Files</string>
                    </property>
                   </widget>
                  </item>
@@ -3534,7 +3534,7 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1297</width>
+             <width>1299</width>
              <height>467</height>
             </rect>
            </property>
@@ -3560,61 +3560,7 @@ p, li { white-space: pre-wrap; }
                <string>Esophagogastroduodenoscopy (EGD)</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_39">
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_65">
-                 <property name="text">
-                  <string>Distance of pictures (in cm):</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_63">
-                 <property name="text">
-                  <string>Position LES (in cm):</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="comboBox_17"/>
-               </item>
-               <item row="3" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_7">
-                 <item>
-                  <widget class="QLineEdit" name="endoscopy_textfield"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="endoscopy_upload_button">
-                   <property name="text">
-                    <string>Upload Files</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="4" column="1">
-                <spacer name="verticalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_57">
-                 <property name="text">
-                  <string>EGD files:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QSpinBox" name="spinBox_2"/>
-               </item>
-               <item row="2" column="0" colspan="2">
+               <item row="4" column="0" colspan="2">
                 <layout class="QHBoxLayout" name="horizontalLayout_11">
                  <item>
                   <widget class="QPushButton" name="pushButton_9">
@@ -3631,6 +3577,60 @@ p, li { white-space: pre-wrap; }
                   </widget>
                  </item>
                 </layout>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_65">
+                 <property name="text">
+                  <string>Distance of pictures (in cm):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_63">
+                 <property name="text">
+                  <string>Position LES (in cm):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <widget class="QLineEdit" name="endoscopy_textfield"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="endoscopy_upload_button">
+                   <property name="text">
+                    <string>Upload Files</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="6" column="1">
+                <spacer name="verticalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_57">
+                 <property name="text">
+                  <string>EGD files:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QSpinBox" name="spinBox_2"/>
+               </item>
+               <item row="0" column="1">
+                <widget class="QSpinBox" name="spinBox_24"/>
                </item>
               </layout>
              </widget>
@@ -3691,7 +3691,7 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1297</width>
+             <width>1299</width>
              <height>467</height>
             </rect>
            </property>
@@ -3845,61 +3845,7 @@ p, li { white-space: pre-wrap; }
                <string>Endosonography</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_43">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_87">
-                 <property name="text">
-                  <string>Distances of pictures (in cm):</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_77">
-                 <property name="text">
-                  <string>Thickness of esophageal wall:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_45"/>
-               </item>
-               <item row="1" column="1">
-                <widget class="QSpinBox" name="spinBox_3"/>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_79">
-                 <property name="text">
-                  <string>Endosonographie Files:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <spacer name="verticalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="3" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <item>
-                  <widget class="QLineEdit" name="endoscno_textfield"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="endosono_upload_button">
-                   <property name="text">
-                    <string>Upload Files</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0" colspan="2">
+               <item row="3" column="0" colspan="3">
                 <layout class="QHBoxLayout" name="horizontalLayout_13">
                  <item>
                   <widget class="QPushButton" name="pushButton_11">
@@ -3916,6 +3862,60 @@ p, li { white-space: pre-wrap; }
                   </widget>
                  </item>
                 </layout>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_87">
+                 <property name="text">
+                  <string>Distances of pictures (in cm):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_45"/>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_79">
+                 <property name="text">
+                  <string>Endosonographie Files:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="2">
+                <spacer name="verticalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="4" column="2">
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
+                  <widget class="QLineEdit" name="endoscno_textfield"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="endosono_upload_button">
+                   <property name="text">
+                    <string>Upload Files</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_77">
+                 <property name="text">
+                  <string>Thickness of esophageal wall:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QSpinBox" name="spinBox_3"/>
                </item>
               </layout>
              </widget>
