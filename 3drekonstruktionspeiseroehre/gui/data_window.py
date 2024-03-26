@@ -322,9 +322,6 @@ class DataWindow(QMainWindow):
                 str(self.patient_tableView.model().index(selected_row, 0).data()))
             self.__patient_id_filled()
 
-
-
-
     def __patient_selected(self, patient_data):
         self.ui.selected_patient_text_patientview.setText(patient_data)
         self.ui.selected_patient_text_visitview.setText(patient_data)
@@ -341,7 +338,6 @@ class DataWindow(QMainWindow):
         self.ui.selected_therapy_text_patientview.setText("")
 
         self.ui.visits.setEnabled(True)
-
 
     def __validate_patient(self):
         if (
@@ -581,34 +577,37 @@ class DataWindow(QMainWindow):
 
             self.selected_visit = str(self.visits_tableView.model().index(selected_row, 0).data())
 
-            visit = self.visit_service.get_visit(
-                self.selected_visit)
-            # Show the correct widget in the visitdata tab
-            if visit:
-                if visit.visit_type == "Follow-Up Diagnostic":
-                    self.ui.stackedWidget.setCurrentIndex(0)
-                elif visit.visit_type == "Initial Diagnostic":
-                    self.ui.stackedWidget.setCurrentIndex(0)
-                if visit.therapy_type == "Botox injection":
-                    self.ui.stackedWidget.setCurrentIndex(1)
-                elif visit.therapy_type == "Pneumatic Dilitation":
-                    self.ui.stackedWidget.setCurrentIndex(2)
-                elif visit.therapy_type == "POEM":
-                    self.ui.stackedWidget.setCurrentIndex(4)
-                elif visit.therapy_type == "LHM":
-                    self.ui.stackedWidget.setCurrentIndex(3)
+        #ToDo: Überprüfen ob die Einrückungen passen
+        #ToDo: Refactoring
 
-            if self.selected_visit:
-                self.ui.eckardt_score.setEnabled(True)
-                self.ui.visit_data.setEnabled(True)
-                # for some reason the stacked widget needs to be enabled if the tab was disabled before
+        visit = self.visit_service.get_visit(
+            self.selected_visit)
+        # Show the correct widget in the visitdata tab
+        if visit:
+            if visit.visit_type == "Follow-Up Diagnostic":
+                self.ui.stackedWidget.setCurrentIndex(0)
+            elif visit.visit_type == "Initial Diagnostic":
+                self.ui.stackedWidget.setCurrentIndex(0)
+            if visit.therapy_type == "Botox injection":
+                self.ui.stackedWidget.setCurrentIndex(1)
+            elif visit.therapy_type == "Pneumatic Dilitation":
+                self.ui.stackedWidget.setCurrentIndex(2)
+            elif visit.therapy_type == "POEM":
+                self.ui.stackedWidget.setCurrentIndex(4)
+            elif visit.therapy_type == "LHM":
+                self.ui.stackedWidget.setCurrentIndex(3)
 
-            if visit:
-                endoscopy_images = self.endoscopy_file_service.retrieve_endoscopy_images_for_visit(visit.visit_id)
-                if endoscopy_images:
-                    self.endoscopy_pixmaps = endoscopy_images
-                    self.endoscopy_image_index = 0
-                    self.__load_endoscopy_image()
+        if self.selected_visit:
+            print(self.selected_visit)
+            self.ui.eckardt_score.setEnabled(True)
+            self.ui.visit_data.setEnabled(True)
+
+        if visit:
+            endoscopy_images = self.endoscopy_file_service.retrieve_endoscopy_images_for_visit(visit.visit_id)
+            if endoscopy_images:
+                self.endoscopy_pixmaps = endoscopy_images
+                self.endoscopy_image_index = 0
+                self.__load_endoscopy_image()
 
     def __validate_visit(self):
         if (
