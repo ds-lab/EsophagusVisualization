@@ -573,26 +573,8 @@ class DataWindow(QMainWindow):
 
             self.selected_visit = str(self.visits_tableView.model().index(selected_row, 0).data())
 
-            # Show the data of the selected visit in the drop-down/selection menu
             visit = self.visit_service.get_visit(
                 self.selected_visit)
-            if visit:
-                self.ui.year_of_visit_calendar.setDate(QDate(visit.year_of_visit, 1, 1))
-                if visit.visit_type == "Initial Diagnostic":
-                    self.ui.visit_type_dropdown.setCurrentIndex(1)
-                elif visit.visit_type == "Therapy":
-                    self.ui.visit_type_dropdown.setCurrentIndex(2)
-                elif visit.visit_type == "Follow-Up Diagnostic":
-                    self.ui.visit_type_dropdown.setCurrentIndex(3)
-                if visit.therapy_type == "Botox injection":
-                    self.ui.therapy_type_dropdown.setCurrentIndex(1)
-                elif visit.therapy_type == "Pneumatic Dilitation":
-                    self.ui.therapy_type_dropdown.setCurrentIndex(2)
-                elif visit.therapy_type == "POEM":
-                    self.ui.therapy_type_dropdown.setCurrentIndex(3)
-                elif visit.therapy_type == "LHM":
-                    self.ui.therapy_type_dropdown.setCurrentIndex(4)
-
             # Show the correct widget in the visitdata tab
             if visit:
                 if visit.visit_type == "Follow-Up Diagnostic":
@@ -607,6 +589,12 @@ class DataWindow(QMainWindow):
                     self.ui.stackedWidget.setCurrentIndex(4)
                 elif visit.therapy_type == "LHM":
                     self.ui.stackedWidget.setCurrentIndex(3)
+
+            if self.selected_visit:
+                self.ui.eckardt_score.setEnabled(True)
+                self.ui.visit_data.setEnabled(True)
+                # for some reason the stacked widget needs to be enabled if the tab was disabled before
+                self.ui.stackedWidget.setEnabled(True)
 
             if visit:
                 endoscopy_images = self.endoscopy_file_service.retrieve_endoscopy_images_for_visit(visit.visit_id)
@@ -660,7 +648,7 @@ class DataWindow(QMainWindow):
                 file.save(file_bytes, format=extension)
                 file_bytes = file_bytes.getvalue()
                 endoscopy_file_dict = {
-                    'visit_id': self.selected_visit, # Todo Button für Upload nur aktivieren, wenn ein Visit selektiert ist
+                    'visit_id': self.selected_visit,
                     'image_position': positions[i],
                     'filename': filenames[i], # ToDo Filename langfristig besser nicht abspeichern
                     'file': file_bytes

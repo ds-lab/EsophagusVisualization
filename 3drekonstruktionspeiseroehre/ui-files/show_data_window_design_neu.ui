@@ -36,7 +36,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -767,7 +767,10 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item row="0" column="3">
-         <widget class="QGroupBox" name="groupBox_10">
+         <widget class="QGroupBox" name="eckardt_score">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="title">
            <string>Eckardt Score des Visits</string>
           </property>
@@ -1112,7 +1115,7 @@ p, li { white-space: pre-wrap; }
            <bool>false</bool>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="clinical_questions">
            <layout class="QGridLayout" name="gridLayout_71">
@@ -1738,18 +1741,23 @@ p, li { white-space: pre-wrap; }
               <layout class="QGridLayout" name="gridLayout_63">
                <item row="0" column="2">
                 <widget class="QGroupBox" name="groupBox_36">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="title">
                   <string>Complications:</string>
                  </property>
+                 <property name="flat">
+                  <bool>false</bool>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
                  <layout class="QGridLayout" name="gridLayout_56">
-                  <item row="5" column="0">
-                   <widget class="QLabel" name="label_105">
-                    <property name="text">
-                     <string>Pneumothorax</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="1">
+                  <item row="3" column="1">
                    <widget class="QComboBox" name="comboBox_37">
                     <property name="enabled">
                      <bool>false</bool>
@@ -1776,7 +1784,7 @@ p, li { white-space: pre-wrap; }
                     </item>
                    </widget>
                   </item>
-                  <item row="2" column="1">
+                  <item row="1" column="1">
                    <widget class="QComboBox" name="comboBox_38">
                     <property name="enabled">
                      <bool>false</bool>
@@ -1803,7 +1811,7 @@ p, li { white-space: pre-wrap; }
                     </item>
                    </widget>
                   </item>
-                  <item row="3" column="1">
+                  <item row="2" column="1">
                    <widget class="QComboBox" name="comboBox_39">
                     <property name="enabled">
                      <bool>false</bool>
@@ -1830,7 +1838,14 @@ p, li { white-space: pre-wrap; }
                     </item>
                    </widget>
                   </item>
-                  <item row="1" column="1">
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_105">
+                    <property name="text">
+                     <string>Pneumothorax</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
                    <widget class="QComboBox" name="comboBox_40">
                     <property name="enabled">
                      <bool>false</bool>
@@ -1858,20 +1873,13 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item row="2" column="0">
-                   <widget class="QLabel" name="label_106">
-                    <property name="text">
-                     <string>Perforation</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
                    <widget class="QLabel" name="label_107">
                     <property name="text">
                      <string>Capnoperitoneum</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="7" column="0">
+                  <item row="6" column="0">
                    <widget class="QLabel" name="label_108">
                     <property name="text">
                      <string>Other</string>
@@ -1879,61 +1887,20 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item row="1" column="0">
+                   <widget class="QLabel" name="label_106">
+                    <property name="text">
+                     <string>Perforation</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
                    <widget class="QLabel" name="label_109">
                     <property name="text">
                      <string>Bleeding</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_110">
-                    <property name="text">
-                     <string>No complications</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="QLabel" name="label_111">
-                    <property name="text">
-                     <string>Mucosal tears</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="7" column="1">
-                   <widget class="QComboBox" name="comboBox_41">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>none</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>mild</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>moderate</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>severe</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="6" column="0">
-                   <widget class="QLabel" name="label_112">
-                    <property name="text">
-                     <string>Pneumomediastinum</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="1">
+                  <item row="4" column="1">
                    <widget class="QComboBox" name="comboBox_42">
                     <property name="enabled">
                      <bool>false</bool>
@@ -1960,8 +1927,15 @@ p, li { white-space: pre-wrap; }
                     </item>
                    </widget>
                   </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_111">
+                    <property name="text">
+                     <string>Mucosal tears</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="6" column="1">
-                   <widget class="QComboBox" name="comboBox_43">
+                   <widget class="QComboBox" name="comboBox_41">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1987,11 +1961,38 @@ p, li { white-space: pre-wrap; }
                     </item>
                    </widget>
                   </item>
-                  <item row="0" column="1">
-                   <widget class="QCheckBox" name="checkBox_9">
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="label_112">
                     <property name="text">
-                     <string/>
+                     <string>Pneumomediastinum</string>
                     </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QComboBox" name="comboBox_43">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>none</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>mild</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>moderate</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>severe</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                  </layout>
@@ -2244,15 +2245,75 @@ p, li { white-space: pre-wrap; }
               <property name="title">
                <string>Complications:</string>
               </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
               <layout class="QGridLayout" name="gridLayout_65">
-               <item row="5" column="0">
+               <item row="0" column="1">
+                <widget class="QComboBox" name="comboBox_47">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>none</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>mild</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>moderate</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>servere</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="comboBox_45">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>none</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>mild</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>moderate</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>severe</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="4" column="0">
                 <widget class="QLabel" name="label_113">
                  <property name="text">
                   <string>Pneumothorax</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="1">
+               <item row="3" column="1">
                 <widget class="QComboBox" name="comboBox_44">
                  <property name="enabled">
                   <bool>false</bool>
@@ -2280,33 +2341,6 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QComboBox" name="comboBox_45">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>none</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>mild</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>moderate</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>severe</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="3" column="1">
                 <widget class="QComboBox" name="comboBox_46">
                  <property name="enabled">
                   <bool>false</bool>
@@ -2333,48 +2367,21 @@ p, li { white-space: pre-wrap; }
                  </item>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QComboBox" name="comboBox_47">
-                 <property name="enabled">
-                  <bool>false</bool>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_117">
+                 <property name="text">
+                  <string>Bleeding</string>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>none</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>mild</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>moderate</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>servere</string>
-                  </property>
-                 </item>
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_114">
-                 <property name="text">
-                  <string>Perforation</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
                 <widget class="QLabel" name="label_115">
                  <property name="text">
                   <string>Capnoperitoneum</string>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="0">
+               <item row="6" column="0">
                 <widget class="QLabel" name="label_116">
                  <property name="text">
                   <string>Other</string>
@@ -2382,61 +2389,27 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QLabel" name="label_117">
+                <widget class="QLabel" name="label_114">
                  <property name="text">
-                  <string>Bleeding</string>
+                  <string>Perforation</string>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_118">
-                 <property name="text">
-                  <string>No complications</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
+               <item row="3" column="0">
                 <widget class="QLabel" name="label_119">
                  <property name="text">
                   <string>Mucosal tears</string>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="1">
-                <widget class="QComboBox" name="comboBox_48">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>none</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>mild</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>moderate</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>severe</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="6" column="0">
+               <item row="5" column="0">
                 <widget class="QLabel" name="label_120">
                  <property name="text">
                   <string>Pneumomediastinum</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="1">
+               <item row="4" column="1">
                 <widget class="QComboBox" name="comboBox_49">
                  <property name="enabled">
                   <bool>false</bool>
@@ -2463,7 +2436,7 @@ p, li { white-space: pre-wrap; }
                  </item>
                 </widget>
                </item>
-               <item row="6" column="1">
+               <item row="5" column="1">
                 <widget class="QComboBox" name="comboBox_50">
                  <property name="enabled">
                   <bool>false</bool>
@@ -2490,11 +2463,31 @@ p, li { white-space: pre-wrap; }
                  </item>
                 </widget>
                </item>
-               <item row="0" column="1">
-                <widget class="QCheckBox" name="checkBox_10">
-                 <property name="text">
-                  <string/>
+               <item row="6" column="1">
+                <widget class="QComboBox" name="comboBox_48">
+                 <property name="enabled">
+                  <bool>false</bool>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>none</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>mild</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>moderate</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>severe</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
               </layout>
@@ -2670,197 +2663,13 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <layout class="QGridLayout" name="gridLayout_51">
                   <item row="5" column="0">
-                   <widget class="QLabel" name="label_60">
-                    <property name="text">
-                     <string>Pneumothorax</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="1">
-                   <widget class="QComboBox" name="comboBox_16">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>none</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>mild</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>moderate</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>severe</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QComboBox" name="comboBox_10">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>none</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>mild</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>moderate</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>severe</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QComboBox" name="comboBox_11">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>none</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>mild</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>moderate</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>severe</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QComboBox" name="comboBox_9">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>none</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>mild</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>moderate</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>servere</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_49">
-                    <property name="text">
-                     <string>Perforation</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_55">
-                    <property name="text">
-                     <string>Capnoperitoneum</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="7" column="0">
-                   <widget class="QLabel" name="label_58">
-                    <property name="text">
-                     <string>Other</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_59">
-                    <property name="text">
-                     <string>Bleeding</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_61">
-                    <property name="text">
-                     <string>No complications</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="QLabel" name="label_56">
-                    <property name="text">
-                     <string>Mucosal tears</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="7" column="1">
-                   <widget class="QComboBox" name="comboBox_18">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>none</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>mild</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>moderate</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>severe</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="6" column="0">
                    <widget class="QLabel" name="label_75">
                     <property name="text">
                      <string>Pneumomediastinum</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="5" column="1">
+                  <item row="4" column="1">
                    <widget class="QComboBox" name="comboBox_21">
                     <property name="enabled">
                      <bool>false</bool>
@@ -2887,8 +2696,69 @@ p, li { white-space: pre-wrap; }
                     </item>
                    </widget>
                   </item>
-                  <item row="6" column="1">
-                   <widget class="QComboBox" name="comboBox_22">
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_60">
+                    <property name="text">
+                     <string>Pneumothorax</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QComboBox" name="comboBox_16">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>none</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>mild</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>moderate</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>severe</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QComboBox" name="comboBox_10">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>none</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>mild</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>moderate</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>severe</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QComboBox" name="comboBox_11">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -2915,10 +2785,119 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item row="0" column="1">
-                   <widget class="QCheckBox" name="checkBox_6">
-                    <property name="text">
-                     <string/>
+                   <widget class="QComboBox" name="comboBox_9">
+                    <property name="enabled">
+                     <bool>false</bool>
                     </property>
+                    <item>
+                     <property name="text">
+                      <string>none</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>mild</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>moderate</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>servere</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_49">
+                    <property name="text">
+                     <string>Perforation</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_55">
+                    <property name="text">
+                     <string>Capnoperitoneum</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="label_58">
+                    <property name="text">
+                     <string>Other</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_59">
+                    <property name="text">
+                     <string>Bleeding</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_56">
+                    <property name="text">
+                     <string>Mucosal tears</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QComboBox" name="comboBox_22">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>none</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>mild</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>moderate</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>severe</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="6" column="1">
+                   <widget class="QComboBox" name="comboBox_18">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>none</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>mild</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>moderate</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>severe</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                  </layout>
