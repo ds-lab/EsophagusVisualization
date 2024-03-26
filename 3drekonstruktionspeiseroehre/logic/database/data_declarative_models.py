@@ -25,6 +25,19 @@ class Patient(Base):
     def __repr__(self) -> str:
         return f"[patient_id: {self.patient_id}, birth_year: {self.birth_year}]"
 
+class PreviousTherapy(Base):
+    __tablename__ = "previous_therapies"
+    previous_therapy_id = mapped_column(Integer, primary_key=True)
+    patient_id = mapped_column(ForeignKey(
+        "patients.patient_id", ondelete="CASCADE"), nullable=False)
+    therapy = mapped_column(String, nullable=False)
+    year = mapped_column(Integer, nullable=True)
+    year_not_known = mapped_column(Boolean, nullable=True)
+    center = mapped_column(String(20), nullable=True)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class Visit(Base):
     __tablename__ = "visits"
@@ -39,20 +52,107 @@ class Visit(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
-
-class PreviousTherapy(Base):
-    __tablename__ = "previous_therapies"
-    previous_therapy_id = mapped_column(Integer, primary_key=True)
-    patient_id = mapped_column(ForeignKey(
-        "patients.patient_id", ondelete="CASCADE"), nullable=False)
-    therapy = mapped_column(String, nullable=False)
-    year = mapped_column(Integer, nullable=True)
-    year_not_known = mapped_column(Boolean, nullable=True)
-    center = mapped_column(String(20), nullable=True)
+class EckardtScore(Base):
+    __tablename__ = "eckardt_scores"
+    eckardt_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    dysphagia = mapped_column(Integer)
+    retrosternal_pain = mapped_column(Integer)
+    regurgitation = mapped_column(Integer)
+    weightloss = mapped_column(Integer)
+    total_score = mapped_column(Integer, nullable=False)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+class Gerd(Base):
+    __tablename__ = "gerd_scores"
+    gerd_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    grade = mapped_column(String(20))
+    heard_burn = mapped_column(Boolean)
+    ppi_use = mapped_column(Boolean)
+    acid_exposure_time = mapped_column(Float)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class Medication(Base):
+    __tablename__ = "medications"
+    medication_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    use_antithrombotic_medication = mapped_column(Boolean)
+    type_antithrombotic_medication = mapped_column(String)
+    dose_antithrombotic_medication = mapped_column(Integer)
+    use_anticoagulation = mapped_column(Boolean)
+    type_anticoagulation = mapped_column(String)
+    dose_anticoagulation = mapped_column(Integer)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class BotoxInjection(Base):
+    __tablename__ = "botox_injections"
+    botox_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    botox_units = mapped_column(Integer)
+    botox_height = mapped_column(Integer)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class PneumaticDilitation(Base):
+    __tablename__ = "pneumatic_dilitations"
+    pneumatic_dilitation_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    ballon_volume = mapped_column(String(5))
+    quantity = mapped_column(Integer)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class LHM(Base):
+    __tablename__ = "lhms"
+    lhm_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    op_duration = mapped_column(Integer)
+    length_myotomy = mapped_column(Float)
+    fundoplicatio = mapped_column(Boolean)
+    type_fundoplicatio = mapped_column(String(8))
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class POEM(Base):
+    __tablename__ = "poems"
+    poem_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    procedure_duration = mapped_column(Integer)
+    height_mucosal_incision = mapped_column(Integer)
+    length_mucosal_incision = mapped_column(Float)
+    length_submuscosal_tunnel = mapped_column(Float)
+    localization_myotomy = mapped_column(String(10))
+    length_tubular_myotomy = mapped_column(Float)
+    length_gastric_myotomy = mapped_column(Float)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+class Complication(Base):
+    __tablename = "complications"
+    complication_id = mapped_column(Integer, primary_key=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    no_complications = mapped_column(Boolean)
+    bleeding = mapped_column(String(10))
+    perforation = mapped_column(String(10))
+    capnoperitoneum = mapped_column(String(10))
+    mucosal_tears = mapped_column(String(10))
+    pneumothorax = mapped_column(String(10))
+    pneumomediastinum = mapped_column(String(10))
+    other = mapped_column(String(10))
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 class EndoscopyFile(Base):
     __tablename__ = "endoscopy_files"
