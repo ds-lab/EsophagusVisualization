@@ -584,7 +584,7 @@ class DataWindow(QMainWindow):
                     self.ui.visit_type_dropdown.setCurrentIndex(2)
                 elif visit.visit_type == "Follow-Up Diagnostic":
                     self.ui.visit_type_dropdown.setCurrentIndex(3)
-                if visit.therapy_type == "Botox":
+                if visit.therapy_type == "Botox injection":
                     self.ui.therapy_type_dropdown.setCurrentIndex(1)
                 elif visit.therapy_type == "Pneumatic Dilitation":
                     self.ui.therapy_type_dropdown.setCurrentIndex(2)
@@ -593,13 +593,13 @@ class DataWindow(QMainWindow):
                 elif visit.therapy_type == "LHM":
                     self.ui.therapy_type_dropdown.setCurrentIndex(4)
 
-            # Show the data of the selected visits in the visitsdata Tab
+            # Show the correct widget in the visitdata tab
             if visit:
                 if visit.visit_type == "Follow-Up Diagnostic":
                     self.ui.stackedWidget.setCurrentIndex(0)
                 elif visit.visit_type == "Initial Diagnostic":
                     self.ui.stackedWidget.setCurrentIndex(0)
-                if visit.therapy_type == "Botox":
+                if visit.therapy_type == "Botox injection":
                     self.ui.stackedWidget.setCurrentIndex(1)
                 elif visit.therapy_type == "Pneumatic Dilitation":
                     self.ui.stackedWidget.setCurrentIndex(2)
@@ -609,13 +609,11 @@ class DataWindow(QMainWindow):
                     self.ui.stackedWidget.setCurrentIndex(3)
 
             if visit:
-                # ToDo überprüfen ob ein Pixmap existiert
-                # ToDo alle Pixmaps laden statt nur einen
-                self.endoscopy_pixmaps = self.endoscopy_file_service.retrieve_endoscopy_images_for_visit(visit.visit_id)
-                self.endoscopy_image_index = 0
-                self.__load_endoscopy_image()
-
-
+                endoscopy_images = self.endoscopy_file_service.retrieve_endoscopy_images_for_visit(visit.visit_id)
+                if endoscopy_images:
+                    self.endoscopy_pixmaps = endoscopy_images
+                    self.endoscopy_image_index = 0
+                    self.__load_endoscopy_image()
 
     def __validate_visit(self):
         if (
