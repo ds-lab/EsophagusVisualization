@@ -643,9 +643,6 @@
              </item>
              <item row="4" column="1">
               <widget class="QComboBox" name="therapy_type_dropdown">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
                <item>
                 <property name="text">
                  <string>---</string>
@@ -779,9 +776,6 @@ p, li { white-space: pre-wrap; }
             <layout class="QGridLayout" name="gridLayout_73">
              <item row="0" column="0">
               <widget class="QPushButton" name="add_eckardt_score_button">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
                <property name="text">
                 <string>Add Score to Visit</string>
                </property>
@@ -789,9 +783,6 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="0" column="1">
               <widget class="QPushButton" name="delete_eckardt_score_button">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
                <property name="text">
                 <string>Delete Score from Visit</string>
                </property>
