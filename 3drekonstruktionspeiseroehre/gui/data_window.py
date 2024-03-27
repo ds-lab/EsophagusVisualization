@@ -14,6 +14,7 @@ from logic.database import database
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.eckardtscore_service import EckardtscoreService
+from logic.services.manometry_service import ManometryService
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyFileService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
@@ -53,6 +54,7 @@ class DataWindow(QMainWindow):
         self.previous_therapy_service = PreviousTherapyService(self.db)
         self.visit_service = VisitService(self.db)
         self.eckardtscore_service = EckardtscoreService(self.db)
+        self.manometry_service = ManometryService(self.db)
         self.endoscopy_file_service = EndoscopyFileService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
@@ -88,6 +90,11 @@ class DataWindow(QMainWindow):
         # Eckardt Score
         self.ui.add_eckardt_score_button.clicked.connect(self.__add_eckardt_score_button_clicked)
         self.ui.delete_eckardt_score_button.clicked.connect(self.__delete_eckardt_score_button_clicked)
+        # Visit Data Tab
+        # Manometry
+        self.ui.add_manometry_button.clicked.connect(self.__add_manometry)
+        #self.ui.delete_manometry_button.clicked.connect(self.__delete_manometry)
+        #self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
 
 
         # self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
@@ -644,6 +651,42 @@ class DataWindow(QMainWindow):
             return True
         return False
 
+
+
+    def __add_eckardt_score_button_clicked(self):
+        eckardt_dict = {'visit_id': self.selected_visit,
+                      'dysphagia': self.ui.eckardt_dysphagia_dropdown.currentText(),
+                      'retrosternal_pain': self.ui.eckardt_retro_pain_dropdown.currentText(),
+                      'regurgitation': self.ui.eckardt_regurgitation_dropdown.currentText(),
+                      'weightloss': self.ui.eckardt_weightloss_dropdown.currentText(),
+                      'total_score': self.ui.eckardt_totalscore_dropdown.currentText()}
+        if not self.__validate_eckardtscore():
+            QMessageBox.warning(self, "Insufficient Data",
+                                "Please fill out all data and make sure they are valid.")
+        # check if an eckardt score is already in the DB for the selected visit
+        elif self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit):
+            eckardt = self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit)
+            self.eckardtscore_service.update_eckardtscore(eckardt.eckardt_id, eckardt_dict)
+        else:
+            self.eckardtscore_service.create_eckardtscore(eckardt_dict)
+        # ToDo ggf eine Anzeige für den EckardtScore einbauen
+
+
+    def __delete_eckardt_score_button_clicked(self):
+        self.eckardtscore_service.delete_eckardtscore_for_visit(
+            self.selected_visit)
+
+    def __validate_eckardtscore(self):
+        if (
+                self.ui.eckardt_dysphagia_dropdown.currentText() != '---' and
+                self.ui.eckardt_retro_pain_dropdown.currentText() != '---' and
+                self.ui.eckardt_regurgitation_dropdown.currentText() != '---' and
+                self.ui.eckardt_weightloss_dropdown.currentText() != '---' and
+                self.ui.eckardt_totalscore_dropdown.currentText() != '---'
+        ):
+            return True
+        return False
+
     def __endoscopy_upload_button_clicked(self):
         """
         Endoscopy button callback. Handles endoscopy image selection.
@@ -686,36 +729,31 @@ class DataWindow(QMainWindow):
                 }
                 self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
 
-    def __add_eckardt_score_button_clicked(self):
-        eckardt_dict = {'visit_id': self.selected_visit,
-                      'dysphagia': self.ui.eckardt_dysphagia_dropdown.currentText(),
-                      'retrosternal_pain': self.ui.eckardt_retro_pain_dropdown.currentText(),
-                      'regurgitation': self.ui.eckardt_regurgitation_dropdown.currentText(),
-                      'weightloss': self.ui.eckardt_weightloss_dropdown.currentText(),
-                      'total_score': self.ui.eckardt_totalscore_dropdown.currentText()}
-        if not self.__validate_eckardtscore():
+    def __add_manometry(self):
+        les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
+        manometry_dict = {'visit_id': self.selected_visit,
+                        'catheder_type': self.ui.manometry_cathedertype_dropdown.currentText(),
+                        'patient_position': self.ui.manometry_patientposition_dropdown.currentText(),
+                        'resting_pressure': self.ui.manometry_restingpressure_spin.value(),
+                        'ipr4': self.ui.manometry_ipr4_spin.value(),
+                        'dci': self.ui.manometry_dci_spin.value(),
+                        'dl': self.ui.manometry_dl_spin.value(),
+                        'ues_upper_boundary': self.ui.manometry_upperboundary_ues_spin.value(),
+                        'ues_lower_boundary': self.ui.manometry_lowerboundary_ues_spin.value(),
+                        'les_upper_boundary': self.ui.manometry_upperboundary_les_spin.value(),
+                        'les_lower_boundary': self.ui.manometry_lowerboundary_les_spin.value(),
+                        'les_length': les_length}
+        if not self.__validate_manometry():
             QMessageBox.warning(self, "Insufficient Data",
-                                "Please fill out all data and make sure they are valid.")
-        # check if an eckardt score is already in the DB for the selected visit
-        elif self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit):
-            eckardt = self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit)
-            self.eckardtscore_service.update_eckardtscore(eckardt.eckardt_id, eckardt_dict)
-        else:
-            self.eckardtscore_service.create_eckardtscore(eckardt_dict)
-        # ToDo ggf eine Anzeige für den EckardtScore einbauen
+                                "Please fill out all manometry data and make sure they are valid.")
+        else: #ToDo checken ob schon Manometry existiert, wenn ja updaten wie bei Eckardtscore
+            self.manometry_service.create_manometry(manometry_dict)
+            #self.__init_visits_of_patient() # ToDo Manometry Daten anzeigen
 
-
-    def __delete_eckardt_score_button_clicked(self):
-        self.eckardtscore_service.delete_eckardtscore_for_visit(
-            self.selected_visit)
-
-    def __validate_eckardtscore(self):
+    def __validate_manometry(self):
         if (
-                self.ui.eckardt_dysphagia_dropdown.currentText() != '---' and
-                self.ui.eckardt_retro_pain_dropdown.currentText() != '---' and
-                self.ui.eckardt_regurgitation_dropdown.currentText() != '---' and
-                self.ui.eckardt_weightloss_dropdown.currentText() != '---' and
-                self.ui.eckardt_totalscore_dropdown.currentText() != '---'
+                self.ui.manometry_cathedertype_dropdown.currentText() != "---" and
+                self.ui.manometry_patientposition_dropdown.currentText() != "---"
         ):
             return True
         return False
