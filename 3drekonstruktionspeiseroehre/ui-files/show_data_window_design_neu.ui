@@ -808,6 +808,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="4" column="1">
               <widget class="QComboBox" name="eckardt_regurgitation_dropdown">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>---</string>
@@ -837,6 +840,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="5" column="1">
               <widget class="QComboBox" name="eckardt_weightloss_dropdown">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>---</string>
@@ -880,6 +886,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="3" column="1">
               <widget class="QComboBox" name="eckardt_retro_pain_dropdown">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>---</string>
@@ -909,6 +918,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="1" column="1">
               <widget class="QComboBox" name="eckardt_dysphagia_dropdown">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>---</string>
@@ -938,6 +950,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="6" column="1">
               <widget class="QComboBox" name="eckardt_totalscore_dropdown">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>---</string>
@@ -2933,8 +2948,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1299</width>
-             <height>467</height>
+             <width>467</width>
+             <height>337</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3253,8 +3268,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1299</width>
-             <height>467</height>
+             <width>734</width>
+             <height>268</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3483,8 +3498,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1299</width>
-             <height>467</height>
+             <width>630</width>
+             <height>130</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3640,8 +3655,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1299</width>
-             <height>467</height>
+             <width>574</width>
+             <height>176</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3769,7 +3784,7 @@ p, li { white-space: pre-wrap; }
              <x>0</x>
              <y>0</y>
              <width>1297</width>
-             <height>467</height>
+             <height>476</height>
             </rect>
            </property>
            <attribute name="label">

@@ -254,8 +254,10 @@ class DataWindow(QMainWindow):
 
     def __patient_delete_button_clicked(self):
         self.patient_service.delete_patient(
-            self.ui.patient_id_field.text())  # ToDo vorher checken ob der Patient existiert
+            self.selected_patient)
         self.__init_ui()
+        self.__init_previous_therapies()
+        self.__init_visits_of_patient()
         print(self.selected_patient)
         self.selected_patient = None
         self.ui.selected_patient_text_patientview.setText("please select a patient")
