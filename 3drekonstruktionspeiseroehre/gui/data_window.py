@@ -87,7 +87,7 @@ class DataWindow(QMainWindow):
         self.ui.visit_delete_button.clicked.connect(self.__visit_delete_button_clicked)
         # Eckardt Score
         self.ui.add_eckardt_score_button.clicked.connect(self.__add_eckardt_score_button_clicked)
-        #self.ui.delete_eckardt_score_button.clicked.connect(self.__delete_eckardt_score_button_clicked)
+        self.ui.delete_eckardt_score_button.clicked.connect(self.__delete_eckardt_score_button_clicked)
 
 
         # self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
@@ -617,6 +617,11 @@ class DataWindow(QMainWindow):
         if self.selected_visit:
             print(self.selected_visit)
             self.ui.eckardt_score.setEnabled(True)
+            self.ui.eckardt_dysphagia_dropdown.setEnabled(True)
+            self.ui.eckardt_retro_pain_dropdown.setEnabled(True)
+            self.ui.eckardt_regurgitation_dropdown.setEnabled(True)
+            self.ui.eckardt_weightloss_dropdown.setEnabled(True)
+            self.ui.eckardt_totalscore_dropdown.setEnabled(True)
             self.ui.visit_data.setEnabled(True)
 
         if visit:
@@ -696,14 +701,8 @@ class DataWindow(QMainWindow):
                                 "Please fill out all data and make sure they are valid.")
 
     def __delete_eckardt_score_button_clicked(self):
-        if self.visit_exists():
-            self.visit_service.delete_visit(
-                self.selected_visit)
-            self.__init_visits_of_patient()
-            self.selected_visit = None
-            self.ui.selected_visit_text.setText("")
-        else:
-            QMessageBox.warning(self, "Select Visit to Delete", "Please select a visit you wish to delete.")
+        self.eckardtscore_service.delete_eckardtscore_for_visit(
+            self.selected_visit)
 
     def __validate_eckardtscore(self):
         if (

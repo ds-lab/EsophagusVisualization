@@ -19,11 +19,21 @@ class EckardtscoreService:
             self.show_error_msg()
 
     def get_eckardtscores_for_visit(self, visit_id: int) -> list[EckardtScore, None]:
-        stmt = select(Visit).join(Visit).where(Visit.visit_id == visit_id)
+        stmt = select(EckardtScore).join(Visit).where(Visit.visit_id == visit_id)
         try:
             result = self.db.execute(stmt).all()
             return list(map(lambda row: row[0].toDict(), result))
         except OperationalError as e:
+            self.show_error_msg()
+
+    def delete_eckardtscore_for_visit(self, visit_id: int):
+        stmt = delete(EckardtScore).where(EckardtScore.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt)
+            self.db.commit()
+            return result.rowcount
+        except OperationalError as e:
+            self.db.rollback()
             self.show_error_msg()
 
     def delete_eckardtscore(self, id: int):
