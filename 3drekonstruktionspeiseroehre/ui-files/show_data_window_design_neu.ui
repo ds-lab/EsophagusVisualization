@@ -2970,7 +2970,11 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_31">
                <item row="2" column="1">
-                <widget class="QSpinBox" name="manometry_restingpressure_spin"/>
+                <widget class="QSpinBox" name="manometry_restingpressure_spin">
+                 <property name="singleStep">
+                  <number>1</number>
+                 </property>
+                </widget>
                </item>
                <item row="3" column="1">
                 <widget class="QSpinBox" name="manometry_ipr4_spin"/>
@@ -3234,6 +3238,9 @@ p, li { white-space: pre-wrap; }
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
+                 <property name="text">
+                  <string>will be calculated automatically from (LES upper boundary - LES lower boundary)</string>
+                 </property>
                 </widget>
                </item>
                <item row="10" column="0">
@@ -3271,7 +3278,7 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_36">
                <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_3"/>
+                <widget class="QTextEdit" name="manometry_text"/>
                </item>
               </layout>
              </widget>

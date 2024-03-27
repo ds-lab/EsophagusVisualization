@@ -746,9 +746,13 @@ class DataWindow(QMainWindow):
         if not self.__validate_manometry():
             QMessageBox.warning(self, "Insufficient Data",
                                 "Please fill out all manometry data and make sure they are valid.")
-        else: #ToDo checken ob schon Manometry existiert, wenn ja updaten wie bei Eckardtscore
+        elif self.manometry_service.get_manometry_for_visit(self.selected_visit):
+            manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
+            print(f"manometry id: {manometry.manometry_id}")
+            self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)
+        else:
             self.manometry_service.create_manometry(manometry_dict)
-            #self.__init_visits_of_patient() # ToDo Manometry Daten anzeigen
+        self.__init_manometry()  # ToDo Manometry Daten anzeigen
 
     def __validate_manometry(self):
         if (
@@ -757,6 +761,19 @@ class DataWindow(QMainWindow):
         ):
             return True
         return False
+
+    def __init_manometry(self):
+        manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
+
+        if manometry is not None:
+            attributes = vars(manometry)  # Zugriff auf die Attribute des Objekts als Dictionary
+            text = ""
+            for attribute, value in attributes.items():
+                text += f"{attribute}: {value}\n"  # Erstellen des Textes für jedes Attribut
+            # Anzeige des Textes in einem Textfeld (hier angenommen, dass es sich um ein Textfeld mit dem Namen text_field handelt)
+            self.ui.manometry_text.setText(text)
+        else:
+            self.ui.manometry_text.setText("Keine Manometrie für den ausgewählten Besuch gefunden.")
 
     def __load_endoscopy_image(self):
         # Load and display the current image

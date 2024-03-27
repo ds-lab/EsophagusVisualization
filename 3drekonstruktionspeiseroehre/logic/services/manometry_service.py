@@ -14,7 +14,8 @@ class ManometryService:
         stmt = select(Manometry).where(Manometry.manometry_id == id)
         try:
             result = self.db.execute(stmt).first()
-            return result[0]
+            if result:
+                return result[0]
         except OperationalError as e:
             self.show_error_msg()
 
@@ -22,7 +23,8 @@ class ManometryService:
         stmt = select(Manometry).where(Manometry.visit_id == visit_id)
         try:
             result = self.db.execute(stmt).first()
-            return result[0]
+            if result:
+                return result[0]
         except OperationalError as e:
             self.show_error_msg()
 

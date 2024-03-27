@@ -13,7 +13,7 @@ else:
     DATABASE_URL = 'postgresql+psycopg2://admin:123+qwe@127.0.0.1:5432/3drekonstruktion'
 
 # echo in Produktion auf false setzen
-engine_local = create_engine(DATABASE_URL, pool_pre_ping=True)
+engine_local = create_engine(DATABASE_URL, pool_pre_ping=True, echo=True)
 Session = sessionmaker(bind=engine_local)
 
 
