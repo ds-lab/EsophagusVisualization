@@ -6,7 +6,7 @@ from datetime import datetime
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QCompleter
-from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel 
+from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
 from logic.patient_data import PatientData
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
@@ -17,6 +17,7 @@ from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyFileService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 from PIL import Image
+
 
 class DataWindow(QMainWindow):
 
@@ -37,7 +38,6 @@ class DataWindow(QMainWindow):
 
         # For displaying images
         self.endoscopy_image_index = None
-
 
         self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
 
@@ -82,11 +82,11 @@ class DataWindow(QMainWindow):
         self.ui.firstsymptoms_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.center_radio.toggled.connect(self.__patients_apply_filter)
 
-        #self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
-        #self.ui.endosono_upload_button.clicked.connect(self.__endosono_upload_button_clicked)
+        # self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
+        # self.ui.endosono_upload_button.clicked.connect(self.__endosono_upload_button_clicked)
         self.ui.endoscopy_upload_button.clicked.connect(self.__endoscopy_upload_button_clicked)
-        #self.ui.endoflip_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
-        #self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
+        # self.ui.endoflip_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
+        # self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
 
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
@@ -256,15 +256,20 @@ class DataWindow(QMainWindow):
         self.patient_service.delete_patient(
             self.ui.patient_id_field.text())  # ToDo vorher checken ob der Patient existiert
         self.__init_ui()
+        print(self.selected_patient)
         self.selected_patient = None
-        self.ui.selected_patient_text_patientview.setText("")
-        self.ui.selected_patient_text_visitview.setText("")
-        self.ui.selected_patient_text_visitdataview.setText("")
-        # Set the text of the selected visit to ""
-        self.ui.selected_visit_text_visitview.setText("")
-        self.ui.selected_visit_text_visitdataview.setText("")
+        self.ui.selected_patient_text_patientview.setText("please select a patient")
+        self.ui.selected_patient_text_visitview.setText("please select a patient")
+        self.ui.selected_patient_text_visitdataview.setText("please select a patient")
+        # Set the text of the selected visit to "please select a visit"
+        self.ui.selected_visit_text_visitview.setText("please select a visit")
+        self.ui.selected_visit_text_visitdataview.setText("please select a visit")
         # Set the text of the select previous therapy to ""
         self.ui.selected_therapy_text_patientview.setText("")
+
+        self.ui.visits.setEnabled(False)
+        self.ui.eckardt_score.setEnabled(False)
+        self.ui.visit_data.setEnabled(False)
 
     def __patient_id_filled(self):
         patient = self.patient_service.get_patient(
@@ -338,6 +343,8 @@ class DataWindow(QMainWindow):
         self.ui.selected_therapy_text_patientview.setText("")
 
         self.ui.visits.setEnabled(True)
+        self.ui.eckardt_score.setEnabled(False)
+        self.ui.visit_data.setEnabled(False)
 
     def __validate_patient(self):
         if (
@@ -377,7 +384,7 @@ class DataWindow(QMainWindow):
 
     def __patients_apply_filter(self):
         if self.ui.patient_id_radio.isChecked():
-            filter_exp = '^' + self.ui.patient_id_field.text() # all patient that start with this id are shown
+            filter_exp = '^' + self.ui.patient_id_field.text()  # all patient that start with this id are shown
             self.__init_ui(filter_column=0, filter_expression=filter_exp)
         if self.ui.birthyear_radio.isChecked():
             filter_exp = str(self.ui.birthyear_calendar.date().toPyDate().year)
@@ -395,7 +402,7 @@ class DataWindow(QMainWindow):
             filter_exp = str(self.ui.firstsymptoms_calendar.date().toPyDate().year)
             self.__init_ui(filter_column=5, filter_expression=filter_exp)
         if self.ui.center_radio.isChecked():
-            filter_exp = '^' + self.ui.center_text.text() # all patients whos centers start with this string
+            filter_exp = '^' + self.ui.center_text.text()  # all patients whos centers start with this string
             self.__init_ui(filter_column=6, filter_expression=filter_exp)
 
     def __patients_reset_filter_button_clicked(self):
@@ -577,8 +584,8 @@ class DataWindow(QMainWindow):
 
             self.selected_visit = str(self.visits_tableView.model().index(selected_row, 0).data())
 
-        #ToDo: Überprüfen ob die Einrückungen passen
-        #ToDo: Refactoring
+        # ToDo: Überprüfen ob die Einrückungen passen
+        # ToDo: Refactoring
 
         visit = self.visit_service.get_visit(
             self.selected_visit)
@@ -613,8 +620,10 @@ class DataWindow(QMainWindow):
         if (
                 1900 < self.ui.year_of_visit_calendar.date().toPyDate().year <= datetime.now().year
                 and self.ui.visit_type_dropdown.currentText() != "---"
-                and (self.ui.visit_type_dropdown.currentText() != "Therapy" or self.ui.therapy_type_dropdown.currentText() != "---")
-                and (self.ui.therapy_type_dropdown.currentText() == "---" or self.ui.visit_type_dropdown.currentText() == "Therapy")
+                and (
+                self.ui.visit_type_dropdown.currentText() != "Therapy" or self.ui.therapy_type_dropdown.currentText() != "---")
+                and (
+                self.ui.therapy_type_dropdown.currentText() == "---" or self.ui.visit_type_dropdown.currentText() == "Therapy")
                 and self.ui.month_after_therapy_spin.value() != -1
         ):
             return True
@@ -645,7 +654,8 @@ class DataWindow(QMainWindow):
         if not error:
             self.ui.endoscopy_textfield.setText(str(len(filenames)) + " Files selected")
             for i in range(len(filenames)):
-                if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or fileextensions[i] == 'JPEG':
+                if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or \
+                        fileextensions[i] == 'JPEG':
                     extension = 'JPEG'
                 elif fileextensions[i] == 'png' or fileextensions[i] == 'PNG':
                     extension = 'PNG'
@@ -656,7 +666,7 @@ class DataWindow(QMainWindow):
                 endoscopy_file_dict = {
                     'visit_id': self.selected_visit,
                     'image_position': positions[i],
-                    'filename': filenames[i], # ToDo Filename langfristig besser nicht abspeichern
+                    'filename': filenames[i],  # ToDo Filename langfristig besser nicht abspeichern
                     'file': file_bytes
                 }
                 self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
