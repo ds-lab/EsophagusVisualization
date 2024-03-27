@@ -13,6 +13,7 @@ from gui.info_window import InfoWindow
 from logic.database import database
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
+from logic.services.eckardtscore_service import EckardtscoreService
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyFileService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
@@ -47,9 +48,11 @@ class DataWindow(QMainWindow):
 
         self.master_window = master_window
         self.db = database.get_db()
-        self.previous_therapy_service = PreviousTherapyService(self.db)
+
         self.patient_service = PatientService(self.db)
+        self.previous_therapy_service = PreviousTherapyService(self.db)
         self.visit_service = VisitService(self.db)
+        self.eckardtscore_service = EckardtscoreService(self.db)
         self.endoscopy_file_service = EndoscopyFileService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
@@ -63,17 +66,12 @@ class DataWindow(QMainWindow):
         self.endoflip_screenshot = None
 
         # Connect Buttons to Functions
+        # Patients Tab
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
         self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
         self.ui.patient_delete_button.clicked.connect(self.__patient_delete_button_clicked)
         self.ui.patient_reset_filter_button.clicked.connect(self.__patients_reset_filter_button_clicked)
-
-        self.ui.previous_therapy_add_button.clicked.connect(self.__previous_therapy_add_button_clicked)
-        self.ui.previous_therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
-
-        self.ui.visit_add_button.clicked.connect(self.__visit_add_button_clicked)
-        self.ui.visit_delete_button.clicked.connect(self.__visit_delete_button_clicked)
-
+        # Filter Patients
         self.ui.patient_id_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.birthyear_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.gender_radio.toggled.connect(self.__patients_apply_filter)
@@ -81,6 +79,16 @@ class DataWindow(QMainWindow):
         self.ui.firstdiagnosis_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.firstsymptoms_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.center_radio.toggled.connect(self.__patients_apply_filter)
+        # Previous Therapies
+        self.ui.previous_therapy_add_button.clicked.connect(self.__previous_therapy_add_button_clicked)
+        self.ui.previous_therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
+        # Visits Tab
+        self.ui.visit_add_button.clicked.connect(self.__visit_add_button_clicked)
+        self.ui.visit_delete_button.clicked.connect(self.__visit_delete_button_clicked)
+        # Eckardt Score
+        self.ui.add_eckardt_score_button.clicked.connect(self.__add_eckardt_score_button_clicked)
+        #self.ui.delete_eckardt_score_button.clicked.connect(self.__delete_eckardt_score_button_clicked)
+
 
         # self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
         # self.ui.endosono_upload_button.clicked.connect(self.__endosono_upload_button_clicked)
@@ -271,6 +279,7 @@ class DataWindow(QMainWindow):
         self.ui.visits.setEnabled(False)
         self.ui.eckardt_score.setEnabled(False)
         self.ui.visit_data.setEnabled(False)
+        self.ui.previous_therapies.setEnabled(False)
 
     def __patient_id_filled(self):
         patient = self.patient_service.get_patient(
@@ -672,6 +681,27 @@ class DataWindow(QMainWindow):
                     'file': file_bytes
                 }
                 self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
+
+    def __add_eckardt_score_button_clicked(self):
+        eckardt_dict = {'visit_id': self.selected_visit,
+                      'dysphagia': self.ui.eckardt_dysphagia_dropdown.currentText(),
+                      'retrosternal_pain': self.ui.eckardt_retro_pain_dropdown.currentText(),
+                      'regurgitation': self.ui.eckardt_regurgitation_dropdown.currentText(),
+                      'weightloss': self.ui.eckardt_weightloss_dropdown.currentText(),
+                      'total_score': self.ui.eckardt_totalscore_dropdown.currentText()}
+        if self.__validate_eckardtscore():  # check if data are valid
+            self.eckardtscore_service.create_eckardtscore(eckardt_dict)
+            # ToDo ggf eine Anzeige für den EckardtScore einbauen
+        else:
+            QMessageBox.warning(self, "Insufficient Data",
+                                "Please fill out all data and make sure they are valid.")
+
+    def __validate_eckardtscore(self):
+        if (
+                self.ui.eckardt_totalscore_dropdown.currentText() != '---'
+        ):
+            return True
+        return False
 
     def __load_endoscopy_image(self):
         # Load and display the current image
