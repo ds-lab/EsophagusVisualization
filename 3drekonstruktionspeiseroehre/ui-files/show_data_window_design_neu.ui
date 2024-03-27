@@ -784,7 +784,7 @@ p, li { white-space: pre-wrap; }
              <item row="0" column="0">
               <widget class="QPushButton" name="add_eckardt_score_button">
                <property name="text">
-                <string>Add Score to Visit</string>
+                <string>Add / Update Score to Visit</string>
                </property>
               </widget>
              </item>

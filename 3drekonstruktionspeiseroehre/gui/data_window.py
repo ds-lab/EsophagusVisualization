@@ -693,12 +693,17 @@ class DataWindow(QMainWindow):
                       'regurgitation': self.ui.eckardt_regurgitation_dropdown.currentText(),
                       'weightloss': self.ui.eckardt_weightloss_dropdown.currentText(),
                       'total_score': self.ui.eckardt_totalscore_dropdown.currentText()}
-        if self.__validate_eckardtscore():  # check if data are valid
-            self.eckardtscore_service.create_eckardtscore(eckardt_dict)
-            # ToDo ggf eine Anzeige für den EckardtScore einbauen
-        else:
+        if not self.__validate_eckardtscore():
             QMessageBox.warning(self, "Insufficient Data",
                                 "Please fill out all data and make sure they are valid.")
+        # check if an eckardt score is already in the DB for the selected visit
+        elif self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit):
+            eckardt = self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit)
+            self.eckardtscore_service.update_eckardtscore(eckardt.eckardt_id, eckardt_dict)
+        else:
+            self.eckardtscore_service.create_eckardtscore(eckardt_dict)
+        # ToDo ggf eine Anzeige für den EckardtScore einbauen
+
 
     def __delete_eckardt_score_button_clicked(self):
         self.eckardtscore_service.delete_eckardtscore_for_visit(
@@ -706,6 +711,10 @@ class DataWindow(QMainWindow):
 
     def __validate_eckardtscore(self):
         if (
+                self.ui.eckardt_dysphagia_dropdown.currentText() != '---' and
+                self.ui.eckardt_retro_pain_dropdown.currentText() != '---' and
+                self.ui.eckardt_regurgitation_dropdown.currentText() != '---' and
+                self.ui.eckardt_weightloss_dropdown.currentText() != '---' and
                 self.ui.eckardt_totalscore_dropdown.currentText() != '---'
         ):
             return True

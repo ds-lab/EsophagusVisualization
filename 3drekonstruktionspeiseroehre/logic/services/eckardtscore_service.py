@@ -21,8 +21,8 @@ class EckardtscoreService:
     def get_eckardtscores_for_visit(self, visit_id: int) -> list[EckardtScore, None]:
         stmt = select(EckardtScore).where(EckardtScore.visit_id == visit_id)
         try:
-            result = self.db.execute(stmt).all()
-            return list(map(lambda row: row[0].toDict(), result))
+            result = self.db.execute(stmt).first()
+            return result[0]
         except OperationalError as e:
             self.show_error_msg()
 
