@@ -815,6 +815,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="4" column="1">
               <widget class="QComboBox" name="eckardt_regurgitation_dropdown">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>---</string>
@@ -844,6 +847,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="5" column="1">
               <widget class="QComboBox" name="eckardt_weightloss_dropdown">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>---</string>
@@ -887,6 +893,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="3" column="1">
               <widget class="QComboBox" name="eckardt_retro_pain_dropdown">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>---</string>
@@ -916,6 +925,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="1" column="1">
               <widget class="QComboBox" name="eckardt_dysphagia_dropdown">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>---</string>
@@ -945,6 +957,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item row="6" column="1">
               <widget class="QComboBox" name="eckardt_totalscore_dropdown">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>---</string>

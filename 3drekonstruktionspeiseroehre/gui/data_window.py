@@ -563,14 +563,13 @@ class DataWindow(QMainWindow):
                                 "Please fill out all visit data and make sure they are valid.")
 
     def __visit_delete_button_clicked(self):
-        if self.visit_exists():
-            self.visit_service.delete_visit(
-                self.selected_visit)
-            self.__init_visits_of_patient()
-            self.selected_visit = None
-            self.ui.selected_visit_text.setText("")
-        else:
-            QMessageBox.warning(self, "Select Visit to Delete", "Please select a visit you wish to delete.")
+        self.visit_service.delete_visit(
+            self.selected_visit)
+        self.__init_visits_of_patient()
+        self.selected_visit = None
+        self.ui.selected_visit_text_visitview.setText("please select a visit")
+        self.ui.selected_visit_text_visitdataview.setText("please select a visit")
+
 
     def __show_selected_visit_data(self):
         selected_indexes = self.visits_tableView.selectedIndexes()  # Get the indexes of all selected cells
@@ -695,6 +694,16 @@ class DataWindow(QMainWindow):
         else:
             QMessageBox.warning(self, "Insufficient Data",
                                 "Please fill out all data and make sure they are valid.")
+
+    def __delete_eckardt_score_button_clicked(self):
+        if self.visit_exists():
+            self.visit_service.delete_visit(
+                self.selected_visit)
+            self.__init_visits_of_patient()
+            self.selected_visit = None
+            self.ui.selected_visit_text.setText("")
+        else:
+            QMessageBox.warning(self, "Select Visit to Delete", "Please select a visit you wish to delete.")
 
     def __validate_eckardtscore(self):
         if (
