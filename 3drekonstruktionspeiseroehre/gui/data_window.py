@@ -258,7 +258,6 @@ class DataWindow(QMainWindow):
         self.__init_ui()
         self.__init_previous_therapies()
         self.__init_visits_of_patient()
-        print(self.selected_patient)
         self.selected_patient = None
         self.ui.selected_patient_text_patientview.setText("please select a patient")
         self.ui.selected_patient_text_visitview.setText("please select a patient")
@@ -345,6 +344,7 @@ class DataWindow(QMainWindow):
         self.ui.selected_therapy_text_patientview.setText("")
 
         self.ui.visits.setEnabled(True)
+        self.ui.previous_therapies.setEnabled(True)
         self.ui.eckardt_score.setEnabled(False)
         self.ui.visit_data.setEnabled(False)
 
