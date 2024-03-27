@@ -20,7 +20,7 @@ class PreviousTherapyService:
             self.show_error_msg()
 
     def get_prev_therapies_for_patient(self, patient_id: str) -> list[PreviousTherapy, None]:
-        stmt = select(PreviousTherapy).join(Patient).where(Patient.patient_id == patient_id)
+        stmt = select(PreviousTherapy).where(PreviousTherapy.patient_id == patient_id)
         try:
             result = self.db.execute(stmt).all()
             return list(map(lambda row: row[0].toDict(), result))

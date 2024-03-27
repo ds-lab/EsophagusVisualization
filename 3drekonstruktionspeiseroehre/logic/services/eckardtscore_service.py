@@ -19,7 +19,7 @@ class EckardtscoreService:
             self.show_error_msg()
 
     def get_eckardtscores_for_visit(self, visit_id: int) -> list[EckardtScore, None]:
-        stmt = select(EckardtScore).join(Visit).where(Visit.visit_id == visit_id)
+        stmt = select(EckardtScore).where(EckardtScore.visit_id == visit_id)
         try:
             result = self.db.execute(stmt).all()
             return list(map(lambda row: row[0].toDict(), result))

@@ -18,7 +18,7 @@ class VisitService:
             self.show_error_msg()
 
     def get_visits_for_patient(self, patient_id: str) -> list[Visit, None]:
-        stmt = select(Visit).join(Patient).where(Patient.patient_id == patient_id)
+        stmt = select(Visit).where(Visit.patient_id == patient_id)
         try:
             result = self.db.execute(stmt).all()
             return list(map(lambda row: row[0].toDict(), result))
