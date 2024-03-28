@@ -273,6 +273,7 @@ class DataWindow(QMainWindow):
         self.__init_ui()
         self.__init_previous_therapies()
         self.__init_visits_of_patient()
+        self.__init_manometry()
         self.selected_patient = None
         self.ui.selected_patient_text_patientview.setText("please select a patient")
         self.ui.selected_patient_text_visitview.setText("please select a patient")
@@ -352,6 +353,7 @@ class DataWindow(QMainWindow):
         # Show the data of the selected patient in the other tabs
         self.__init_previous_therapies()
         self.__init_visits_of_patient()
+        self.__init_manometry()
 
         # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
         self.ui.selected_visit_text_visitview.setText("please select a visit")
@@ -545,7 +547,7 @@ class DataWindow(QMainWindow):
         self.visits_tableView.resizeColumnsToContents()
         self.visits_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.visits_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.visits_tableView.clicked.connect(self.__show_selected_visit_data)
+        self.visits_tableView.clicked.connect(self.__select_visit)
 
     def __context_menu_visit(self):
         menu = QtWidgets.QMenu()
@@ -573,12 +575,15 @@ class DataWindow(QMainWindow):
         self.visit_service.delete_visit(
             self.selected_visit)
         self.__init_visits_of_patient()
+        self.__init_manometry()
         self.selected_visit = None
         self.ui.selected_visit_text_visitview.setText("please select a visit")
         self.ui.selected_visit_text_visitdataview.setText("please select a visit")
+        self.ui.eckardt_score.setEnabled(False)
+        self.ui.visit_data.setEnabled(False)
 
 
-    def __show_selected_visit_data(self):
+    def __select_visit(self):
         selected_indexes = self.visits_tableView.selectedIndexes()  # Get the indexes of all selected cells
         if selected_indexes:
             # Get the row number of the first selected index
@@ -596,13 +601,14 @@ class DataWindow(QMainWindow):
             output = ""
             for key, value in zip(labels, data):
                 output += f"{key}: {value}\n"
-            self.ui.selected_visit_text_visitview.setText(output)
-            self.ui.selected_visit_text_visitdataview.setText(output)
 
             self.selected_visit = str(self.visits_tableView.model().index(selected_row, 0).data())
 
-        # ToDo: Überprüfen ob die Einrückungen passen
-        # ToDo: Refactoring
+            self.__visit_selected(output)
+
+    def __visit_selected(self, visit_data):
+        self.ui.selected_visit_text_visitview.setText(visit_data)
+        self.ui.selected_visit_text_visitdataview.setText(visit_data)
 
         visit = self.visit_service.get_visit(
             self.selected_visit)
@@ -622,7 +628,6 @@ class DataWindow(QMainWindow):
                 self.ui.stackedWidget.setCurrentIndex(3)
 
         if self.selected_visit:
-            print(self.selected_visit)
             self.ui.eckardt_score.setEnabled(True)
             self.ui.eckardt_dysphagia_dropdown.setEnabled(True)
             self.ui.eckardt_retro_pain_dropdown.setEnabled(True)
@@ -631,7 +636,7 @@ class DataWindow(QMainWindow):
             self.ui.eckardt_totalscore_dropdown.setEnabled(True)
             self.ui.visit_data.setEnabled(True)
 
-        if visit:
+        if visit: #ToDo anpassen, dass kein Join gemacht werden muss
             endoscopy_images = self.endoscopy_file_service.retrieve_endoscopy_images_for_visit(visit.visit_id)
             if endoscopy_images:
                 self.endoscopy_pixmaps = endoscopy_images
@@ -770,14 +775,13 @@ class DataWindow(QMainWindow):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
 
         if manometry is not None:
-            attributes = vars(manometry)  # Zugriff auf die Attribute des Objekts als Dictionary
+            attributes = vars(manometry)
             text = ""
             for attribute, value in attributes.items():
-                text += f"{attribute}: {value}\n"  # Erstellen des Textes für jedes Attribut
-            # Anzeige des Textes in einem Textfeld (hier angenommen, dass es sich um ein Textfeld mit dem Namen text_field handelt)
+                text += f"{attribute}: {value}\n"
             self.ui.manometry_text.setText(text)
         else:
-            self.ui.manometry_text.setText("Keine Manometrie für den ausgewählten Besuch gefunden.")
+            self.ui.manometry_text.setText("No manometry data for the selected visit.")
 
     def __load_endoscopy_image(self):
         # Load and display the current image
