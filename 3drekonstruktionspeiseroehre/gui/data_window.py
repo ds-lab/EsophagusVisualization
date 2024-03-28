@@ -105,7 +105,7 @@ class DataWindow(QMainWindow):
 
         # self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
         # self.ui.endosono_upload_button.clicked.connect(self.__endosono_upload_button_clicked)
-        self.ui.endoscopy_upload_button.clicked.connect(self.__endoscopy_upload_button_clicked)
+        self.ui.endoscopy_upload_button.clicked.connect(self.__upload_endoscopy_images)
         # self.ui.endoflip_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
         # self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
 
@@ -646,8 +646,8 @@ class DataWindow(QMainWindow):
             self.ui.eckardt_totalscore_dropdown.setEnabled(True)
             self.ui.visit_data.setEnabled(True)
 
-        if visit: #ToDo anpassen, dass kein Join gemacht werden muss
-            endoscopy_images = self.endoscopy_file_service.retrieve_endoscopy_images_for_visit(visit.visit_id)
+        if visit:
+            endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(visit.visit_id)
             if endoscopy_images:
                 self.endoscopy_pixmaps = endoscopy_images
                 self.endoscopy_image_index = 0
@@ -788,7 +788,7 @@ class DataWindow(QMainWindow):
         self.default_path = os.path.dirname(filename)
 
 
-    def __endoscopy_upload_button_clicked(self):
+    def __upload_endoscopy_images(self):
         """
         Endoscopy button callback. Handles endoscopy image selection.
         """
@@ -799,6 +799,11 @@ class DataWindow(QMainWindow):
         positions = []
         fileextensions = []
         error = False
+
+        # If endoscopy images are already uploaded in the database, images are deleted and updated with new images
+        if self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit):
+            self.endoscopy_file_service.delete_endoscopy_file_for_visit(self.selected_visit)
+
         for filename in filenames:
             match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
             if match:
@@ -829,6 +834,12 @@ class DataWindow(QMainWindow):
                     'file': file_bytes
                 }
                 self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
+            # load the pixmaps of the images to make them viewable
+            endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
+            if endoscopy_images:
+                self.endoscopy_pixmaps = endoscopy_images
+                self.endoscopy_image_index = 0
+                self.__load_endoscopy_image()
 
     def __load_endoscopy_image(self):
         # Load and display the current image

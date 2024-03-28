@@ -142,7 +142,7 @@ CREATE TABLE barium_swallows (
 CREATE TABLE barium_swallow_files (
     tbe_file_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    filename VARCHAR(6),
+    filename VARCHAR,
     file BYTEA NOT NULL
 );
 
@@ -156,7 +156,7 @@ CREATE TABLE endoscopy_files (
     endoscopy_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     image_position INT NOT NULL,
-    filename VARCHAR(50) NOT NULL,
+    filename VARCHAR NOT NULL,
     file BYTEA NOT NULL
 );
 

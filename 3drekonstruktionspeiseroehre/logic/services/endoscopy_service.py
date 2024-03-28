@@ -32,6 +32,16 @@ class EndoscopyFileService:
             self.db.rollback()
             self.show_error_msg()
 
+    def delete_endoscopy_file_for_visit(self, visit_id: str):
+        stmt = delete(EndoscopyFile).where(EndoscopyFile.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt)
+            self.db.commit()
+            return result.rowcount
+        except OperationalError as e:
+            self.db.rollback()
+            self.show_error_msg()
+
     def update_endoscopy_file(self, id: str, data: dict):
         stmt = update(EndoscopyFile).where(EndoscopyFile.endoscopy_id == id).values(**data)
         try:
@@ -68,7 +78,7 @@ class EndoscopyFileService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def retrieve_endoscopy_image(self, id: int):
+    def get_endoscopy_image(self, id: int):
         stmt = select(EndoscopyFile).where(EndoscopyFile.endoscopy_id == id)
         try:
             result = self.db.execute(stmt).first()
@@ -80,15 +90,13 @@ class EndoscopyFileService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def retrieve_endoscopy_images_for_visit(self, visit_id: int):
+    def get_endoscopy_images_for_visit(self, visit_id: int):
         try:
-            # Abfrage, um alle Endoscopy-Dateien für den bestimmten Visit zu erhalten
-            stmt = select(EndoscopyFile).join(Visit).filter(Visit.visit_id == visit_id)
+            stmt = select(EndoscopyFile).where(EndoscopyFile.visit_id == visit_id)
             results = self.db.execute(stmt).all()
             pixmaps = []
             if results:
                 for endoscopy_file in results:
-                    # Erstellen eines Pixmaps für jedes Endoscopy-Bild
                     image = endoscopy_file[0].file
                     pixmap = QtGui.QPixmap()
                     pixmap.loadFromData(image, 'jpeg')
