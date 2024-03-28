@@ -3,6 +3,11 @@ import re
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime
+
+import config
+import numpy as np
+
+import pandas as pd
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QCompleter
@@ -14,7 +19,7 @@ from logic.database import database
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.eckardtscore_service import EckardtscoreService
-from logic.services.manometry_service import ManometryService
+from logic.services.manometry_service import ManometryService, ManometryFileService
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyFileService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
@@ -55,6 +60,7 @@ class DataWindow(QMainWindow):
         self.visit_service = VisitService(self.db)
         self.eckardtscore_service = EckardtscoreService(self.db)
         self.manometry_service = ManometryService(self.db)
+        self.manometry_file_service = ManometryFileService(self.db)
         self.endoscopy_file_service = EndoscopyFileService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
@@ -94,7 +100,7 @@ class DataWindow(QMainWindow):
         # Manometry
         self.ui.add_manometry_button.clicked.connect(self.__add_manometry)
         self.ui.delete_manometry_button.clicked.connect(self.__delete_manometry)
-        #self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
+        self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
 
 
         # self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
@@ -696,48 +702,6 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-    def __endoscopy_upload_button_clicked(self):
-        """
-        Endoscopy button callback. Handles endoscopy image selection.
-        """
-        filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
-                                                    "Images (*.jpg *.JPG *.png *.PNG)")
-        print(filenames)
-        print(_)
-        positions = []
-        fileextensions = []
-        error = False
-        for filename in filenames:
-            match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
-            if match:
-                positions.append(int(match.group('pos')))
-                fileextensions.append(os.path.splitext(filename)[1][1:])
-                print(fileextensions)
-            else:
-                error = True
-                QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
-                                     "' does not contain the required positional information, for example, 'name_10cm.png' (Format: Underscore + Integer + cm)")
-                break
-        if not error:
-            self.ui.endoscopy_textfield.setText(str(len(filenames)) + " Files selected")
-            for i in range(len(filenames)):
-                if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or \
-                        fileextensions[i] == 'JPEG':
-                    extension = 'JPEG'
-                elif fileextensions[i] == 'png' or fileextensions[i] == 'PNG':
-                    extension = 'PNG'
-                file = Image.open(filenames[i])
-                file_bytes = BytesIO()
-                file.save(file_bytes, format=extension)
-                file_bytes = file_bytes.getvalue()
-                endoscopy_file_dict = {
-                    'visit_id': self.selected_visit,
-                    'image_position': positions[i],
-                    'filename': filenames[i],  # ToDo Filename langfristig besser nicht abspeichern
-                    'file': file_bytes
-                }
-                self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
-
     def __add_manometry(self):
         les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
         manometry_dict = {'visit_id': self.selected_visit,
@@ -791,6 +755,76 @@ class DataWindow(QMainWindow):
             self.ui.manometry_text.setText(text)
         else:
             self.ui.manometry_text.setText("No manometry data for the selected visit.")
+
+    def __upload_manometry_file(self):
+        """
+        Manometry callback. Handles CSV file selection.
+        """
+        filename, _ = QFileDialog.getOpenFileName(self, 'Select Manometry file', self.default_path, "CSV (*.csv *.CSV)")
+        if len(filename) > 0:
+            error = False
+            try:
+                df = pd.read_csv(filename, skiprows=config.csv_skiprows, header=0, index_col=0)
+                df = df.drop(config.csv_drop_columns, axis=1)
+                matrix = df.to_numpy()
+                matrix = matrix.T  # sensors in axis 0
+                pressure_matrix = np.flipud(matrix)  # sensors from top to bottom
+            except:
+                error = True
+            if error or pressure_matrix.shape[1] < 1:
+                self.ui.csv_textfield.setText("")
+                QMessageBox.critical(self, "Unvalid File", "Error: The file does not have the expected format.")
+            else:
+                self.ui.manometry_file_text.setText(filename)
+                pressure_matrix_bytes = pressure_matrix.tobytes()
+                manometry_file_dict = {
+                    'visit_id': self.selected_visit,
+                    'file': pressure_matrix_bytes
+                }
+                self.manometry_file_service.create_manometry_file(manometry_file_dict)
+        self.default_path = os.path.dirname(filename)
+
+    def __endoscopy_upload_button_clicked(self):
+        """
+        Endoscopy button callback. Handles endoscopy image selection.
+        """
+        filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
+                                                    "Images (*.jpg *.JPG *.png *.PNG)")
+        print(filenames)
+        print(_)
+        positions = []
+        fileextensions = []
+        error = False
+        for filename in filenames:
+            match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+            if match:
+                positions.append(int(match.group('pos')))
+                fileextensions.append(os.path.splitext(filename)[1][1:])
+                print(fileextensions)
+            else:
+                error = True
+                QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
+                                     "' does not contain the required positional information, for example, 'name_10cm.png' (Format: Underscore + Integer + cm)")
+                break
+        if not error:
+            self.ui.endoscopy_textfield.setText(str(len(filenames)) + " Files selected")
+            for i in range(len(filenames)):
+                if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or \
+                        fileextensions[i] == 'JPEG':
+                    extension = 'JPEG'
+                elif fileextensions[i] == 'png' or fileextensions[i] == 'PNG':
+                    extension = 'PNG'
+                file = Image.open(filenames[i])
+                file_bytes = BytesIO()
+                file.save(file_bytes, format=extension)
+                file_bytes = file_bytes.getvalue()
+                endoscopy_file_dict = {
+                    'visit_id': self.selected_visit,
+                    'image_position': positions[i],
+                    'filename': filenames[i],  # ToDo Filename langfristig besser nicht abspeichern
+                    'file': file_bytes
+                }
+                self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
 
     def __load_endoscopy_image(self):
         # Load and display the current image

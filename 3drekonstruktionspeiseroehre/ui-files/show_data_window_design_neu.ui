@@ -2955,7 +2955,7 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1299</width>
+             <width>1297</width>
              <height>472</height>
             </rect>
            </property>
@@ -3259,13 +3259,6 @@ p, li { white-space: pre-wrap; }
                    </property>
                   </widget>
                  </item>
-                 <item>
-                  <widget class="QPushButton" name="delete_manometry_button">
-                   <property name="text">
-                    <string>Delete Manometry Data</string>
-                   </property>
-                  </widget>
-                 </item>
                 </layout>
                </item>
               </layout>
@@ -3279,6 +3272,13 @@ p, li { white-space: pre-wrap; }
               <layout class="QGridLayout" name="gridLayout_36">
                <item row="0" column="0">
                 <widget class="QTextEdit" name="manometry_text"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QPushButton" name="delete_manometry_button">
+                 <property name="text">
+                  <string>Delete Manometry Data</string>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
