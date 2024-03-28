@@ -721,7 +721,6 @@ class DataWindow(QMainWindow):
                                 "Please fill out all manometry data and make sure they are valid.")
         elif self.manometry_service.get_manometry_for_visit(self.selected_visit):
             manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-            print(f"manometry id: {manometry.manometry_id}")
             self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)
         else:
             self.manometry_service.create_manometry(manometry_dict)
@@ -781,8 +780,13 @@ class DataWindow(QMainWindow):
                     'visit_id': self.selected_visit,
                     'file': pressure_matrix_bytes
                 }
-                self.manometry_file_service.create_manometry_file(manometry_file_dict)
+                if self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit):
+                    manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+                    self.manometry_file_service.update_manometry_file(manometry_file.manometry_file_id, manometry_file_dict)
+                else:
+                    self.manometry_file_service.create_manometry_file(manometry_file_dict)
         self.default_path = os.path.dirname(filename)
+
 
     def __endoscopy_upload_button_clicked(self):
         """
