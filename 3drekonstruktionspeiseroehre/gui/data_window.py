@@ -273,7 +273,7 @@ class DataWindow(QMainWindow):
         self.__init_ui()
         self.__init_previous_therapies()
         self.__init_visits_of_patient()
-        self.__init_manometry()
+
         self.selected_patient = None
         self.ui.selected_patient_text_patientview.setText("please select a patient")
         self.ui.selected_patient_text_visitview.setText("please select a patient")
@@ -283,6 +283,8 @@ class DataWindow(QMainWindow):
         self.ui.selected_visit_text_visitdataview.setText("please select a visit")
         # Set the text of the select previous therapy to ""
         self.ui.selected_therapy_text_patientview.setText("")
+        # Set the text for the manometry data
+        self.ui.manometry_text.setText("")
 
         self.ui.visits.setEnabled(False)
         self.ui.eckardt_score.setEnabled(False)
@@ -353,13 +355,14 @@ class DataWindow(QMainWindow):
         # Show the data of the selected patient in the other tabs
         self.__init_previous_therapies()
         self.__init_visits_of_patient()
-        self.__init_manometry()
 
         # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
         self.ui.selected_visit_text_visitview.setText("please select a visit")
         self.ui.selected_visit_text_visitdataview.setText("please select a visit")
         # Set the text of the select previous therapy to "" until a previous therapy is selected
         self.ui.selected_therapy_text_patientview.setText("")
+        # Set the text for the manometry data
+        self.ui.manometry_text.setText("")
 
         self.ui.visits.setEnabled(True)
         self.ui.previous_therapies.setEnabled(True)
@@ -575,10 +578,10 @@ class DataWindow(QMainWindow):
         self.visit_service.delete_visit(
             self.selected_visit)
         self.__init_visits_of_patient()
-        self.__init_manometry()
         self.selected_visit = None
         self.ui.selected_visit_text_visitview.setText("please select a visit")
         self.ui.selected_visit_text_visitdataview.setText("please select a visit")
+        self.ui.manometry_text.setText("")
         self.ui.eckardt_score.setEnabled(False)
         self.ui.visit_data.setEnabled(False)
 
@@ -609,6 +612,7 @@ class DataWindow(QMainWindow):
     def __visit_selected(self, visit_data):
         self.ui.selected_visit_text_visitview.setText(visit_data)
         self.ui.selected_visit_text_visitdataview.setText(visit_data)
+        self.__init_manometry()
 
         visit = self.visit_service.get_visit(
             self.selected_visit)
@@ -762,6 +766,7 @@ class DataWindow(QMainWindow):
     def __delete_manometry(self):
         self.manometry_service.delete_manometry_for_visit(
             self.selected_visit)
+        self.__init_manometry()
 
     def __validate_manometry(self):
         if (
