@@ -93,7 +93,7 @@ class DataWindow(QMainWindow):
         # Visit Data Tab
         # Manometry
         self.ui.add_manometry_button.clicked.connect(self.__add_manometry)
-        #self.ui.delete_manometry_button.clicked.connect(self.__delete_manometry)
+        self.ui.delete_manometry_button.clicked.connect(self.__delete_manometry)
         #self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
 
 
@@ -753,6 +753,10 @@ class DataWindow(QMainWindow):
         else:
             self.manometry_service.create_manometry(manometry_dict)
         self.__init_manometry()  # ToDo Manometry Daten anzeigen
+
+    def __delete_manometry(self):
+        self.manometry_service.delete_manometry_for_visit(
+            self.selected_visit)
 
     def __validate_manometry(self):
         if (
