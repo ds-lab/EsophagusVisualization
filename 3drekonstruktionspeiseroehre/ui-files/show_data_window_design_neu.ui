@@ -65,7 +65,11 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_14">
            <item row="0" column="0">
-            <widget class="QTextEdit" name="selected_patient_text_patientview"/>
+            <widget class="QTextEdit" name="selected_patient_text_patientview">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -246,6 +250,9 @@
                <property name="maxLength">
                 <number>100</number>
                </property>
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
               </widget>
              </item>
              <item row="10" column="1">
@@ -411,7 +418,11 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_24">
            <item row="1" column="0">
-            <widget class="QTextEdit" name="selected_therapy_text_patientview"/>
+            <widget class="QTextEdit" name="selected_therapy_text_patientview">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -738,6 +749,9 @@
           <layout class="QGridLayout" name="gridLayout_11">
            <item row="0" column="0">
             <widget class="QTextEdit" name="selected_patient_text_visitview">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
              <property name="html">
               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -758,6 +772,9 @@ p, li { white-space: pre-wrap; }
           <layout class="QGridLayout" name="gridLayout_16">
            <item row="0" column="0">
             <widget class="QTextEdit" name="selected_visit_text_visitview">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
              <property name="html">
               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -1087,7 +1104,7 @@ p, li { white-space: pre-wrap; }
       </widget>
       <widget class="QWidget" name="visit_data">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <attribute name="title">
         <string>Visit-Data</string>
@@ -1250,7 +1267,11 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <layout class="QGridLayout" name="gridLayout_76">
                   <item row="1" column="0">
-                   <widget class="QTextEdit" name="textEdit_4"/>
+                   <widget class="QTextEdit" name="textEdit_4">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -1313,7 +1334,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="1">
                    <widget class="QCheckBox" name="checkBox_2">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string/>
@@ -1323,28 +1344,28 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="1">
                    <widget class="QLineEdit" name="lineEdit_3">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
                   <item row="4" column="1">
                    <widget class="QLineEdit" name="lineEdit_6">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
                   <item row="2" column="1">
                    <widget class="QSpinBox" name="spinBox_21">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
                   <item row="5" column="1">
                    <widget class="QSpinBox" name="spinBox_22">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -1632,7 +1653,11 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <layout class="QGridLayout" name="gridLayout_20">
                   <item row="0" column="0">
-                   <widget class="QTextEdit" name="textEdit"/>
+                   <widget class="QTextEdit" name="textEdit">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -1997,7 +2022,11 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <layout class="QGridLayout" name="gridLayout_47">
                   <item row="0" column="0">
-                   <widget class="QTextEdit" name="textEdit_12"/>
+                   <widget class="QTextEdit" name="textEdit_12">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -2105,7 +2134,11 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_49">
                <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_11"/>
+                <widget class="QTextEdit" name="textEdit_11">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -2902,7 +2935,11 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <layout class="QGridLayout" name="gridLayout_57">
                   <item row="0" column="0">
-                   <widget class="QTextEdit" name="textEdit_13"/>
+                   <widget class="QTextEdit" name="textEdit_13">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -2948,7 +2985,7 @@ p, li { white-space: pre-wrap; }
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -3108,6 +3145,9 @@ p, li { white-space: pre-wrap; }
                   <widget class="QLineEdit" name="manometry_file_text">
                    <property name="enabled">
                     <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -3271,7 +3311,11 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_36">
                <item row="0" column="0">
-                <widget class="QTextEdit" name="manometry_text"/>
+                <widget class="QTextEdit" name="manometry_text">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
                <item row="1" column="0">
                 <widget class="QPushButton" name="delete_manometry_button">
@@ -3290,8 +3334,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>734</width>
-             <height>268</height>
+             <width>1297</width>
+             <height>472</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3305,7 +3349,11 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_38">
                <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_7"/>
+                <widget class="QTextEdit" name="textEdit_7">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -3400,7 +3448,14 @@ p, li { white-space: pre-wrap; }
                <item row="9" column="2">
                 <layout class="QHBoxLayout" name="horizontalLayout_9">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_2"/>
+                  <widget class="QLineEdit" name="lineEdit_2">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="xray_upload_button">
@@ -3520,8 +3575,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>130</height>
+             <width>1297</width>
+             <height>472</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3535,7 +3590,11 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_40">
                <item row="0" column="1">
-                <widget class="QTextEdit" name="textEdit_8"/>
+                <widget class="QTextEdit" name="textEdit_8">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -3581,7 +3640,14 @@ p, li { white-space: pre-wrap; }
                <item row="5" column="1">
                 <layout class="QHBoxLayout" name="horizontalLayout_7">
                  <item>
-                  <widget class="QLineEdit" name="endoscopy_textfield"/>
+                  <widget class="QLineEdit" name="endoscopy_textfield">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="endoscopy_upload_button">
@@ -3677,8 +3743,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>574</width>
-             <height>176</height>
+             <width>1297</width>
+             <height>472</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3692,7 +3758,11 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_42">
                <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_9"/>
+                <widget class="QTextEdit" name="textEdit_9">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -3747,7 +3817,14 @@ p, li { white-space: pre-wrap; }
                <item row="5" column="1">
                 <layout class="QHBoxLayout" name="horizontalLayout_10">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_7"/>
+                  <widget class="QLineEdit" name="lineEdit_7">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="endoflip_upload_button">
@@ -3820,7 +3897,11 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_44">
                <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_10"/>
+                <widget class="QTextEdit" name="textEdit_10">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -3882,7 +3963,14 @@ p, li { white-space: pre-wrap; }
                <item row="4" column="2">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <item>
-                  <widget class="QLineEdit" name="endosono_file_textfield"/>
+                  <widget class="QLineEdit" name="endosono_file_textfield">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="endosono_upload_button">
@@ -3966,7 +4054,11 @@ p, li { white-space: pre-wrap; }
           </property>
           <layout class="QGridLayout" name="gridLayout_26">
            <item row="0" column="0">
-            <widget class="QTextEdit" name="selected_patient_text_visitdataview"/>
+            <widget class="QTextEdit" name="selected_patient_text_visitdataview">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -3984,6 +4076,9 @@ p, li { white-space: pre-wrap; }
                <width>0</width>
                <height>0</height>
               </size>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
