@@ -17,6 +17,7 @@ from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.endoscopy_data_processing import process_and_upload_endoscopy_images
+from logic.tbe_data_processing import process_and_upload_tbe_images
 from logic.database import database
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
@@ -814,33 +815,14 @@ class DataWindow(QMainWindow):
 
             for filename in filenames:
                 match = re.search(r'(?P<time>[0-9]+)', filename)
-                if match:
-                    times.append(int(match.group('time')))
-                    fileextensions.append(os.path.splitext(filename)[1][1:])
-                    print(fileextensions)
-                else:
+                if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
                                          "' does not contain the required time information, for example, '2.jpg' ")
                     break
             if not error:
+                process_and_upload_tbe_images(self.selected_visit, filenames)
                 self.ui.tbe_file_text.setText(str(len(filenames)) + " File(s) uploaded")
-                for i in range(len(filenames)):
-                    if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or \
-                            fileextensions[i] == 'JPEG':
-                        extension = 'JPEG'
-                    elif fileextensions[i] == 'png' or fileextensions[i] == 'PNG':
-                        extension = 'PNG'
-                    file = Image.open(filenames[i])
-                    file_bytes = BytesIO()
-                    file.save(file_bytes, format=extension)
-                    file_bytes = file_bytes.getvalue()
-                    tbe_file_dict = {
-                        'visit_id': self.selected_visit,
-                        'filename': filenames[i],  # ToDo Filename langfristig besser nicht abspeichern, stattdessen die Zeit mit abspeichern
-                        'file': file_bytes
-                    }
-                    self.tbe_file_service.create_tbe_file(tbe_file_dict)
                 # load the pixmaps of the images to make them viewable
                 tbe_images = self.tbe_file_service.get_tbe_images_for_visit(self.selected_visit)
                 if tbe_images:
