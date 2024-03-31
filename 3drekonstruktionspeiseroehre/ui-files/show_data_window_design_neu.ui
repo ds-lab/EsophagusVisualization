@@ -1104,7 +1104,7 @@ p, li { white-space: pre-wrap; }
       </widget>
       <widget class="QWidget" name="visit_data">
        <property name="enabled">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <attribute name="title">
         <string>Visit-Data</string>
@@ -1334,7 +1334,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="1">
                    <widget class="QCheckBox" name="checkBox_2">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string/>
@@ -1344,28 +1344,28 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="1">
                    <widget class="QLineEdit" name="lineEdit_3">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
                   <item row="4" column="1">
                    <widget class="QLineEdit" name="lineEdit_6">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
                   <item row="2" column="1">
                    <widget class="QSpinBox" name="spinBox_21">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
                   <item row="5" column="1">
                    <widget class="QSpinBox" name="spinBox_22">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
@@ -3373,14 +3373,14 @@ p, li { white-space: pre-wrap; }
                <item row="1" column="0">
                 <layout class="QHBoxLayout" name="horizontalLayout_2">
                  <item>
-                  <widget class="QPushButton" name="manometrie_delete_button_8">
+                  <widget class="QPushButton" name="tbe_previous_button">
                    <property name="text">
                     <string>previous</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_24">
+                  <widget class="QPushButton" name="tbe_next_button">
                    <property name="text">
                     <string>next</string>
                    </property>
@@ -3389,7 +3389,7 @@ p, li { white-space: pre-wrap; }
                 </layout>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="label_83">
+                <widget class="QLabel" name="tbe_imageview">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                    <horstretch>0</horstretch>

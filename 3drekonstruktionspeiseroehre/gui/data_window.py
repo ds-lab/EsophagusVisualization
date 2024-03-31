@@ -22,6 +22,7 @@ from logic.services.eckardtscore_service import EckardtscoreService
 from logic.services.manometry_service import ManometryService, ManometryFileService
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyFileService
+from logic.services.tbe_service import TbeFileService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 from PIL import Image
 
@@ -61,6 +62,7 @@ class DataWindow(QMainWindow):
         self.eckardtscore_service = EckardtscoreService(self.db)
         self.manometry_service = ManometryService(self.db)
         self.manometry_file_service = ManometryFileService(self.db)
+        self.tbe_file_service = TbeFileService(self.db)
         self.endoscopy_file_service = EndoscopyFileService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
@@ -101,6 +103,8 @@ class DataWindow(QMainWindow):
         self.ui.add_manometry_button.clicked.connect(self.__add_manometry)
         self.ui.delete_manometry_button.clicked.connect(self.__delete_manometry)
         self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
+        # Barium Swallow / TBE
+        self.ui.tbe_file_upload_button.clicked.connect(self.__upload_tbe_images)
 
 
         # self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
@@ -112,6 +116,8 @@ class DataWindow(QMainWindow):
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
         self.ui.endoscopy_next_button.clicked.connect(self.__endoscopy_next_button_clicked)
+        self.ui.tbe_previous_button.clicked.connect(self.__tbe_previous_button_clicked)
+        self.ui.tbe_next_button.clicked.connect(self.__tbe_next_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -724,7 +730,7 @@ class DataWindow(QMainWindow):
             self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)
         else:
             self.manometry_service.create_manometry(manometry_dict)
-        self.__init_manometry()  # ToDo Manometry Daten anzeigen
+        self.__init_manometry()
 
     def __delete_manometry(self):
         self.manometry_service.delete_manometry_for_visit(
@@ -789,15 +795,74 @@ class DataWindow(QMainWindow):
 
     def __upload_tbe_images(self):
         """
-        X-ray button callback. Handles X-ray file selection for all files.
+        X-ray/TBE button callback. Handles X-ray file selection for all files.
         """
-        filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
-                                                    "Bilder (*.jpg *.JPG *.png *.PNG)")
-        if len(filenames) > 0:
-            self.ui.xray_textfield_all.setText(str(len(filenames)) + " Dateien ausgewählt")
-            self.xray_filenames = filenames
-            self.__check_button_activate()
-            self.default_path = os.path.dirname(filenames[0])
+        # If TBE images are already uploaded in the database, images are deleted and updated with new images
+        tbe_exists = self.tbe_file_service.get_tbe_images_for_visit(self.selected_visit)
+        if not tbe_exists or tbe_exists and self.to_update_for_visit("TBE Images"):
+            self.tbe_file_service.delete_tbe_file_for_visit(self.selected_visit)
+
+            filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
+                                                        "Images (*.jpg *.JPG *.png *.PNG)")
+            times = []
+            fileextensions = []
+            error = False
+
+            for filename in filenames:
+                match = re.search(r'(?P<time>[0-9]+)', filename)
+                if match:
+                    times.append(int(match.group('time')))
+                    fileextensions.append(os.path.splitext(filename)[1][1:])
+                    print(fileextensions)
+                else:
+                    error = True
+                    QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
+                                         "' does not contain the required time information, for example, '2.jpg' ")
+                    break
+            if not error:
+                self.ui.tbe_file_text.setText(str(len(filenames)) + " File(s) uploaded")
+                for i in range(len(filenames)):
+                    if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or \
+                            fileextensions[i] == 'JPEG':
+                        extension = 'JPEG'
+                    elif fileextensions[i] == 'png' or fileextensions[i] == 'PNG':
+                        extension = 'PNG'
+                    file = Image.open(filenames[i])
+                    file_bytes = BytesIO()
+                    file.save(file_bytes, format=extension)
+                    file_bytes = file_bytes.getvalue()
+                    tbe_file_dict = {
+                        'visit_id': self.selected_visit,
+                        'filename': filenames[i],  # ToDo Filename langfristig besser nicht abspeichern, stattdessen die Zeit mit abspeichern
+                        'file': file_bytes
+                    }
+                    self.tbe_file_service.create_tbe_file(tbe_file_dict)
+                # load the pixmaps of the images to make them viewable
+                tbe_images = self.tbe_file_service.get_tbe_images_for_visit(self.selected_visit)
+                if tbe_images:
+                    self.tbe_pixmaps = tbe_images
+                    self.tbe_image_index = 0
+                    self.__load_tbe_image()
+
+    def __load_tbe_image(self):
+        # Load and display the current image
+        if 0 <= self.tbe_image_index < len(self.tbe_pixmaps):
+            scaled_pixmap = self.tbe_pixmaps[self.tbe_image_index].scaledToWidth(200)
+            scaled_size = scaled_pixmap.size()
+            self.ui.tbe_imageview.setPixmap(scaled_pixmap)
+            self.ui.tbe_imageview.setFixedSize(scaled_size)
+
+    def __tbe_previous_button_clicked(self):
+        # Show the previous image
+        if self.tbe_image_index > 0:
+            self.tbe_image_index -= 1
+            self.__load_tbe_image()
+
+    def __tbe_next_button_clicked(self):
+        # Show the next image
+        if self.tbe_image_index < len(self.tbe_pixmaps) - 1:
+            self.tbe_image_index += 1
+            self.__load_tbe_image()
 
     def __upload_endoscopy_images(self):
         """
@@ -826,7 +891,7 @@ class DataWindow(QMainWindow):
                                          "' does not contain the required positional information, for example, 'name_10cm.png' (Format: Underscore + Integer + cm)")
                     break
             if not error:
-                self.ui.endoscopy_textfield.setText(str(len(filenames)) + " Files selected")
+                self.ui.endoscopy_textfield.setText(str(len(filenames)) + " File(s) uploaded")
                 for i in range(len(filenames)):
                     if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or \
                             fileextensions[i] == 'JPEG':
