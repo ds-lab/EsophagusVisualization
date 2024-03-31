@@ -33,7 +33,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="enabled">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -2985,7 +2985,7 @@ p, li { white-space: pre-wrap; }
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>1</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -3397,7 +3397,7 @@ p, li { white-space: pre-wrap; }
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Anzeige Breischluck Bilder</string>
+                  <string>No TBE images are loaded</string>
                  </property>
                 </widget>
                </item>
@@ -3724,7 +3724,7 @@ p, li { white-space: pre-wrap; }
                       </sizepolicy>
                      </property>
                      <property name="text">
-                      <string>Anzeige Endoskopie Bilder</string>
+                      <string>no Endoscopy Images are loaded</string>
                      </property>
                     </widget>
                    </item>
@@ -3817,7 +3817,7 @@ p, li { white-space: pre-wrap; }
                <item row="5" column="1">
                 <layout class="QHBoxLayout" name="horizontalLayout_10">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_7">
+                  <widget class="QLineEdit" name="endoflip_file_text">
                    <property name="enabled">
                     <bool>false</bool>
                    </property>
@@ -3963,7 +3963,7 @@ p, li { white-space: pre-wrap; }
                <item row="4" column="2">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <item>
-                  <widget class="QLineEdit" name="endosono_file_textfield">
+                  <widget class="QLineEdit" name="endosono_file_text">
                    <property name="enabled">
                     <bool>false</bool>
                    </property>
@@ -4031,7 +4031,7 @@ p, li { white-space: pre-wrap; }
                       </sizepolicy>
                      </property>
                      <property name="text">
-                      <string>Anzeige Endoskopie Bilder</string>
+                      <string>no Endosonography Images are loaded</string>
                      </property>
                     </widget>
                    </item>

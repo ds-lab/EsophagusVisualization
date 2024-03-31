@@ -15,6 +15,7 @@ from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
 from logic.patient_data import PatientData
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
+from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.database import database
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
@@ -763,35 +764,37 @@ class DataWindow(QMainWindow):
 
     def __upload_manometry_file(self):
         """
-        Manometry callback. Handles CSV file selection.
+        Manometry callback. Handles Manometry file selection.
         """
-        filename, _ = QFileDialog.getOpenFileName(self, 'Select Manometry file', self.default_path, "CSV (*.csv *.CSV)")
-        if len(filename) > 0:
-            error = False
-            try:
-                df = pd.read_csv(filename, skiprows=config.csv_skiprows, header=0, index_col=0)
-                df = df.drop(config.csv_drop_columns, axis=1)
-                matrix = df.to_numpy()
-                matrix = matrix.T  # sensors in axis 0
-                pressure_matrix = np.flipud(matrix)  # sensors from top to bottom
-            except:
-                error = True
-            if error or pressure_matrix.shape[1] < 1:
-                self.ui.csv_textfield.setText("")
-                QMessageBox.critical(self, "Unvalid File", "Error: The file does not have the expected format.")
-            else:
-                self.ui.manometry_file_text.setText(filename)
-                pressure_matrix_bytes = pressure_matrix.tobytes()
-                manometry_file_dict = {
-                    'visit_id': self.selected_visit,
-                    'file': pressure_matrix_bytes
-                }
-                if self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit):
-                    manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
-                    self.manometry_file_service.update_manometry_file(manometry_file.manometry_file_id, manometry_file_dict)
+        manometry_exists = self.manometry_service.get_manometry_for_visit(self.selected_visit)
+        if not manometry_exists or manometry_exists and self.to_update_for_visit("Manometry file"):
+            filename, _ = QFileDialog.getOpenFileName(self, 'Select Manometry file', self.default_path, "CSV (*.csv *.CSV)")
+            if len(filename) > 0:
+                error = False
+                try:
+                    df = pd.read_csv(filename, skiprows=config.csv_skiprows, header=0, index_col=0)
+                    df = df.drop(config.csv_drop_columns, axis=1)
+                    matrix = df.to_numpy()
+                    matrix = matrix.T  # sensors in axis 0
+                    pressure_matrix = np.flipud(matrix)  # sensors from top to bottom
+                except:
+                    error = True
+                if error or pressure_matrix.shape[1] < 1:
+                    self.ui.csv_textfield.setText("")
+                    QMessageBox.critical(self, "Unvalid File", "Error: The file does not have the expected format.")
                 else:
-                    self.manometry_file_service.create_manometry_file(manometry_file_dict)
-        self.default_path = os.path.dirname(filename)
+                    self.ui.manometry_file_text.setText(filename)
+                    pressure_matrix_bytes = pressure_matrix.tobytes()
+                    manometry_file_dict = {
+                        'visit_id': self.selected_visit,
+                        'file': pressure_matrix_bytes
+                    }
+                    if self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit):
+                        manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+                        self.manometry_file_service.update_manometry_file(manometry_file.manometry_file_id, manometry_file_dict)
+                    else:
+                        self.manometry_file_service.create_manometry_file(manometry_file_dict)
+            self.default_path = os.path.dirname(filename)
 
     def __upload_tbe_images(self):
         """
@@ -943,3 +946,23 @@ class DataWindow(QMainWindow):
         if self.endoscopy_image_index < len(self.endoscopy_pixmaps) - 1:
             self.endoscopy_image_index += 1
             self.__load_endoscopy_image()
+
+    def __upload_endoflip_file(self):
+        """
+        EndoFLIP button callback. Handles EndoFLIP .xlsx file selection.
+        """
+        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path, "Excel (*.xlsx *.XLSX)")
+        if len(filename) > 0:
+            error = False
+            try:
+                self.endoflip_screenshot = process_endoflip_xlsx(filename)
+            except:
+                error = True
+            if error or len(self.endoflip_screenshot['30']['aggregates']) != 4 or len(
+                    self.endoflip_screenshot['40']['aggregates']) != 4:
+                self.ui.endoflip_textfield.setText("")
+                QMessageBox.critical(self, "Ungültige Datei", "Fehler: Die Datei hat nicht das erwartete Format")
+            else:
+                self.ui.endoflip_textfield.setText(filename)
+        self.__check_button_activate()
+        self.default_path = os.path.dirname(filename)
