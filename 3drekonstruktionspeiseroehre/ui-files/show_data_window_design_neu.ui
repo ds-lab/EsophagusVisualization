@@ -245,7 +245,7 @@
              <item row="2" column="2">
               <widget class="QLineEdit" name="patient_id_field">
                <property name="text">
-                <string>insert Patient Id</string>
+                <string/>
                </property>
                <property name="maxLength">
                 <number>100</number>
@@ -2985,7 +2985,7 @@ p, li { white-space: pre-wrap; }
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>2</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -3448,7 +3448,7 @@ p, li { white-space: pre-wrap; }
                <item row="9" column="2">
                 <layout class="QHBoxLayout" name="horizontalLayout_9">
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_2">
+                  <widget class="QLineEdit" name="tbe_file_text">
                    <property name="enabled">
                     <bool>false</bool>
                    </property>
@@ -3458,7 +3458,7 @@ p, li { white-space: pre-wrap; }
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="xray_upload_button">
+                  <widget class="QPushButton" name="tbe_file_upload_button">
                    <property name="text">
                     <string>Upload Files</string>
                    </property>
