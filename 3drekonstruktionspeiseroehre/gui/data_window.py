@@ -16,6 +16,7 @@ from logic.patient_data import PatientData
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from logic.endoflip_data_processing import process_endoflip_xlsx
+from logic.endoscopy_data_processing import process_and_upload_endoscopy_images
 from logic.database import database
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
@@ -780,7 +781,7 @@ class DataWindow(QMainWindow):
                 except:
                     error = True
                 if error or pressure_matrix.shape[1] < 1:
-                    self.ui.csv_textfield.setText("")
+                    self.ui.manometry_file_text.setText("")
                     QMessageBox.critical(self, "Unvalid File", "Error: The file does not have the expected format.")
                 else:
                     self.ui.manometry_file_text.setText(filename)
@@ -878,46 +879,27 @@ class DataWindow(QMainWindow):
 
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
-            positions = []
-            fileextensions = []
             error = False
 
             for filename in filenames:
                 match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
-                if match:
-                    positions.append(int(match.group('pos')))
-                    fileextensions.append(os.path.splitext(filename)[1][1:])
-                    print(fileextensions)
-                else:
+                if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
                                          "' does not contain the required positional information, for example, 'name_10cm.png' (Format: Underscore + Integer + cm)")
                     break
+
+            # if all images have valid names, process and upload them
             if not error:
+                process_and_upload_endoscopy_images(self.selected_visit, filenames)
                 self.ui.endoscopy_textfield.setText(str(len(filenames)) + " File(s) uploaded")
-                for i in range(len(filenames)):
-                    if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or \
-                            fileextensions[i] == 'JPEG':
-                        extension = 'JPEG'
-                    elif fileextensions[i] == 'png' or fileextensions[i] == 'PNG':
-                        extension = 'PNG'
-                    file = Image.open(filenames[i])
-                    file_bytes = BytesIO()
-                    file.save(file_bytes, format=extension)
-                    file_bytes = file_bytes.getvalue()
-                    endoscopy_file_dict = {
-                        'visit_id': self.selected_visit,
-                        'image_position': positions[i],
-                        'filename': filenames[i],  # ToDo Filename langfristig besser nicht abspeichern
-                        'file': file_bytes
-                    }
-                    self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
-                # load the pixmaps of the images to make them viewable
-                endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
-                if endoscopy_images:
-                    self.endoscopy_pixmaps = endoscopy_images
-                    self.endoscopy_image_index = 0
-                    self.__load_endoscopy_image()
+
+            # load the pixmaps of the images to make them viewable
+            endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
+            if endoscopy_images:
+                self.endoscopy_pixmaps = endoscopy_images
+                self.endoscopy_image_index = 0
+                self.__load_endoscopy_image()
 
     def to_update_for_visit(self, type_to_update: str):
         reply = QMessageBox.question(self, f'{type_to_update} already exists in the database.',

@@ -33,7 +33,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -2985,15 +2985,15 @@ p, li { white-space: pre-wrap; }
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>3</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1297</width>
-             <height>472</height>
+             <width>468</width>
+             <height>337</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3334,8 +3334,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1297</width>
-             <height>472</height>
+             <width>734</width>
+             <height>268</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3576,7 +3576,7 @@ p, li { white-space: pre-wrap; }
              <x>0</x>
              <y>0</y>
              <width>1297</width>
-             <height>472</height>
+             <height>476</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3744,7 +3744,7 @@ p, li { white-space: pre-wrap; }
              <x>0</x>
              <y>0</y>
              <width>1297</width>
-             <height>472</height>
+             <height>476</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3882,8 +3882,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1297</width>
-             <height>472</height>
+             <width>568</width>
+             <height>130</height>
             </rect>
            </property>
            <attribute name="label">
