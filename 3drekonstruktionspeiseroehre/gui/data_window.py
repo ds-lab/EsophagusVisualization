@@ -787,59 +787,77 @@ class DataWindow(QMainWindow):
                     self.manometry_file_service.create_manometry_file(manometry_file_dict)
         self.default_path = os.path.dirname(filename)
 
+    def __upload_tbe_images(self):
+        """
+        X-ray button callback. Handles X-ray file selection for all files.
+        """
+        filenames, _ = QFileDialog.getOpenFileNames(self, 'Dateien auswählen', self.default_path,
+                                                    "Bilder (*.jpg *.JPG *.png *.PNG)")
+        if len(filenames) > 0:
+            self.ui.xray_textfield_all.setText(str(len(filenames)) + " Dateien ausgewählt")
+            self.xray_filenames = filenames
+            self.__check_button_activate()
+            self.default_path = os.path.dirname(filenames[0])
 
     def __upload_endoscopy_images(self):
         """
         Endoscopy button callback. Handles endoscopy image selection.
         """
-        filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
-                                                    "Images (*.jpg *.JPG *.png *.PNG)")
-        print(filenames)
-        print(_)
-        positions = []
-        fileextensions = []
-        error = False
-
         # If endoscopy images are already uploaded in the database, images are deleted and updated with new images
-        if self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit):
+        endoscopy_exists = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
+        if not endoscopy_exists or endoscopy_exists and self.to_update_for_visit("Endoscopy Images"):
             self.endoscopy_file_service.delete_endoscopy_file_for_visit(self.selected_visit)
 
-        for filename in filenames:
-            match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
-            if match:
-                positions.append(int(match.group('pos')))
-                fileextensions.append(os.path.splitext(filename)[1][1:])
-                print(fileextensions)
-            else:
-                error = True
-                QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
-                                     "' does not contain the required positional information, for example, 'name_10cm.png' (Format: Underscore + Integer + cm)")
-                break
-        if not error:
-            self.ui.endoscopy_textfield.setText(str(len(filenames)) + " Files selected")
-            for i in range(len(filenames)):
-                if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or \
-                        fileextensions[i] == 'JPEG':
-                    extension = 'JPEG'
-                elif fileextensions[i] == 'png' or fileextensions[i] == 'PNG':
-                    extension = 'PNG'
-                file = Image.open(filenames[i])
-                file_bytes = BytesIO()
-                file.save(file_bytes, format=extension)
-                file_bytes = file_bytes.getvalue()
-                endoscopy_file_dict = {
-                    'visit_id': self.selected_visit,
-                    'image_position': positions[i],
-                    'filename': filenames[i],  # ToDo Filename langfristig besser nicht abspeichern
-                    'file': file_bytes
-                }
-                self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
-            # load the pixmaps of the images to make them viewable
-            endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
-            if endoscopy_images:
-                self.endoscopy_pixmaps = endoscopy_images
-                self.endoscopy_image_index = 0
-                self.__load_endoscopy_image()
+            filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
+                                                        "Images (*.jpg *.JPG *.png *.PNG)")
+            positions = []
+            fileextensions = []
+            error = False
+
+            for filename in filenames:
+                match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+                if match:
+                    positions.append(int(match.group('pos')))
+                    fileextensions.append(os.path.splitext(filename)[1][1:])
+                    print(fileextensions)
+                else:
+                    error = True
+                    QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
+                                         "' does not contain the required positional information, for example, 'name_10cm.png' (Format: Underscore + Integer + cm)")
+                    break
+            if not error:
+                self.ui.endoscopy_textfield.setText(str(len(filenames)) + " Files selected")
+                for i in range(len(filenames)):
+                    if fileextensions[i] == 'jpg' or fileextensions[i] == 'JPG' or fileextensions[i] == 'jpeg' or \
+                            fileextensions[i] == 'JPEG':
+                        extension = 'JPEG'
+                    elif fileextensions[i] == 'png' or fileextensions[i] == 'PNG':
+                        extension = 'PNG'
+                    file = Image.open(filenames[i])
+                    file_bytes = BytesIO()
+                    file.save(file_bytes, format=extension)
+                    file_bytes = file_bytes.getvalue()
+                    endoscopy_file_dict = {
+                        'visit_id': self.selected_visit,
+                        'image_position': positions[i],
+                        'filename': filenames[i],  # ToDo Filename langfristig besser nicht abspeichern
+                        'file': file_bytes
+                    }
+                    self.endoscopy_file_service.create_endoscopy_file(endoscopy_file_dict)
+                # load the pixmaps of the images to make them viewable
+                endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
+                if endoscopy_images:
+                    self.endoscopy_pixmaps = endoscopy_images
+                    self.endoscopy_image_index = 0
+                    self.__load_endoscopy_image()
+
+    def to_update_for_visit(self, type_to_update: str):
+        reply = QMessageBox.question(self, f'{type_to_update} already exists in the database.',
+                                     f"Should the {type_to_update} for this visit be updated?", QMessageBox.StandardButton.Yes |
+                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            return True
+        return False
 
     def __load_endoscopy_image(self):
         # Load and display the current image
