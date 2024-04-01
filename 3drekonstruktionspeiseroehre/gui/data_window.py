@@ -109,12 +109,10 @@ class DataWindow(QMainWindow):
         self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
         # Barium Swallow / TBE
         self.ui.tbe_file_upload_button.clicked.connect(self.__upload_tbe_images)
-
-        # self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
-        # self.ui.endosono_upload_button.clicked.connect(self.__endosono_upload_button_clicked)
+        # Endoscopy / EGD
         self.ui.endoscopy_upload_button.clicked.connect(self.__upload_endoscopy_images)
-        # self.ui.endoflip_upload_button.clicked.connect(self.__endoflip_upload_button_clicked)
-        # self.ui.manometry_upload_button.clicked.connect(self.__manometry_upload_button_clicked)
+        # Endoflip
+        self.ui.endoflip_upload_button.clicked.connect(self.__upload_endoflip_file)
 
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
@@ -894,14 +892,15 @@ class DataWindow(QMainWindow):
         if len(filename) > 0:
             error = False
             try:
-                data_bytes, endoflip_screenshot = process_endoflip_xlsx(filename)
+                endoflip_screenshot = process_endoflip_xlsx(filename)
             except:
                 error = True
-            if error or len(self.endoflip_screenshot['30']['aggregates']) != 4 or len(
-                    self.endoflip_screenshot['40']['aggregates']) != 4:
-                self.ui.endoflip_textfield.setText("")
+            if error or len(endoflip_screenshot['30']['aggregates']) != 4 or len(
+                    endoflip_screenshot['40']['aggregates']) != 4:
+                print(error)
+                self.ui.endoflip_file_text.setText("")
                 QMessageBox.critical(self, "Invalid File", "Error: The file does not have the expected format.")
             else:
-                conduct_endoflip_file_upload(self.selected_visit, data_bytes, endoflip_screenshot)
+                conduct_endoflip_file_upload(self.selected_visit, endoflip_screenshot)
                 self.ui.endoflip_file_text.setText(filename)
         self.default_path = os.path.dirname(filename)

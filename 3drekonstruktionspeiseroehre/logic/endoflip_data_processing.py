@@ -1,15 +1,15 @@
 import pandas as pd
 import re
-from PyQt6.QtWidgets import QMessageBox
 from logic.services.endoflip_service import EndoflipFileService
 from logic.database import database
+import pickle
 
 
-def conduct_endoflip_file_upload(selected_visit, data_bytes, endoflip_screenshot):
+def conduct_endoflip_file_upload(selected_visit, endoflip_screenshot):
+    endoflip_bytes = pickle.dumps(endoflip_screenshot)
     endoflip_file_dict = {
         'visit_id': selected_visit,
-        'file': data_bytes,
-        'screenshot': endoflip_screenshot
+        'screenshot': endoflip_bytes
     }
     db = database.get_db()
     endoflip_file_service = EndoflipFileService(db)
@@ -35,7 +35,6 @@ def process_endoflip_xlsx(file_path: str) -> dict:
 
     # Read the Excel file
     data = pd.read_excel(file_path, header=None)
-    data_bytes = data.tobytes()
 
     # Find starting header row (doctors use the first couple rows for their annotations)
     row_start = 0
@@ -86,4 +85,4 @@ def process_endoflip_xlsx(file_path: str) -> dict:
             'aggregates': selected_columns.astype(float).agg(['min', 'max', 'mean', 'median'])
         }
 
-    return data_bytes, aggregations
+    return aggregations
