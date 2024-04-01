@@ -1,5 +1,24 @@
 import pandas as pd
 import re
+from PyQt6.QtWidgets import QMessageBox
+from logic.services.endoflip_service import EndoflipFileService
+from logic.database import database
+
+
+def conduct_endoflip_file_upload(selected_visit, data_bytes, endoflip_screenshot):
+    endoflip_file_dict = {
+        'visit_id': selected_visit,
+        'file': data_bytes,
+        'screenshot': endoflip_screenshot
+    }
+    db = database.get_db()
+    endoflip_file_service = EndoflipFileService(db)
+    if endoflip_file_service.get_endoflip_file_for_visit(selected_visit):
+        endoflip_file = endoflip_file_service.get_endoflip_file_for_visit(selected_visit)
+        endoflip_file_service.update_endoflip_file(endoflip_file.endoflip, endoflip_file_dict)
+    else:
+        endoflip_file_service.create_endoflip_file(endoflip_file_dict)
+
 
 def process_endoflip_xlsx(file_path: str) -> dict:
     """
@@ -16,6 +35,7 @@ def process_endoflip_xlsx(file_path: str) -> dict:
 
     # Read the Excel file
     data = pd.read_excel(file_path, header=None)
+    data_bytes = data.tobytes()
 
     # Find starting header row (doctors use the first couple rows for their annotations)
     row_start = 0
@@ -66,4 +86,4 @@ def process_endoflip_xlsx(file_path: str) -> dict:
             'aggregates': selected_columns.astype(float).agg(['min', 'max', 'mean', 'median'])
         }
 
-    return aggregations
+    return data_bytes, aggregations

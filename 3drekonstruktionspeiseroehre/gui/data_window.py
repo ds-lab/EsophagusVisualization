@@ -15,7 +15,7 @@ from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
 from logic.patient_data import PatientData
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
-from logic.endoflip_data_processing import process_endoflip_xlsx
+from logic.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload
 from logic.endoscopy_data_processing import process_and_upload_endoscopy_images
 from logic.tbe_data_processing import process_and_upload_tbe_images
 from logic.manometry_data_processing import process_and_upload_manometry_file
@@ -109,7 +109,6 @@ class DataWindow(QMainWindow):
         self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
         # Barium Swallow / TBE
         self.ui.tbe_file_upload_button.clicked.connect(self.__upload_tbe_images)
-
 
         # self.ui.xray_upload_button.clicked.connect(self.__xray_upload_button_clicked)
         # self.ui.endosono_upload_button.clicked.connect(self.__endosono_upload_button_clicked)
@@ -601,7 +600,6 @@ class DataWindow(QMainWindow):
         self.ui.eckardt_score.setEnabled(False)
         self.ui.visit_data.setEnabled(False)
 
-
     def __select_visit(self):
         selected_indexes = self.visits_tableView.selectedIndexes()  # Get the indexes of all selected cells
         if selected_indexes:
@@ -676,15 +674,13 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-
-
     def __add_eckardt_score_button_clicked(self):
         eckardt_dict = {'visit_id': self.selected_visit,
-                      'dysphagia': self.ui.eckardt_dysphagia_dropdown.currentText(),
-                      'retrosternal_pain': self.ui.eckardt_retro_pain_dropdown.currentText(),
-                      'regurgitation': self.ui.eckardt_regurgitation_dropdown.currentText(),
-                      'weightloss': self.ui.eckardt_weightloss_dropdown.currentText(),
-                      'total_score': self.ui.eckardt_totalscore_dropdown.currentText()}
+                        'dysphagia': self.ui.eckardt_dysphagia_dropdown.currentText(),
+                        'retrosternal_pain': self.ui.eckardt_retro_pain_dropdown.currentText(),
+                        'regurgitation': self.ui.eckardt_regurgitation_dropdown.currentText(),
+                        'weightloss': self.ui.eckardt_weightloss_dropdown.currentText(),
+                        'total_score': self.ui.eckardt_totalscore_dropdown.currentText()}
         if not self.__validate_eckardtscore():
             QMessageBox.warning(self, "Insufficient Data",
                                 "Please fill out all data and make sure they are valid.")
@@ -695,7 +691,6 @@ class DataWindow(QMainWindow):
         else:
             self.eckardtscore_service.create_eckardtscore(eckardt_dict)
         # ToDo ggf eine Anzeige für den EckardtScore einbauen
-
 
     def __delete_eckardt_score_button_clicked(self):
         self.eckardtscore_service.delete_eckardtscore_for_visit(
@@ -715,17 +710,17 @@ class DataWindow(QMainWindow):
     def __add_manometry(self):
         les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
         manometry_dict = {'visit_id': self.selected_visit,
-                        'catheder_type': self.ui.manometry_cathedertype_dropdown.currentText(),
-                        'patient_position': self.ui.manometry_patientposition_dropdown.currentText(),
-                        'resting_pressure': self.ui.manometry_restingpressure_spin.value(),
-                        'ipr4': self.ui.manometry_ipr4_spin.value(),
-                        'dci': self.ui.manometry_dci_spin.value(),
-                        'dl': self.ui.manometry_dl_spin.value(),
-                        'ues_upper_boundary': self.ui.manometry_upperboundary_ues_spin.value(),
-                        'ues_lower_boundary': self.ui.manometry_lowerboundary_ues_spin.value(),
-                        'les_upper_boundary': self.ui.manometry_upperboundary_les_spin.value(),
-                        'les_lower_boundary': self.ui.manometry_lowerboundary_les_spin.value(),
-                        'les_length': les_length}
+                          'catheder_type': self.ui.manometry_cathedertype_dropdown.currentText(),
+                          'patient_position': self.ui.manometry_patientposition_dropdown.currentText(),
+                          'resting_pressure': self.ui.manometry_restingpressure_spin.value(),
+                          'ipr4': self.ui.manometry_ipr4_spin.value(),
+                          'dci': self.ui.manometry_dci_spin.value(),
+                          'dl': self.ui.manometry_dl_spin.value(),
+                          'ues_upper_boundary': self.ui.manometry_upperboundary_ues_spin.value(),
+                          'ues_lower_boundary': self.ui.manometry_lowerboundary_ues_spin.value(),
+                          'les_upper_boundary': self.ui.manometry_upperboundary_les_spin.value(),
+                          'les_lower_boundary': self.ui.manometry_lowerboundary_les_spin.value(),
+                          'les_length': les_length}
         if not self.__validate_manometry():
             QMessageBox.warning(self, "Insufficient Data",
                                 "Please fill out all manometry data and make sure they are valid.")
@@ -771,7 +766,8 @@ class DataWindow(QMainWindow):
         """
         manometry_exists = self.manometry_service.get_manometry_for_visit(self.selected_visit)
         if not manometry_exists or manometry_exists and self.to_update_for_visit("Manometry file"):
-            filename, _ = QFileDialog.getOpenFileName(self, 'Select Manometry file', self.default_path, "CSV (*.csv *.CSV)")
+            filename, _ = QFileDialog.getOpenFileName(self, 'Select Manometry file', self.default_path,
+                                                      "CSV (*.csv *.CSV)")
             if len(filename) > 0:
                 process_and_upload_manometry_file(self.selected_visit, filename)
                 self.ui.manometry_file_text.setText(filename)
@@ -863,7 +859,8 @@ class DataWindow(QMainWindow):
 
     def to_update_for_visit(self, type_to_update: str):
         reply = QMessageBox.question(self, f'{type_to_update} already exists in the database.',
-                                     f"Should the {type_to_update} for this visit be updated?", QMessageBox.StandardButton.Yes |
+                                     f"Should the {type_to_update} for this visit be updated?",
+                                     QMessageBox.StandardButton.Yes |
                                      QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
             return True
@@ -897,14 +894,14 @@ class DataWindow(QMainWindow):
         if len(filename) > 0:
             error = False
             try:
-                self.endoflip_screenshot = process_endoflip_xlsx(filename)
+                data_bytes, endoflip_screenshot = process_endoflip_xlsx(filename)
             except:
                 error = True
             if error or len(self.endoflip_screenshot['30']['aggregates']) != 4 or len(
                     self.endoflip_screenshot['40']['aggregates']) != 4:
                 self.ui.endoflip_textfield.setText("")
-                QMessageBox.critical(self, "Ungültige Datei", "Fehler: Die Datei hat nicht das erwartete Format")
+                QMessageBox.critical(self, "Invalid File", "Error: The file does not have the expected format.")
             else:
-                self.ui.endoflip_textfield.setText(filename)
-        self.__check_button_activate()
+                conduct_endoflip_file_upload(self.selected_visit, data_bytes, endoflip_screenshot)
+                self.ui.endoflip_file_text.setText(filename)
         self.default_path = os.path.dirname(filename)

@@ -1,10 +1,6 @@
 import numpy as np
 import pandas as pd
 from PyQt6.QtWidgets import QMessageBox
-from PIL import Image
-import re
-from io import BytesIO
-import os
 import config
 from logic.services.manometry_service import ManometryFileService
 from logic.database import database
@@ -23,12 +19,12 @@ def process_and_upload_manometry_file(selected_visit, filename):
     if error or pressure_matrix.shape[1] < 1:
         QMessageBox.critical(None, "Invalid File", "Error: The file does not have the expected format.")
 
-    pressure_matrix_bytes = pressure_matrix.tobytes()
-    manometry_file_dict = {
-        'visit_id': selected_visit,
-        'file': pressure_matrix_bytes
-    }
     if not error:
+        pressure_matrix_bytes = pressure_matrix.tobytes()
+        manometry_file_dict = {
+            'visit_id': selected_visit,
+            'file': pressure_matrix_bytes
+        }
         db = database.get_db()
         manometry_file_service = ManometryFileService(db)
         if manometry_file_service.get_manometry_file_for_visit(selected_visit):
