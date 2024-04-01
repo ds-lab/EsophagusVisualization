@@ -248,7 +248,7 @@ class EndoflipFile(Base):
     endoflip_file_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     file = mapped_column(PickleType, nullable=True)
-    screenshot = mapped_column(JSONB)
+    screenshot = mapped_column(PickleType)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
