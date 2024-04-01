@@ -896,7 +896,7 @@ class DataWindow(QMainWindow):
             if len(filename) > 0:
                 error = False
                 try:
-                    endoflip_screenshot = process_endoflip_xlsx(filename)
+                    data_bytes, endoflip_screenshot = process_endoflip_xlsx(filename)
                 except:
                     error = True
                 if error or len(endoflip_screenshot['30']['aggregates']) != 4 or len(
@@ -905,6 +905,6 @@ class DataWindow(QMainWindow):
                     self.ui.endoflip_file_text.setText("")
                     QMessageBox.critical(self, "Invalid File", "Error: The file does not have the expected format.")
                 else:
-                    conduct_endoflip_file_upload(self.selected_visit, endoflip_screenshot)
+                    conduct_endoflip_file_upload(self.selected_visit, data_bytes, endoflip_screenshot)
                     self.ui.endoflip_file_text.setText(filename)
             self.default_path = os.path.dirname(filename)
