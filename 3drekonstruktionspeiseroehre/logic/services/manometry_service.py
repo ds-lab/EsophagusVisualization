@@ -90,7 +90,7 @@ class ManometryFileService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def get_manometry_file_for_visit(self, visit_id: int) -> list[Manometry, None]:
+    def get_manometry_file_for_visit(self, visit_id: int) -> list[ManometryFile, None]:
         stmt = select(ManometryFile).where(ManometryFile.visit_id == visit_id)
         try:
             result = self.db.execute(stmt).first()
