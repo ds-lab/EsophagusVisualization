@@ -18,6 +18,7 @@ from gui.info_window import InfoWindow
 from logic.endoflip_data_processing import process_endoflip_xlsx
 from logic.endoscopy_data_processing import process_and_upload_endoscopy_images
 from logic.tbe_data_processing import process_and_upload_tbe_images
+from logic.manometry_data_processing import process_and_upload_manometry_file
 from logic.database import database
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
@@ -772,31 +773,8 @@ class DataWindow(QMainWindow):
         if not manometry_exists or manometry_exists and self.to_update_for_visit("Manometry file"):
             filename, _ = QFileDialog.getOpenFileName(self, 'Select Manometry file', self.default_path, "CSV (*.csv *.CSV)")
             if len(filename) > 0:
-                error = False
-                try:
-                    df = pd.read_csv(filename, skiprows=config.csv_skiprows, header=0, index_col=0)
-                    df = df.drop(config.csv_drop_columns, axis=1)
-                    matrix = df.to_numpy()
-                    matrix = matrix.T  # sensors in axis 0
-                    pressure_matrix = np.flipud(matrix)  # sensors from top to bottom
-                except:
-                    error = True
-                if error or pressure_matrix.shape[1] < 1:
-                    self.ui.manometry_file_text.setText("")
-                    QMessageBox.critical(self, "Unvalid File", "Error: The file does not have the expected format.")
-                else:
-                    self.ui.manometry_file_text.setText(filename)
-                    pressure_matrix_bytes = pressure_matrix.tobytes()
-                    manometry_file_dict = {
-                        'visit_id': self.selected_visit,
-                        'file': pressure_matrix_bytes
-                    }
-                    if self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit):
-                        manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
-                        self.manometry_file_service.update_manometry_file(manometry_file.manometry_file_id, manometry_file_dict)
-                    else:
-                        self.manometry_file_service.create_manometry_file(manometry_file_dict)
-            self.default_path = os.path.dirname(filename)
+                process_and_upload_manometry_file(self.selected_visit, filename)
+                self.ui.manometry_file_text.setText(filename)
 
     def __upload_tbe_images(self):
         """
@@ -809,8 +787,6 @@ class DataWindow(QMainWindow):
 
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
-            times = []
-            fileextensions = []
             error = False
 
             for filename in filenames:
@@ -820,6 +796,8 @@ class DataWindow(QMainWindow):
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
                                          "' does not contain the required time information, for example, '2.jpg' ")
                     break
+
+            # if all images are named in the correct format, process and upload them
             if not error:
                 process_and_upload_tbe_images(self.selected_visit, filenames)
                 self.ui.tbe_file_text.setText(str(len(filenames)) + " File(s) uploaded")
@@ -876,12 +854,12 @@ class DataWindow(QMainWindow):
                 process_and_upload_endoscopy_images(self.selected_visit, filenames)
                 self.ui.endoscopy_textfield.setText(str(len(filenames)) + " File(s) uploaded")
 
-            # load the pixmaps of the images to make them viewable
-            endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
-            if endoscopy_images:
-                self.endoscopy_pixmaps = endoscopy_images
-                self.endoscopy_image_index = 0
-                self.__load_endoscopy_image()
+                # load the pixmaps of the images to make them viewable
+                endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
+                if endoscopy_images:
+                    self.endoscopy_pixmaps = endoscopy_images
+                    self.endoscopy_image_index = 0
+                    self.__load_endoscopy_image()
 
     def to_update_for_visit(self, type_to_update: str):
         reply = QMessageBox.question(self, f'{type_to_update} already exists in the database.',

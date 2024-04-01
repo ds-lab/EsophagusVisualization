@@ -1104,7 +1104,7 @@ p, li { white-space: pre-wrap; }
       </widget>
       <widget class="QWidget" name="visit_data">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <attribute name="title">
         <string>Visit-Data</string>
@@ -2985,15 +2985,15 @@ p, li { white-space: pre-wrap; }
         <item row="2" column="0" colspan="3">
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>2</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>468</width>
-             <height>337</height>
+             <width>1297</width>
+             <height>476</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3334,8 +3334,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>734</width>
-             <height>268</height>
+             <width>1297</width>
+             <height>476</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3882,8 +3882,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>568</width>
-             <height>130</height>
+             <width>1297</width>
+             <height>476</height>
             </rect>
            </property>
            <attribute name="label">
