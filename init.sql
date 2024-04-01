@@ -172,8 +172,8 @@ CREATE TABLE endoflips (
 CREATE TABLE endoflip_files (
     endoflip_file_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    file BYTEA NOT NULL,
-    screenshot BYTEA
+    file BYTEA,
+    screenshot JSONB
 );
 
 CREATE TABLE endosonographies (

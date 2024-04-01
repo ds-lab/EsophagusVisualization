@@ -1,5 +1,6 @@
 from sqlalchemy import Boolean, ForeignKey, Integer, PickleType, String, Enum, Date, Float, create_engine, inspect
 from sqlalchemy.orm import DeclarativeBase, mapped_column, sessionmaker
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 class Base(DeclarativeBase):
@@ -246,8 +247,8 @@ class EndoflipFile(Base):
     __tablename__ = "endoflip_files"
     endoflip_file_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    file = mapped_column(PickleType, nullable=False)
-    screenshot = mapped_column(PickleType)
+    file = mapped_column(PickleType, nullable=True)
+    screenshot = mapped_column(JSONB)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
