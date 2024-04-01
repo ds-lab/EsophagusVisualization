@@ -15,7 +15,7 @@ def conduct_endoflip_file_upload(selected_visit, endoflip_screenshot):
     endoflip_file_service = EndoflipFileService(db)
     if endoflip_file_service.get_endoflip_file_for_visit(selected_visit):
         endoflip_file = endoflip_file_service.get_endoflip_file_for_visit(selected_visit)
-        endoflip_file_service.update_endoflip_file(endoflip_file.endoflip, endoflip_file_dict)
+        endoflip_file_service.update_endoflip_file(endoflip_file.endoflip_file_id, endoflip_file_dict)
     else:
         endoflip_file_service.create_endoflip_file(endoflip_file_dict)
 

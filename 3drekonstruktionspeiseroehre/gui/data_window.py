@@ -26,6 +26,7 @@ from logic.services.eckardtscore_service import EckardtscoreService
 from logic.services.manometry_service import ManometryService, ManometryFileService
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyFileService
+from logic.services.endoflip_service import EndoflipFileService
 from logic.services.tbe_service import TbeFileService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 from PIL import Image
@@ -68,6 +69,7 @@ class DataWindow(QMainWindow):
         self.manometry_file_service = ManometryFileService(self.db)
         self.tbe_file_service = TbeFileService(self.db)
         self.endoscopy_file_service = EndoscopyFileService(self.db)
+        self.endoflip_file_service = EndoflipFileService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -762,7 +764,7 @@ class DataWindow(QMainWindow):
         """
         Manometry callback. Handles Manometry file selection.
         """
-        manometry_exists = self.manometry_service.get_manometry_for_visit(self.selected_visit)
+        manometry_exists = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
         if not manometry_exists or manometry_exists and self.to_update_for_visit("Manometry file"):
             filename, _ = QFileDialog.getOpenFileName(self, 'Select Manometry file', self.default_path,
                                                       "CSV (*.csv *.CSV)")
@@ -888,19 +890,21 @@ class DataWindow(QMainWindow):
         """
         EndoFLIP button callback. Handles EndoFLIP .xlsx file selection.
         """
-        filename, _ = QFileDialog.getOpenFileName(self, 'Datei auswählen', self.default_path, "Excel (*.xlsx *.XLSX)")
-        if len(filename) > 0:
-            error = False
-            try:
-                endoflip_screenshot = process_endoflip_xlsx(filename)
-            except:
-                error = True
-            if error or len(endoflip_screenshot['30']['aggregates']) != 4 or len(
-                    endoflip_screenshot['40']['aggregates']) != 4:
-                print(error)
-                self.ui.endoflip_file_text.setText("")
-                QMessageBox.critical(self, "Invalid File", "Error: The file does not have the expected format.")
-            else:
-                conduct_endoflip_file_upload(self.selected_visit, endoflip_screenshot)
-                self.ui.endoflip_file_text.setText(filename)
-        self.default_path = os.path.dirname(filename)
+        endoflip_exists = self.endoflip_file_service.get_endoflip_file_for_visit(self.selected_visit)
+        if not endoflip_exists or endoflip_exists and self.to_update_for_visit("Endoflip file"):
+            filename, _ = QFileDialog.getOpenFileName(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
+            if len(filename) > 0:
+                error = False
+                try:
+                    endoflip_screenshot = process_endoflip_xlsx(filename)
+                except:
+                    error = True
+                if error or len(endoflip_screenshot['30']['aggregates']) != 4 or len(
+                        endoflip_screenshot['40']['aggregates']) != 4:
+                    print(error)
+                    self.ui.endoflip_file_text.setText("")
+                    QMessageBox.critical(self, "Invalid File", "Error: The file does not have the expected format.")
+                else:
+                    conduct_endoflip_file_upload(self.selected_visit, endoflip_screenshot)
+                    self.ui.endoflip_file_text.setText(filename)
+            self.default_path = os.path.dirname(filename)
