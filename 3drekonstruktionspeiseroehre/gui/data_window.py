@@ -669,7 +669,7 @@ class DataWindow(QMainWindow):
                 self.ui.visit_type_dropdown.currentText() != "Therapy" or self.ui.therapy_type_dropdown.currentText() != "---")
                 and (
                 self.ui.therapy_type_dropdown.currentText() == "---" or self.ui.visit_type_dropdown.currentText() == "Therapy")
-                and self.ui.month_after_therapy_spin.value() != -1
+                and self.ui.months_after_therapy_spin.value() != -1
         ):
             return True
         return False
