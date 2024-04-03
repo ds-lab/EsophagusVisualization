@@ -696,7 +696,7 @@
               </widget>
              </item>
              <item row="5" column="1">
-              <widget class="QSpinBox" name="month_after_therapy_spin">
+              <widget class="QSpinBox" name="months_after_therapy_spin">
                <property name="minimum">
                 <number>-1</number>
                </property>
@@ -1455,7 +1455,7 @@ p, li { white-space: pre-wrap; }
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -1463,7 +1463,7 @@ p, li { white-space: pre-wrap; }
              <x>0</x>
              <y>0</y>
              <width>1384</width>
-             <height>584</height>
+             <height>655</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2202,7 +2202,7 @@ p, li { white-space: pre-wrap; }
              <x>0</x>
              <y>0</y>
              <width>1384</width>
-             <height>584</height>
+             <height>655</height>
             </rect>
            </property>
            <attribute name="label">
