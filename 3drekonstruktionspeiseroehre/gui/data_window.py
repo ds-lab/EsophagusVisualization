@@ -1,13 +1,8 @@
 import os
 import re
-from io import BytesIO
 from pathlib import Path
 from datetime import datetime
 
-import config
-import numpy as np
-
-import pandas as pd
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QCompleter
@@ -15,11 +10,12 @@ from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
 from logic.patient_data import PatientData
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
-from logic.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload
-from logic.endoscopy_data_processing import process_and_upload_endoscopy_images
-from logic.tbe_data_processing import process_and_upload_tbe_images
-from logic.manometry_data_processing import process_and_upload_manometry_file
+from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload
+from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
+from logic.datainput.tbe_data_processing import process_and_upload_tbe_images
+from logic.datainput.manometry_data_processing import process_and_upload_manometry_file
 from logic.database import database
+from logic.datainput.validate_input_data import DataValidation
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.eckardtscore_service import EckardtscoreService
@@ -29,7 +25,6 @@ from logic.services.endoscopy_service import EndoscopyFileService
 from logic.services.endoflip_service import EndoflipFileService
 from logic.services.tbe_service import TbeFileService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
-from PIL import Image
 
 
 class DataWindow(QMainWindow):
@@ -721,10 +716,24 @@ class DataWindow(QMainWindow):
                           'les_upper_boundary': self.ui.manometry_upperboundary_les_spin.value(),
                           'les_lower_boundary': self.ui.manometry_lowerboundary_les_spin.value(),
                           'les_length': les_length}
-        if not self.__validate_manometry():
-            QMessageBox.warning(self, "Insufficient Data",
-                                "Please fill out all manometry data and make sure they are valid.")
-        elif self.manometry_service.get_manometry_for_visit(self.selected_visit):
+        manometry_dict, null_values = DataValidation.validate_manometry(manometry_dict)
+
+        if null_values:
+            null_message = "The following values are not set: " + ", ".join(
+                null_values) + ". Do you want to set them to null/unknown?"
+            reply = QMessageBox.question(self, 'Null Values Detected', null_message,
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                return
+                # ToDo überprüfen ob dies wirklich nicht benötigt wird
+                # Set missing values to Null and set values in manometry_dict
+                #for key in null_values:
+                #    manometry_dict[key] = None
+            #else:
+            #    return  # Cancel if User wants
+
+        if self.manometry_service.get_manometry_for_visit(self.selected_visit):
             manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
             self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)
         else:

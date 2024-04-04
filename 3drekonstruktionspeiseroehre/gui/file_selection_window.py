@@ -5,10 +5,10 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from PyQt6 import uic, QtCore
+from PyQt6 import uic
 from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox, QVBoxLayout, QCompleter
+from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox, QCompleter
 from sqlalchemy.orm import sessionmaker
 
 import config
@@ -19,8 +19,8 @@ from gui.xray_window_managment import ManageXrayWindows
 from gui.previous_therapies_window import PreviousTherapiesWindow
 from gui.data_window import DataWindow
 from logic.database import database
-from logic.database.data_declarative_models import Patient, Visit
-from logic.endoflip_data_processing import process_endoflip_xlsx
+from logic.database.data_declarative_models import Patient
+from logic.datainput.endoflip_data_processing import process_endoflip_xlsx
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData

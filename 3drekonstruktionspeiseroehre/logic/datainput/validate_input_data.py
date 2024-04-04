@@ -43,29 +43,10 @@ class DataValidation:
         return False
 
     @staticmethod
-    def validate_manometry(manometry_cathedertype_dropdown, manometry_patientposition_dropdown,
-                           manometry_restingpressure_spin, manometry_ipr4_spin, manometry_dci_spin, manometry_dl_spin,
-                           manometry_upperboundary_ues_spin, manometry_lowerboundary_ues_spin,
-                           manometry_upperboundary_les_spin, manometry_lowerboundary_les_spin):
-        if (
-                manometry_cathedertype_dropdown != "---" and
-                manometry_patientposition_dropdown != "---" and
-                manometry_restingpressure_spin != -1 and
-                manometry_ipr4_spin != -1 and
-                manometry_dci_spin != -1 and
-                manometry_dl_spin != -1 and
-                manometry_upperboundary_ues_spin != -1 and
-                manometry_lowerboundary_ues_spin != -1 and
-                manometry_upperboundary_les_spin != -1 and
-                manometry_lowerboundary_les_spin != -1
-        ):
-            return True
-        else:
-            reply = QMessageBox.question(None, f'Not all variables are filled out',
-                                         f"Should these variables be set to null/unknown?",
-                                         QMessageBox.StandardButton.Yes |
-                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-            if reply == QMessageBox.StandardButton.Yes:
-                return True
-            else:
-                return False
+    def validate_manometry(manometry_dict):
+        null_values = []
+        for key, value in manometry_dict.items():
+            if value == -1 or value == "---":
+                null_values.append(key)
+                manometry_dict[key] = None
+        return manometry_dict, null_values
