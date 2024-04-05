@@ -12,7 +12,7 @@ from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload
 from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
-from logic.datainput.tbe_data_processing import process_and_upload_tbe_images
+from logic.datainput.barium_swallow_data_processing import process_and_upload_barium_swallow_images
 from logic.datainput.manometry_data_processing import process_and_upload_manometry_file
 from logic.database import database
 from logic.datainput.validate_input_data import DataValidation
@@ -114,8 +114,8 @@ class DataWindow(QMainWindow):
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
         self.ui.endoscopy_next_button.clicked.connect(self.__endoscopy_next_button_clicked)
-        self.ui.tbe_previous_button.clicked.connect(self.__tbe_previous_button_clicked)
-        self.ui.tbe_next_button.clicked.connect(self.__tbe_next_button_clicked)
+        self.ui.tbe_previous_button.clicked.connect(self.__barium_swallow_previous_button_clicked)
+        self.ui.tbe_next_button.clicked.connect(self.__barium_swallow_next_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -576,7 +576,7 @@ class DataWindow(QMainWindow):
                       'year_of_visit': self.ui.year_of_visit_calendar.date().toPyDate().year,
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
                       'therapy_type': self.ui.therapy_type_dropdown.currentText(),
-                      'months_after_therapy': self.ui.month_after_therapy_spin.value()}
+                      'months_after_therapy': self.ui.months_after_therapy_spin.value()}
         if self.__validate_visit():  # check if visit-data are valid
             self.visit_service.create_visit(visit_dict)
             self.__init_visits_of_patient()
@@ -780,9 +780,9 @@ class DataWindow(QMainWindow):
         X-ray/TBE button callback. Handles X-ray file selection for all files.
         """
         # If TBE images are already uploaded in the database, images are deleted and updated with new images
-        tbe_exists = self.tbe_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
-        if not tbe_exists or tbe_exists and self.to_update_for_visit("TBE Images"):
-            self.tbe_file_service.delete_barium_swallow_file_for_visit(self.selected_visit)
+        barium_swallow_exists = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
+        if not barium_swallow_exists or barium_swallow_exists and self.to_update_for_visit("TBE Images"):
+            self.barium_swallow_file_service.delete_barium_swallow_file_for_visit(self.selected_visit)
 
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
@@ -798,34 +798,34 @@ class DataWindow(QMainWindow):
 
             # if all images are named in the correct format, process and upload them
             if not error:
-                process_and_upload_tbe_images(self.selected_visit, filenames)
+                process_and_upload_barium_swallow_images(self.selected_visit, filenames)
                 self.ui.tbe_file_text.setText(str(len(filenames)) + " File(s) uploaded")
                 # load the pixmaps of the images to make them viewable
-                tbe_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
-                if tbe_images:
-                    self.tbe_pixmaps = tbe_images
-                    self.tbe_image_index = 0
-                    self.__load_tbe_image()
+                barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
+                if barium_swallow_images:
+                    self.barium_swallow_pixmaps = barium_swallow_images
+                    self.barium_swallow_image_index = 0
+                    self.__load_barium_swallow_image()
 
-    def __load_tbe_image(self):
+    def __load_barium_swallow_image(self):
         # Load and display the current image
-        if 0 <= self.tbe_image_index < len(self.tbe_pixmaps):
-            scaled_pixmap = self.tbe_pixmaps[self.tbe_image_index].scaledToWidth(200)
+        if 0 <= self.barium_swallow_image_index < len(self.barium_swallow_pixmaps):
+            scaled_pixmap = self.barium_swallow_pixmaps[self.barium_swallow_image_index].scaledToWidth(200)
             scaled_size = scaled_pixmap.size()
-            self.ui.tbe_imageview.setPixmap(scaled_pixmap)
-            self.ui.tbe_imageview.setFixedSize(scaled_size)
+            self.ui.barium_swallow_imageview.setPixmap(scaled_pixmap)
+            self.ui.barium_swallow_imageview.setFixedSize(scaled_size)
 
-    def __tbe_previous_button_clicked(self):
+    def __barium_swallow_previous_button_clicked(self):
         # Show the previous image
-        if self.tbe_image_index > 0:
-            self.tbe_image_index -= 1
-            self.__load_tbe_image()
+        if self.barium_swallow_image_index > 0:
+            self.barium_swallow_image_index -= 1
+            self.__load_barium_swallow_image()
 
-    def __tbe_next_button_clicked(self):
+    def __barium_swallow_next_button_clicked(self):
         # Show the next image
-        if self.tbe_image_index < len(self.tbe_pixmaps) - 1:
-            self.tbe_image_index += 1
-            self.__load_tbe_image()
+        if self.barium_swallow_image_index < len(self.barium_swallow_pixmaps) - 1:
+            self.barium_swallow_image_index += 1
+            self.__load_barium_swallow_image()
 
     def __upload_endoscopy_images(self):
         """
