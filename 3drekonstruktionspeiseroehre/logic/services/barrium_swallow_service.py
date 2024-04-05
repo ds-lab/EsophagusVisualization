@@ -3,18 +3,18 @@ from PyQt6.QtWidgets import QMessageBox
 from flask import jsonify
 from sqlalchemy import select, delete, update, insert, func
 from sqlalchemy.orm import Session
-from logic.database.data_declarative_models import BariumSwollowFile, Visit
+from logic.database.data_declarative_models import BariumSwallowFile, Visit
 from sqlalchemy import inspect
 from sqlalchemy.exc import OperationalError
 
 
-class TbeFileService:
+class BariumSwallowFileService:
 
     def __init__(self, db_session: Session):
         self.db = db_session
 
     def get_tbe_file(self, id: int):
-        stmt = select(BariumSwollowFile).where(BariumSwollowFile.tbe_file_id == id)
+        stmt = select(BariumSwallowFile).where(BariumSwallowFile.tbe_file_id == id)
         try:
             result = self.db.execute(stmt).first()
             if result:
@@ -23,7 +23,7 @@ class TbeFileService:
             self.show_error_msg()
 
     def delete_tbe_file(self, id: str):
-        stmt = delete(BariumSwollowFile).where(BariumSwollowFile.tbe_file_id == id)
+        stmt = delete(BariumSwallowFile).where(BariumSwallowFile.tbe_file_id == id)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
@@ -33,7 +33,7 @@ class TbeFileService:
             self.show_error_msg()
 
     def delete_tbe_file_for_visit(self, visit_id: str):
-        stmt = delete(BariumSwollowFile).where(BariumSwollowFile.visit_id == visit_id)
+        stmt = delete(BariumSwallowFile).where(BariumSwallowFile.visit_id == visit_id)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
@@ -43,7 +43,7 @@ class TbeFileService:
             self.show_error_msg()
 
     def update_tbe_file(self, id: str, data: dict):
-        stmt = update(BariumSwollowFile).where(BariumSwollowFile.tbe_file_id == id).values(**data)
+        stmt = update(BariumSwallowFile).where(BariumSwallowFile.tbe_file_id == id).values(**data)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
@@ -53,7 +53,7 @@ class TbeFileService:
             self.show_error_msg()
 
     def create_tbe_file(self, data: dict):
-        stmt = insert(BariumSwollowFile).values(**data)
+        stmt = insert(BariumSwallowFile).values(**data)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
@@ -62,8 +62,8 @@ class TbeFileService:
             self.db.rollback()
             self.show_error_msg()
 
-    def get_all_tbe_files(self) -> list[BariumSwollowFile, None]:
-        stmt = select(BariumSwollowFile)
+    def get_all_tbe_files(self) -> list[BariumSwallowFile, None]:
+        stmt = select(BariumSwallowFile)
         try:
             result = self.db.execute(stmt).all()
             return list(map(lambda row: row[0].toDict(), result))
@@ -71,7 +71,7 @@ class TbeFileService:
             self.show_error_msg()
 
     def get_tbe_image(self, id: int):
-        stmt = select(BariumSwollowFile).where(BariumSwollowFile.tbe_file_id == id)
+        stmt = select(BariumSwallowFile).where(BariumSwallowFile.tbe_file_id == id)
         try:
             result = self.db.execute(stmt).first()
             if result:
@@ -84,7 +84,7 @@ class TbeFileService:
 
     def get_tbe_images_for_visit(self, visit_id: int):
         try:
-            stmt = select(BariumSwollowFile).where(BariumSwollowFile.visit_id == visit_id)
+            stmt = select(BariumSwallowFile).where(BariumSwallowFile.visit_id == visit_id)
             results = self.db.execute(stmt).all()
             pixmaps = []
             if results:

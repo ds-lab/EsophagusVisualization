@@ -36,7 +36,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -1216,7 +1216,7 @@ p, li { white-space: pre-wrap; }
              </property>
              <property name="icon">
               <iconset>
-               <normaloff>C:/Users/schnepia/Downloads/icons8-herunterladen-48.png</normaloff>C:/Users/schnepia/Downloads/icons8-herunterladen-48.png</iconset>
+               <normaloff>../../../../../../../schnepia/Downloads/icons8-herunterladen-48.png</normaloff>../../../../../../../schnepia/Downloads/icons8-herunterladen-48.png</iconset>
              </property>
              <property name="checkable">
               <bool>false</bool>
@@ -1455,7 +1455,7 @@ p, li { white-space: pre-wrap; }
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -1883,8 +1883,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1384</width>
-             <height>584</height>
+             <width>965</width>
+             <height>321</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2201,8 +2201,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1384</width>
-             <height>655</height>
+             <width>792</width>
+             <height>139</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2366,7 +2366,7 @@ p, li { white-space: pre-wrap; }
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-7</y>
+             <y>0</y>
              <width>1367</width>
              <height>671</height>
             </rect>
@@ -2851,7 +2851,7 @@ p, li { white-space: pre-wrap; }
                      </widget>
                     </item>
                     <item row="0" column="3">
-                     <widget class="QPushButton" name="endoflip_upload_button_3">
+                     <widget class="QPushButton" name="endoflip_upload_button">
                       <property name="text">
                        <string>Upload File</string>
                       </property>

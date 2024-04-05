@@ -199,7 +199,7 @@ class BariumSwallow(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
-class BariumSwollowFile(Base):
+class BariumSwallowFile(Base):
     __tablename__ = "barium_swallow_files"
     tbe_file_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)

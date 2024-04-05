@@ -23,7 +23,7 @@ from logic.services.manometry_service import ManometryService, ManometryFileServ
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyFileService
 from logic.services.endoflip_service import EndoflipFileService
-from logic.services.tbe_service import TbeFileService
+from logic.services.barium_swallow_service import BariumSwallowFileService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 
 
@@ -47,7 +47,7 @@ class DataWindow(QMainWindow):
         # For displaying images
         self.endoscopy_image_index = None
 
-        self.ui = uic.loadUi("./ui-files/show_data_window_design_neu.ui", self)
+        self.ui = uic.loadUi("./ui-files/show_data_window_design_neu2.ui", self)
 
         self.patient_tableView = self.ui.patient_tableView
         self.therapy_tableView = self.ui.therapy_tableView
@@ -62,7 +62,7 @@ class DataWindow(QMainWindow):
         self.eckardtscore_service = EckardtscoreService(self.db)
         self.manometry_service = ManometryService(self.db)
         self.manometry_file_service = ManometryFileService(self.db)
-        self.tbe_file_service = TbeFileService(self.db)
+        self.barium_swallow_file_service = BariumSwallowFileService(self.db)
         self.endoscopy_file_service = EndoscopyFileService(self.db)
         self.endoflip_file_service = EndoflipFileService(self.db)
 
@@ -726,12 +726,6 @@ class DataWindow(QMainWindow):
                                          QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
             if reply == QMessageBox.StandardButton.No:
                 return
-                # ToDo überprüfen ob dies wirklich nicht benötigt wird
-                # Set missing values to Null and set values in manometry_dict
-                #for key in null_values:
-                #    manometry_dict[key] = None
-            #else:
-            #    return  # Cancel if User wants
 
         if self.manometry_service.get_manometry_for_visit(self.selected_visit):
             manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
