@@ -780,9 +780,9 @@ class DataWindow(QMainWindow):
         X-ray/TBE button callback. Handles X-ray file selection for all files.
         """
         # If TBE images are already uploaded in the database, images are deleted and updated with new images
-        tbe_exists = self.tbe_file_service.get_tbe_images_for_visit(self.selected_visit)
+        tbe_exists = self.tbe_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
         if not tbe_exists or tbe_exists and self.to_update_for_visit("TBE Images"):
-            self.tbe_file_service.delete_tbe_file_for_visit(self.selected_visit)
+            self.tbe_file_service.delete_barium_swallow_file_for_visit(self.selected_visit)
 
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
@@ -801,7 +801,7 @@ class DataWindow(QMainWindow):
                 process_and_upload_tbe_images(self.selected_visit, filenames)
                 self.ui.tbe_file_text.setText(str(len(filenames)) + " File(s) uploaded")
                 # load the pixmaps of the images to make them viewable
-                tbe_images = self.tbe_file_service.get_tbe_images_for_visit(self.selected_visit)
+                tbe_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
                 if tbe_images:
                     self.tbe_pixmaps = tbe_images
                     self.tbe_image_index = 0

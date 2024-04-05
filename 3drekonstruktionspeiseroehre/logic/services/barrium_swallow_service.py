@@ -13,7 +13,7 @@ class BariumSwallowFileService:
     def __init__(self, db_session: Session):
         self.db = db_session
 
-    def get_tbe_file(self, id: int):
+    def get_barium_swallow_file(self, id: int):
         stmt = select(BariumSwallowFile).where(BariumSwallowFile.tbe_file_id == id)
         try:
             result = self.db.execute(stmt).first()
@@ -22,7 +22,7 @@ class BariumSwallowFileService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def delete_tbe_file(self, id: str):
+    def delete_barium_swallow_file(self, id: str):
         stmt = delete(BariumSwallowFile).where(BariumSwallowFile.tbe_file_id == id)
         try:
             result = self.db.execute(stmt)
@@ -32,7 +32,7 @@ class BariumSwallowFileService:
             self.db.rollback()
             self.show_error_msg()
 
-    def delete_tbe_file_for_visit(self, visit_id: str):
+    def delete_barium_swallow_file_for_visit(self, visit_id: str):
         stmt = delete(BariumSwallowFile).where(BariumSwallowFile.visit_id == visit_id)
         try:
             result = self.db.execute(stmt)
@@ -42,7 +42,7 @@ class BariumSwallowFileService:
             self.db.rollback()
             self.show_error_msg()
 
-    def update_tbe_file(self, id: str, data: dict):
+    def update_barium_swallow_file(self, id: str, data: dict):
         stmt = update(BariumSwallowFile).where(BariumSwallowFile.tbe_file_id == id).values(**data)
         try:
             result = self.db.execute(stmt)
@@ -52,7 +52,7 @@ class BariumSwallowFileService:
             self.db.rollback()
             self.show_error_msg()
 
-    def create_tbe_file(self, data: dict):
+    def create_barium_swallow_file(self, data: dict):
         stmt = insert(BariumSwallowFile).values(**data)
         try:
             result = self.db.execute(stmt)
@@ -62,7 +62,7 @@ class BariumSwallowFileService:
             self.db.rollback()
             self.show_error_msg()
 
-    def get_all_tbe_files(self) -> list[BariumSwallowFile, None]:
+    def get_all_barium_swallow_files(self) -> list[BariumSwallowFile, None]:
         stmt = select(BariumSwallowFile)
         try:
             result = self.db.execute(stmt).all()
@@ -70,7 +70,7 @@ class BariumSwallowFileService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def get_tbe_image(self, id: int):
+    def get_barium_swallow_image(self, id: int):
         stmt = select(BariumSwallowFile).where(BariumSwallowFile.tbe_file_id == id)
         try:
             result = self.db.execute(stmt).first()
@@ -82,7 +82,7 @@ class BariumSwallowFileService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def get_tbe_images_for_visit(self, visit_id: int):
+    def get_barium_swallow_images_for_visit(self, visit_id: int):
         try:
             stmt = select(BariumSwallowFile).where(BariumSwallowFile.visit_id == visit_id)
             results = self.db.execute(stmt).all()

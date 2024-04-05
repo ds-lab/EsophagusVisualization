@@ -2,10 +2,10 @@ from PIL import Image
 import re
 from io import BytesIO
 import os
-from logic.services.tbe_service import TbeFileService
+from logic.services.barium_swallow_service import BariumSwallowFileService
 from logic.database import database
 
-def process_and_upload_tbe_images(selected_visit, filenames):
+def process_and_upload_barium_swallow_images(selected_visit, filenames):
     for i, filename in enumerate(filenames):
         match = re.search(r'(?P<time>[0-9]+)', filename)
         if match:
@@ -32,5 +32,5 @@ def process_and_upload_tbe_images(selected_visit, filenames):
             }
 
             db = database.get_db()
-            tbe_service = TbeFileService(db)
-            tbe_service.create_tbe_file(tbe_file_dict)
+            barium_swallow_service = BariumSwallowFileService(db)
+            barium_swallow_service.create_barium_swallow_file(tbe_file_dict)
