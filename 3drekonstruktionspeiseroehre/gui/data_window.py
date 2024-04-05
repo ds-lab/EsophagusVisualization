@@ -105,7 +105,7 @@ class DataWindow(QMainWindow):
         self.ui.delete_manometry_button.clicked.connect(self.__delete_manometry)
         self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
         # Barium Swallow / TBE
-        self.ui.tbe_file_upload_button.clicked.connect(self.__upload_tbe_images)
+        self.ui.tbe_file_upload_button.clicked.connect(self.__upload_barium_swallow_images)
         # Endoscopy / EGD
         self.ui.endoscopy_upload_button.clicked.connect(self.__upload_endoscopy_images)
         # Endoflip
@@ -775,7 +775,7 @@ class DataWindow(QMainWindow):
                 process_and_upload_manometry_file(self.selected_visit, filename)
                 self.ui.manometry_file_text.setText(filename)
 
-    def __upload_tbe_images(self):
+    def __upload_barium_swallow_images(self):
         """
         X-ray/TBE button callback. Handles X-ray file selection for all files.
         """
