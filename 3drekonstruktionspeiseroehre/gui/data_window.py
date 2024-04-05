@@ -812,8 +812,8 @@ class DataWindow(QMainWindow):
         if 0 <= self.barium_swallow_image_index < len(self.barium_swallow_pixmaps):
             scaled_pixmap = self.barium_swallow_pixmaps[self.barium_swallow_image_index].scaledToWidth(200)
             scaled_size = scaled_pixmap.size()
-            self.ui.barium_swallow_imageview.setPixmap(scaled_pixmap)
-            self.ui.barium_swallow_imageview.setFixedSize(scaled_size)
+            self.ui.tbe_imageview.setPixmap(scaled_pixmap)
+            self.ui.tbe_imageview.setFixedSize(scaled_size)
 
     def __barium_swallow_previous_button_clicked(self):
         # Show the previous image
