@@ -43,10 +43,16 @@ class DataValidation:
         return False
 
     @staticmethod
-    def validate_manometry(manometry_dict):
+    def validate_visitdata(visit_data_dict):
         null_values = []
-        for key, value in manometry_dict.items():
+        error = False
+        for key, value in visit_data_dict.items():
+            if key == "visit_id" and value is None:
+                QMessageBox.critical(None, "No visit selected", "Error: Please select a visit.")
+                error = True
+                return visit_data_dict, null_values, error
             if value == -1 or value == "---":
                 null_values.append(key)
-                manometry_dict[key] = None
-        return manometry_dict, null_values
+                visit_data_dict[key] = None
+        return visit_data_dict, null_values, error
+

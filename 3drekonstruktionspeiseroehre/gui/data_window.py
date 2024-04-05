@@ -716,7 +716,10 @@ class DataWindow(QMainWindow):
                           'les_upper_boundary': self.ui.manometry_upperboundary_les_spin.value(),
                           'les_lower_boundary': self.ui.manometry_lowerboundary_les_spin.value(),
                           'les_length': les_length}
-        manometry_dict, null_values = DataValidation.validate_manometry(manometry_dict)
+        manometry_dict, null_values, error = DataValidation.validate_visitdata(manometry_dict)
+
+        if error:
+            return
 
         if null_values:
             null_message = "The following values are not set: " + ", ".join(
@@ -733,6 +736,30 @@ class DataWindow(QMainWindow):
         else:
             self.manometry_service.create_manometry(manometry_dict)
         self.__init_manometry()
+
+    def __add_barium_swallow(self):
+        tbe_dict = {'visit_id': self.selected_visit,
+                    'type_contrast_medium': self.ui.tbe_cm_dropdown.currentText(),
+                    'amount_contrast_medium': self.ui.tbe_amount_cm_spin.value(),
+                    'height_contast_medium_1min': self.ui.tbe_height_cm_1_spin.value(),
+                    'height_contast_medium_2min': self.ui.tbe_height_cm_2_spin.value(),
+                    'height_contast_medium_5min': self.ui.tbe_height_cm_5_spin.value(),
+                    'width_contast_medium_1min': self.ui.tbe_width_cm_1_spin.value(),
+                    'width_contast_medium_2min': self.ui.tbe_width_cm_2_spin.value(),
+                    'width_contast_medium_5min': self.ui.tbe_width_cm_5_spin.value()}
+        tbe_dict, null_values = DataValidation.validate_visitdata(tbe_dict)
+
+        if null_values:
+            null_message = "The following values are not set: " + ", ".join(
+                null_values) + ". Do you want to set them to null/unknown?"
+            reply = QMessageBox.question(self, 'Null Values Detected', null_message,
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                return
+
+
+
 
     def __delete_manometry(self):
         self.manometry_service.delete_manometry_for_visit(
@@ -777,7 +804,7 @@ class DataWindow(QMainWindow):
 
     def __upload_barium_swallow_images(self):
         """
-        X-ray/TBE button callback. Handles X-ray file selection for all files.
+        Timed Barium Swallow (TBE) button callback. Handles TBE file selection.
         """
         # If TBE images are already uploaded in the database, images are deleted and updated with new images
         barium_swallow_exists = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
