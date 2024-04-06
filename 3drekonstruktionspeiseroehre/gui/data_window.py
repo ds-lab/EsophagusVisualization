@@ -424,19 +424,6 @@ class DataWindow(QMainWindow):
         self.ui.eckardt_score.setEnabled(False)
         self.ui.visit_data.setEnabled(False)
 
-    def __validate_patient(self):
-        if (
-                len(self.ui.patient_id_field.text()) > 0
-                and self.ui.gender_dropdown.currentText() != "---"
-                and self.ui.ethnicity_dropdown.currentText() != "---"
-                and 1900 < self.ui.birthyear_calendar.date().toPyDate().year <= datetime.now().year
-                and 1900 < self.ui.firstdiagnosis_calendar.date().toPyDate().year <= datetime.now().year
-                and 1900 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
-                and self.ui.center_text.text() != ""
-        ):
-            return True
-        return False
-
     def __patients_apply_filter(self):
         if self.ui.patient_id_radio.isChecked():
             filter_exp = '^' + self.ui.patient_id_field.text()  # all patient that start with this id are shown
@@ -539,30 +526,17 @@ class DataWindow(QMainWindow):
             self.ui.selected_therapy_text_patientview.setText(output)
 
     def __previous_therapy_add_button_clicked(self):
-        if (
-                self.ui.therapy_dropdown.currentText() != "---"
-                and (1900 < self.ui.therapy_calendar.date().toPyDate().year <= datetime.now().year or
-                     self.ui.therapy_year_unknown_checkbox.isChecked())
-        ):
-            if self.ui.therapy_year_unknown_checkbox.isChecked():
-                therapy_dict = {
-                    'patient_id': self.selected_patient,
-                    'therapy': self.ui.therapy_dropdown.currentText(),
-                    'year_not_known': True,
-                    'center': self.ui.center_previous_therapy_text.text()}
-                self.previous_therapy_service.create_previous_therapy(therapy_dict)
-                self.__init_previous_therapies()
-            else:
-                therapy_dict = {
-                    'patient_id': self.selected_patient,
-                    'therapy': self.ui.therapy_dropdown.currentText(),
-                    'year': self.ui.therapy_calendar.date().toPyDate().year,
-                    'center': self.ui.center_previous_therapy_text.text()}
-                self.previous_therapy_service.create_previous_therapy(therapy_dict)
-                self.__init_previous_therapies()
-        else:
-            QMessageBox.warning(self, "Insufficient Data", "Please fill out all therapy data and make sure they are "
-                                                           "valid.")
+        prev_therapy_dict = {
+            'patient_id': self.selected_patient,
+            'therapy': self.ui.therapy_dropdown.currentText(),
+            'year': self.ui.therapy_calendar.date().toPyDate().year,
+            'center': self.ui.center_previous_therapy_text.text()}
+        patient_dict, null_values, error = DataValidation.validate_previous_therapy(prev_therapy_dict)
+        if error:  # return if the user wants or needs to fill out additional data
+            return
+        self.previous_therapy_service.create_previous_therapy(prev_therapy_dict)
+        self.__init_previous_therapies()
+
 
     def __previous_therapy_delete_button_clicked(self):
         self.previous_therapy_service.delete_previous_therapy(self.selected_previous_therapy)
