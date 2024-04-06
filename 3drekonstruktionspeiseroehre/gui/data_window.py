@@ -721,15 +721,6 @@ class DataWindow(QMainWindow):
         if error:
             return
 
-        if null_values:
-            null_message = "The following values are not set: " + ", ".join(
-                null_values) + ". Do you want to set them to null/unknown?"
-            reply = QMessageBox.question(self, 'Null Values Detected', null_message,
-                                         QMessageBox.StandardButton.Yes |
-                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-            if reply == QMessageBox.StandardButton.No:
-                return
-
         if self.manometry_service.get_manometry_for_visit(self.selected_visit):
             manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
             self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)

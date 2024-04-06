@@ -54,5 +54,13 @@ class DataValidation:
             if value == -1 or value == "---":
                 null_values.append(key)
                 visit_data_dict[key] = None
+        if null_values:
+            null_message = "The following values are not set: " + ", ".join(
+                null_values) + ". Do you want to set them to null/unknown?"
+            reply = QMessageBox.question(None, 'Null Values Detected', null_message,
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                error = True
         return visit_data_dict, null_values, error
 
