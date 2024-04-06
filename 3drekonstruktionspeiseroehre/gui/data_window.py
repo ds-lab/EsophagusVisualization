@@ -16,6 +16,7 @@ from logic.datainput.barium_swallow_data_processing import process_and_upload_ba
 from logic.datainput.manometry_data_processing import process_and_upload_manometry_file
 from logic.database import database
 from logic.datainput.validate_input_data import DataValidation
+from logic.datainput.check_data_existence import CheckDataExistence
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.eckardtscore_service import EckardtscoreService
@@ -183,16 +184,15 @@ class DataWindow(QMainWindow):
 
     def __patient_add_button_clicked(self):
         if self.__validate_patient():
-            if self.__patient_exists():
-                if self.__to_update_patient():
-                    pat_dict = {'gender': self.ui.gender_dropdown.currentText(),
-                                'ethnicity': self.ui.ethnicity_dropdown.currentText(),
-                                'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
-                                'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
-                                'center': self.ui.center_text.text()}
-                    self.patient_service.update_patient(
-                        self.ui.patient_id_field.text(), pat_dict)
+            if CheckDataExistence.patient_exists(self):
+                pat_dict = {'gender': self.ui.gender_dropdown.currentText(),
+                            'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+                            'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+                            'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                            'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
+                            'center': self.ui.center_text.text()}
+                self.patient_service.update_patient(
+                    self.ui.patient_id_field.text(), pat_dict)
             else:
                 pat_dict = {
                     'patient_id': self.ui.patient_id_field.text(),
@@ -231,16 +231,15 @@ class DataWindow(QMainWindow):
 
     def __patient_update_button_clicked(self):
         if self.__validate_patient():  # check if patient data are valid
-            if not self.__patient_exists():  # check if patient exists in database, execute if this is not the case
-                if self.__to_create_patient():  # ask user if patient should be created
-                    pat_dict = {'patient_id': self.ui.patient_id_field.text(),
-                                'gender': self.ui.gender_dropdown.currentText(),
-                                'ethnicity': self.ui.ethnicity_dropdown.currentText(),
-                                'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
-                                'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                                'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
-                                'center': self.ui.center_text.text()}
-                    self.patient_service.create_patient(pat_dict)
+            if CheckDataExistence.patient_not_exists(self):
+                pat_dict = {'patient_id': self.ui.patient_id_field.text(),
+                            'gender': self.ui.gender_dropdown.currentText(),
+                            'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+                            'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+                            'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                            'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
+                            'center': self.ui.center_text.text()}
+                self.patient_service.create_patient(pat_dict)
             else:  # if patient exists in database, patient data can be updated
                 pat_dict = {
                     'gender': self.ui.gender_dropdown.currentText(),
@@ -389,29 +388,6 @@ class DataWindow(QMainWindow):
                 and 1900 < self.ui.firstsymptoms_calendar.date().toPyDate().year <= datetime.now().year
                 and self.ui.center_text.text() != ""
         ):
-            return True
-        return False
-
-    def __patient_exists(self):
-        patient = self.patient_service.get_patient(
-            self.ui.patient_id_field.text())
-        if patient:
-            return True
-        return False
-
-    def __to_update_patient(self):
-        reply = QMessageBox.question(self, 'This Patient already exists in the database.',
-                                     "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
-                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
-            return True
-        return False
-
-    def __to_create_patient(self):
-        reply = QMessageBox.question(self, 'This Patient not yet exists in the database.',
-                                     "Should the patient be created?", QMessageBox.StandardButton.Yes |
-                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
             return True
         return False
 
