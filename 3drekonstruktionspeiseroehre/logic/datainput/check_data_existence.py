@@ -28,12 +28,8 @@ class CheckDataExistence:
         patient = self.patient_service.get_patient(
             self.ui.patient_id_field.text())
         if patient:
-            reply = QMessageBox.question(None, 'This Patient already exists in the database.',
-                                         "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
-                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-            if reply == QMessageBox.StandardButton.Yes:
-                return True
-            return False
+            return True
+        return False
 
     def patient_not_exists(self):
         patient = self.patient_service.get_patient(

@@ -1,22 +1,35 @@
 from datetime import datetime
+import config
 
 from PyQt6.QtWidgets import QMessageBox
 
 
 class DataValidation:
     @staticmethod
-    def validate_patient(patient_id_field, gender_dropdown, ethnicity_dropdown, birthyear_calendar, firstdiagnosis_calendar, firstsymptoms_calendar, center_text):
-        if (
-                len(patient_id_field) > 0
-                and gender_dropdown != "---"
-                and ethnicity_dropdown != "---"
-                and 1900 < birthyear_calendar <= datetime.now().year
-                and 1900 < firstdiagnosis_calendar <= datetime.now().year
-                and 1900 < firstsymptoms_calendar <= datetime.now().year
-                and center_text != ""
-        ):
-            return True
-        return False
+    def validate_patient(patient_dict):
+        null_values = []
+        error = False
+        for key, value in patient_dict.items():
+            if value == config.min_value_year or value == "---" or value == "":
+                null_values.append(key)
+                patient_dict[key] = None
+        if null_values:
+            # check if mandatory values are set
+            for key in ["patient_id", "birth_year", "center"]:
+                if key in patient_dict and patient_dict[key] is None:
+                    null_message = f"The following mandatory value is not set: {key}.Please provide this value."
+                    QMessageBox.critical(None, 'Null Value Detected', null_message)
+                    error = True
+                    return patient_dict, null_values, error
+            # Check if other values are set and ask if they should be set to NULL
+            null_message = "The following values are not set: " + ", ".join(
+                null_values) + ". Do you want to set them to null/unknown?"
+            reply = QMessageBox.question(None, 'Null Values Detected', null_message,
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                error = True
+        return patient_dict, null_values, error
 
     @staticmethod
     def validate_visit(year_of_visit_calendar, visit_type_dropdown, therapy_type_dropdown, months_after_therapy_spin):

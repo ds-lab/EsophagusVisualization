@@ -17,6 +17,7 @@ from logic.datainput.manometry_data_processing import process_and_upload_manomet
 from logic.database import database
 from logic.datainput.validate_input_data import DataValidation
 from logic.datainput.check_data_existence import CheckDataExistence
+from logic.datainput.popup_windows import PopupWindow
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.eckardtscore_service import EckardtscoreService
@@ -183,29 +184,25 @@ class DataWindow(QMainWindow):
         menu.exec(cursor.pos())
 
     def __patient_add_button_clicked(self):
-        if self.__validate_patient():
-            if CheckDataExistence.patient_exists(self):
+        # Check if Patient alread exists
+        if CheckDataExistence.patient_exists(self):
+            # If Patient exists in database, ask user if their data should be updated
+            if PopupWindow.update_confirmed(self):
                 pat_dict = {'gender': self.ui.gender_dropdown.currentText(),
                             'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                             'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                             'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                             'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
                             'center': self.ui.center_text.text()}
-                self.patient_service.update_patient(
-                    self.ui.patient_id_field.text(), pat_dict)
-            else:
-                pat_dict = {
-                    'patient_id': self.ui.patient_id_field.text(),
-                    'gender': self.ui.gender_dropdown.currentText(),
-                    'ethnicity': self.ui.ethnicity_dropdown.currentText(),
-                    'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
-                    'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                    'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
-                    'center': self.ui.center_text.text()}
-                self.patient_service.create_patient(pat_dict)
-            self.__init_ui()
-            # Show the data of the selected patient in QTextEdit
-            # pat_dict is needed again in case the patient was only updated
+                # Validate Patients data
+                patient_dict, null_values, error = DataValidation.validate_patient(pat_dict)
+                if error: # return if the user wants or needs to fill out additional data
+                    return
+                # update the patient in the database
+                self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
+            else: # return if the patient exists and should not be updated
+                return
+        else: # the patient does not exist yet
             pat_dict = {
                 'patient_id': self.ui.patient_id_field.text(),
                 'gender': self.ui.gender_dropdown.currentText(),
@@ -214,20 +211,34 @@ class DataWindow(QMainWindow):
                 'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                 'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
                 'center': self.ui.center_text.text()}
-            output = ""
-            for key, value in pat_dict.items():
-                output += f"{key}: {value}\n"
-            self.ui.selected_patient_text_patientview.setText(output)
-            self.ui.selected_patient_text_visitview.setText(output)
-            self.ui.selected_patient_text_visitdataview.setText(output)
-            # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
-            self.ui.selected_visit_text_visitview.setText("please select a visit")
-            self.ui.selected_visit_text_visitdataview.setText("")
-            # Set the text of the select previous therapy to "" until a previous therapy is selected
-            self.ui.selected_therapy_text_patientview.setText("")
-        else:
-            QMessageBox.warning(self, "Insufficient Data",
-                                "Please fill out all patient data and make sure they are valid.")
+            # Validate the Patients data
+            patient_dict, null_values, error = DataValidation.validate_patient(pat_dict)
+            if error: # return if the user wants or needs to fill out additional data
+                return
+            self.patient_service.create_patient(pat_dict)
+        self.__init_ui()
+        # Show the data of the selected patient in QTextEdit
+        # pat_dict is needed again in case the patient was only updated
+        pat_dict = {
+            'patient_id': self.ui.patient_id_field.text(),
+            'gender': self.ui.gender_dropdown.currentText(),
+            'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+            'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+            'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+            'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
+            'center': self.ui.center_text.text()}
+        output = ""
+        for key, value in pat_dict.items():
+            output += f"{key}: {value}\n"
+        self.ui.selected_patient_text_patientview.setText(output)
+        self.ui.selected_patient_text_visitview.setText(output)
+        self.ui.selected_patient_text_visitdataview.setText(output)
+        # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
+        self.ui.selected_visit_text_visitview.setText("please select a visit")
+        self.ui.selected_visit_text_visitdataview.setText("")
+        # Set the text of the select previous therapy to "" until a previous therapy is selected
+        self.ui.selected_therapy_text_patientview.setText("")
+
 
     def __patient_update_button_clicked(self):
         if self.__validate_patient():  # check if patient data are valid
