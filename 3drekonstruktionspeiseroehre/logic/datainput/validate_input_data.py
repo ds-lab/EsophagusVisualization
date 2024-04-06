@@ -11,7 +11,7 @@ class DataValidation:
         invalid_values = []
         error = False
         for key, value in patient_dict.items():
-            if value == config.min_value_year or value == "---" or value == "":
+            if value == config.min_value_year or value == config.missing_dropdown or value == config.missing_text:
                 null_values.append(key)
                 patient_dict[key] = None
             # For Years, check that the date is not greater than the current date
@@ -52,7 +52,7 @@ class DataValidation:
                 QMessageBox.critical(None, "No patient selected", "Error: Please select a patient.")
                 error = True
                 return prev_therapy_dict, null_values, error
-            if value == config.min_value_year or value == "---" or value == "":
+            if value == config.min_value_year or value == config.missing_dropdown or value == config.missing_text:
                 null_values.append(key)
                 prev_therapy_dict[key] = None
             # For Years, check that the date is not greater than the current date
@@ -117,7 +117,7 @@ class DataValidation:
                 QMessageBox.critical(None, "No visit selected", "Error: Please select a visit.")
                 error = True
                 return visit_data_dict, null_values, error
-            if value == -1 or value == "---":
+            if value == config.missing_int or value == config.missing_dropdown:
                 null_values.append(key)
                 visit_data_dict[key] = None
         if null_values:
