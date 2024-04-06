@@ -187,7 +187,7 @@ class DataWindow(QMainWindow):
         # Check if Patient alread exists
         if CheckDataExistence.patient_exists(self):
             # If Patient exists in database, ask user if their data should be updated
-            if PopupWindow.update_confirmed(self):
+            if PopupWindow.update_confirmed():
                 pat_dict = {'gender': self.ui.gender_dropdown.currentText(),
                             'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                             'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
@@ -196,13 +196,13 @@ class DataWindow(QMainWindow):
                             'center': self.ui.center_text.text()}
                 # Validate Patients data
                 patient_dict, null_values, error = DataValidation.validate_patient(pat_dict)
-                if error: # return if the user wants or needs to fill out additional data
+                if error:  # return if the user wants or needs to fill out additional data
                     return
                 # update the patient in the database
                 self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
-            else: # return if the patient exists and should not be updated
+            else:  # return if the patient exists and should not be updated
                 return
-        else: # the patient does not exist yet
+        else:  # the patient does not exist yet
             pat_dict = {
                 'patient_id': self.ui.patient_id_field.text(),
                 'gender': self.ui.gender_dropdown.currentText(),
@@ -213,7 +213,7 @@ class DataWindow(QMainWindow):
                 'center': self.ui.center_text.text()}
             # Validate the Patients data
             patient_dict, null_values, error = DataValidation.validate_patient(pat_dict)
-            if error: # return if the user wants or needs to fill out additional data
+            if error:  # return if the user wants or needs to fill out additional data
                 return
             self.patient_service.create_patient(pat_dict)
         self.__init_ui()
@@ -239,10 +239,9 @@ class DataWindow(QMainWindow):
         # Set the text of the select previous therapy to "" until a previous therapy is selected
         self.ui.selected_therapy_text_patientview.setText("")
 
-
     def __patient_update_button_clicked(self):
-        if self.__validate_patient():  # check if patient data are valid
-            if CheckDataExistence.patient_not_exists(self):
+        if not CheckDataExistence.patient_exists(self):
+            if PopupWindow.add_confirmed():
                 pat_dict = {'patient_id': self.ui.patient_id_field.text(),
                             'gender': self.ui.gender_dropdown.currentText(),
                             'ethnicity': self.ui.ethnicity_dropdown.currentText(),
@@ -250,42 +249,46 @@ class DataWindow(QMainWindow):
                             'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                             'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
                             'center': self.ui.center_text.text()}
+                # Validate the Patients data
+                patient_dict, null_values, error = DataValidation.validate_patient(pat_dict)
+                if error:  # return if the user wants or needs to fill out additional data
+                    return
                 self.patient_service.create_patient(pat_dict)
-            else:  # if patient exists in database, patient data can be updated
-                pat_dict = {
-                    'gender': self.ui.gender_dropdown.currentText(),
-                    'ethnicity': self.ui.ethnicity_dropdown.currentText(),
-                    'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
-                    'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
-                    'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
-                    'center': self.ui.center_text.text()}
-                self.patient_service.update_patient(
-                    self.ui.patient_id_field.text(), pat_dict)
-            self.__init_ui()
-            # Show the data of the selected patient in QTextEdit
-            # pat_dict is needed again in case the patient was only updated
+        else:  # if patient exists in database, patient data can be updated
             pat_dict = {
-                'patient_id': self.ui.patient_id_field.text(),
                 'gender': self.ui.gender_dropdown.currentText(),
                 'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                 'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
                 'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                 'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
                 'center': self.ui.center_text.text()}
-            output = ""
-            for key, value in pat_dict.items():
-                output += f"{key}: {value}\n"
-            self.ui.selected_patient_text_patientview.setText(output)
-            self.ui.selected_patient_text_visitview.setText(output)
-            self.ui.selected_patient_text_visitdataview.setText(output)
-            # Set the text of the select visit to "" until a visit for the patient is selected
-            self.ui.selected_visit_text_visitview.setText("")
-            self.ui.selected_visit_text_visitdataview.setText("")
-            # Set the text of the select previous therapy to "" until a previous therapy is selected
-            self.ui.selected_therapy_text_patientview.setText("")
-        else:
-            QMessageBox.warning(self, "Insufficient Data", "Please fill out all patient data and make sure they are "
-                                                           "valid.")
+            # Validate the Patients data
+            patient_dict, null_values, error = DataValidation.validate_patient(pat_dict)
+            if error:  # return if the user wants or needs to fill out additional data
+                return
+            self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
+        self.__init_ui()
+        # Show the data of the selected patient in QTextEdit
+        # pat_dict is needed again in case the patient was only updated
+        pat_dict = {
+            'patient_id': self.ui.patient_id_field.text(),
+            'gender': self.ui.gender_dropdown.currentText(),
+            'ethnicity': self.ui.ethnicity_dropdown.currentText(),
+            'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
+            'year_first_diagnosis': self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+            'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
+            'center': self.ui.center_text.text()}
+        output = ""
+        for key, value in pat_dict.items():
+            output += f"{key}: {value}\n"
+        self.ui.selected_patient_text_patientview.setText(output)
+        self.ui.selected_patient_text_visitview.setText(output)
+        self.ui.selected_patient_text_visitdataview.setText(output)
+        # Set the text of the select visit to "" until a visit for the patient is selected
+        self.ui.selected_visit_text_visitview.setText("")
+        self.ui.selected_visit_text_visitdataview.setText("")
+        # Set the text of the select previous therapy to "" until a previous therapy is selected
+        self.ui.selected_therapy_text_patientview.setText("")
 
     def __patient_delete_button_clicked(self):
         self.patient_service.delete_patient(
@@ -736,9 +739,6 @@ class DataWindow(QMainWindow):
             if reply == QMessageBox.StandardButton.No:
                 return
 
-
-
-
     def __delete_manometry(self):
         self.manometry_service.delete_manometry_for_visit(
             self.selected_visit)
@@ -785,7 +785,8 @@ class DataWindow(QMainWindow):
         Timed Barium Swallow (TBE) button callback. Handles TBE file selection.
         """
         # If TBE images are already uploaded in the database, images are deleted and updated with new images
-        barium_swallow_exists = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
+        barium_swallow_exists = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
+            self.selected_visit)
         if not barium_swallow_exists or barium_swallow_exists and self.to_update_for_visit("TBE Images"):
             self.barium_swallow_file_service.delete_barium_swallow_file_for_visit(self.selected_visit)
 
@@ -806,7 +807,8 @@ class DataWindow(QMainWindow):
                 process_and_upload_barium_swallow_images(self.selected_visit, filenames)
                 self.ui.tbe_file_text.setText(str(len(filenames)) + " File(s) uploaded")
                 # load the pixmaps of the images to make them viewable
-                barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
+                barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
+                    self.selected_visit)
                 if barium_swallow_images:
                     self.barium_swallow_pixmaps = barium_swallow_images
                     self.barium_swallow_image_index = 0

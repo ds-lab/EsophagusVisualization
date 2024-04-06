@@ -31,13 +31,3 @@ class CheckDataExistence:
             return True
         return False
 
-    def patient_not_exists(self):
-        patient = self.patient_service.get_patient(
-            self.ui.patient_id_field.text())
-        if not patient:
-            reply = QMessageBox.question(None, 'This Patient does not exists in the database.',
-                                         "Should the patient be created?", QMessageBox.StandardButton.Yes |
-                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-            if reply == QMessageBox.StandardButton.Yes:
-                return True
-            return False
