@@ -8,14 +8,23 @@ class DataValidation:
     @staticmethod
     def validate_patient(patient_dict):
         null_values = []
+        invalid_values = []
         error = False
         for key, value in patient_dict.items():
             if value == config.min_value_year or value == "---" or value == "":
                 null_values.append(key)
                 patient_dict[key] = None
+            if value > datetime.now().year:
+                invalid_values.append(key)
+        if invalid_values:
+            invalid_message = "The values for the following variable(s) are invalid: " + ", ".join(
+                invalid_values) + ".Please provide valid values."
+            QMessageBox.critical(None, 'Invalid Value(s) Detected', invalid_message)
+            error = True
+            return patient_dict, null_values, error
         if null_values:
             # check if mandatory values are set
-            for key in ["patient_id", "birth_year", "center"]:
+            for key in config.mandatory_values:
                 if key in patient_dict and patient_dict[key] is None:
                     null_message = f"The following mandatory value is not set: {key}.Please provide this value."
                     QMessageBox.critical(None, 'Null Value Detected', null_message)

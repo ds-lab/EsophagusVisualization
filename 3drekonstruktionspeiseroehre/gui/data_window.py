@@ -2,6 +2,7 @@ import os
 import re
 from pathlib import Path
 from datetime import datetime
+import config
 
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtGui import QAction
@@ -317,30 +318,61 @@ class DataWindow(QMainWindow):
     def __patient_id_filled(self):
         patient = self.patient_service.get_patient(
             self.ui.patient_id_field.text())
+
         if patient:
-            self.ui.birthyear_calendar.setDate(QDate(patient.birth_year, 1, 1))
-            self.ui.firstdiagnosis_calendar.setDate(
-                QDate(patient.year_first_diagnosis, 1, 1))
-            self.ui.firstsymptoms_calendar.setDate(
-                QDate(patient.year_first_symptoms, 1, 1))
-            if patient.gender == "male":
-                self.ui.gender_dropdown.setCurrentIndex(1)
-            elif patient.gender == "female":
-                self.ui.gender_dropdown.setCurrentIndex(2)
+            if patient.birth_year is not None:
+                self.ui.birthyear_calendar.setDate(QDate(patient.birth_year, 1, 1))
             else:
-                self.ui.gender_dropdown.setCurrentIndex(3)
-            if patient.ethnicity == "American Indian or Alaska Native":
-                self.ui.ethnicity_dropdown.setCurrentIndex(1)
-            elif patient.ethnicity == "Asian":
-                self.ui.ethnicity_dropdown.setCurrentIndex(2)
-            elif patient.ethnicity == "Black or African American":
-                self.ui.ethnicity_dropdown.setCurrentIndex(3)
-            elif patient.ethnicity == "Native Hawaiian or Other Pacific Islander":
-                self.ui.ethnicity_dropdown.setCurrentIndex(4)
-            elif patient.ethnicity == "White":
-                self.ui.ethnicity_dropdown.setCurrentIndex(5)
+                self.ui.birthyear_calendar.setDate(QDate(config.min_value_year, 1, 1))
+
+            if patient.year_first_diagnosis is not None:
+                self.ui.firstdiagnosis_calendar.setDate(QDate(patient.year_first_diagnosis, 1, 1))
             else:
-                self.ui.ethnicity_dropdown.setCurrentIndex(6)
+                self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
+
+            if patient.year_first_symptoms is not None:
+                self.ui.firstsymptoms_calendar.setDate(QDate(patient.year_first_symptoms, 1, 1))
+            else:
+                self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
+
+            if patient.gender is not None:
+                if patient.gender == "male":
+                    self.ui.gender_dropdown.setCurrentIndex(1)
+                elif patient.gender == "female":
+                    self.ui.gender_dropdown.setCurrentIndex(2)
+                elif patient.gender == "divers":
+                    self.ui.gender_dropdown.setCurrentIndex(3)
+            else:
+                self.ui.gender_dropdown.setCurrentIndex(0)
+
+            if patient.ethnicity is not None:
+                if patient.ethnicity == "American Indian or Alaska Native":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(1)
+                elif patient.ethnicity == "Asian":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(2)
+                elif patient.ethnicity == "Black or African American":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(3)
+                elif patient.ethnicity == "Native Hawaiian or Other Pacific Islander":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(4)
+                elif patient.ethnicity == "White":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(5)
+                elif patient.ethnicity == "Other":
+                    self.ui.ethnicity_dropdown.setCurrentIndex(6)
+            else:
+                self.ui.ethnicity_dropdown.setCurrentIndex(0)
+
+            if patient.year_first_diagnosis is not None:
+                self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
+            else:
+                self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
+
+            if patient.year_first_symptoms is not None:
+                self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
+            else:
+                self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
+
+            if patient.center is not None:
+                self.ui.center_text.setText(patient.center)
 
     def __select_patient(self):
         selected_indexes = self.patient_tableView.selectedIndexes()  # Get the indexes of all selected cells

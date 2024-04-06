@@ -2,6 +2,7 @@
 
 # data validation for database:
 min_value_year = 1900
+mandatory_values = ["patient_id", "birth_year", "center"]
 
 # dash server:
 dash_port_range = (50000, 50100)  # the dash server tries to use a port inside this range
