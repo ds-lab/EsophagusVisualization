@@ -929,4 +929,9 @@ class DataWindow(QMainWindow):
             return
 
         self.botox_injection_service.create_botox_injection(botox_dict)
+        self.__init_botox()
+
+    def __init_botox(self):
+        botox = self.botox_injection_service.get_botox_injections_for_visit(self.selected_visit)
+        self.ui.botox_text.setText(setText.set_text_botox(botox, "Botox data"))
 

@@ -17,7 +17,7 @@ class setText:
 
 
     @staticmethod
-    def set_text_many(db_relations, description):
+    def set_text_botox(db_relations, description):
 
         if db_relations is not None:
             text = ""
@@ -25,10 +25,8 @@ class setText:
                 attributes = vars(db_relation)
                 first_attribute_skipped = False
                 for attribute, value in attributes.items():
-                    if not first_attribute_skipped:
-                        first_attribute_skipped = True
-                        continue
-                    text += f"{attribute}: {value}\n"
+                    if not (attribute == "_sa_instance_state" or attribute == "visit_id" or attribute == "botox_id"):
+                        text += f"{attribute}: {value}\n"
                 text += "-----\n"
             return text
         else:

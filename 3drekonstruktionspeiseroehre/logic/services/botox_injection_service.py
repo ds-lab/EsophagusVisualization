@@ -19,12 +19,14 @@ class BotoxInjectionService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def get_botox_injections_for_visit(self, visit_id: int) -> list[BotoxInjection, None]:
+    def get_botox_injections_for_visit(self, visit_id: int) -> list[BotoxInjection]:
         stmt = select(BotoxInjection).where(BotoxInjection.visit_id == visit_id)
         try:
-            result = self.db.execute(stmt).first()
+            result = self.db.execute(stmt).all()
             if result:
-                return result[0]
+                return [row[0] for row in result]
+            else:
+                return []
         except OperationalError as e:
             self.show_error_msg()
 
