@@ -543,7 +543,6 @@ class DataWindow(QMainWindow):
         self.previous_therapy_service.create_previous_therapy(prev_therapy_dict)
         self.__init_previous_therapies()
 
-
     def __previous_therapy_delete_button_clicked(self):
         self.previous_therapy_service.delete_previous_therapy(self.selected_previous_therapy)
         self.__init_previous_therapies()
@@ -767,7 +766,6 @@ class DataWindow(QMainWindow):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
         self.ui.manometry_text.setText(setText.set_text(manometry, "manometry data"))
 
-
     def __upload_manometry_file(self):
         """
         Manometry callback. Handles Manometry file selection.
@@ -934,4 +932,5 @@ class DataWindow(QMainWindow):
     def __init_botox(self):
         botox = self.botox_injection_service.get_botox_injections_for_visit(self.selected_visit)
         self.ui.botox_text.setText(setText.set_text_botox(botox, "Botox data"))
+
 
