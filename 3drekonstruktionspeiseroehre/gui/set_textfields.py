@@ -6,13 +6,30 @@ class setText:
 
         if db_relation is not None:
             attributes = vars(db_relation)
+            print(f" attributes: {attributes}")
             text = ""
-            first_attribute_skipped = False
             for attribute, value in attributes.items():
-                if not first_attribute_skipped:
-                    first_attribute_skipped = True
-                    continue
-                text += f"{attribute}: {value}\n"
+                if not (attribute == "_sa_instance_state" or attribute == "visit_id"):
+                    text += f"{attribute}: {value}\n"
+            return text
+        else:
+            return f"No {description} for the selected visit."
+
+
+    @staticmethod
+    def set_text_many(db_relations, description):
+
+        if db_relations is not None:
+            text = ""
+            for db_relation in db_relations:
+                attributes = vars(db_relation)
+                first_attribute_skipped = False
+                for attribute, value in attributes.items():
+                    if not first_attribute_skipped:
+                        first_attribute_skipped = True
+                        continue
+                    text += f"{attribute}: {value}\n"
+                text += "-----\n"
             return text
         else:
             return f"No {description} for the selected visit."
