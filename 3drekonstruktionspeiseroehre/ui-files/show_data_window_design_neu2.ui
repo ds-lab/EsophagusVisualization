@@ -36,7 +36,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -1453,7 +1453,7 @@ p, li { white-space: pre-wrap; }
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -3061,7 +3061,7 @@ p, li { white-space: pre-wrap; }
                   <string>Complications:</string>
                  </property>
                  <property name="checkable">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                  <property name="checked">
                   <bool>false</bool>
@@ -3070,7 +3070,7 @@ p, li { white-space: pre-wrap; }
                   <item row="0" column="1">
                    <widget class="QComboBox" name="comboBox_58">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3097,7 +3097,7 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="1">
                    <widget class="QComboBox" name="comboBox_59">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3123,6 +3123,9 @@ p, li { white-space: pre-wrap; }
                   </item>
                   <item row="4" column="0">
                    <widget class="QLabel" name="label_127">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
                     <property name="text">
                      <string>Pneumothorax</string>
                     </property>
@@ -3131,7 +3134,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="1">
                    <widget class="QComboBox" name="comboBox_60">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3158,7 +3161,7 @@ p, li { white-space: pre-wrap; }
                   <item row="2" column="1">
                    <widget class="QComboBox" name="comboBox_61">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3184,6 +3187,9 @@ p, li { white-space: pre-wrap; }
                   </item>
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_128">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
                     <property name="text">
                      <string>Bleeding</string>
                     </property>
@@ -3191,6 +3197,9 @@ p, li { white-space: pre-wrap; }
                   </item>
                   <item row="2" column="0">
                    <widget class="QLabel" name="label_129">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
                     <property name="text">
                      <string>Capnoperitoneum</string>
                     </property>
@@ -3198,6 +3207,9 @@ p, li { white-space: pre-wrap; }
                   </item>
                   <item row="6" column="0">
                    <widget class="QLabel" name="label_130">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
                     <property name="text">
                      <string>Other</string>
                     </property>
@@ -3205,6 +3217,9 @@ p, li { white-space: pre-wrap; }
                   </item>
                   <item row="1" column="0">
                    <widget class="QLabel" name="label_131">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
                     <property name="text">
                      <string>Perforation</string>
                     </property>
@@ -3212,6 +3227,9 @@ p, li { white-space: pre-wrap; }
                   </item>
                   <item row="3" column="0">
                    <widget class="QLabel" name="label_132">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
                     <property name="text">
                      <string>Mucosal tears</string>
                     </property>
@@ -3219,6 +3237,9 @@ p, li { white-space: pre-wrap; }
                   </item>
                   <item row="5" column="0">
                    <widget class="QLabel" name="label_133">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
                     <property name="text">
                      <string>Pneumomediastinum</string>
                     </property>
@@ -3227,7 +3248,7 @@ p, li { white-space: pre-wrap; }
                   <item row="4" column="1">
                    <widget class="QComboBox" name="comboBox_62">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3254,7 +3275,7 @@ p, li { white-space: pre-wrap; }
                   <item row="5" column="1">
                    <widget class="QComboBox" name="comboBox_63">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3281,7 +3302,7 @@ p, li { white-space: pre-wrap; }
                   <item row="6" column="1">
                    <widget class="QComboBox" name="comboBox_64">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <item>
                      <property name="text">
