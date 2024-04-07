@@ -46,7 +46,7 @@ class Visit(Base):
         "patients.patient_id", ondelete="CASCADE"), nullable=False)
     year_of_visit = mapped_column(Integer, nullable=False)
     visit_type = mapped_column(String(50), nullable=False)
-    therapy_type = mapped_column(String(50), nullable=False)
+    therapy_type = mapped_column(String(50), nullable=True)
     months_after_therapy = mapped_column(Integer, nullable=False)
 
     def toDict(self):
