@@ -117,6 +117,9 @@ class DataWindow(QMainWindow):
         # Endoflip
         self.ui.endoflip_upload_button.clicked.connect(self.__upload_endoflip_file)
 
+        # Therapy Buttons
+        self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
+
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
         self.ui.endoscopy_next_button.clicked.connect(self.__endoscopy_next_button_clicked)
@@ -919,7 +922,7 @@ class DataWindow(QMainWindow):
     def __add_botox_injection(self):
         botox_dict = {'visit_id': self.selected_visit,
                       'botox_units': self.ui.botox_units_spin.value(),
-                      'botox_height': self.ui.botox_height_spin.spin()}
+                      'botox_height': self.ui.botox_height_spin.value()}
         botox_dict, null_values, error = DataValidation.validate_visitdata(botox_dict)
 
         if error:
