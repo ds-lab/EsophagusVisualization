@@ -28,6 +28,7 @@ from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyFileService
 from logic.services.endoflip_service import EndoflipFileService
 from logic.services.barium_swallow_service import BariumSwallowFileService
+from logic.services.botox_injection_service import BotoxInjectionService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 
 
@@ -69,6 +70,7 @@ class DataWindow(QMainWindow):
         self.barium_swallow_file_service = BariumSwallowFileService(self.db)
         self.endoscopy_file_service = EndoscopyFileService(self.db)
         self.endoflip_file_service = EndoflipFileService(self.db)
+        self.botox_injection_service = BotoxInjectionService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -913,3 +915,15 @@ class DataWindow(QMainWindow):
                     conduct_endoflip_file_upload(self.selected_visit, data_bytes, endoflip_screenshot)
                     self.ui.endoflip_file_text.setText(filename)
             self.default_path = os.path.dirname(filename)
+
+    def __add_botox_injection(self):
+        botox_dict = {'visit_id': self.selected_visit,
+                      'botox_units': self.ui.botox_units_spin.value(),
+                      'botox_height': self.ui.botox_height_spin.spin()}
+        botox_dict, null_values, error = DataValidation.validate_visitdata(botox_dict)
+
+        if error:
+            return
+
+        self.botox_injection_service.create_botox_injection(botox_dict)
+
