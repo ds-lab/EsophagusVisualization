@@ -33,7 +33,6 @@ class PreviousTherapy(Base):
         "patients.patient_id", ondelete="CASCADE"), nullable=False)
     therapy = mapped_column(String, nullable=False)
     year = mapped_column(Integer, nullable=True)
-    year_not_known = mapped_column(Boolean, nullable=True)
     center = mapped_column(String(20), nullable=True)
 
     def toDict(self):

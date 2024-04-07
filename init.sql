@@ -13,7 +13,6 @@ CREATE TABLE previous_therapies (
     patient_id VARCHAR(30) REFERENCES patients(patient_id) ON DELETE CASCADE NOT NULL,
     therapy VARCHAR NOT NULL,
     year INT,
-    year_not_known BOOLEAN,
     center VARCHAR(20)
 );
 
