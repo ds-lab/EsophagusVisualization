@@ -11,6 +11,7 @@ from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
 from logic.patient_data import PatientData
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
+from gui.set_textfields import setText
 from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload
 from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
 from logic.datainput.barium_swallow_data_processing import process_and_upload_barium_swallow_images
@@ -759,19 +760,8 @@ class DataWindow(QMainWindow):
 
     def __init_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
+        self.ui.manometry_text.setText(setText.set_text(manometry, "manometry data"))
 
-        if manometry is not None:
-            attributes = vars(manometry)
-            text = ""
-            first_attribute_skipped = False
-            for attribute, value in attributes.items():
-                if not first_attribute_skipped:
-                    first_attribute_skipped = True
-                    continue
-                text += f"{attribute}: {value}\n"
-            self.ui.manometry_text.setText(text)
-        else:
-            self.ui.manometry_text.setText("No manometry data for the selected visit.")
 
     def __upload_manometry_file(self):
         """
