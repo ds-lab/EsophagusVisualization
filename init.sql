@@ -62,8 +62,8 @@ CREATE TABLE botox_injections (
     botox_height INT
 );
 
-CREATE TABLE pneumatic_dilitations (
-    pneumatic_dilitation_id SERIAL PRIMARY KEY,
+CREATE TABLE pneumatic_dilatations (
+    pneumatic_dilatation_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     ballon_volume VARCHAR(5),
     quantity INT
