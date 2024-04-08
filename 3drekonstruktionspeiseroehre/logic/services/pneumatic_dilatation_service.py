@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from logic.database.data_declarative_models import Visit, Patient, PneumaticDilatation
 
 
-class POEMService:
+class PneumaticDilatationService:
 
     def __init__(self, db_session: Session):
         self.db = db_session

@@ -36,7 +36,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -1211,7 +1211,7 @@ p, li { white-space: pre-wrap; }
              </property>
              <property name="icon">
               <iconset>
-               <normaloff>../../../../../../../schnepia/Downloads/icons8-herunterladen-48.png</normaloff>../../../../../../../schnepia/Downloads/icons8-herunterladen-48.png</iconset>
+               <normaloff>../../../../schnepia/Downloads/icons8-herunterladen-48.png</normaloff>../../../../schnepia/Downloads/icons8-herunterladen-48.png</iconset>
              </property>
              <property name="checkable">
               <bool>false</bool>
@@ -1881,8 +1881,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1384</width>
-             <height>655</height>
+             <width>965</width>
+             <height>321</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2365,7 +2365,7 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1367</width>
+             <width>748</width>
              <height>671</height>
             </rect>
            </property>
@@ -3026,7 +3026,7 @@ p, li { white-space: pre-wrap; }
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="empty">
            <layout class="QGridLayout" name="gridLayout_71"/>
@@ -3441,7 +3441,7 @@ p, li { white-space: pre-wrap; }
             <item row="0" column="0">
              <widget class="QGroupBox" name="groupBox_5">
               <property name="title">
-               <string>Therapie: Pneumatische Dilitation</string>
+               <string>Therapy: Pneumatic Dilatation</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_63">
                <item row="0" column="2">
