@@ -142,7 +142,6 @@ class Complication(Base):
     __tablename__ = "complications"
     complication_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    no_complications = mapped_column(Boolean)
     bleeding = mapped_column(String(10))
     perforation = mapped_column(String(10))
     capnoperitoneum = mapped_column(String(10))

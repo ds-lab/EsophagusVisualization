@@ -93,7 +93,6 @@ CREATE TABLE poems (
 CREATE TABLE complications (
     complication_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    no_complications BOOLEAN,
     bleeding VARCHAR(10),
     perforation VARCHAR(10),
     capnoperitoneum VARCHAR(10),
