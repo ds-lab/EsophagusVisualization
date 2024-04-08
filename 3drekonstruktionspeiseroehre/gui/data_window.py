@@ -27,7 +27,7 @@ from logic.services.manometry_service import ManometryService, ManometryFileServ
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyFileService
 from logic.services.endoflip_service import EndoflipFileService
-from logic.services.barium_swallow_service import BariumSwallowFileService
+from logic.services.barium_swallow_service import BariumSwallow, BariumSwallowFileService
 from logic.services.botox_injection_service import BotoxInjectionService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 
@@ -67,6 +67,7 @@ class DataWindow(QMainWindow):
         self.eckardtscore_service = EckardtscoreService(self.db)
         self.manometry_service = ManometryService(self.db)
         self.manometry_file_service = ManometryFileService(self.db)
+        self.barium_swallow_service = BariumSwallow(self.db)
         self.barium_swallow_file_service = BariumSwallowFileService(self.db)
         self.endoscopy_file_service = EndoscopyFileService(self.db)
         self.endoflip_file_service = EndoflipFileService(self.db)
@@ -703,6 +704,7 @@ class DataWindow(QMainWindow):
         return False
 
     def __add_manometry(self):
+        # ToDo Abfrage ob upgedated werden soll, wenn schon Daten da
         les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
         manometry_dict = {'visit_id': self.selected_visit,
                           'catheder_type': self.ui.manometry_cathedertype_dropdown.currentText(),
@@ -729,6 +731,7 @@ class DataWindow(QMainWindow):
         self.__init_manometry()
 
     def __add_barium_swallow(self):
+        # ToDo Abfrage ob upgedated werden soll, wenn schon Daten da
         tbe_dict = {'visit_id': self.selected_visit,
                     'type_contrast_medium': self.ui.tbe_cm_dropdown.currentText(),
                     'amount_contrast_medium': self.ui.tbe_amount_cm_spin.value(),
@@ -749,13 +752,12 @@ class DataWindow(QMainWindow):
             if reply == QMessageBox.StandardButton.No:
                 return
 
-        #ToDo anpassen
-        if self.manometry_service.get_manometry_for_visit(self.selected_visit):
-            manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-            self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)
+        if self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit):
+            barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
+            self.barium_swallow_service.update_barium_swallow(barium_swallow.tbe_id, tbe_dict)
         else:
-            self.manometry_service.create_manometry(manometry_dict)
-        self.__init_manometry()
+            self.barium_swallow_service.create_barium_swallow(tbe_dict)
+        # ToDo init Textfield
 
     def __delete_manometry(self):
         self.manometry_service.delete_manometry_for_visit(
