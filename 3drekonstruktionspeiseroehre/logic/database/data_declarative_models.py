@@ -138,7 +138,7 @@ class POEM(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
-class Complication(Base):
+class Complications(Base):
     __tablename__ = "complications"
     complication_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
