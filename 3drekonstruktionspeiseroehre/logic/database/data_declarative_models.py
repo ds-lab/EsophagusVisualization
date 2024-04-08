@@ -103,7 +103,7 @@ class BotoxInjection(Base):
 
 class PneumaticDilatation(Base):
     __tablename__ = "pneumatic_dilatations"
-    pneumatic_dilitation_id = mapped_column(Integer, primary_key=True)
+    pneumatic_dilatation_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     ballon_volume = mapped_column(String(5))
     quantity = mapped_column(Integer)
