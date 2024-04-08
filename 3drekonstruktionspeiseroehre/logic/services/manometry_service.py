@@ -76,6 +76,7 @@ class ManometryService:
         msg.setInformativeText("Please check the connection to the database.")
         msg.exec()
 
+
 class ManometryFileService:
 
     def __init__(self, db_session: Session):

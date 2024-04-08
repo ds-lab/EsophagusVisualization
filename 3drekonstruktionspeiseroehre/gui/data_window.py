@@ -749,6 +749,14 @@ class DataWindow(QMainWindow):
             if reply == QMessageBox.StandardButton.No:
                 return
 
+        #ToDo anpassen
+        if self.manometry_service.get_manometry_for_visit(self.selected_visit):
+            manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
+            self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)
+        else:
+            self.manometry_service.create_manometry(manometry_dict)
+        self.__init_manometry()
+
     def __delete_manometry(self):
         self.manometry_service.delete_manometry_for_visit(
             self.selected_visit)
