@@ -168,8 +168,16 @@ CREATE TABLE endoflips (
 );
 
 CREATE TABLE endoflip_files (
+    endoflip_image_id SERIAL PRIMARY KEY,
+    visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
+    timepoint VARCHAR(10),
+    file BYTEA
+);
+
+CREATE TABLE endoflip_images (
     endoflip_file_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
+    timepoint VARCHAR(10),
     file BYTEA,
     screenshot BYTEA
 );

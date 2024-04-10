@@ -26,6 +26,7 @@ class Patient(Base):
     def __repr__(self) -> str:
         return f"[patient_id: {self.patient_id}, birth_year: {self.birth_year}]"
 
+
 class PreviousTherapy(Base):
     __tablename__ = "previous_therapies"
     previous_therapy_id = mapped_column(Integer, primary_key=True)
@@ -52,6 +53,7 @@ class Visit(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+
 class EckardtScore(Base):
     __tablename__ = "eckardt_scores"
     eckardt_id = mapped_column(Integer, primary_key=True)
@@ -65,6 +67,7 @@ class EckardtScore(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+
 class Gerd(Base):
     __tablename__ = "gerd_scores"
     gerd_id = mapped_column(Integer, primary_key=True)
@@ -76,6 +79,7 @@ class Gerd(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class Medication(Base):
     __tablename__ = "medications"
@@ -91,6 +95,7 @@ class Medication(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+
 class BotoxInjection(Base):
     __tablename__ = "botox_injections"
     botox_id = mapped_column(Integer, primary_key=True)
@@ -101,6 +106,7 @@ class BotoxInjection(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+
 class PneumaticDilatation(Base):
     __tablename__ = "pneumatic_dilatations"
     pneumatic_dilatation_id = mapped_column(Integer, primary_key=True)
@@ -110,6 +116,7 @@ class PneumaticDilatation(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class LHM(Base):
     __tablename__ = "lhms"
@@ -122,6 +129,7 @@ class LHM(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class POEM(Base):
     __tablename__ = "poems"
@@ -138,6 +146,7 @@ class POEM(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+
 class Complications(Base):
     __tablename__ = "complications"
     complication_id = mapped_column(Integer, primary_key=True)
@@ -152,6 +161,7 @@ class Complications(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class Manometry(Base):
     __tablename__ = "manometries"
@@ -172,6 +182,7 @@ class Manometry(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+
 class ManometryFile(Base):
     __tablename__ = "manometry_files"
     manometry_file_id = mapped_column(Integer, primary_key=True)
@@ -180,6 +191,7 @@ class ManometryFile(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class BariumSwallow(Base):
     __tablename__ = "barium_swallows"
@@ -197,6 +209,7 @@ class BariumSwallow(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+
 class BariumSwallowFile(Base):
     __tablename__ = "barium_swallow_files"
     tbe_file_id = mapped_column(Integer, primary_key=True)
@@ -206,6 +219,7 @@ class BariumSwallowFile(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class Endoscopy(Base):
     __tablename__ = "endoscopies"
@@ -241,15 +255,30 @@ class Endoflip(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+
 class EndoflipFile(Base):
     __tablename__ = "endoflip_files"
     endoflip_file_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    timepoint = mapped_column(String(10))
     file = mapped_column(PickleType, nullable=True)
     screenshot = mapped_column(PickleType)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+
+class EndoflipImage(Base):
+    __tablename__ = "endoflip_images"
+    endoflip_image_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    timepoint = mapped_column(String(10))
+    file = mapped_column(PickleType, nullable=True)
+    screenshot = mapped_column(PickleType)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class Endosonography(Base):
     __tablename__ = "endosonographies"
@@ -260,6 +289,7 @@ class Endosonography(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
+
 class EndosonographyFile(Base):
     __tablename__ = "endosonography_files"
     endosonography_file_id = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -268,6 +298,7 @@ class EndosonographyFile(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
 
 class Metric(Base):
     __tablename__ = "metrics"
