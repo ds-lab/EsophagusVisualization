@@ -1391,7 +1391,7 @@ p, li { white-space: pre-wrap; }
        <attribute name="title">
         <string>Visit-Data</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,1,7,1,1" columnstretch="1,1,3">
+       <layout class="QGridLayout" name="gridLayout_8" rowstretch="1,1,5,0,0" columnstretch="1,0,0">
         <item row="0" column="0" rowspan="2">
          <widget class="QGroupBox" name="groupBox_14">
           <property name="title">
@@ -1442,1585 +1442,6 @@ p, li { white-space: pre-wrap; }
           <property name="text">
            <string>Create Visualization for selected Patient and selected Visit</string>
           </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="3">
-         <widget class="QToolBox" name="toolbox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="currentIndex">
-           <number>2</number>
-          </property>
-          <widget class="QWidget" name="manometry">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1384</width>
-             <height>655</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Manometry</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_30">
-            <item row="0" column="0" rowspan="3">
-             <widget class="QGroupBox" name="groupBox_26">
-              <property name="title">
-               <string>Manometry</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_31">
-               <item row="2" column="1">
-                <widget class="QSpinBox" name="manometry_restingpressure_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>100</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>1</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QSpinBox" name="manometry_ipr4_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>100</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_41">
-                 <property name="text">
-                  <string>Catheder type:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_37">
-                 <property name="text">
-                  <string>Distal Contractile Integral (DCI) in mmHg/s/cm:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QComboBox" name="manometry_patientposition_dropdown">
-                 <item>
-                  <property name="text">
-                   <string>---</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>upright 0°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>upright 10°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>upright 20°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>upright 30°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>upright 40°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>upright 50°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>upright 60°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>upright 70°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>upright 80°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>upright 90°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>supine 0°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>supine 10°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>supine 20°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>supine 30°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>supine 40°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>supine 50°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>supine 60°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>supine 70°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>supine 80°</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>supine 90°</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="12" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_8">
-                 <item>
-                  <widget class="QLineEdit" name="manometry_file_text">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="manometry_file_upload_button">
-                   <property name="text">
-                    <string>Upload File</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="manometry_cathedertype_dropdown">
-                 <item>
-                  <property name="text">
-                   <string>---</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>solid state</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>water catheter</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_39">
-                 <property name="text">
-                  <string>Distal Latency (DL) in s:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_33">
-                 <property name="text">
-                  <string>Integrated relaxation pressure 4s (IPR4) in mmHg:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_38">
-                 <property name="text">
-                  <string>Patient position:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_43">
-                 <property name="text">
-                  <string>Resting pressure (LES) in mmHg:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_34">
-                 <property name="text">
-                  <string>Lower boundary of the lower esophageal sphincter (LES) in cm:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_42">
-                 <property name="text">
-                  <string>Upper boundary of the lower esophageal sphincter (LES) in cm:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="13" column="1">
-                <spacer name="verticalSpacer_14">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_36">
-                 <property name="text">
-                  <string>Upper boundary of the upper esophageal sphincter (UES) in cm:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_40">
-                 <property name="text">
-                  <string>Lower boundery of the upper esophageal sphincter (UES) in cm:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <widget class="QSpinBox" name="manometry_dl_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>25</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="0">
-                <widget class="QLabel" name="label_35">
-                 <property name="text">
-                  <string>Manometry File:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QSpinBox" name="manometry_dci_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>40000</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="1">
-                <widget class="QSpinBox" name="manometry_upperboundary_ues_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>25</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="1">
-                <widget class="QSpinBox" name="manometry_lowerboundary_les_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>55</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="1">
-                <widget class="QSpinBox" name="manometry_lowerboundary_ues_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>25</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="1">
-                <widget class="QSpinBox" name="manometry_upperboundary_les_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>55</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="1">
-                <widget class="QLineEdit" name="manometry_length_les_text">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>calculated automatically</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="text">
-                  <string>Length of the lower esophageal sphincter (LES) in cm:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="11" column="0" colspan="2">
-                <layout class="QHBoxLayout" name="horizontalLayout">
-                 <item>
-                  <widget class="QPushButton" name="add_manometry_button">
-                   <property name="text">
-                    <string>Add / Update Manomentry Data</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_27">
-              <property name="title">
-               <string>saved Manometry Data:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_36">
-               <item row="0" column="0">
-                <widget class="QTextEdit" name="manometry_text">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QPushButton" name="delete_manometry_button">
-                 <property name="text">
-                  <string>Delete Manometry Data</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="xray">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1384</width>
-             <height>655</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Timed barium esophagogram (TBE)</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_33">
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_29">
-              <property name="title">
-               <string>saved timed barium esophagogram (TBE) data:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_38">
-               <item row="0" column="0">
-                <widget class="QTextEdit" name="tbe_text">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="2" rowspan="2">
-             <widget class="QGroupBox" name="groupBox_21">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Timed barium esophagogram (TBE) pictures:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_64">
-               <item row="0" column="0">
-                <widget class="QLineEdit" name="lineEdit_4">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" alignment="Qt::AlignHCenter">
-                <widget class="QLabel" name="tbe_swallow_imageview">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>No TBE images are loaded</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_2">
-                 <item>
-                  <widget class="QPushButton" name="tbe_previous_button">
-                   <property name="text">
-                    <string>previous</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="tbe_next_button">
-                   <property name="text">
-                    <string>next</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QGroupBox" name="groupBox_28">
-              <property name="title">
-               <string>Timed barium esophagogram (TBE)</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_37">
-               <item row="1" column="2">
-                <widget class="QSpinBox" name="tbe_amount_cm_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>20</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="2">
-                <widget class="QSpinBox" name="tbe_width_cm_1_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>20</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="2">
-                <widget class="QSpinBox" name="tbe_width_cm_2_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>20</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="2">
-                <widget class="QSpinBox" name="tbe_height_cm_1_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>20</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="2">
-                <widget class="QSpinBox" name="tbe_height_cm_2_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>20</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="2">
-                <widget class="QSpinBox" name="tbe_height_cm_5_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>20</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="2">
-                <widget class="QSpinBox" name="tbe_width_cm_5_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>20</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_51">
-                 <property name="text">
-                  <string>Width of contrast medium column after 2 min (in cml):</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_45">
-                 <property name="text">
-                  <string>TBE Files:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="2">
-                <layout class="QHBoxLayout" name="horizontalLayout_9">
-                 <item>
-                  <widget class="QLineEdit" name="tbe_file_text">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="tbe_file_upload_button">
-                   <property name="text">
-                    <string>Upload Files</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_54">
-                 <property name="text">
-                  <string>Amount of contrast medium:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QComboBox" name="tbe_cm_dropdown">
-                 <item>
-                  <property name="text">
-                   <string>---</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>barium sulfate</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>water-soluble contrast medium</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_52">
-                 <property name="text">
-                  <string>Type of contrast medium:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_44">
-                 <property name="text">
-                  <string>Height of contrast medium column after 1 min (in cm):</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_47">
-                 <property name="text">
-                  <string>Width of contrast medium column after 1 min (in cm):</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_50">
-                 <property name="text">
-                  <string>Height of contrast medium column after 5 min (in cm):</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_48">
-                 <property name="text">
-                  <string>Height of contrast medium column after 2 min (in cm):</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_53">
-                 <property name="text">
-                  <string>Width of contrast medium column after 5 min (in cm):</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="2">
-                <spacer name="verticalSpacer_13">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="8" column="0" colspan="3">
-                <layout class="QHBoxLayout" name="horizontalLayout_3">
-                 <item>
-                  <widget class="QPushButton" name="add_tbe_button">
-                   <property name="text">
-                    <string>Add / Update TBE data</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="delete_tbe_button">
-                   <property name="text">
-                    <string>Delete TBE data</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="endoskopy">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1384</width>
-             <height>655</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Esophagogastroduodenoscopy (EGD)</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_45">
-            <item row="0" column="0">
-             <widget class="QGroupBox" name="groupBox_30">
-              <property name="title">
-               <string>Esophagogastroduoendoscopy (EGD)</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_39">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_63">
-                 <property name="text">
-                  <string>Position LES (in cm):</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0" colspan="2">
-                <layout class="QHBoxLayout" name="horizontalLayout_11">
-                 <item>
-                  <widget class="QPushButton" name="add_egd_button">
-                   <property name="text">
-                    <string>Update / Add EGD data</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="delete_egd_button">
-                   <property name="text">
-                    <string>Delete EGD data</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="5" column="1">
-                <spacer name="verticalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_57">
-                 <property name="text">
-                  <string>EGD files:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_7">
-                 <item>
-                  <widget class="QLineEdit" name="egd_file_text">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="egd_file_upload_button">
-                   <property name="text">
-                    <string>Upload Files</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="0" column="1">
-                <widget class="QSpinBox" name="egd_position_les_spin">
-                 <property name="minimum">
-                  <number>-1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>55</number>
-                 </property>
-                 <property name="value">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_31">
-              <property name="title">
-               <string>Saved esophagogastroduodenoscopy (EGD) data:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_40">
-               <item row="0" column="1">
-                <widget class="QTextEdit" name="egd_text">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QGroupBox" name="groupBox_37">
-              <property name="title">
-               <string>Esophagogastroduodenoscopy (EGD) pictures:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_68">
-               <item row="0" column="0">
-                <widget class="QLineEdit" name="lineEdit_5">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" alignment="Qt::AlignHCenter">
-                <widget class="QLabel" name="endoscopy_imageview">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>no Endoscopy Images are loaded</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_4">
-                 <item>
-                  <widget class="QPushButton" name="endoscopy_previous_button">
-                   <property name="text">
-                    <string>previous</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="endoscopy_next_button">
-                   <property name="text">
-                    <string>next</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="endoflip">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1367</width>
-             <height>671</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Impedance planimetry (EndoFlip)</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_46">
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_33">
-              <property name="title">
-               <string>saved Impedance planimetry (EndoFlip) data:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_42">
-               <item row="0" column="0">
-                <widget class="QTextEdit" name="endoflip_text">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QPushButton" name="manometrie_delete_button_5">
-                 <property name="text">
-                  <string>Delete Impedance planimetry (EndoFlip) data</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QGroupBox" name="groupBox_41">
-              <property name="title">
-               <string>Endoflip pictures:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_66">
-               <item row="1" column="0">
-                <widget class="QLineEdit" name="lineEdit_2">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_14">
-                 <item>
-                  <widget class="QPushButton" name="manometrie_delete_button_12">
-                   <property name="text">
-                    <string>previous</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_28">
-                   <property name="text">
-                    <string>next</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0" alignment="Qt::AlignHCenter">
-                <widget class="QLabel" name="label_81">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>no Endoflip Images are loaded</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QGroupBox" name="groupBox_32">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Endoflip</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_80">
-               <item row="4" column="0" colspan="2">
-                <widget class="QGroupBox" name="groupBox_17">
-                 <property name="title">
-                  <string>after Procedure:</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_76">
-                  <item row="0" column="0">
-                   <layout class="QGridLayout" name="gridLayout_79">
-                    <item row="1" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_after_csa_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>200.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_87">
-                      <property name="text">
-                       <string>Diameter minimal (Dmin) in mm:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_after_di_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>15.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_89">
-                      <property name="text">
-                       <string>Distensibility Index (DI) in mm²/mmHg:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_after_dmin_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>15.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_90">
-                      <property name="text">
-                       <string>Intraballon pressure (IBP) in mmHg:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_after_ibp_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>100.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_30">
-                      <property name="text">
-                       <string>Cross sectional Area (CSA) in mm²:</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="1" column="0">
-                   <layout class="QGridLayout" name="gridLayout_83">
-                    <item row="0" column="1">
-                     <widget class="QLineEdit" name="endoflip_file_text_5">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_98">
-                      <property name="text">
-                       <string>EndoFlip File (xlsx):</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="2">
-                     <widget class="QPushButton" name="endoflip_upload_button_5">
-                      <property name="text">
-                       <string>Upload File</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_49">
-                      <property name="text">
-                       <string>EndoFlip Image (.jpeg):</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="lineEdit_8">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="2">
-                     <widget class="QPushButton" name="pushButton_3">
-                      <property name="text">
-                       <string>Upload File</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="2" column="0" colspan="2">
-                <widget class="QGroupBox" name="groupBox_11">
-                 <property name="title">
-                  <string>during Procedure:</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_67">
-                  <item row="0" column="0">
-                   <layout class="QGridLayout" name="gridLayout_60">
-                    <item row="1" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_during_csa_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>200.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_77">
-                      <property name="text">
-                       <string>Diameter minimal (Dmin) in mm:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_during_di_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>15.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_74">
-                      <property name="text">
-                       <string>Distensibility Index (DI) in mm²/mmHg:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_during_dmin_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>15.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_75">
-                      <property name="text">
-                       <string>Intraballon pressure (IBP) in mmHg:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_during_ibp_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>100.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_29">
-                      <property name="text">
-                       <string>Cross sectional Area (CSA) in mm²:</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="1" column="0">
-                   <layout class="QGridLayout" name="gridLayout_82">
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_97">
-                      <property name="text">
-                       <string>EndoFlip File (xlsx):</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="2">
-                     <widget class="QPushButton" name="endoflip_upload_button_4">
-                      <property name="text">
-                       <string>Upload File</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QLineEdit" name="endoflip_file_text_4">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_27">
-                      <property name="text">
-                       <string>EndoFlip Image (.jpeg):</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="lineEdit_6">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="2">
-                     <widget class="QPushButton" name="pushButton_2">
-                      <property name="text">
-                       <string>Upload File</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QGroupBox" name="groupBox_10">
-                 <property name="title">
-                  <string>before Procedure:</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_62">
-                  <item row="0" column="0">
-                   <layout class="QGridLayout" name="gridLayout_41">
-                    <item row="1" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_before_csa_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>200.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_76">
-                      <property name="text">
-                       <string>Diameter minimal (Dmin) in mm:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_before_di_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>15.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_71">
-                      <property name="text">
-                       <string>Distensibility Index (DI) in mm²/mmHg:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_before_dmin_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>15.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_66">
-                      <property name="text">
-                       <string>Intraballon pressure (IBP) in mmHg:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QDoubleSpinBox" name="endflip_before_ibp_spin">
-                      <property name="minimum">
-                       <double>-1.000000000000000</double>
-                      </property>
-                      <property name="maximum">
-                       <double>100.000000000000000</double>
-                      </property>
-                      <property name="value">
-                       <double>-1.000000000000000</double>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_28">
-                      <property name="text">
-                       <string>Cross sectional Area (CSA) in mm²:</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="1" column="0">
-                   <layout class="QGridLayout" name="gridLayout_81">
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_96">
-                      <property name="text">
-                       <string>EndoFlip File (xlsx):</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="2">
-                     <widget class="QLineEdit" name="endoflip_file_text_3">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="3">
-                     <widget class="QPushButton" name="endoflip_upload_button">
-                      <property name="text">
-                       <string>Upload File</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_26">
-                      <property name="text">
-                       <string>EndoFlip Image (.jpeg):</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="2">
-                     <widget class="QLineEdit" name="lineEdit_3">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="3">
-                     <widget class="QPushButton" name="pushButton">
-                      <property name="text">
-                       <string>Upload File</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="5" column="0" colspan="2">
-                <widget class="QPushButton" name="manometrie_add_button_5">
-                 <property name="text">
-                  <string>Add Impedance planimetry (EndoFlip) data</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="ednosonography">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1384</width>
-             <height>655</height>
-            </rect>
-           </property>
-           <attribute name="label">
-            <string>Endosonography</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_29">
-            <item row="0" column="0">
-             <widget class="QGroupBox" name="groupBox_34">
-              <property name="title">
-               <string>Endosonography</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_43">
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_79">
-                 <property name="text">
-                  <string>Endosonographie Files:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <spacer name="verticalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="1" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <item>
-                  <widget class="QLineEdit" name="endosono_file_text">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="endosono_upload_button">
-                   <property name="text">
-                    <string>Upload Files</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_35">
-              <property name="title">
-               <string>Saved Endosonography data:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_44">
-               <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_10">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QGroupBox" name="groupBox_38">
-              <property name="title">
-               <string>Endosonography pictures:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_61">
-               <item row="2" column="0" alignment="Qt::AlignHCenter">
-                <widget class="QLabel" name="label_80">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>no Endosonography Images are loaded</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <item>
-                  <widget class="QPushButton" name="manometrie_delete_button_11">
-                   <property name="text">
-                    <string>previous</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_27">
-                   <property name="text">
-                    <string>next</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLineEdit" name="lineEdit">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
          </widget>
         </item>
         <item row="0" column="2" rowspan="2">
@@ -4750,6 +3171,1496 @@ p, li { white-space: pre-wrap; }
                   </widget>
                  </item>
                 </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QToolBox" name="toolbox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="currentIndex">
+           <number>3</number>
+          </property>
+          <widget class="QWidget" name="manometry">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1384</width>
+             <height>655</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Manometry</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_30">
+            <item row="0" column="0" rowspan="3">
+             <widget class="QGroupBox" name="groupBox_26">
+              <property name="title">
+               <string>Manometry</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_31">
+               <item row="2" column="1">
+                <widget class="QSpinBox" name="manometry_restingpressure_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QSpinBox" name="manometry_ipr4_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_41">
+                 <property name="text">
+                  <string>Catheder type:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_37">
+                 <property name="text">
+                  <string>Distal Contractile Integral (DCI) in mmHg/s/cm:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="manometry_patientposition_dropdown">
+                 <item>
+                  <property name="text">
+                   <string>---</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>upright 0°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>upright 10°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>upright 20°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>upright 30°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>upright 40°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>upright 50°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>upright 60°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>upright 70°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>upright 80°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>upright 90°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>supine 0°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>supine 10°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>supine 20°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>supine 30°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>supine 40°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>supine 50°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>supine 60°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>supine 70°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>supine 80°</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>supine 90°</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="12" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <item>
+                  <widget class="QLineEdit" name="manometry_file_text">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="manometry_file_upload_button">
+                   <property name="text">
+                    <string>Upload File</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="manometry_cathedertype_dropdown">
+                 <item>
+                  <property name="text">
+                   <string>---</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>solid state</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>water catheter</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_39">
+                 <property name="text">
+                  <string>Distal Latency (DL) in s:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_33">
+                 <property name="text">
+                  <string>Integrated relaxation pressure 4s (IPR4) in mmHg:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_38">
+                 <property name="text">
+                  <string>Patient position:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_43">
+                 <property name="text">
+                  <string>Resting pressure (LES) in mmHg:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_34">
+                 <property name="text">
+                  <string>Lower boundary of the lower esophageal sphincter (LES) in cm:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_42">
+                 <property name="text">
+                  <string>Upper boundary of the lower esophageal sphincter (LES) in cm:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="1">
+                <spacer name="verticalSpacer_14">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_36">
+                 <property name="text">
+                  <string>Upper boundary of the upper esophageal sphincter (UES) in cm:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_40">
+                 <property name="text">
+                  <string>Lower boundery of the upper esophageal sphincter (UES) in cm:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QSpinBox" name="manometry_dl_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>25</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QLabel" name="label_35">
+                 <property name="text">
+                  <string>Manometry File:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QSpinBox" name="manometry_dci_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>40000</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QSpinBox" name="manometry_upperboundary_ues_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>25</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <widget class="QSpinBox" name="manometry_lowerboundary_les_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>55</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QSpinBox" name="manometry_lowerboundary_ues_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>25</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QSpinBox" name="manometry_upperboundary_les_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>55</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="QLineEdit" name="manometry_length_les_text">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>calculated automatically</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>Length of the lower esophageal sphincter (LES) in cm:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0" colspan="2">
+                <layout class="QHBoxLayout" name="horizontalLayout">
+                 <item>
+                  <widget class="QPushButton" name="add_manometry_button">
+                   <property name="text">
+                    <string>Add / Update Manomentry Data</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_27">
+              <property name="title">
+               <string>saved Manometry Data:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_36">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="manometry_text">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QPushButton" name="delete_manometry_button">
+                 <property name="text">
+                  <string>Delete Manometry Data</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="xray">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1384</width>
+             <height>655</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Timed barium esophagogram (TBE)</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_33">
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_29">
+              <property name="title">
+               <string>saved timed barium esophagogram (TBE) data:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_38">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="tbe_text">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="2" rowspan="2">
+             <widget class="QGroupBox" name="groupBox_21">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Timed barium esophagogram (TBE) pictures:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_64">
+               <item row="0" column="0">
+                <widget class="QLineEdit" name="lineEdit_4">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" alignment="Qt::AlignHCenter">
+                <widget class="QLabel" name="tbe_swallow_imageview">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>No TBE images are loaded</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QPushButton" name="tbe_previous_button">
+                   <property name="text">
+                    <string>previous</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="tbe_next_button">
+                   <property name="text">
+                    <string>next</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_28">
+              <property name="title">
+               <string>Timed barium esophagogram (TBE)</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_37">
+               <item row="1" column="2">
+                <widget class="QSpinBox" name="tbe_amount_cm_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="2">
+                <widget class="QSpinBox" name="tbe_width_cm_1_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="2">
+                <widget class="QSpinBox" name="tbe_width_cm_2_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QSpinBox" name="tbe_height_cm_1_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QSpinBox" name="tbe_height_cm_2_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="2">
+                <widget class="QSpinBox" name="tbe_height_cm_5_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="2">
+                <widget class="QSpinBox" name="tbe_width_cm_5_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_51">
+                 <property name="text">
+                  <string>Width of contrast medium column after 2 min (in cml):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_45">
+                 <property name="text">
+                  <string>TBE Files:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="2">
+                <layout class="QHBoxLayout" name="horizontalLayout_9">
+                 <item>
+                  <widget class="QLineEdit" name="tbe_file_text">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="tbe_file_upload_button">
+                   <property name="text">
+                    <string>Upload Files</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_54">
+                 <property name="text">
+                  <string>Amount of contrast medium:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QComboBox" name="tbe_cm_dropdown">
+                 <item>
+                  <property name="text">
+                   <string>---</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>barium sulfate</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>water-soluble contrast medium</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_52">
+                 <property name="text">
+                  <string>Type of contrast medium:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_44">
+                 <property name="text">
+                  <string>Height of contrast medium column after 1 min (in cm):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_47">
+                 <property name="text">
+                  <string>Width of contrast medium column after 1 min (in cm):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_50">
+                 <property name="text">
+                  <string>Height of contrast medium column after 5 min (in cm):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_48">
+                 <property name="text">
+                  <string>Height of contrast medium column after 2 min (in cm):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_53">
+                 <property name="text">
+                  <string>Width of contrast medium column after 5 min (in cm):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="2">
+                <spacer name="verticalSpacer_13">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="8" column="0" colspan="3">
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <item>
+                  <widget class="QPushButton" name="add_tbe_button">
+                   <property name="text">
+                    <string>Add / Update TBE data</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="delete_tbe_button">
+                   <property name="text">
+                    <string>Delete TBE data</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="endoskopy">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1384</width>
+             <height>655</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Esophagogastroduodenoscopy (EGD)</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_45">
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_30">
+              <property name="title">
+               <string>Esophagogastroduoendoscopy (EGD)</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_39">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_63">
+                 <property name="text">
+                  <string>Position LES (in cm):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0" colspan="2">
+                <layout class="QHBoxLayout" name="horizontalLayout_11">
+                 <item>
+                  <widget class="QPushButton" name="add_egd_button">
+                   <property name="text">
+                    <string>Update / Add EGD data</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="delete_egd_button">
+                   <property name="text">
+                    <string>Delete EGD data</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="5" column="1">
+                <spacer name="verticalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_57">
+                 <property name="text">
+                  <string>EGD files:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <widget class="QLineEdit" name="egd_file_text">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="egd_file_upload_button">
+                   <property name="text">
+                    <string>Upload Files</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="0" column="1">
+                <widget class="QSpinBox" name="egd_position_les_spin">
+                 <property name="minimum">
+                  <number>-1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>55</number>
+                 </property>
+                 <property name="value">
+                  <number>-1</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_31">
+              <property name="title">
+               <string>Saved esophagogastroduodenoscopy (EGD) data:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_40">
+               <item row="0" column="1">
+                <widget class="QTextEdit" name="egd_text">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_37">
+              <property name="title">
+               <string>Esophagogastroduodenoscopy (EGD) pictures:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_68">
+               <item row="0" column="0">
+                <widget class="QLineEdit" name="lineEdit_5">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" alignment="Qt::AlignHCenter">
+                <widget class="QLabel" name="endoscopy_imageview">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>no Endoscopy Images are loaded</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QPushButton" name="endoscopy_previous_button">
+                   <property name="text">
+                    <string>previous</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="endoscopy_next_button">
+                   <property name="text">
+                    <string>next</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="endoflip">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1384</width>
+             <height>655</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Impedance planimetry (EndoFlip)</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_46">
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_33">
+              <property name="title">
+               <string>saved Impedance planimetry (EndoFlip) data:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_42">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="endoflip_text">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QPushButton" name="manometrie_delete_button_5">
+                 <property name="text">
+                  <string>Delete Impedance planimetry (EndoFlip) data</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_41">
+              <property name="title">
+               <string>Endoflip pictures:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_66">
+               <item row="1" column="0">
+                <widget class="QLineEdit" name="lineEdit_2">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_14">
+                 <item>
+                  <widget class="QPushButton" name="manometrie_delete_button_12">
+                   <property name="text">
+                    <string>previous</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_28">
+                   <property name="text">
+                    <string>next</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0" alignment="Qt::AlignHCenter">
+                <widget class="QLabel" name="label_81">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>no Endoflip Images are loaded</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_32">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Endoflip</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_88">
+               <item row="0" column="0">
+                <widget class="QGroupBox" name="groupBox_10">
+                 <property name="title">
+                  <string>before Procedure:</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_62">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_41">
+                    <item row="1" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_before_csa_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>200.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_76">
+                      <property name="text">
+                       <string>Diameter minimal (Dmin) in mm:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_before_di_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>15.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_71">
+                      <property name="text">
+                       <string>Distensibility Index (DI) in mm²/mmHg:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_before_dmin_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>15.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="0">
+                     <widget class="QLabel" name="label_66">
+                      <property name="text">
+                       <string>Intraballon pressure (IBP) in mmHg:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_before_ibp_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>100.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_28">
+                      <property name="text">
+                       <string>Cross sectional Area (CSA) in mm²:</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QGroupBox" name="groupBox_11">
+                 <property name="title">
+                  <string>during Procedure:</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_67">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_60">
+                    <item row="1" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_during_csa_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>200.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_77">
+                      <property name="text">
+                       <string>Diameter minimal (Dmin) in mm:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_during_di_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>15.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_74">
+                      <property name="text">
+                       <string>Distensibility Index (DI) in mm²/mmHg:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_during_dmin_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>15.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="0">
+                     <widget class="QLabel" name="label_75">
+                      <property name="text">
+                       <string>Intraballon pressure (IBP) in mmHg:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_during_ibp_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>100.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_29">
+                      <property name="text">
+                       <string>Cross sectional Area (CSA) in mm²:</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QGroupBox" name="groupBox_17">
+                 <property name="title">
+                  <string>after Procedure:</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_76">
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_79">
+                    <item row="1" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_after_csa_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>200.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_87">
+                      <property name="text">
+                       <string>Diameter minimal (Dmin) in mm:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_after_di_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>15.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_89">
+                      <property name="text">
+                       <string>Distensibility Index (DI) in mm²/mmHg:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_after_dmin_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>15.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="0">
+                     <widget class="QLabel" name="label_90">
+                      <property name="text">
+                       <string>Intraballon pressure (IBP) in mmHg:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="1">
+                     <widget class="QDoubleSpinBox" name="endflip_after_ibp_spin">
+                      <property name="minimum">
+                       <double>-1.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>100.000000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>-1.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_30">
+                      <property name="text">
+                       <string>Cross sectional Area (CSA) in mm²:</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QGroupBox" name="groupBox_39">
+                 <property name="title">
+                  <string>EndoFlip Files and Images:</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_80">
+                  <item row="1" column="0">
+                   <layout class="QGridLayout" name="gridLayout_87">
+                    <item row="0" column="1">
+                     <widget class="QLineEdit" name="endoflip_file_text">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_99">
+                      <property name="text">
+                       <string>EndoFlip Files (.xlsx):</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="2">
+                     <widget class="QPushButton" name="endoflip_file_upload_button">
+                      <property name="text">
+                       <string>Upload Files</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_55">
+                      <property name="text">
+                       <string>EndoFlip Images (.jpeg):</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLineEdit" name="endoflip_image_text">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="2">
+                     <widget class="QPushButton" name="endoflip_image_upload_button">
+                      <property name="text">
+                       <string>Upload Images</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QPushButton" name="endoflip_add_button">
+                 <property name="text">
+                  <string>Add Impedance planimetry (EndoFlip) data</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="ednosonography">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1384</width>
+             <height>655</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Endosonography</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_29">
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_34">
+              <property name="title">
+               <string>Endosonography</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_43">
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_79">
+                 <property name="text">
+                  <string>Endosonographie Files:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <spacer name="verticalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
+                  <widget class="QLineEdit" name="endosono_file_text">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="endosono_upload_button">
+                   <property name="text">
+                    <string>Upload Files</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_35">
+              <property name="title">
+               <string>Saved Endosonography data:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_44">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="textEdit_10">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_38">
+              <property name="title">
+               <string>Endosonography pictures:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_61">
+               <item row="2" column="0" alignment="Qt::AlignHCenter">
+                <widget class="QLabel" name="label_80">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>no Endosonography Images are loaded</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QPushButton" name="manometrie_delete_button_11">
+                   <property name="text">
+                    <string>previous</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_27">
+                   <property name="text">
+                    <string>next</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLineEdit" name="lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
