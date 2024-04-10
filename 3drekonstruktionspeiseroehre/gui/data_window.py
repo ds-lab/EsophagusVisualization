@@ -12,6 +12,7 @@ from logic.patient_data import PatientData
 from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from gui.set_textfields import setText
+from gui.show_message import ShowMessage
 from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload
 from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
 from logic.datainput.barium_swallow_data_processing import process_and_upload_barium_swallow_images
@@ -705,7 +706,7 @@ class DataWindow(QMainWindow):
 
     def __add_manometry(self):
         manometry_exists = self.manometry_service.get_manoetry_for_visit(self.selected_visit)
-        if not manometry_exists or manometry_exists and self.to_update_for_visit("Timed Barium Swallow (TBE) data"):
+        if not manometry_exists or manometry_exists and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
             les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
             manometry_dict = {'visit_id': self.selected_visit,
                               'catheder_type': self.ui.manometry_cathedertype_dropdown.currentText(),
@@ -733,7 +734,7 @@ class DataWindow(QMainWindow):
 
     def __add_barium_swallow(self):
         tbe_exists = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
-        if not tbe_exists or tbe_exists and self.to_update_for_visit("Timed Barium Swallow (TBE) data"):
+        if not tbe_exists or tbe_exists and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
             tbe_dict = {'visit_id': self.selected_visit,
                         'type_contrast_medium': self.ui.tbe_cm_dropdown.currentText(),
                         'amount_contrast_medium': self.ui.tbe_amount_cm_spin.value(),
@@ -783,7 +784,7 @@ class DataWindow(QMainWindow):
         Manometry callback. Handles Manometry file selection.
         """
         manometry_exists = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
-        if not manometry_exists or manometry_exists and self.to_update_for_visit("Manometry file"):
+        if not manometry_exists or manometry_exists and ShowMessage.to_update_for_visit("Manometry file"):
             filename, _ = QFileDialog.getOpenFileName(self, 'Select Manometry file', self.default_path,
                                                       "CSV (*.csv *.CSV)")
             if len(filename) > 0:
@@ -797,7 +798,7 @@ class DataWindow(QMainWindow):
         # If TBE images are already uploaded in the database, images are deleted and updated with new images
         barium_swallow_exists = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
             self.selected_visit)
-        if not barium_swallow_exists or barium_swallow_exists and self.to_update_for_visit("TBE Images"):
+        if not barium_swallow_exists or barium_swallow_exists and ShowMessage.to_update_for_visit("TBE Images"):
             self.barium_swallow_file_service.delete_barium_swallow_file_for_visit(self.selected_visit)
 
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
@@ -850,7 +851,7 @@ class DataWindow(QMainWindow):
         """
         # If endoscopy images are already uploaded in the database, images are deleted and updated with new images
         endoscopy_exists = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
-        if not endoscopy_exists or endoscopy_exists and self.to_update_for_visit("Endoscopy Images"):
+        if not endoscopy_exists or endoscopy_exists and ShowMessage.to_update_for_visit("Endoscopy Images"):
             self.endoscopy_file_service.delete_endoscopy_file_for_visit(self.selected_visit)
 
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
@@ -877,15 +878,6 @@ class DataWindow(QMainWindow):
                     self.endoscopy_image_index = 0
                     self.__load_endoscopy_image()
 
-    def to_update_for_visit(self, type_to_update: str):
-        reply = QMessageBox.question(self, f'{type_to_update} already exists in the database.',
-                                     f"Should the {type_to_update} for this visit be updated?",
-                                     QMessageBox.StandardButton.Yes |
-                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
-            return True
-        return False
-
     def __load_endoscopy_image(self):
         # Load and display the current image
         if 0 <= self.endoscopy_image_index < len(self.endoscopy_pixmaps):
@@ -911,7 +903,7 @@ class DataWindow(QMainWindow):
         EndoFLIP button callback. Handles EndoFLIP .xlsx file selection.
         """
         endoflip_exists = self.endoflip_file_service.get_endoflip_file_for_visit(self.selected_visit)
-        if not endoflip_exists or endoflip_exists and self.to_update_for_visit("Endoflip file"):
+        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip file"):
             filename, _ = QFileDialog.getOpenFileName(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
             if len(filename) > 0:
                 error = False
