@@ -118,7 +118,7 @@ class DataWindow(QMainWindow):
         self.ui.delete_tbe_button.clicked.connect(self.__delete_barium_swallow)
         self.ui.tbe_file_upload_button.clicked.connect(self.__upload_barium_swallow_images)
         # Endoscopy / EGD
-        self.ui.endoscopy_upload_button.clicked.connect(self.__upload_endoscopy_images)
+        self.ui.egd_file_upload_button.clicked.connect(self.__upload_endoscopy_images)
         # Endoflip
         self.ui.endoflip_upload_button.clicked.connect(self.__upload_endoflip_file)
 
@@ -902,7 +902,7 @@ class DataWindow(QMainWindow):
             # if all images have valid names, process and upload them
             if not error:
                 process_and_upload_endoscopy_images(self.selected_visit, filenames)
-                self.ui.endoscopy_textfield.setText(str(len(filenames)) + " File(s) uploaded")
+                self.ui.egd_file_text.setText(str(len(filenames)) + " File(s) uploaded")
 
                 # load the pixmaps of the images to make them viewable
                 endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
