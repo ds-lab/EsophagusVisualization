@@ -937,6 +937,7 @@ class DataWindow(QMainWindow):
         """
         endoflip_exists = self.endoflip_file_service.get_endoflip_file_for_visit(self.selected_visit)
         if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip file"):
+            # ToDo Dateiname muss before, during oder after enthalten und dies wird als Zeitstempel gespeichert implementieren
             filename, _ = QFileDialog.getOpenFileName(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
             if len(filename) > 0:
                 error = False
