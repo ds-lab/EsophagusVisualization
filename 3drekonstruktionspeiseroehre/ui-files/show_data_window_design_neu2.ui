@@ -1453,7 +1453,7 @@ p, li { white-space: pre-wrap; }
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -1881,8 +1881,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>965</width>
-             <height>321</height>
+             <width>1384</width>
+             <height>655</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2199,8 +2199,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>792</width>
-             <height>139</height>
+             <width>1384</width>
+             <height>655</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2210,7 +2210,7 @@ p, li { white-space: pre-wrap; }
             <item row="0" column="0">
              <widget class="QGroupBox" name="groupBox_30">
               <property name="title">
-               <string>Esophagogastroduodenoscopy (EGD)</string>
+               <string>Esophagogastroduoendoscopy (EGD)</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_39">
                <item row="0" column="0">
@@ -2261,7 +2261,7 @@ p, li { white-space: pre-wrap; }
                <item row="4" column="1">
                 <layout class="QHBoxLayout" name="horizontalLayout_7">
                  <item>
-                  <widget class="QLineEdit" name="endoscopy_textfield">
+                  <widget class="QLineEdit" name="egd_file_text">
                    <property name="enabled">
                     <bool>false</bool>
                    </property>
@@ -2271,7 +2271,7 @@ p, li { white-space: pre-wrap; }
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="endoscopy_upload_button">
+                  <widget class="QPushButton" name="egd_file_upload_button">
                    <property name="text">
                     <string>Upload Files</string>
                    </property>
@@ -2302,7 +2302,7 @@ p, li { white-space: pre-wrap; }
               </property>
               <layout class="QGridLayout" name="gridLayout_40">
                <item row="0" column="1">
-                <widget class="QTextEdit" name="textEdit_8">
+                <widget class="QTextEdit" name="egd_text">
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -2365,7 +2365,7 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>748</width>
+             <width>1367</width>
              <height>671</height>
             </rect>
            </property>
@@ -2898,8 +2898,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>674</width>
-             <height>122</height>
+             <width>1384</width>
+             <height>655</height>
             </rect>
            </property>
            <attribute name="label">
