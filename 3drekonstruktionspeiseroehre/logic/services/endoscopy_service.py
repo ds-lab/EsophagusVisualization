@@ -3,9 +3,80 @@ from PyQt6.QtWidgets import QMessageBox
 from flask import jsonify
 from sqlalchemy import select, delete, update, insert, func
 from sqlalchemy.orm import Session
-from logic.database.data_declarative_models import EndoscopyFile, Visit
+from logic.database.data_declarative_models import EndoscopyFile, Endoscopy, Visit
 from sqlalchemy import inspect
 from sqlalchemy.exc import OperationalError
+
+class EndoscopyService:
+
+    def __init__(self, db_session: Session):
+        self.db = db_session
+
+    def get_endoscopy(self, id: int):
+        stmt = select(Endoscopy).where(Endoscopy.egd_id == id)
+        try:
+            result = self.db.execute(stmt).first()
+            if result:
+                return result[0]
+        except OperationalError as e:
+            self.show_error_msg()
+
+    def get_endoscopy_for_visit(self, visit_id: int) -> list[Endoscopy, None]:
+        stmt = select(Endoscopy).where(Endoscopy.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt).first()
+            if result:
+                return result[0]
+        except OperationalError as e:
+            self.show_error_msg()
+
+    def delete_endoscopy_for_visit(self, visit_id: int):
+        stmt = delete(Endoscopy).where(Endoscopy.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt)
+            self.db.commit()
+            return result.rowcount
+        except OperationalError as e:
+            self.db.rollback()
+            self.show_error_msg()
+
+    def delete_endoscopy(self, id: int):
+        stmt = delete(Endoscopy).where(Endoscopy.egd_id == id)
+        try:
+            result = self.db.execute(stmt)
+            self.db.commit()
+            return result.rowcount
+        except OperationalError as e:
+            self.db.rollback()
+            self.show_error_msg()
+
+    def update_endoscopy(self, id: int, data: dict):
+        stmt = update(Endoscopy).where(Endoscopy.egd_id == id).values(**data)
+        try:
+            result = self.db.execute(stmt)
+            self.db.commit()
+            return result.rowcount
+        except OperationalError as e:
+            self.db.rollback()
+            self.show_error_msg()
+
+    def create_endoscopy(self, data: dict):
+        stmt = insert(Endoscopy).values(**data)
+        try:
+            result = self.db.execute(stmt)
+            self.db.commit()
+            return result.rowcount  # Return the number of rows affected
+        except OperationalError as e:
+            self.db.rollback()
+            self.show_error_msg()
+
+    def show_error_msg(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Icon.Critical)
+        msg.setWindowTitle("Error")
+        msg.setText("An error occurred.")
+        msg.setInformativeText("Please check the connection to the database.")
+        msg.exec()
 
 
 class EndoscopyFileService:

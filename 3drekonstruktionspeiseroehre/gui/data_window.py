@@ -26,7 +26,7 @@ from logic.services.visit_service import VisitService
 from logic.services.eckardtscore_service import EckardtscoreService
 from logic.services.manometry_service import ManometryService, ManometryFileService
 from logic.services.previous_therapy_service import PreviousTherapyService
-from logic.services.endoscopy_service import EndoscopyFileService
+from logic.services.endoscopy_service import EndoscopyService, EndoscopyFileService
 from logic.services.endoflip_service import EndoflipFileService
 from logic.services.barium_swallow_service import BariumSwallowService, BariumSwallowFileService
 from logic.services.botox_injection_service import BotoxInjectionService
@@ -71,6 +71,7 @@ class DataWindow(QMainWindow):
         self.barium_swallow_service = BariumSwallowService(self.db)
         self.barium_swallow_file_service = BariumSwallowFileService(self.db)
         self.endoscopy_file_service = EndoscopyFileService(self.db)
+        self.endoscopy_service = EndoscopyService(self.db)
         self.endoflip_file_service = EndoflipFileService(self.db)
         self.botox_injection_service = BotoxInjectionService(self.db)
 
@@ -763,16 +764,10 @@ class DataWindow(QMainWindow):
                         'width_contast_medium_1min': self.ui.tbe_width_cm_1_spin.value(),
                         'width_contast_medium_2min': self.ui.tbe_width_cm_2_spin.value(),
                         'width_contast_medium_5min': self.ui.tbe_width_cm_5_spin.value()}
-            tbe_dict, null_values = DataValidation.validate_visitdata(tbe_dict)
+            tbe_dict, null_values, error = DataValidation.validate_visitdata(tbe_dict)
 
-            if null_values:
-                null_message = "The following values are not set: " + ", ".join(
-                    null_values) + ". Do you want to set them to null/unknown?"
-                reply = QMessageBox.question(self, 'Null Values Detected', null_message,
-                                             QMessageBox.StandardButton.Yes |
-                                             QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-                if reply == QMessageBox.StandardButton.No:
-                    return
+            if error:
+                return
 
             if self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit):
                 barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
@@ -855,6 +850,33 @@ class DataWindow(QMainWindow):
         if self.barium_swallow_image_index < len(self.barium_swallow_pixmaps) - 1:
             self.barium_swallow_image_index += 1
             self.__load_barium_swallow_image()
+
+    def __add_endoscopy(self):
+        egd_exists = self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit)
+        if not egd_exists or egd_exists and ShowMessage.to_update_for_visit("Endoscopy (EGD) data"):
+            egd_dict = {'visit_id': self.selected_visit,
+                        'type_contrast_medium': self.ui.egd_position_les_spin.value()}
+
+            tbe_dict, null_values, error = DataValidation.validate_visitdata(egd_dict)
+
+            if error:
+                return
+
+            if self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit):
+                endoscopy = self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit)
+                self.endoscopy_service.update_endoscopy(endoscopy.egd_id, egd_dict)
+            else:
+                self.endoscopy_service.create_endoscopy(egd_dict)
+            self.__init_endoscopy()
+
+    def __init_endoscopy(self):
+        endoscopy = self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit)
+        self.ui.tbe_text.setText(setText.set_text(endoscopy, "endoscopy (EGD) data"))
+
+    def __delete_endoscopy(self):
+        self.endoscopy_service.delete_endoscopy_for_visit(
+            self.selected_visit)
+        self.__init_endoscopy()
 
     def __upload_endoscopy_images(self):
         """
