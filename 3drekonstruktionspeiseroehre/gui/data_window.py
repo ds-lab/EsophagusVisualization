@@ -704,59 +704,61 @@ class DataWindow(QMainWindow):
         return False
 
     def __add_manometry(self):
-        # ToDo Abfrage ob upgedated werden soll, wenn schon Daten da
-        les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
-        manometry_dict = {'visit_id': self.selected_visit,
-                          'catheder_type': self.ui.manometry_cathedertype_dropdown.currentText(),
-                          'patient_position': self.ui.manometry_patientposition_dropdown.currentText(),
-                          'resting_pressure': self.ui.manometry_restingpressure_spin.value(),
-                          'ipr4': self.ui.manometry_ipr4_spin.value(),
-                          'dci': self.ui.manometry_dci_spin.value(),
-                          'dl': self.ui.manometry_dl_spin.value(),
-                          'ues_upper_boundary': self.ui.manometry_upperboundary_ues_spin.value(),
-                          'ues_lower_boundary': self.ui.manometry_lowerboundary_ues_spin.value(),
-                          'les_upper_boundary': self.ui.manometry_upperboundary_les_spin.value(),
-                          'les_lower_boundary': self.ui.manometry_lowerboundary_les_spin.value(),
-                          'les_length': les_length}
-        manometry_dict, null_values, error = DataValidation.validate_visitdata(manometry_dict)
+        manometry_exists = self.manometry_service.get_manoetry_for_visit(self.selected_visit)
+        if not manometry_exists or manometry_exists and self.to_update_for_visit("Timed Barium Swallow (TBE) data"):
+            les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
+            manometry_dict = {'visit_id': self.selected_visit,
+                              'catheder_type': self.ui.manometry_cathedertype_dropdown.currentText(),
+                              'patient_position': self.ui.manometry_patientposition_dropdown.currentText(),
+                              'resting_pressure': self.ui.manometry_restingpressure_spin.value(),
+                              'ipr4': self.ui.manometry_ipr4_spin.value(),
+                              'dci': self.ui.manometry_dci_spin.value(),
+                              'dl': self.ui.manometry_dl_spin.value(),
+                              'ues_upper_boundary': self.ui.manometry_upperboundary_ues_spin.value(),
+                              'ues_lower_boundary': self.ui.manometry_lowerboundary_ues_spin.value(),
+                              'les_upper_boundary': self.ui.manometry_upperboundary_les_spin.value(),
+                              'les_lower_boundary': self.ui.manometry_lowerboundary_les_spin.value(),
+                              'les_length': les_length}
+            manometry_dict, null_values, error = DataValidation.validate_visitdata(manometry_dict)
 
-        if error:
-            return
-
-        if self.manometry_service.get_manometry_for_visit(self.selected_visit):
-            manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-            self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)
-        else:
-            self.manometry_service.create_manometry(manometry_dict)
-        self.__init_manometry()
-
-    def __add_barium_swallow(self):
-        # ToDo Abfrage ob upgedated werden soll, wenn schon Daten da
-        tbe_dict = {'visit_id': self.selected_visit,
-                    'type_contrast_medium': self.ui.tbe_cm_dropdown.currentText(),
-                    'amount_contrast_medium': self.ui.tbe_amount_cm_spin.value(),
-                    'height_contast_medium_1min': self.ui.tbe_height_cm_1_spin.value(),
-                    'height_contast_medium_2min': self.ui.tbe_height_cm_2_spin.value(),
-                    'height_contast_medium_5min': self.ui.tbe_height_cm_5_spin.value(),
-                    'width_contast_medium_1min': self.ui.tbe_width_cm_1_spin.value(),
-                    'width_contast_medium_2min': self.ui.tbe_width_cm_2_spin.value(),
-                    'width_contast_medium_5min': self.ui.tbe_width_cm_5_spin.value()}
-        tbe_dict, null_values = DataValidation.validate_visitdata(tbe_dict)
-
-        if null_values:
-            null_message = "The following values are not set: " + ", ".join(
-                null_values) + ". Do you want to set them to null/unknown?"
-            reply = QMessageBox.question(self, 'Null Values Detected', null_message,
-                                         QMessageBox.StandardButton.Yes |
-                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
-            if reply == QMessageBox.StandardButton.No:
+            if error:
                 return
 
-        if self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit):
-            barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
-            self.barium_swallow_service.update_barium_swallow(barium_swallow.tbe_id, tbe_dict)
-        else:
-            self.barium_swallow_service.create_barium_swallow(tbe_dict)
+            if self.manometry_service.get_manometry_for_visit(self.selected_visit):
+                manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
+                self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)
+            else:
+                self.manometry_service.create_manometry(manometry_dict)
+            self.__init_manometry()
+
+    def __add_barium_swallow(self):
+        tbe_exists = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
+        if not tbe_exists or tbe_exists and self.to_update_for_visit("Timed Barium Swallow (TBE) data"):
+            tbe_dict = {'visit_id': self.selected_visit,
+                        'type_contrast_medium': self.ui.tbe_cm_dropdown.currentText(),
+                        'amount_contrast_medium': self.ui.tbe_amount_cm_spin.value(),
+                        'height_contast_medium_1min': self.ui.tbe_height_cm_1_spin.value(),
+                        'height_contast_medium_2min': self.ui.tbe_height_cm_2_spin.value(),
+                        'height_contast_medium_5min': self.ui.tbe_height_cm_5_spin.value(),
+                        'width_contast_medium_1min': self.ui.tbe_width_cm_1_spin.value(),
+                        'width_contast_medium_2min': self.ui.tbe_width_cm_2_spin.value(),
+                        'width_contast_medium_5min': self.ui.tbe_width_cm_5_spin.value()}
+            tbe_dict, null_values = DataValidation.validate_visitdata(tbe_dict)
+
+            if null_values:
+                null_message = "The following values are not set: " + ", ".join(
+                    null_values) + ". Do you want to set them to null/unknown?"
+                reply = QMessageBox.question(self, 'Null Values Detected', null_message,
+                                             QMessageBox.StandardButton.Yes |
+                                             QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+                if reply == QMessageBox.StandardButton.No:
+                    return
+
+            if self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit):
+                barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
+                self.barium_swallow_service.update_barium_swallow(barium_swallow.tbe_id, tbe_dict)
+            else:
+                self.barium_swallow_service.create_barium_swallow(tbe_dict)
         # ToDo init Textfield
 
     def __delete_manometry(self):
