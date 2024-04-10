@@ -760,7 +760,11 @@ class DataWindow(QMainWindow):
                 self.barium_swallow_service.update_barium_swallow(barium_swallow.tbe_id, tbe_dict)
             else:
                 self.barium_swallow_service.create_barium_swallow(tbe_dict)
-        # ToDo init Textfield
+            self.__init_barium_swallow()
+
+    def __init_barium_swallow(self):
+        barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
+        self.ui.tbe_text.setText(setText.set_text(barium_swallow, "timed barium swallow data"))
 
     def __delete_manometry(self):
         self.manometry_service.delete_manometry_for_visit(
