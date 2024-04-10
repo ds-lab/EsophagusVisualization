@@ -113,6 +113,8 @@ class DataWindow(QMainWindow):
         self.ui.delete_manometry_button.clicked.connect(self.__delete_manometry)
         self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
         # Barium Swallow / TBE
+        self.ui.add.tbe_button.clicked.connect(self.__add_barium_swallow)
+        self.ui.delete_tbe_button.clicked.connect(self.__delete_barium_swallow)
         self.ui.tbe_file_upload_button.clicked.connect(self.__upload_barium_swallow_images)
         # Endoscopy / EGD
         self.ui.endoscopy_upload_button.clicked.connect(self.__upload_endoscopy_images)
@@ -732,6 +734,23 @@ class DataWindow(QMainWindow):
                 self.manometry_service.create_manometry(manometry_dict)
             self.__init_manometry()
 
+    def __delete_manometry(self):
+        self.manometry_service.delete_manometry_for_visit(
+            self.selected_visit)
+        self.__init_manometry()
+
+    def __validate_manometry(self):
+        if (
+                self.ui.manometry_cathedertype_dropdown.currentText() != "---" and
+                self.ui.manometry_patientposition_dropdown.currentText() != "---"
+        ):
+            return True
+        return False
+
+    def __init_manometry(self):
+        manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
+        self.ui.manometry_text.setText(setText.set_text(manometry, "manometry data"))
+
     def __add_barium_swallow(self):
         tbe_exists = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
         if not tbe_exists or tbe_exists and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
@@ -766,22 +785,10 @@ class DataWindow(QMainWindow):
         barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
         self.ui.tbe_text.setText(setText.set_text(barium_swallow, "timed barium swallow data"))
 
-    def __delete_manometry(self):
-        self.manometry_service.delete_manometry_for_visit(
+    def __delete_barium_swallow(self):
+        self.barium_swallow_service.delete_barium_swallow_for_visit(
             self.selected_visit)
-        self.__init_manometry()
-
-    def __validate_manometry(self):
-        if (
-                self.ui.manometry_cathedertype_dropdown.currentText() != "---" and
-                self.ui.manometry_patientposition_dropdown.currentText() != "---"
-        ):
-            return True
-        return False
-
-    def __init_manometry(self):
-        manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-        self.ui.manometry_text.setText(setText.set_text(manometry, "manometry data"))
+        self.__init_barium_swallow()
 
     def __upload_manometry_file(self):
         """
