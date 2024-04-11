@@ -8,10 +8,11 @@ from logic.database import database
 import pickle
 
 
-def conduct_endoflip_file_upload(selected_visit, data_bytes, endoflip_screenshot):
+def conduct_endoflip_file_upload(selected_visit, timepoint, data_bytes, endoflip_screenshot):
     endoflip_bytes = pickle.dumps(endoflip_screenshot)
     endoflip_file_dict = {
         'visit_id': selected_visit,
+        'timepoint': timepoint,
         'file': data_bytes,
         'screenshot': endoflip_bytes
     }

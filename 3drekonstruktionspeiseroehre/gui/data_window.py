@@ -13,7 +13,8 @@ from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from gui.set_textfields import setText
 from gui.show_message import ShowMessage
-from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload, process_and_upload_endoflip_images
+from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload, \
+    process_and_upload_endoflip_images
 from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
 from logic.datainput.barium_swallow_data_processing import process_and_upload_barium_swallow_images
 from logic.datainput.manometry_data_processing import process_and_upload_manometry_file
@@ -710,7 +711,8 @@ class DataWindow(QMainWindow):
 
     def __add_manometry(self):
         manometry_exists = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-        if not manometry_exists or manometry_exists and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
+        if not manometry_exists or manometry_exists and ShowMessage.to_update_for_visit(
+                "Timed Barium Swallow (TBE) data"):
             les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
             manometry_dict = {'visit_id': self.selected_visit,
                               'catheder_type': self.ui.manometry_cathedertype_dropdown.currentText(),
@@ -938,22 +940,34 @@ class DataWindow(QMainWindow):
         """
         endoflip_exists = self.endoflip_file_service.get_endoflip_file_for_visit(self.selected_visit)
         if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip files"):
-            # ToDo Dateiname muss before, during oder after enthalten und dies wird als Zeitstempel gespeichert implementieren
-            filename, _ = QFileDialog.getOpenFileName(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
-            if len(filename) > 0:
-                error = False
-                try:
-                    data_bytes, endoflip_screenshot = process_endoflip_xlsx(filename)
-                except:
+            filenames, _ = QFileDialog.getOpenFileNames(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
+            error = False
+            for filename in filenames:
+                match = re.search(r'(before|during|after)', filename)
+                if not match:
                     error = True
-                if error or len(endoflip_screenshot['30']['aggregates']) != 4 or len(
-                        endoflip_screenshot['40']['aggregates']) != 4:
-                    print(error)
-                    self.ui.endoflip_file_text.setText("")
-                    QMessageBox.critical(self, "Invalid File", "Error: The file does not have the expected format.")
-                else:
-                    conduct_endoflip_file_upload(self.selected_visit, data_bytes, endoflip_screenshot)
-                    self.ui.endoflip_file_text.setText(filename)
+                    QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
+                                         "' does not contain the required time information ('before', 'during' or 'after'), for example, 'before.jpg' ")
+                    break
+            if not error:
+                for filename in filenames:
+                    if len(filename) > 0:
+                        error = False
+                        try:
+                            data_bytes, endoflip_screenshot = process_endoflip_xlsx(filename)
+                        except:
+                            error = True
+                        if error or len(endoflip_screenshot['30']['aggregates']) != 4 or len(
+                                endoflip_screenshot['40']['aggregates']) != 4:
+                            print(error)
+                            self.ui.endoflip_file_text.setText("")
+                            QMessageBox.critical(self, "Invalid File",
+                                                 "Error: The file does not have the expected format.")
+                        else:
+                            match = re.search(r'(before|during|after)', filename)
+                            timepoint = match.group(0)
+                            conduct_endoflip_file_upload(self.selected_visit, timepoint, data_bytes, endoflip_screenshot)
+                self.ui.endoflip_file_text.setText(str(len(filenames)) + " File(s) uploaded")
             self.default_path = os.path.dirname(filename)
 
     def __upload_endoflip_image(self):
@@ -981,7 +995,6 @@ class DataWindow(QMainWindow):
                     self.endoflip_image_index = 0
                     self.__load_endoflip_image()
 
-
     def __add_botox_injection(self):
         botox_dict = {'visit_id': self.selected_visit,
                       'botox_units': self.ui.botox_units_spin.value(),
@@ -997,5 +1010,3 @@ class DataWindow(QMainWindow):
     def __init_botox(self):
         botox = self.botox_injection_service.get_botox_injections_for_visit(self.selected_visit)
         self.ui.botox_text.setText(setText.set_text_botox(botox, "Botox data"))
-
-
