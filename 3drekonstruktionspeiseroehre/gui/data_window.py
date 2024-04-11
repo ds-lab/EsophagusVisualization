@@ -114,13 +114,13 @@ class DataWindow(QMainWindow):
         self.ui.delete_manometry_button.clicked.connect(self.__delete_manometry)
         self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
         # Barium Swallow / TBE
-        self.ui.add.tbe_button.clicked.connect(self.__add_barium_swallow)
+        self.ui.add_tbe_button.clicked.connect(self.__add_barium_swallow)
         self.ui.delete_tbe_button.clicked.connect(self.__delete_barium_swallow)
         self.ui.tbe_file_upload_button.clicked.connect(self.__upload_barium_swallow_images)
         # Endoscopy / EGD
         self.ui.egd_file_upload_button.clicked.connect(self.__upload_endoscopy_images)
         # Endoflip
-        self.ui.endoflip_upload_button.clicked.connect(self.__upload_endoflip_file)
+        self.ui.endoflip_file_upload_button.clicked.connect(self.__upload_endoflip_file)
 
         # Therapy Buttons
         self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
@@ -708,7 +708,7 @@ class DataWindow(QMainWindow):
         return False
 
     def __add_manometry(self):
-        manometry_exists = self.manometry_service.get_manoetry_for_visit(self.selected_visit)
+        manometry_exists = self.manometry_service.get_manometry_for_visit(self.selected_visit)
         if not manometry_exists or manometry_exists and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
             les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
             manometry_dict = {'visit_id': self.selected_visit,

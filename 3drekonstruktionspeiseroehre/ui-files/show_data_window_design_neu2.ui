@@ -3188,15 +3188,15 @@ p, li { white-space: pre-wrap; }
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1384</width>
-             <height>655</height>
+             <width>636</width>
+             <height>399</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3660,7 +3660,7 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
                <item row="1" column="0" alignment="Qt::AlignHCenter">
-                <widget class="QLabel" name="tbe_swallow_imageview">
+                <widget class="QLabel" name="tbe_imageview">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -3934,8 +3934,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1384</width>
-             <height>655</height>
+             <width>792</width>
+             <height>139</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4544,8 +4544,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1384</width>
-             <height>655</height>
+             <width>674</width>
+             <height>122</height>
             </rect>
            </property>
            <attribute name="label">
