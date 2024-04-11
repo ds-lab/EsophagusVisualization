@@ -141,7 +141,7 @@ class DataWindow(QMainWindow):
 
         self.widget_names = {
             "Botox injection": 1,
-            "Pneumatic Dilitation": 2,
+            "Pneumatic Dilatation": 2,
             "LHM": 3,
             "POEM": 4
         }
