@@ -995,6 +995,26 @@ class DataWindow(QMainWindow):
                     self.endoflip_image_index = 0
                     self.__load_endoflip_image()
 
+    def __load_endoflip_image(self):
+        # Load and display the current image
+        if 0 <= self.endoflip_image_index < len(self.endoflip_pixmaps):
+            scaled_pixmap = self.endoflip_pixmaps[self.endoflip_image_index].scaledToWidth(200)
+            scaled_size = scaled_pixmap.size()
+            self.ui.endoflip_imageview.setPixmap(scaled_pixmap)
+            self.ui.endoflip_imageview.setFixedSize(scaled_size)
+
+    def __endoflip_previous_button_clicked(self):
+        # Show the previous image
+        if self.endoflip_image_index > 0:
+            self.endoflip_image_index -= 1
+            self.__load_endoflip_image()
+
+    def __endoflip_next_button_clicked(self):
+        # Show the next image
+        if self.endoflip_image_index < len(self.endoflip_pixmaps) - 1:
+            self.endoflip_image_index += 1
+            self.__load_endoflip_image()
+
     def __add_botox_injection(self):
         botox_dict = {'visit_id': self.selected_visit,
                       'botox_units': self.ui.botox_units_spin.value(),
