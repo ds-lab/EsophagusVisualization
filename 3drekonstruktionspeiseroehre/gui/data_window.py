@@ -135,6 +135,13 @@ class DataWindow(QMainWindow):
         self.ui.endoflip_previous_button.clicked.connect(self.__endoflip_previous_button_clicked)
         self.ui.endoflip_next_button.clicked.connect(self.__endoscopy_next_button_clicked)
 
+        self.widget_names = {
+            "Botox injection": 1,
+            "Pneumatic Dilitation": 2,
+            "LHM": 3,
+            "POEM": 4
+        }
+
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -636,18 +643,12 @@ class DataWindow(QMainWindow):
             self.selected_visit)
         # Show the correct widget in the visitdata tab
         if visit:
-            if visit.visit_type == "Follow-Up Diagnostic":
+            if visit.therapy_type in self.widget_names:
+                widget_index = self.widget_names[visit.therapy_type]
+                self.ui.stackedWidget.setCurrentIndex(widget_index)
+            else:
+                # No widget for therapy data input is shown
                 self.ui.stackedWidget.setCurrentIndex(0)
-            elif visit.visit_type == "Initial Diagnostic":
-                self.ui.stackedWidget.setCurrentIndex(0)
-            if visit.therapy_type == "Botox injection":
-                self.ui.stackedWidget.setCurrentIndex(1)
-            elif visit.therapy_type == "Pneumatic Dilitation":
-                self.ui.stackedWidget.setCurrentIndex(2)
-            elif visit.therapy_type == "POEM":
-                self.ui.stackedWidget.setCurrentIndex(4)
-            elif visit.therapy_type == "LHM":
-                self.ui.stackedWidget.setCurrentIndex(3)
 
         if self.selected_visit:
             self.ui.eckardt_score.setEnabled(True)
