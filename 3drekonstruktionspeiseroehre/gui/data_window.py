@@ -13,7 +13,7 @@ from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from gui.set_textfields import setText
 from gui.show_message import ShowMessage
-from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload
+from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload, process_and_upload_endoflip_images
 from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
 from logic.datainput.barium_swallow_data_processing import process_and_upload_barium_swallow_images
 from logic.datainput.manometry_data_processing import process_and_upload_manometry_file
@@ -27,7 +27,7 @@ from logic.services.eckardtscore_service import EckardtscoreService
 from logic.services.manometry_service import ManometryService, ManometryFileService
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyService, EndoscopyFileService
-from logic.services.endoflip_service import EndoflipFileService
+from logic.services.endoflip_service import EndoflipFileService, EndoflipImageService
 from logic.services.barium_swallow_service import BariumSwallowService, BariumSwallowFileService
 from logic.services.botox_injection_service import BotoxInjectionService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
@@ -73,6 +73,7 @@ class DataWindow(QMainWindow):
         self.endoscopy_file_service = EndoscopyFileService(self.db)
         self.endoscopy_service = EndoscopyService(self.db)
         self.endoflip_file_service = EndoflipFileService(self.db)
+        self.endoflip_image_service = EndoflipImageService(self.db)
         self.botox_injection_service = BotoxInjectionService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
@@ -933,10 +934,10 @@ class DataWindow(QMainWindow):
 
     def __upload_endoflip_file(self):
         """
-        EndoFLIP button callback. Handles EndoFLIP .xlsx file selection.
+        EndoFLIP-file button callback. Handles EndoFLIP .xlsx file selection.
         """
         endoflip_exists = self.endoflip_file_service.get_endoflip_file_for_visit(self.selected_visit)
-        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip file"):
+        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip files"):
             # ToDo Dateiname muss before, during oder after enthalten und dies wird als Zeitstempel gespeichert implementieren
             filename, _ = QFileDialog.getOpenFileName(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
             if len(filename) > 0:
@@ -954,6 +955,32 @@ class DataWindow(QMainWindow):
                     conduct_endoflip_file_upload(self.selected_visit, data_bytes, endoflip_screenshot)
                     self.ui.endoflip_file_text.setText(filename)
             self.default_path = os.path.dirname(filename)
+
+    def __upload_endoflip_image(self):
+        endoflip_exists = self.endoflip_file_service.get_endoflip_file_for_visit(self.selected_visit)
+        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip images"):
+            filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
+                                                        "Images (*.jpg *.JPG *.png *.PNG)")
+            error = False
+            for filename in filenames:
+                match = re.search(r'(before|during|after)', filename)
+                if not match:
+                    error = True
+                    QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
+                                         "' does not contain the required time information, for example, '2.jpg' ")
+                    break
+
+            if not error:
+                process_and_upload_endoflip_images(self.selected_visit, filenames)
+                self.ui.endflip_image_text.setText(str(len(filenames)) + " File(s) uploaded")
+                # load the pixmaps of the images to make them viewable
+                endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(
+                    self.selected_visit)
+                if endoflip_images:
+                    self.endoflip_pixmaps = endoflip_images
+                    self.endoflip_image_index = 0
+                    self.__load_endoflip_image()
+
 
     def __add_botox_injection(self):
         botox_dict = {'visit_id': self.selected_visit,
