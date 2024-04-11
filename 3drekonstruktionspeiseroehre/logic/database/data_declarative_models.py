@@ -274,7 +274,6 @@ class EndoflipImage(Base):
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     timepoint = mapped_column(String(10))
     file = mapped_column(PickleType, nullable=True)
-    screenshot = mapped_column(PickleType)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
