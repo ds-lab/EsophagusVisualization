@@ -247,10 +247,18 @@ class Endoflip(Base):
     __tablename__ = "endoflips"
     endoflip_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    csa = mapped_column(Float)
-    dist = mapped_column(Float)
-    dmin = mapped_column(Float)
-    ibp = mapped_column(Float)
+    csa_before = mapped_column(Float)
+    dist_before = mapped_column(Float)
+    dmin_before = mapped_column(Float)
+    ibp_before = mapped_column(Float)
+    csa_during = mapped_column(Float)
+    dist_during = mapped_column(Float)
+    dmin_during = mapped_column(Float)
+    ibp_during = mapped_column(Float)
+    csa_after = mapped_column(Float)
+    dist_after = mapped_column(Float)
+    dmin_after = mapped_column(Float)
+    ibp_after = mapped_column(Float)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}

@@ -161,10 +161,18 @@ CREATE TABLE endoscopy_files (
 CREATE TABLE endoflips (
     endoflip_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    csa FLOAT,
-    dist FLOAT,
-    dmin FLOAT,
-    ibp FLOAT
+    csa_before FLOAT,
+    dist_before FLOAT,
+    dmin_before FLOAT,
+    ibp_before FLOAT,
+    csa_during FLOAT,
+    dist_during FLOAT,
+    dmin_during FLOAT,
+    ibp_during FLOAT,
+    csa_after FLOAT,
+    dist_after FLOAT,
+    dmin_after FLOAT,
+    ibp_after FLOAT
 );
 
 CREATE TABLE endoflip_files (
