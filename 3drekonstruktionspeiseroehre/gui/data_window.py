@@ -936,30 +936,34 @@ class DataWindow(QMainWindow):
             self.endoscopy_image_index += 1
             self.__load_endoscopy_image()
 
-    # ToDo anpassen
     def __add_endoflip(self):
-        endoflip_exists = self.endoflip_service.get_barium_swallow_for_visit(self.selected_visit)
-        if not tbe_exists or tbe_exists and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
-            tbe_dict = {'visit_id': self.selected_visit,
-                        'type_contrast_medium': self.ui.tbe_cm_dropdown.currentText(),
-                        'amount_contrast_medium': self.ui.tbe_amount_cm_spin.value(),
-                        'height_contast_medium_1min': self.ui.tbe_height_cm_1_spin.value(),
-                        'height_contast_medium_2min': self.ui.tbe_height_cm_2_spin.value(),
-                        'height_contast_medium_5min': self.ui.tbe_height_cm_5_spin.value(),
-                        'width_contast_medium_1min': self.ui.tbe_width_cm_1_spin.value(),
-                        'width_contast_medium_2min': self.ui.tbe_width_cm_2_spin.value(),
-                        'width_contast_medium_5min': self.ui.tbe_width_cm_5_spin.value()}
-            tbe_dict, null_values, error = DataValidation.validate_visitdata(tbe_dict)
+        endoflip_exists = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
+        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("EndoFlip data"):
+            endoflip_dict = {'visit_id': self.selected_visit,
+                        'csa_before': self.ui.endflip_before_csa_spin.value(),
+                        'dist_before': self.ui.endflip_before_di_spin.value(),
+                        'dmin_before': self.ui.self.ui.endflip_before_dmin_spin.value(),
+                        'ibp_before': self.ui.endflip_before_ibp_spin.value(),
+                        'csa_during': self.ui.endflip_during_csa_spin.value(),
+                        'dist_during': self.ui.endflip_during_di_spin.value(),
+                        'dmin_during': self.ui.endflip_during_dmin_spin.value(),
+                        'ibp_during': self.ui.endflip_during_ibp_spin.value(),
+                        'csa_after': self.ui.endflip_after_csa_spin.value(),
+                        'dist_after': self.ui.endflip_after_di_spin.value(),
+                        'dmin_after': self.ui.endflip_after_dmin_spin.value(),
+                        'ibp_after': self.ui.endflip_after_ibp_spin.value()}
+
+            endoflip_dict, null_values, error = DataValidation.validate_visitdata(endoflip_dict)
 
             if error:
                 return
 
-            if self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit):
-                barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
-                self.barium_swallow_service.update_barium_swallow(barium_swallow.tbe_id, tbe_dict)
+            if self.endoflip_service.get_endoflip_for_visit(self.selected_visit):
+                endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
+                self.endoflip_service.update_endoflip(endoflip.endoflip_id, endoflip_dict)
             else:
-                self.barium_swallow_service.create_barium_swallow(tbe_dict)
-            self.__init_barium_swallow()
+                self.endoflip_service.create_endoflip(endoflip_dict)
+            self.__init_endoflip()
 
     def __upload_endoflip_file(self):
         """
