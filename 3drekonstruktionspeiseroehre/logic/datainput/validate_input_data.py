@@ -165,3 +165,22 @@ class DataValidation:
                 error = True
         return visit_data_dict, null_values, error
 
+    @staticmethod
+    def validate_complications(complications_dict):
+        no_complications = []
+        error = False
+        for key, value in complications_dict.items():
+            if key == "visit_id" and value is None:
+                QMessageBox.critical(None, "No visit selected", "Error: Please select a visit.")
+                error = True
+                return complications_dict, error
+            if value == "none":
+                no_complications.append(key)
+        if len(no_complications) == 7:
+            reply = QMessageBox.question(None, 'No Complications', 'No Complications are set. Is this correct?',
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                error = True
+        return complications_dict, error
+

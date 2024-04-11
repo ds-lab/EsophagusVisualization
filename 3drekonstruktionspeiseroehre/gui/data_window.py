@@ -31,6 +31,7 @@ from logic.services.endoscopy_service import EndoscopyService, EndoscopyFileServ
 from logic.services.endoflip_service import EndoflipFileService, EndoflipImageService
 from logic.services.barium_swallow_service import BariumSwallowService, BariumSwallowFileService
 from logic.services.botox_injection_service import BotoxInjectionService
+from logic.services.complications_service import ComplicationsService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 
 
@@ -76,6 +77,7 @@ class DataWindow(QMainWindow):
         self.endoflip_file_service = EndoflipFileService(self.db)
         self.endoflip_image_service = EndoflipImageService(self.db)
         self.botox_injection_service = BotoxInjectionService(self.db)
+        self.complications_service = ComplicationsService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -126,6 +128,7 @@ class DataWindow(QMainWindow):
 
         # Therapy Buttons
         self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
+        self.ui.add_botox_button.clicked.connect(self.__add_botox_complications)
 
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
@@ -1067,4 +1070,31 @@ class DataWindow(QMainWindow):
 
     def __init_botox(self):
         botox = self.botox_injection_service.get_botox_injections_for_visit(self.selected_visit)
-        self.ui.botox_text.setText(setText.set_text_botox(botox, "Botox data"))
+        complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        botox_text = setText.set_text_botox(botox, "Botox data")
+        complications_text = setText.set_text(complications, "Complication data")
+        text = botox_text + "\n" + "--- Complications ---\n" + complications_text
+        self.ui.botox_text.setText(text)
+
+    def __add_botox_complications(self):
+        botox_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        if not botox_complications or botox_complications and ShowMessage.to_update_for_visit("complications for the botox therapy"):
+            botox_complications_dict = {'visit_id': self.selected_visit,
+                                        'bleeding': self.ui.bleeding_botox.currentText(),
+                                        'perforation': self.ui.perforation_botox.currentText(),
+                                        'capnoperitoneum': self.ui.capnoperitoneum_botox.currentText(),
+                                        'mucosal_tears': self.ui.mucusal_tears_botox.currentText(),
+                                        'pneumothorax': self.ui.pneumothorax_botox.currentText(),
+                                        'pneumomediastinum': self.ui.pneumomediastinum_botox.currentText(),
+                                        'other': self.ui.other_botox.currentText()}
+            botox_complications_dict, null_values, error = DataValidation.validate_complications(botox_complications_dict)
+
+            if error:
+                return
+
+            if self.complications_service.get_complications_for_visit(self.selected_visit):
+                complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+                self.complications_service.update_complications(complications.complication_id, botox_complications_dict)
+            else:
+                self.complications_service.create_complications(botox_complications_dict)
+            self.__init_botox()
