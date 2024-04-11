@@ -129,6 +129,7 @@ class DataWindow(QMainWindow):
         # Therapy Buttons
         self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
         self.ui.add_botox_button.clicked.connect(self.__add_botox_complications)
+        self.ui.delete_botox_button.clicked.connect(self.__delete_botox)
 
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
