@@ -965,6 +965,10 @@ class DataWindow(QMainWindow):
                 self.endoflip_service.create_endoflip(endoflip_dict)
             self.__init_endoflip()
 
+    def __init_endoflip(self):
+        endoflip = self.endoflip.get_endoflip_for_visit(self.selected_visit)
+        self.ui.manometry_text.setText(setText.set_text(endoflip, "EndoFlip data"))
+
     def __upload_endoflip_file(self):
         """
         EndoFLIP-file button callback. Handles EndoFLIP .xlsx file selection.
