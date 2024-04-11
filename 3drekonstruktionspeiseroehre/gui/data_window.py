@@ -1098,3 +1098,8 @@ class DataWindow(QMainWindow):
             else:
                 self.complications_service.create_complications(botox_complications_dict)
             self.__init_botox()
+
+    def __delete_botox(self):
+        self.botox_service.delete_botox_for_visit(self.selected_visit)
+        self.complications_service.delete_complications_for_visit(self.selected_visit)
+        self.__init_botox()
