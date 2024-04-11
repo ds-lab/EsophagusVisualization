@@ -936,12 +936,38 @@ class DataWindow(QMainWindow):
             self.endoscopy_image_index += 1
             self.__load_endoscopy_image()
 
+    # ToDo anpassen
+    def __add_endoflip(self):
+        endoflip_exists = self.endoflip_service.get_barium_swallow_for_visit(self.selected_visit)
+        if not tbe_exists or tbe_exists and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
+            tbe_dict = {'visit_id': self.selected_visit,
+                        'type_contrast_medium': self.ui.tbe_cm_dropdown.currentText(),
+                        'amount_contrast_medium': self.ui.tbe_amount_cm_spin.value(),
+                        'height_contast_medium_1min': self.ui.tbe_height_cm_1_spin.value(),
+                        'height_contast_medium_2min': self.ui.tbe_height_cm_2_spin.value(),
+                        'height_contast_medium_5min': self.ui.tbe_height_cm_5_spin.value(),
+                        'width_contast_medium_1min': self.ui.tbe_width_cm_1_spin.value(),
+                        'width_contast_medium_2min': self.ui.tbe_width_cm_2_spin.value(),
+                        'width_contast_medium_5min': self.ui.tbe_width_cm_5_spin.value()}
+            tbe_dict, null_values, error = DataValidation.validate_visitdata(tbe_dict)
+
+            if error:
+                return
+
+            if self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit):
+                barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
+                self.barium_swallow_service.update_barium_swallow(barium_swallow.tbe_id, tbe_dict)
+            else:
+                self.barium_swallow_service.create_barium_swallow(tbe_dict)
+            self.__init_barium_swallow()
+
     def __upload_endoflip_file(self):
         """
         EndoFLIP-file button callback. Handles EndoFLIP .xlsx file selection.
         """
-        endoflip_exists = self.endoflip_file_service.get_endoflip_file_for_visit(self.selected_visit)
+        endoflip_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
         if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip files"):
+            self.endoflip_file_service.delete_endoflip_file_for_visit(self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
             error = False
             for filename in filenames:
@@ -973,8 +999,9 @@ class DataWindow(QMainWindow):
             self.default_path = os.path.dirname(filename)
 
     def __upload_endoflip_image(self):
-        endoflip_exists = self.endoflip_file_service.get_endoflip_file_for_visit(self.selected_visit)
+        endoflip_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
         if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip images"):
+            self.endoflip_image_service.delete_endoflip_image_for_visit(self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
             error = False
