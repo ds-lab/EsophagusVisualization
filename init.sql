@@ -162,15 +162,15 @@ CREATE TABLE endoflips (
     endoflip_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     csa_before FLOAT,
-    dist_before FLOAT,
+    di_before FLOAT,
     dmin_before FLOAT,
     ibp_before FLOAT,
     csa_during FLOAT,
-    dist_during FLOAT,
+    di_during FLOAT,
     dmin_during FLOAT,
     ibp_during FLOAT,
     csa_after FLOAT,
-    dist_after FLOAT,
+    di_after FLOAT,
     dmin_after FLOAT,
     ibp_after FLOAT
 );
