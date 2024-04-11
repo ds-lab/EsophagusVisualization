@@ -132,6 +132,8 @@ class DataWindow(QMainWindow):
         self.ui.endoscopy_next_button.clicked.connect(self.__endoscopy_next_button_clicked)
         self.ui.tbe_previous_button.clicked.connect(self.__barium_swallow_previous_button_clicked)
         self.ui.tbe_next_button.clicked.connect(self.__barium_swallow_next_button_clicked)
+        self.ui.endoflip_previous_button.clicked.connect(self.__endoflip_previous_button_clicked)
+        self.ui.endoflip_next_button.clicked.connect(self.__endoscopy_next_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
