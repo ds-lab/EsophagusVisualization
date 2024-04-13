@@ -184,3 +184,45 @@ class DataValidation:
                 error = True
         return complications_dict, error
 
+    @staticmethod
+    def validate_lhm(lhm_dict):
+        null_values = []
+        error = False
+        for key, value in lhm_dict.items():
+            if key == "visit_id" and value is None:
+                QMessageBox.critical(None, "No visit selected", "Error: Please select a visit.")
+                error = True
+                return lhm_dict, error
+            if value == config.missing_int or value == 0:
+                null_values.append(key)
+                lhm_dict[key] = None
+        if null_values:
+            null_message = "The following values are not set: " + ", ".join(
+                null_values) + ". Do you want to set them to null/unknown?"
+            reply = QMessageBox.question(None, 'Null Values Detected', null_message,
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                error = True
+                return lhm_dict, error
+        if lhm_dict.get('type_fundoplicatio') == '---':
+            lhm_dict['type_fundoplicatio'] = None
+        if lhm_dict.get('fundoplicatio') is None:
+            lhm_dict['fundoplicatio'] = False
+        if lhm_dict.get('fundoplicatio') is False and lhm_dict.get('type_fundoplicatio') is not None:
+            invalid_message = ("The values for the following variable(s) are incompatible: "
+                               "'Fundoplicatio' and 'Type of Fundoplicatio'. Please provide valid values.")
+            QMessageBox.critical(None, 'Invalid Value(s) Detected', invalid_message)
+            error = True
+            return lhm_dict, error
+        if lhm_dict.get('fundoplicatio') is True and lhm_dict.get('type_fundoplicatio') is None:
+            null_message = "Is the type of fundoplicatio unknown?"
+            reply = QMessageBox.question(None, 'Null Values Detected', null_message,
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                error = True
+                lhm_dict, error
+        return lhm_dict, error
+
+

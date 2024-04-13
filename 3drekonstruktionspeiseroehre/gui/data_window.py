@@ -1174,7 +1174,7 @@ class DataWindow(QMainWindow):
                         'fundoplicatio': self.ui.lhm_fundo_bool.isChecked(),
                         'type_fundoplicatio': self.ui.lhm_fundo_type_dropdown.currentText()}
             # ToDo validation anpassen, um auch auf 0 duration zu testen
-            lhm_dict, null_values, error = DataValidation.validate_visitdata(lhm_dict)
+            lhm_dict, error = DataValidation.validate_lhm(lhm_dict)
 
             if error:
                 return
