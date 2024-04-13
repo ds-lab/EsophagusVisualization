@@ -690,22 +690,23 @@ class DataWindow(QMainWindow):
         return False
 
     def __add_eckardt_score_button_clicked(self):
-        eckardt_dict = {'visit_id': self.selected_visit,
-                        'dysphagia': self.ui.eckardt_dysphagia_dropdown.currentText(),
-                        'retrosternal_pain': self.ui.eckardt_retro_pain_dropdown.currentText(),
-                        'regurgitation': self.ui.eckardt_regurgitation_dropdown.currentText(),
-                        'weightloss': self.ui.eckardt_weightloss_dropdown.currentText(),
-                        'total_score': self.ui.eckardt_totalscore_dropdown.currentText()}
-        if not self.__validate_eckardtscore():
-            QMessageBox.warning(self, "Insufficient Data",
-                                "Please fill out all data and make sure they are valid.")
-        # check if an eckardt score is already in the DB for the selected visit
-        elif self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit):
-            eckardt = self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit)
-            self.eckardtscore_service.update_eckardtscore(eckardt.eckardt_id, eckardt_dict)
-        else:
-            self.eckardtscore_service.create_eckardtscore(eckardt_dict)
-        # ToDo ggf eine Anzeige für den EckardtScore einbauen
+        eckardt = self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit)
+        if not eckardt or eckardt and ShowMessage.to_update_for_visit(
+                "Eckardt Score"):
+            eckardt_dict = {'visit_id': self.selected_visit,
+                            'dysphagia': self.ui.eckardt_dysphagia_dropdown.currentText(),
+                            'retrosternal_pain': self.ui.eckardt_retro_pain_dropdown.currentText(),
+                            'regurgitation': self.ui.eckardt_regurgitation_dropdown.currentText(),
+                            'weightloss': self.ui.eckardt_weightloss_dropdown.currentText(),
+                            'total_score': self.ui.eckardt_totalscore_dropdown.currentText()}
+            if not self.__validate_eckardtscore():
+                QMessageBox.warning(self, "Insufficient Data",
+                                    "Please fill out all data and make sure they are valid.")
+            # check if an eckardt score is already in the DB for the selected visit
+            if eckardt:
+                self.eckardtscore_service.update_eckardtscore(eckardt.eckardt_id, eckardt_dict)
+            else:
+                self.eckardtscore_service.create_eckardtscore(eckardt_dict)
 
     def __delete_eckardt_score_button_clicked(self):
         self.eckardtscore_service.delete_eckardtscore_for_visit(
@@ -723,8 +724,8 @@ class DataWindow(QMainWindow):
         return False
 
     def __add_manometry(self):
-        manometry_exists = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-        if not manometry_exists or manometry_exists and ShowMessage.to_update_for_visit(
+        manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
+        if not manometry or manometry and ShowMessage.to_update_for_visit(
                 "Timed Barium Swallow (TBE) data"):
             les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
             manometry_dict = {'visit_id': self.selected_visit,
@@ -744,8 +745,7 @@ class DataWindow(QMainWindow):
             if error:
                 return
 
-            if self.manometry_service.get_manometry_for_visit(self.selected_visit):
-                manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
+            if manometry:
                 self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)
             else:
                 self.manometry_service.create_manometry(manometry_dict)
@@ -769,8 +769,8 @@ class DataWindow(QMainWindow):
         self.ui.manometry_text.setText(setText.set_text(manometry, "manometry data"))
 
     def __add_barium_swallow(self):
-        tbe_exists = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
-        if not tbe_exists or tbe_exists and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
+        tbe = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
+        if not tbe or tbe and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
             tbe_dict = {'visit_id': self.selected_visit,
                         'type_contrast_medium': self.ui.tbe_cm_dropdown.currentText(),
                         'amount_contrast_medium': self.ui.tbe_amount_cm_spin.value(),
@@ -785,9 +785,8 @@ class DataWindow(QMainWindow):
             if error:
                 return
 
-            if self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit):
-                barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
-                self.barium_swallow_service.update_barium_swallow(barium_swallow.tbe_id, tbe_dict)
+            if tbe:
+                self.barium_swallow_service.update_barium_swallow(tbe.tbe_id, tbe_dict)
             else:
                 self.barium_swallow_service.create_barium_swallow(tbe_dict)
             self.__init_barium_swallow()
@@ -868,8 +867,8 @@ class DataWindow(QMainWindow):
             self.__load_barium_swallow_image()
 
     def __add_endoscopy(self):
-        egd_exists = self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit)
-        if not egd_exists or egd_exists and ShowMessage.to_update_for_visit("Endoscopy (EGD) data"):
+        egd = self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit)
+        if not egd or egd and ShowMessage.to_update_for_visit("Endoscopy (EGD) data"):
             egd_dict = {'visit_id': self.selected_visit,
                         'type_contrast_medium': self.ui.egd_position_les_spin.value()}
 
@@ -878,9 +877,8 @@ class DataWindow(QMainWindow):
             if error:
                 return
 
-            if self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit):
-                endoscopy = self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit)
-                self.endoscopy_service.update_endoscopy(endoscopy.egd_id, egd_dict)
+            if edg:
+                self.endoscopy_service.update_endoscopy(egd.egd_id, egd_dict)
             else:
                 self.endoscopy_service.create_endoscopy(egd_dict)
             self.__init_endoscopy()
@@ -948,8 +946,8 @@ class DataWindow(QMainWindow):
             self.__load_endoscopy_image()
 
     def __add_endoflip(self):
-        endoflip_exists = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
-        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("EndoFlip data"):
+        endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
+        if not endoflip or endoflip and ShowMessage.to_update_for_visit("EndoFlip data"):
             endoflip_dict = {'visit_id': self.selected_visit,
                         'csa_before': self.ui.endflip_before_csa_spin.value(),
                         'dist_before': self.ui.endflip_before_di_spin.value(),
@@ -969,8 +967,7 @@ class DataWindow(QMainWindow):
             if error:
                 return
 
-            if self.endoflip_service.get_endoflip_for_visit(self.selected_visit):
-                endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
+            if endoflip:
                 self.endoflip_service.update_endoflip(endoflip.endoflip_id, endoflip_dict)
             else:
                 self.endoflip_service.create_endoflip(endoflip_dict)
@@ -1099,9 +1096,8 @@ class DataWindow(QMainWindow):
             if error:
                 return
 
-            if self.complications_service.get_complications_for_visit(self.selected_visit):
-                complications = self.complications_service.get_complications_for_visit(self.selected_visit)
-                self.complications_service.update_complications(complications.complication_id, botox_complications_dict)
+            if botox_complications:
+                self.complications_service.update_complications(botox_complications.complication_id, botox_complications_dict)
             else:
                 self.complications_service.create_complications(botox_complications_dict)
             self.__init_botox()
@@ -1143,9 +1139,8 @@ class DataWindow(QMainWindow):
             if error:
                 return
 
-            if self.complications_service.get_complications_for_visit(self.selected_visit):
-                complications = self.complications_service.get_complications_for_visit(self.selected_visit)
-                self.complications_service.update_complications(complications.complication_id,
+            if pd_complications:
+                self.complications_service.update_complications(pd_complications.complication_id,
                                                                 pd_complications_dict)
             else:
                 self.complications_service.create_complications(pd_complications_dict)
