@@ -23,11 +23,10 @@ class setText:
             text = ""
             for db_relation in db_relations:
                 attributes = vars(db_relation)
-                first_attribute_skipped = False
                 for attribute, value in attributes.items():
                     if not (attribute == "_sa_instance_state" or attribute == "visit_id" or attribute == "botox_id"):
                         text += f"{attribute}: {value}\n"
                 text += "-----\n"
             return text
         else:
-            return f"No {description} for the selected visit."
+            return f"No {description} for the selected visit.\n"

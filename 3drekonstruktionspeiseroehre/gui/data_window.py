@@ -1074,7 +1074,7 @@ class DataWindow(QMainWindow):
         complications = self.complications_service.get_complications_for_visit(self.selected_visit)
         botox_text = setText.set_text_botox(botox, "Botox data")
         complications_text = setText.set_text(complications, "Complication data")
-        text = botox_text + "\n" + "--- Complications ---\n" + complications_text
+        text = botox_text + "--- Complications ---\n" + complications_text
         self.ui.botox_text.setText(text)
 
     def __add_botox_complications(self):
