@@ -1088,7 +1088,7 @@ class DataWindow(QMainWindow):
                                         'pneumothorax': self.ui.pneumothorax_botox.currentText(),
                                         'pneumomediastinum': self.ui.pneumomediastinum_botox.currentText(),
                                         'other': self.ui.other_botox.currentText()}
-            botox_complications_dict, null_values, error = DataValidation.validate_complications(botox_complications_dict)
+            botox_complications_dict, error = DataValidation.validate_complications(botox_complications_dict)
 
             if error:
                 return
@@ -1101,6 +1101,6 @@ class DataWindow(QMainWindow):
             self.__init_botox()
 
     def __delete_botox(self):
-        self.botox_service.delete_botox_for_visit(self.selected_visit)
+        self.botox_injection_service.delete_botox_injections_for_visit(self.selected_visit)
         self.complications_service.delete_complications_for_visit(self.selected_visit)
         self.__init_botox()

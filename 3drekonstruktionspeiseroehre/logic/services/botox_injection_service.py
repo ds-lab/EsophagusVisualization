@@ -30,7 +30,7 @@ class BotoxInjectionService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def delete_injections_for_visit(self, visit_id: int):
+    def delete_botox_injections_for_visit(self, visit_id: int):
         stmt = delete(BotoxInjection).where(BotoxInjection.visit_id == visit_id)
         try:
             result = self.db.execute(stmt)
