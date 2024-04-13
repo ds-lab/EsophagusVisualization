@@ -1154,3 +1154,8 @@ class DataWindow(QMainWindow):
         complications_text = setText.set_text(complications, "Complication data")
         text = pd_text + "--- Complications ---\n" + complications_text
         self.ui.pd_text.setText(text)
+
+    def __delete_pneumatic_dilatation(self):
+        self.pneumatic_dilatation_service.delete_pneumatic_dilatation_for_visit(self.selected_visit)
+        self.complications_service.delete_complications_for_visit(self.selected_visit)
+        self.__init_pneumatic_dilatation()
