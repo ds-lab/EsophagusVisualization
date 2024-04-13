@@ -124,7 +124,7 @@ class DataWindow(QMainWindow):
         # Endoscopy / EGD
         self.ui.egd_file_upload_button.clicked.connect(self.__upload_endoscopy_images)
         # Endoflip
-        self.ui.endoflip_file_upload_button.clicked.connect(self.__upload_endoflip_file)
+        self.ui.endoflip_file_upload_button.clicked.connect(self.__upload_endoflip_files)
 
         # Therapy Buttons
         self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
@@ -974,7 +974,7 @@ class DataWindow(QMainWindow):
         endoflip = self.endoflip.get_endoflip_for_visit(self.selected_visit)
         self.ui.manometry_text.setText(setText.set_text(endoflip, "EndoFlip data"))
 
-    def __upload_endoflip_file(self):
+    def __upload_endoflip_files(self):
         """
         EndoFLIP-file button callback. Handles EndoFLIP .xlsx file selection.
         """
