@@ -33,6 +33,7 @@ from logic.services.barium_swallow_service import BariumSwallowService, BariumSw
 from logic.services.botox_injection_service import BotoxInjectionService
 from logic.services.complications_service import ComplicationsService
 from logic.services.pneumatic_dilatation_service import PneumaticDilatationService
+from logic.services.lhm_service import LHMService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 
 
@@ -80,6 +81,7 @@ class DataWindow(QMainWindow):
         self.botox_injection_service = BotoxInjectionService(self.db)
         self.complications_service = ComplicationsService(self.db)
         self.pneumatic_dilatation_service = PneumaticDilatationService(self.db)
+        self.lhm_service = LHMService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -136,6 +138,9 @@ class DataWindow(QMainWindow):
         self.ui.delete_botox_button.clicked.connect(self.__delete_botox)
         # Pneumatic Dilatation
         self.ui.add_pd_button.clicked.connect(self.__add_pneumatic_dilatation)
+        self.ui.delete_pd_button.clicked.connect(self.__delete_pneumatic_dilatation)
+        # LHM
+        self.ui.add_lhm_button.clicked.connect(self.__add_lhm)
 
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
@@ -1147,7 +1152,6 @@ class DataWindow(QMainWindow):
         self.__init_pneumatic_dilatation()
 
     def __init_pneumatic_dilatation(self):
-        print(f"selected visit: {self.selected_visit}")
         pneumatic_dilatation = self.pneumatic_dilatation_service.get_pneumatic_dilatation_for_visit(self.selected_visit)
         complications = self.complications_service.get_complications_for_visit(self.selected_visit)
         pd_text = setText.set_text(pneumatic_dilatation, "Pneumatic dilatation data")
@@ -1159,3 +1163,55 @@ class DataWindow(QMainWindow):
         self.pneumatic_dilatation_service.delete_pneumatic_dilatation_for_visit(self.selected_visit)
         self.complications_service.delete_complications_for_visit(self.selected_visit)
         self.__init_pneumatic_dilatation()
+
+    def __add_lhm(self):
+        lhm = self.lhm_service.get_lhm_for_visit(self.selected_visit)
+        if not lhm or lhm and ShowMessage.to_update_for_visit("LHM data"):
+            op_duration = (self.ui.lhm_time.time().hour() * 60) + self.ui.lhm_time.time().minute()
+            lhm_dict = {'visit_id': self.selected_visit,
+                        'op_duration': op_duration,
+                        'length_myotomy': self.ui.lhm_length_spin.value(),
+                        'fundoplicatio': self.ui.lhm_fundo_bool.isChecked(),
+                        'type_fundoplicatio': self.ui.lhm_fundo_type_dropdown.currentText()}
+            # ToDo validation anpassen, um auch auf 0 duration zu testen
+            lhm_dict, null_values, error = DataValidation.validate_visitdata(lhm_dict)
+
+            if error:
+                return
+
+            if lhm:
+                self.lhm_service.update_lhm(
+                    lhm.lhm_id, lhm_dict)
+            else:
+                self.lhm_service.create_lhm(lhm_dict)
+        lhm_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        if not lhm_complications or lhm_complications and ShowMessage.to_update_for_visit(
+                "complications for the LHM therapy"):
+            lhm_complications_dict = {'visit_id': self.selected_visit,
+                                     'bleeding': self.ui.bleeding_lhm.currentText(),
+                                     'perforation': self.ui.perforation_lhm.currentText(),
+                                     'capnoperitoneum': self.ui.capnoperitoneum_lhm.currentText(),
+                                     'mucosal_tears': self.ui.mucusal_tears_lhm.currentText(),
+                                     'pneumothorax': self.ui.pneumothorax_lhm.currentText(),
+                                     'pneumomediastinum': self.ui.pneumomediastinum_lhm.currentText(),
+                                     'other': self.ui.other_lhm.currentText()}
+            lhm_complications_dict, error = DataValidation.validate_complications(lhm_complications_dict)
+
+            if error:
+                return
+
+            if lhm_complications:
+                self.complications_service.update_complications(lhm_complications.complication_id,
+                                                                lhm_complications_dict)
+            else:
+                self.complications_service.create_complications(lhm_complications_dict)
+        self.__init_lhm()
+
+    def __init_lhm(self):
+        lhm = self.lhm_service.get_lhm_for_visit(self.selected_visit)
+        complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        lhm_text = setText.set_text(lhm, "LHM data")
+        complications_text = setText.set_text(complications, "Complication data")
+        text = lhm_text + "--- Complications ---\n" + complications_text
+        self.ui.lhm_text.setText(text)
+
