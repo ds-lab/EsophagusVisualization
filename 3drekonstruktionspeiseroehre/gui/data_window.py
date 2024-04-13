@@ -32,6 +32,7 @@ from logic.services.endoflip_service import EndoflipFileService, EndoflipImageSe
 from logic.services.barium_swallow_service import BariumSwallowService, BariumSwallowFileService
 from logic.services.botox_injection_service import BotoxInjectionService
 from logic.services.complications_service import ComplicationsService
+from logic.services.pneumatic_dilatation_service import PneumaticDilatationService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 
 
@@ -78,6 +79,7 @@ class DataWindow(QMainWindow):
         self.endoflip_image_service = EndoflipImageService(self.db)
         self.botox_injection_service = BotoxInjectionService(self.db)
         self.complications_service = ComplicationsService(self.db)
+        self.pneumatic_dilatation_service = PneumaticDilatationService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -124,12 +126,16 @@ class DataWindow(QMainWindow):
         # Endoscopy / EGD
         self.ui.egd_file_upload_button.clicked.connect(self.__upload_endoscopy_images)
         # Endoflip
+        self.ui.add_endoflip_button.clicked.connect(self.__add_endoflip)
         self.ui.endoflip_file_upload_button.clicked.connect(self.__upload_endoflip_files)
 
         # Therapy Buttons
+        # Botox
         self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
         self.ui.add_botox_button.clicked.connect(self.__add_botox_complications)
         self.ui.delete_botox_button.clicked.connect(self.__delete_botox)
+        # Pneumatic Dilatation
+        self.ui.add_pd_button.clicked.connect(self.__add_pneumatic_dilatation)
 
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
@@ -971,8 +977,8 @@ class DataWindow(QMainWindow):
             self.__init_endoflip()
 
     def __init_endoflip(self):
-        endoflip = self.endoflip.get_endoflip_for_visit(self.selected_visit)
-        self.ui.manometry_text.setText(setText.set_text(endoflip, "EndoFlip data"))
+        endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
+        self.ui.endoflip_text.setText(setText.set_text(endoflip, "EndoFlip data"))
 
     def __upload_endoflip_files(self):
         """
@@ -1104,3 +1110,52 @@ class DataWindow(QMainWindow):
         self.botox_injection_service.delete_botox_injections_for_visit(self.selected_visit)
         self.complications_service.delete_complications_for_visit(self.selected_visit)
         self.__init_botox()
+
+    def __add_pneumatic_dilatation(self):
+        pneumatic_dilatation = self.pneumatic_dilatation_service.get_pneumatic_dilatation_for_visit(self.selected_visit)
+        if not pneumatic_dilatation or pneumatic_dilatation and ShowMessage.to_update_for_visit(
+            "pneumatic dilatation data"):
+            dilatation_dict = {'visit_id': self.selected_visit,
+                              'ballon_volume': self.ui.pd_ballon_volume_dropdown.currentText(),
+                              'quantity': self.ui.pd_quantity_spin.value()}
+            dilatation_dict, null_values, error = DataValidation.validate_visitdata(dilatation_dict)
+
+            if error:
+                return
+
+            if pneumatic_dilatation:
+                self.pneumatic_dilatation_service.update_pneumatic_dilatation(pneumatic_dilatation.pneumatic_dilatation_id, dilatation_dict)
+            else:
+                self.pneumatic_dilatation_service.create_pneumatic_dilatation(dilatation_dict)
+        pd_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        if not pd_complications or pd_complications and ShowMessage.to_update_for_visit(
+                "complications for the pneumatic dilatation therapy"):
+            pd_complications_dict = {'visit_id': self.selected_visit,
+                                        'bleeding': self.ui.bleeding_pd.currentText(),
+                                        'perforation': self.ui.perforation_pd.currentText(),
+                                        'capnoperitoneum': self.ui.capnoperitoneum_pd.currentText(),
+                                        'mucosal_tears': self.ui.mucusal_tears_pd.currentText(),
+                                        'pneumothorax': self.ui.pneumothorax_pd.currentText(),
+                                        'pneumomediastinum': self.ui.pneumomediastinum_pd.currentText(),
+                                        'other': self.ui.other_pd.currentText()}
+            pd_complications_dict, error = DataValidation.validate_complications(pd_complications_dict)
+
+            if error:
+                return
+
+            if self.complications_service.get_complications_for_visit(self.selected_visit):
+                complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+                self.complications_service.update_complications(complications.complication_id,
+                                                                pd_complications_dict)
+            else:
+                self.complications_service.create_complications(pd_complications_dict)
+        self.__init_pneumatic_dilatation()
+
+    def __init_pneumatic_dilatation(self):
+        print(f"selected visit: {self.selected_visit}")
+        pneumatic_dilatation = self.pneumatic_dilatation_service.get_pneumatic_dilatation_for_visit(self.selected_visit)
+        complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        pd_text = setText.set_text(pneumatic_dilatation, "Pneumatic dilatation data")
+        complications_text = setText.set_text(complications, "Complication data")
+        text = pd_text + "--- Complications ---\n" + complications_text
+        self.ui.pd_text.setText(text)

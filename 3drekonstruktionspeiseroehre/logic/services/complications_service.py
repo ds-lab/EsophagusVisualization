@@ -49,7 +49,7 @@ class ComplicationsService:
             self.show_error_msg()
 
     def update_complications(self, id: int, data: dict):
-        stmt = update(Complications).where(Complications.visit_id == id).values(**data)
+        stmt = update(Complications).where(Complications.complication_id == id).values(**data)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
