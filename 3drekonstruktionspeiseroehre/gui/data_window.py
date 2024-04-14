@@ -675,12 +675,14 @@ class DataWindow(QMainWindow):
 
         if self.selected_visit:
             self.ui.eckardt_score.setEnabled(True)
-            self.ui.eckardt_dysphagia_dropdown.setEnabled(True)
-            self.ui.eckardt_retro_pain_dropdown.setEnabled(True)
-            self.ui.eckardt_regurgitation_dropdown.setEnabled(True)
-            self.ui.eckardt_weightloss_dropdown.setEnabled(True)
-            self.ui.eckardt_totalscore_dropdown.setEnabled(True)
+            #self.ui.eckardt_dysphagia_dropdown.setEnabled(True)
+            #self.ui.eckardt_retro_pain_dropdown.setEnabled(True)
+            #self.ui.eckardt_regurgitation_dropdown.setEnabled(True)
+            #self.ui.eckardt_weightloss_dropdown.setEnabled(True)
+            #self.ui.eckardt_totalscore_dropdown.setEnabled(True)
             self.ui.visit_data.setEnabled(True)
+            self.ui.gerd.setEnabled(True)
+            self.ui.medication.setEnabled(True)
 
         if visit:
             endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(visit.visit_id)
