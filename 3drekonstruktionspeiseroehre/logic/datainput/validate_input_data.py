@@ -251,4 +251,46 @@ class DataValidation:
                 return poem_dict, error
         return poem_dict, error
 
+    @staticmethod
+    def validate_eckardt(eckardt_dict):
+        null_values = []
+        values_sum = 0
+        error = False
+        for key, value in eckardt_dict.items():
+            if key != "total_score":
+                if key == "visit_id" and value is None:
+                    QMessageBox.critical(None, "No visit selected", "Error: Please select a visit.")
+                    error = True
+                    return eckardt_dict, error
+                if value == config.missing_dropdown:
+                    null_values.append(key)
+                    eckardt_dict[key] = None
+                if key != "visit_id" and key != "eckardt_id" and key != "total_score":
+                    if value != '---':
+                        values_sum += int(value)
+        if null_values:
+            null_message = "The following values are not set: " + ", ".join(
+                null_values) + ". Do you want to set them to null/unknown?"
+            reply = QMessageBox.question(None, 'Null Values Detected', null_message,
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                error = True
+                return eckardt_dict, error
+        if eckardt_dict.get('total_score') == '---' and not null_values:
+            eckardt_dict['total_score'] = values_sum
+        elif eckardt_dict.get('total_score') == '---' and null_values:
+            null_message = (f"Please set the total score.")
+            QMessageBox.critical(None, 'Total Score not filled', null_message)
+            error = True
+            return eckardt_dict, error
+        if values_sum > int(eckardt_dict.get('total_score')):
+            invalid_message = ("Incompatible values: "
+                               "The individual values and the total score are incompatible. Please provide valid "
+                               "values.")
+            QMessageBox.critical(None, 'Invalid Value(s) Detected', invalid_message)
+            error = True
+        return eckardt_dict, error
+
+
 

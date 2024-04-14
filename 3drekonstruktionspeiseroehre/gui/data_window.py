@@ -112,12 +112,14 @@ class DataWindow(QMainWindow):
         # Previous Therapies
         self.ui.previous_therapy_add_button.clicked.connect(self.__previous_therapy_add_button_clicked)
         self.ui.previous_therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
+
         # Visits Tab
         self.ui.visit_add_button.clicked.connect(self.__visit_add_button_clicked)
         self.ui.visit_delete_button.clicked.connect(self.__visit_delete_button_clicked)
         # Eckardt Score
-        self.ui.add_eckardt_score_button.clicked.connect(self.__add_eckardt_score_button_clicked)
-        self.ui.delete_eckardt_score_button.clicked.connect(self.__delete_eckardt_score_button_clicked)
+        self.ui.add_eckardt_score_button.clicked.connect(self.__add_eckardt_score)
+        self.ui.delete_eckardt_score_button.clicked.connect(self.__delete_eckardt_score)
+
         # Visit Data Tab
         # Manometry
         self.ui.add_manometry_button.clicked.connect(self.__add_manometry)
@@ -132,7 +134,6 @@ class DataWindow(QMainWindow):
         # Endoflip
         self.ui.add_endoflip_button.clicked.connect(self.__add_endoflip)
         self.ui.endoflip_file_upload_button.clicked.connect(self.__upload_endoflip_files)
-
         # Therapy Buttons
         # Botox
         self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
@@ -701,7 +702,7 @@ class DataWindow(QMainWindow):
             return True
         return False
 
-    def __add_eckardt_score_button_clicked(self):
+    def __add_eckardt_score(self):
         eckardt = self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit)
         if not eckardt or eckardt and ShowMessage.to_update_for_visit(
                 "Eckardt Score"):
@@ -711,29 +712,20 @@ class DataWindow(QMainWindow):
                             'regurgitation': self.ui.eckardt_regurgitation_dropdown.currentText(),
                             'weightloss': self.ui.eckardt_weightloss_dropdown.currentText(),
                             'total_score': self.ui.eckardt_totalscore_dropdown.currentText()}
-            if not self.__validate_eckardtscore():
-                QMessageBox.warning(self, "Insufficient Data",
-                                    "Please fill out all data and make sure they are valid.")
+            eckardt_dict, error = DataValidation.validate_eckardt(eckardt_dict)
+
+            if error:
+                return
+
             # check if an eckardt score is already in the DB for the selected visit
             if eckardt:
                 self.eckardtscore_service.update_eckardtscore(eckardt.eckardt_id, eckardt_dict)
             else:
                 self.eckardtscore_service.create_eckardtscore(eckardt_dict)
 
-    def __delete_eckardt_score_button_clicked(self):
+    def __delete_eckardt_score(self):
         self.eckardtscore_service.delete_eckardtscore_for_visit(
             self.selected_visit)
-
-    def __validate_eckardtscore(self):
-        if (
-                self.ui.eckardt_dysphagia_dropdown.currentText() != '---' and
-                self.ui.eckardt_retro_pain_dropdown.currentText() != '---' and
-                self.ui.eckardt_regurgitation_dropdown.currentText() != '---' and
-                self.ui.eckardt_weightloss_dropdown.currentText() != '---' and
-                self.ui.eckardt_totalscore_dropdown.currentText() != '---'
-        ):
-            return True
-        return False
 
     def __add_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
