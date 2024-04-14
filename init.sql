@@ -39,7 +39,7 @@ CREATE TABLE gerd_scores (
     gerd_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     grade VARCHAR(20),
-    heard_burn BOOLEAN,
+    heart_burn BOOLEAN,
     ppi_use BOOLEAN,
     acid_exposure_time FLOAT
 );

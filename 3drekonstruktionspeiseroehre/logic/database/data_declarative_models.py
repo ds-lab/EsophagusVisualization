@@ -73,7 +73,7 @@ class Gerd(Base):
     gerd_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     grade = mapped_column(String(20))
-    heard_burn = mapped_column(Boolean)
+    heart_burn = mapped_column(Boolean)
     ppi_use = mapped_column(Boolean)
     acid_exposure_time = mapped_column(Float)
 
