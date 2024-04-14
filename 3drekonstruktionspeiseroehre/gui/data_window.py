@@ -581,7 +581,7 @@ class DataWindow(QMainWindow):
             'therapy': self.ui.therapy_dropdown.currentText(),
             'year': self.ui.therapy_calendar.date().toPyDate().year,
             'center': self.ui.center_previous_therapy_text.text()}
-        patient_dict, null_values, error = DataValidation.validate_previous_therapy(prev_therapy_dict)
+        patient_dict, error = DataValidation.validate_previous_therapy(prev_therapy_dict)
         if error:  # return if the user wants or needs to fill out additional data
             return
         self.previous_therapy_service.create_previous_therapy(prev_therapy_dict)

@@ -51,7 +51,7 @@ class DataValidation:
             if key == "patient_id" and value is None:
                 QMessageBox.critical(None, "No patient selected", "Error: Please select a patient.")
                 error = True
-                return prev_therapy_dict, null_values, error
+                return prev_therapy_dict, error
             if value == config.min_value_year or value == config.missing_dropdown or value == config.missing_text:
                 null_values.append(key)
                 prev_therapy_dict[key] = None
@@ -64,7 +64,7 @@ class DataValidation:
                 invalid_values) + ". Please provide valid values."
             QMessageBox.critical(None, 'Invalid Value(s) Detected', invalid_message)
             error = True
-            return prev_therapy_dict, null_values, error
+            return prev_therapy_dict, error
         if null_values:
             # check if mandatory values are set
             for key in config.mandatory_values_prev_therapy:
@@ -72,7 +72,7 @@ class DataValidation:
                     null_message = f"The following mandatory value is not set: {key}. Please provide this value."
                     QMessageBox.critical(None, 'Null Value Detected', null_message)
                     error = True
-                    return prev_therapy_dict, null_values, error
+                    return prev_therapy_dict, error
             # Check if other values are set and ask if they should be set to NULL
             null_message = "The following values are not set: " + ", ".join(
                 null_values) + ". Do you want to set them to null/unknown?"
@@ -81,7 +81,7 @@ class DataValidation:
                                          QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
             if reply == QMessageBox.StandardButton.No:
                 error = True
-        return prev_therapy_dict, null_values, error
+        return prev_therapy_dict, error
 
 
     @staticmethod
