@@ -890,19 +890,18 @@ p, li { white-space: pre-wrap; }
                  <property name="text">
                   <string>yes</string>
                  </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="autoRepeat">
+                  <bool>false</bool>
+                 </property>
                 </widget>
                </item>
                <item>
                 <widget class="QRadioButton" name="heartburn_no_ratio">
                  <property name="text">
                   <string>no</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="heartburn_unknown_ratio">
-                 <property name="text">
-                  <string>unknown</string>
                  </property>
                 </widget>
                </item>
@@ -921,13 +920,6 @@ p, li { white-space: pre-wrap; }
                 <widget class="QRadioButton" name="ppi_no_ratio">
                  <property name="text">
                   <string>no</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="ppi_unknown_ratio">
-                 <property name="text">
-                  <string>unknown</string>
                  </property>
                 </widget>
                </item>
