@@ -95,7 +95,7 @@ class DataValidation:
             if key == "patient_id" and value is None:
                 QMessageBox.critical(None, "No patient selected", "Error: Please select a patient.")
                 error = True
-                return visit_dict, null_values, error
+                return visit_dict, error
             if value == config.min_value_year or value == config.missing_dropdown or value == config.missing_int:
                 null_values.append(key)
                 visit_dict[key] = None
@@ -111,37 +111,26 @@ class DataValidation:
                             ". Please provide these/this value(s).")
             QMessageBox.critical(None, 'Null Value Detected', null_message)
             error = True
-            return visit_dict, null_values, error
+            return visit_dict, error
         if invalid_values:
             invalid_message = "The values for the following variable(s) are invalid: " + ", ".join(
                 invalid_values) + ". Please provide valid values."
             QMessageBox.critical(None, 'Invalid Value(s) Detected', invalid_message)
             error = True
-            return visit_dict, null_values, error
+            return visit_dict, error
         if visit_dict.get('visit_type') == 'Therapy' and visit_dict.get('therapy_type') is None:
             error_message = "Please select the Therapy type for this visit."
             QMessageBox.critical(None, 'Select Therapy type', error_message)
             error = True
-            return visit_dict, null_values, error
+            return visit_dict, error
         if visit_dict.get('visit_type') != 'Therapy' and visit_dict.get('therapy_type') is not None:
             error_message = ("If a therapy was applied at this visit, please select 'Therapy' for this visit.\n If "
                              "no therapy was applied, please do not fill out the therapy type for this visit.")
             QMessageBox.critical(None, 'Invalid data', error_message)
             error = True
-            return visit_dict, null_values, error
-        return visit_dict, null_values, error
+            return visit_dict, error
+        return visit_dict, error
 
-    @staticmethod
-    def validate_eckardtscore(eckardt_dysphagia_dropdown, eckardt_retro_pain_dropdown, eckardt_regurgitation_dropdown, eckardt_weightloss_dropdown, eckardt_totalscore_dropdown):
-        if (
-                eckardt_dysphagia_dropdown != '---' and
-                eckardt_retro_pain_dropdown != '---' and
-                eckardt_regurgitation_dropdown != '---' and
-                eckardt_weightloss_dropdown != '---' and
-                eckardt_totalscore_dropdown != '---'
-        ):
-            return True
-        return False
 
     @staticmethod
     def validate_visitdata(visit_data_dict):

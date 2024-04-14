@@ -622,7 +622,7 @@ class DataWindow(QMainWindow):
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
                       'therapy_type': self.ui.therapy_type_dropdown.currentText(),
                       'months_after_therapy': self.ui.months_after_therapy_spin.value()}
-        visit_dict, null_values, error = DataValidation.validate_visit(visit_dict)
+        visit_dict, error = DataValidation.validate_visit(visit_dict)
         if error:
             return
         self.visit_service.create_visit(visit_dict)
