@@ -34,6 +34,7 @@ from logic.services.botox_injection_service import BotoxInjectionService
 from logic.services.complications_service import ComplicationsService
 from logic.services.pneumatic_dilatation_service import PneumaticDilatationService
 from logic.services.lhm_service import LHMService
+from logic.services.poem_service import POEMService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 
 
@@ -82,6 +83,7 @@ class DataWindow(QMainWindow):
         self.complications_service = ComplicationsService(self.db)
         self.pneumatic_dilatation_service = PneumaticDilatationService(self.db)
         self.lhm_service = LHMService(self.db)
+        self.poem_service = POEMService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -142,6 +144,10 @@ class DataWindow(QMainWindow):
         # LHM
         self.ui.add_lhm_button.clicked.connect(self.__add_lhm)
         self.ui.delete_lhm_button.clicked.connect(self.__delete_lhm)
+        # POEM
+        self.ui.add_poem_button.clicked.connect(self.__add_poem)
+        self.ui.delete_poem_button.clicked.connect(self.__delete_poem)
+
 
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
@@ -1219,3 +1225,61 @@ class DataWindow(QMainWindow):
         self.lhm_service.delete_lhm_for_visit(self.selected_visit)
         self.complications_service.delete_complications_for_visit(self.selected_visit)
         self.__init_lhm()
+
+    def __add_poem(self):
+        poem = self.poem_service.get_poem_for_visit(self.selected_visit)
+        if not poem or poem and ShowMessage.to_update_for_visit("POEM data"):
+            procedure_duration = (self.ui.poem_time.time().hour() * 60) + self.ui.poem_time.time().minute()
+            poem_dict = {'visit_id': self.selected_visit,
+                        'procedure_duration': procedure_duration,
+                        'height_mucosal_incision': self.ui.peom_incision_height_spin.value(),
+                        'length_mucosal_incision': self.ui.peom_incision_leght_spin.value(),
+                        'length_submuscosal_tunnel': self.ui.peom_tunnel_length_spin.value(),
+                        'localization_myotomy': self.ui.peom_localisation_dropdown.currentText(),
+                        'length_tubular_myotomy': self.ui.peom_tubular_myotomy_length_spin.value(),
+                        'length_gastric_myotomy': self.ui.poem_gastric_myotomy_length_spin.value()}
+            poem_dict, error = DataValidation.validate_poem(poem_dict)
+
+            if error:
+                return
+
+            if poem:
+                self.poem_service.update_poem(
+                    poem.lhm_id, poem_dict)
+            else:
+                self.poem_service.create_poem(poem_dict)
+        poem_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        if not poem_complications or poem_complications and ShowMessage.to_update_for_visit(
+                "complications for the POEM therapy"):
+            poem_complications_dict = {'visit_id': self.selected_visit,
+                                     'bleeding': self.ui.bleeding_poem.currentText(),
+                                     'perforation': self.ui.perforation_poem.currentText(),
+                                     'capnoperitoneum': self.ui.capnoperitoneum_poem.currentText(),
+                                     'mucosal_tears': self.ui.mucusal_tears_poem.currentText(),
+                                     'pneumothorax': self.ui.pneumothorax_poem.currentText(),
+                                     'pneumomediastinum': self.ui.pneumomediastinum_poem.currentText(),
+                                     'other': self.ui.other_poem.currentText()}
+            poem_complications_dict, error = DataValidation.validate_complications(poem_complications_dict)
+
+            if error:
+                return
+
+            if poem_complications:
+                self.complications_service.update_complications(poem_complications.complication_id,
+                                                                poem_complications_dict)
+            else:
+                self.complications_service.create_complications(poem_complications_dict)
+        self.__init_poem()
+
+    def __init_poem(self):
+        poem = self.poem_service.get_poem_for_visit(self.selected_visit)
+        complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        poem_text = setText.set_text(poem, "LHM data")
+        complications_text = setText.set_text(complications, "Complication data")
+        text = poem_text + "--- Complications ---\n" + complications_text
+        self.ui.poem_text.setText(text)
+
+    def __delete_poem(self):
+        self.poem_service.delete_poem_for_visit(self.selected_visit)
+        self.complications_service.delete_complications_for_visit(self.selected_visit)
+        self.__init_poem()

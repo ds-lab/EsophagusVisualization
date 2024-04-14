@@ -225,4 +225,30 @@ class DataValidation:
                 lhm_dict, error
         return lhm_dict, error
 
+    @staticmethod
+    def validate_poem(poem_dict):
+        null_values = []
+        error = False
+        for key, value in poem_dict.items():
+            if key == "visit_id" and value is None:
+                QMessageBox.critical(None, "No visit selected", "Error: Please select a visit.")
+                error = True
+                return poem_dict, error
+            if value == config.missing_int or value == config.missing_dropdown:
+                null_values.append(key)
+                poem_dict[key] = None
+        if poem_dict.get('procedure_duration') == 0:
+            null_values.append('procedure_duration')
+            poem_dict['procedure_duration'] = None
+        if null_values:
+            null_message = "The following values are not set: " + ", ".join(
+                null_values) + ". Do you want to set them to null/unknown?"
+            reply = QMessageBox.question(None, 'Null Values Detected', null_message,
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                error = True
+                return poem_dict, error
+        return poem_dict, error
+
 

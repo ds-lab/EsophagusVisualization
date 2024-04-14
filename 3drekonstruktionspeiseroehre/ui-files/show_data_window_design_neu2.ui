@@ -1447,7 +1447,7 @@ p, li { white-space: pre-wrap; }
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>3</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="empty">
            <layout class="QGridLayout" name="gridLayout_71"/>
@@ -2791,7 +2791,7 @@ p, li { white-space: pre-wrap; }
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QTimeEdit" name="poem_duration_time">
+                  <widget class="QTimeEdit" name="poem_time">
                    <property name="maximumTime">
                     <time>
                      <hour>3</hour>
@@ -2832,7 +2832,7 @@ p, li { white-space: pre-wrap; }
                   </widget>
                  </item>
                  <item row="4" column="3">
-                  <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+                  <widget class="QDoubleSpinBox" name="poem_gastric_myotomy_length_spin">
                    <property name="minimum">
                     <double>-1.000000000000000</double>
                    </property>
@@ -4621,8 +4621,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1384</width>
-             <height>649</height>
+             <width>674</width>
+             <height>122</height>
             </rect>
            </property>
            <attribute name="label">
