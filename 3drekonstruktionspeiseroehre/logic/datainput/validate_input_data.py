@@ -293,4 +293,31 @@ class DataValidation:
         return eckardt_dict, error
 
 
+    @staticmethod
+    def validate_gerd(gerd_dict):
+        null_values = []
+        error = False
+        for key, value in gerd_dict.items():
+            if key == "visit_id" and value is None:
+                QMessageBox.critical(None, "No visit selected", "Error: Please select a visit.")
+                error = True
+                return gerd_dict, error
+            if value == config.missing_int or value == config.missing_dropdown:
+                null_values.append(key)
+                gerd_dict[key] = None
+        if gerd_dict.get('heart_burn') is None:
+            null_values.append('heart_burn')
+        if gerd_dict.get('ppi_use') is None:
+            null_values.append('ppi_use')
+        if null_values:
+            null_message = "The following values are not set: " + ", ".join(
+                null_values) + ". Do you want to set them to null/unknown?"
+            reply = QMessageBox.question(None, 'Null Values Detected', null_message,
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                error = True
+        return gerd_dict, error
+
+
 

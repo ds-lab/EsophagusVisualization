@@ -35,6 +35,7 @@ from logic.services.complications_service import ComplicationsService
 from logic.services.pneumatic_dilatation_service import PneumaticDilatationService
 from logic.services.lhm_service import LHMService
 from logic.services.poem_service import POEMService
+from logic.services.gerd_service import GerdService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 
 
@@ -84,6 +85,7 @@ class DataWindow(QMainWindow):
         self.pneumatic_dilatation_service = PneumaticDilatationService(self.db)
         self.lhm_service = LHMService(self.db)
         self.poem_service = POEMService(self.db)
+        self.gerd_service = GerdService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -119,6 +121,9 @@ class DataWindow(QMainWindow):
         # Eckardt Score
         self.ui.add_eckardt_score_button.clicked.connect(self.__add_eckardt_score)
         self.ui.delete_eckardt_score_button.clicked.connect(self.__delete_eckardt_score)
+        # GERD
+        self.ui.add_gerd_button.clicked.connect(self.__add_gerd)
+        self.ui.delete_gerd_button.clicked.connect(self.__delete_gerd)
 
         # Visit Data Tab
         # Manometry
@@ -675,11 +680,6 @@ class DataWindow(QMainWindow):
 
         if self.selected_visit:
             self.ui.eckardt_score.setEnabled(True)
-            #self.ui.eckardt_dysphagia_dropdown.setEnabled(True)
-            #self.ui.eckardt_retro_pain_dropdown.setEnabled(True)
-            #self.ui.eckardt_regurgitation_dropdown.setEnabled(True)
-            #self.ui.eckardt_weightloss_dropdown.setEnabled(True)
-            #self.ui.eckardt_totalscore_dropdown.setEnabled(True)
             self.ui.visit_data.setEnabled(True)
             self.ui.gerd.setEnabled(True)
             self.ui.medication.setEnabled(True)
@@ -732,6 +732,44 @@ class DataWindow(QMainWindow):
 
     def __delete_eckardt_score(self):
         self.eckardtscore_service.delete_eckardtscore_for_visit(
+            self.selected_visit)
+
+    def __add_gerd(self):
+        gerd = self.gerd_service.get_gerd_for_visit(self.selected_visit)
+        if not gerd or gerd and ShowMessage.to_update_for_visit("GERD"):
+            heart_burn = None
+            ppi_use = None
+            if self.ui.heartburn_yes_ratio.isChecked():
+                heart_burn = True
+            elif self.ui.heartburn_no_ratio.isChecked():
+                heart_burn = False
+            if self.ui.ppi_yes_ratio.isChecked():
+                ppi_use = True
+            elif self.ui.ppi_no_ratio.isChecked():
+                ppi_use = False
+            gerd_dict = {'visit_id': self.selected_visit,
+                        'grade': self.ui.gerd_reflux_dropdown.currentText(),
+                        'heart_burn': heart_burn,
+                        'ppi_use': ppi_use,
+                        'acid_exposure_time': self.ui.gerd_acidexposure_spin.value()}
+            gerd_dict, error = DataValidation.validate_gerd(gerd_dict)
+
+            if error:
+                return
+
+            # check if an eckardt score is already in the DB for the selected visit
+            if gerd:
+                self.gerd_service.update_gerd(gerd.gerd_id, gerd_dict)
+            else:
+                self.gerd_service.create_gerd(gerd_dict)
+            self.__init_gerd()
+
+    def __init_gerd(self):
+        gerd = self.gerd_service.get_gerd_for_visit(self.selected_visit)
+        self.ui.gerd_text.setText(setText.set_text(gerd, "GERD"))
+
+    def __delete_gerd(self):
+        self.gerd_service.delete_gerd_for_visit(
             self.selected_visit)
 
     def __add_manometry(self):
