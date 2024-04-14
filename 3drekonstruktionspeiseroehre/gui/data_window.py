@@ -789,7 +789,7 @@ class DataWindow(QMainWindow):
                               'les_upper_boundary': self.ui.manometry_upperboundary_les_spin.value(),
                               'les_lower_boundary': self.ui.manometry_lowerboundary_les_spin.value(),
                               'les_length': les_length}
-            manometry_dict, null_values, error = DataValidation.validate_visitdata(manometry_dict)
+            manometry_dict, error = DataValidation.validate_visitdata(manometry_dict)
 
             if error:
                 return
@@ -829,7 +829,7 @@ class DataWindow(QMainWindow):
                         'width_contast_medium_1min': self.ui.tbe_width_cm_1_spin.value(),
                         'width_contast_medium_2min': self.ui.tbe_width_cm_2_spin.value(),
                         'width_contast_medium_5min': self.ui.tbe_width_cm_5_spin.value()}
-            tbe_dict, null_values, error = DataValidation.validate_visitdata(tbe_dict)
+            tbe_dict, error = DataValidation.validate_visitdata(tbe_dict)
 
             if error:
                 return
@@ -921,7 +921,7 @@ class DataWindow(QMainWindow):
             egd_dict = {'visit_id': self.selected_visit,
                         'type_contrast_medium': self.ui.egd_position_les_spin.value()}
 
-            tbe_dict, null_values, error = DataValidation.validate_visitdata(egd_dict)
+            tbe_dict, error = DataValidation.validate_visitdata(egd_dict)
 
             if error:
                 return
@@ -1011,7 +1011,7 @@ class DataWindow(QMainWindow):
                         'dmin_after': self.ui.endflip_after_dmin_spin.value(),
                         'ibp_after': self.ui.endflip_after_ibp_spin.value()}
 
-            endoflip_dict, null_values, error = DataValidation.validate_visitdata(endoflip_dict)
+            endoflip_dict, error = DataValidation.validate_visitdata(endoflip_dict)
 
             if error:
                 return
@@ -1113,7 +1113,7 @@ class DataWindow(QMainWindow):
         botox_dict = {'visit_id': self.selected_visit,
                       'botox_units': self.ui.botox_units_spin.value(),
                       'botox_height': self.ui.botox_height_spin.value()}
-        botox_dict, null_values, error = DataValidation.validate_visitdata(botox_dict)
+        botox_dict, error = DataValidation.validate_visitdata(botox_dict)
 
         if error:
             return
@@ -1163,7 +1163,7 @@ class DataWindow(QMainWindow):
             dilatation_dict = {'visit_id': self.selected_visit,
                               'ballon_volume': self.ui.pd_ballon_volume_dropdown.currentText(),
                               'quantity': self.ui.pd_quantity_spin.value()}
-            dilatation_dict, null_values, error = DataValidation.validate_visitdata(dilatation_dict)
+            dilatation_dict, error = DataValidation.validate_visitdata(dilatation_dict)
 
             if error:
                 return

@@ -140,7 +140,7 @@ class DataValidation:
             if key == "visit_id" and value is None:
                 QMessageBox.critical(None, "No visit selected", "Error: Please select a visit.")
                 error = True
-                return visit_data_dict, null_values, error
+                return visit_data_dict, error
             if value == config.missing_int or value == config.missing_dropdown:
                 null_values.append(key)
                 visit_data_dict[key] = None
@@ -152,7 +152,7 @@ class DataValidation:
                                          QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
             if reply == QMessageBox.StandardButton.No:
                 error = True
-        return visit_data_dict, null_values, error
+        return visit_data_dict, error
 
     @staticmethod
     def validate_complications(complications_dict):
