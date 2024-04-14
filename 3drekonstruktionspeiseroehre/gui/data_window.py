@@ -703,7 +703,7 @@ class DataWindow(QMainWindow):
         return False
 
     def __add_eckardt_score(self):
-        eckardt = self.eckardtscore_service.get_eckardtscores_for_visit(self.selected_visit)
+        eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
         if not eckardt or eckardt and ShowMessage.to_update_for_visit(
                 "Eckardt Score"):
             eckardt_dict = {'visit_id': self.selected_visit,
@@ -722,6 +722,11 @@ class DataWindow(QMainWindow):
                 self.eckardtscore_service.update_eckardtscore(eckardt.eckardt_id, eckardt_dict)
             else:
                 self.eckardtscore_service.create_eckardtscore(eckardt_dict)
+            self.__init_eckardt_score()
+
+    def __init_eckardt_score(self):
+        eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
+        self.ui.eckardt_score_text.setText(setText.set_text(eckardt, "eckardt score"))
 
     def __delete_eckardt_score(self):
         self.eckardtscore_service.delete_eckardtscore_for_visit(

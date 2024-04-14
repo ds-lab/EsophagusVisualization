@@ -19,7 +19,7 @@ class EckardtscoreService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def get_eckardtscores_for_visit(self, visit_id: int) -> list[EckardtScore, None]:
+    def get_eckardtscore_for_visit(self, visit_id: int) -> list[EckardtScore, None]:
         stmt = select(EckardtScore).where(EckardtScore.visit_id == visit_id)
         try:
             result = self.db.execute(stmt).first()
