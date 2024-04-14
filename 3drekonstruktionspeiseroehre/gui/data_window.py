@@ -141,6 +141,7 @@ class DataWindow(QMainWindow):
         self.ui.delete_pd_button.clicked.connect(self.__delete_pneumatic_dilatation)
         # LHM
         self.ui.add_lhm_button.clicked.connect(self.__add_lhm)
+        self.ui.delete_lhm_button.clicked.connect(self.__delete_lhm)
 
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
@@ -882,7 +883,7 @@ class DataWindow(QMainWindow):
             if error:
                 return
 
-            if edg:
+            if egd:
                 self.endoscopy_service.update_endoscopy(egd.egd_id, egd_dict)
             else:
                 self.endoscopy_service.create_endoscopy(egd_dict)
@@ -1173,7 +1174,6 @@ class DataWindow(QMainWindow):
                         'length_myotomy': self.ui.lhm_length_spin.value(),
                         'fundoplicatio': self.ui.lhm_fundo_bool.isChecked(),
                         'type_fundoplicatio': self.ui.lhm_fundo_type_dropdown.currentText()}
-            # ToDo validation anpassen, um auch auf 0 duration zu testen
             lhm_dict, error = DataValidation.validate_lhm(lhm_dict)
 
             if error:
@@ -1215,3 +1215,7 @@ class DataWindow(QMainWindow):
         text = lhm_text + "--- Complications ---\n" + complications_text
         self.ui.lhm_text.setText(text)
 
+    def __delete_lhm(self):
+        self.lhm_service.delete_lhm_for_visit(self.selected_visit)
+        self.complications_service.delete_complications_for_visit(self.selected_visit)
+        self.__init_lhm()
