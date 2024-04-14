@@ -23,7 +23,7 @@ class DataValidation:
                 invalid_values) + ". Please provide valid values."
             QMessageBox.critical(None, 'Invalid Value(s) Detected', invalid_message)
             error = True
-            return patient_dict, null_values, error
+            return patient_dict, error
         if null_values:
             # check if mandatory values are set
             for key in config.mandatory_values_patient:
@@ -31,7 +31,7 @@ class DataValidation:
                     null_message = f"The following mandatory value is not set: {key}. Please provide this value."
                     QMessageBox.critical(None, 'Null Value Detected', null_message)
                     error = True
-                    return patient_dict, null_values, error
+                    return patient_dict, error
             # Check if other values are set and ask if they should be set to NULL
             null_message = "The following values are not set: " + ", ".join(
                 null_values) + ". Do you want to set them to null/unknown?"
@@ -40,7 +40,7 @@ class DataValidation:
                                          QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
             if reply == QMessageBox.StandardButton.No:
                 error = True
-        return patient_dict, null_values, error
+        return patient_dict, error
 
     @staticmethod
     def validate_previous_therapy(prev_therapy_dict):

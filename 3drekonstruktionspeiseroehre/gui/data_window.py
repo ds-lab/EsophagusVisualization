@@ -246,7 +246,7 @@ class DataWindow(QMainWindow):
                             'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
                             'center': self.ui.center_text.text()}
                 # Validate Patients data
-                patient_dict, null_values, error = DataValidation.validate_patient(pat_dict)
+                patient_dict, error = DataValidation.validate_patient(pat_dict)
                 if error:  # return if the user wants or needs to fill out additional data
                     return
                 # update the patient in the database
@@ -263,7 +263,7 @@ class DataWindow(QMainWindow):
                 'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
                 'center': self.ui.center_text.text()}
             # Validate the Patients data
-            patient_dict, null_values, error = DataValidation.validate_patient(pat_dict)
+            patient_dict, error = DataValidation.validate_patient(pat_dict)
             if error:  # return if the user wants or needs to fill out additional data
                 return
             self.patient_service.create_patient(pat_dict)
@@ -301,7 +301,7 @@ class DataWindow(QMainWindow):
                             'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
                             'center': self.ui.center_text.text()}
                 # Validate the Patients data
-                patient_dict, null_values, error = DataValidation.validate_patient(pat_dict)
+                patient_dict, error = DataValidation.validate_patient(pat_dict)
                 if error:  # return if the user wants or needs to fill out additional data
                     return
                 self.patient_service.create_patient(pat_dict)
@@ -314,7 +314,7 @@ class DataWindow(QMainWindow):
                 'year_first_symptoms': self.ui.firstsymptoms_calendar.date().toPyDate().year,
                 'center': self.ui.center_text.text()}
             # Validate the Patients data
-            patient_dict, null_values, error = DataValidation.validate_patient(pat_dict)
+            patient_dict, error = DataValidation.validate_patient(pat_dict)
             if error:  # return if the user wants or needs to fill out additional data
                 return
             self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
