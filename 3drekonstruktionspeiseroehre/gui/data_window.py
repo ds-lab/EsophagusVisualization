@@ -154,7 +154,6 @@ class DataWindow(QMainWindow):
         self.ui.add_poem_button.clicked.connect(self.__add_poem)
         self.ui.delete_poem_button.clicked.connect(self.__delete_poem)
 
-
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
         self.ui.endoscopy_next_button.clicked.connect(self.__endoscopy_next_button_clicked)
@@ -629,15 +628,26 @@ class DataWindow(QMainWindow):
         self.__init_visits_of_patient()
 
     def __visit_delete_button_clicked(self):
-        self.visit_service.delete_visit(
-            self.selected_visit)
+        self.visit_service.delete_visit(self.selected_visit)
         self.__init_visits_of_patient()
         self.selected_visit = None
         self.ui.selected_visit_text_visitview.setText("please select a visit")
         self.ui.selected_visit_text_visitdataview.setText("please select a visit")
-        self.ui.manometry_text.setText("")
+
+        # ToDo überprüfen ob das passt
+        self.__init_manometry()
+        self.__init_barium_swallow()
+        self.__init_endoscopy()
+        self.__init_endoflip()
+        self.__init_botox()
+        self.__init_pneumatic_dilatation()
+        self.__init_lhm()
+        self.__poem()
+
         self.ui.eckardt_score.setEnabled(False)
         self.ui.visit_data.setEnabled(False)
+        self.ui.gerd.setEnabled(False)
+        self.ui.medication.setEnabled(False)
 
     def __select_visit(self):
         selected_indexes = self.visits_tableView.selectedIndexes()  # Get the indexes of all selected cells
@@ -663,9 +673,22 @@ class DataWindow(QMainWindow):
             self.__visit_selected(output)
 
     def __visit_selected(self, visit_data):
+        self.ui.eckardt_score.setEnabled(True)
+        self.ui.visit_data.setEnabled(True)
+        self.ui.gerd.setEnabled(True)
+        self.ui.medication.setEnabled(True)
+
         self.ui.selected_visit_text_visitview.setText(visit_data)
         self.ui.selected_visit_text_visitdataview.setText(visit_data)
+
         self.__init_manometry()
+        self.__init_barium_swallow()
+        self.__init_endoscopy()
+        self.__init_endoflip()
+        self.__init_botox()
+        self.__init_pneumatic_dilatation()
+        self.__init_lhm()
+        self.__poem()
 
         visit = self.visit_service.get_visit(
             self.selected_visit)
@@ -678,31 +701,22 @@ class DataWindow(QMainWindow):
                 # No widget for therapy data input is shown
                 self.ui.stackedWidget.setCurrentIndex(0)
 
-        if self.selected_visit:
-            self.ui.eckardt_score.setEnabled(True)
-            self.ui.visit_data.setEnabled(True)
-            self.ui.gerd.setEnabled(True)
-            self.ui.medication.setEnabled(True)
-
-        if visit:
-            endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(visit.visit_id)
-            if endoscopy_images:
-                self.endoscopy_pixmaps = endoscopy_images
-                self.endoscopy_image_index = 0
-                self.__load_endoscopy_image()
-
-    def __validate_visit(self):
-        if (
-                1900 < self.ui.year_of_visit_calendar.date().toPyDate().year <= datetime.now().year
-                and self.ui.visit_type_dropdown.currentText() != "---"
-                and (
-                self.ui.visit_type_dropdown.currentText() != "Therapy" or self.ui.therapy_type_dropdown.currentText() != "---")
-                and (
-                self.ui.therapy_type_dropdown.currentText() == "---" or self.ui.visit_type_dropdown.currentText() == "Therapy")
-                and self.ui.months_after_therapy_spin.value() != -1
-        ):
-            return True
-        return False
+        # Show images
+        barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
+        if barium_swallow_images:
+            self.barium_swallow_pixmaps = barium_swallow_images
+            self.barium_swallow_image_index = 0
+            self.__load_barium_swallow_image()
+        endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
+        if endoscopy_images:
+            self.endoscopy_pixmaps = endoscopy_images
+            self.endoscopy_image_index = 0
+            self.__load_endoscopy_image()
+        endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
+        if endoflip_images:
+            self.endoflip_pixmaps = endoflip_images
+            self.endoflip_image_index = 0
+            self.__load_endoflip_image()
 
     def __add_eckardt_score(self):
         eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
@@ -748,10 +762,10 @@ class DataWindow(QMainWindow):
             elif self.ui.ppi_no_ratio.isChecked():
                 ppi_use = False
             gerd_dict = {'visit_id': self.selected_visit,
-                        'grade': self.ui.gerd_reflux_dropdown.currentText(),
-                        'heart_burn': heart_burn,
-                        'ppi_use': ppi_use,
-                        'acid_exposure_time': self.ui.gerd_acidexposure_spin.value()}
+                         'grade': self.ui.gerd_reflux_dropdown.currentText(),
+                         'heart_burn': heart_burn,
+                         'ppi_use': ppi_use,
+                         'acid_exposure_time': self.ui.gerd_acidexposure_spin.value()}
             gerd_dict, error = DataValidation.validate_gerd(gerd_dict)
 
             if error:
@@ -817,6 +831,18 @@ class DataWindow(QMainWindow):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
         self.ui.manometry_text.setText(setText.set_text(manometry, "manometry data"))
 
+    def __upload_manometry_file(self):
+        """
+        Manometry callback. Handles Manometry file selection.
+        """
+        manometry_exists = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+        if not manometry_exists or manometry_exists and ShowMessage.to_update_for_visit("Manometry file"):
+            filename, _ = QFileDialog.getOpenFileName(self, 'Select Manometry file', self.default_path,
+                                                      "CSV (*.csv *.CSV)")
+            if len(filename) > 0:
+                process_and_upload_manometry_file(self.selected_visit, filename)
+                self.ui.manometry_file_text.setText(filename)
+
     def __add_barium_swallow(self):
         tbe = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
         if not tbe or tbe and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
@@ -848,18 +874,6 @@ class DataWindow(QMainWindow):
         self.barium_swallow_service.delete_barium_swallow_for_visit(
             self.selected_visit)
         self.__init_barium_swallow()
-
-    def __upload_manometry_file(self):
-        """
-        Manometry callback. Handles Manometry file selection.
-        """
-        manometry_exists = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
-        if not manometry_exists or manometry_exists and ShowMessage.to_update_for_visit("Manometry file"):
-            filename, _ = QFileDialog.getOpenFileName(self, 'Select Manometry file', self.default_path,
-                                                      "CSV (*.csv *.CSV)")
-            if len(filename) > 0:
-                process_and_upload_manometry_file(self.selected_visit, filename)
-                self.ui.manometry_file_text.setText(filename)
 
     def __upload_barium_swallow_images(self):
         """
@@ -998,18 +1012,18 @@ class DataWindow(QMainWindow):
         endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
         if not endoflip or endoflip and ShowMessage.to_update_for_visit("EndoFlip data"):
             endoflip_dict = {'visit_id': self.selected_visit,
-                        'csa_before': self.ui.endflip_before_csa_spin.value(),
-                        'dist_before': self.ui.endflip_before_di_spin.value(),
-                        'dmin_before': self.ui.self.ui.endflip_before_dmin_spin.value(),
-                        'ibp_before': self.ui.endflip_before_ibp_spin.value(),
-                        'csa_during': self.ui.endflip_during_csa_spin.value(),
-                        'dist_during': self.ui.endflip_during_di_spin.value(),
-                        'dmin_during': self.ui.endflip_during_dmin_spin.value(),
-                        'ibp_during': self.ui.endflip_during_ibp_spin.value(),
-                        'csa_after': self.ui.endflip_after_csa_spin.value(),
-                        'dist_after': self.ui.endflip_after_di_spin.value(),
-                        'dmin_after': self.ui.endflip_after_dmin_spin.value(),
-                        'ibp_after': self.ui.endflip_after_ibp_spin.value()}
+                             'csa_before': self.ui.endflip_before_csa_spin.value(),
+                             'dist_before': self.ui.endflip_before_di_spin.value(),
+                             'dmin_before': self.ui.self.ui.endflip_before_dmin_spin.value(),
+                             'ibp_before': self.ui.endflip_before_ibp_spin.value(),
+                             'csa_during': self.ui.endflip_during_csa_spin.value(),
+                             'dist_during': self.ui.endflip_during_di_spin.value(),
+                             'dmin_during': self.ui.endflip_during_dmin_spin.value(),
+                             'ibp_during': self.ui.endflip_during_ibp_spin.value(),
+                             'csa_after': self.ui.endflip_after_csa_spin.value(),
+                             'dist_after': self.ui.endflip_after_di_spin.value(),
+                             'dmin_after': self.ui.endflip_after_dmin_spin.value(),
+                             'ibp_after': self.ui.endflip_after_ibp_spin.value()}
 
             endoflip_dict, error = DataValidation.validate_visitdata(endoflip_dict)
 
@@ -1059,7 +1073,8 @@ class DataWindow(QMainWindow):
                         else:
                             match = re.search(r'(before|during|after)', filename)
                             timepoint = match.group(0)
-                            conduct_endoflip_file_upload(self.selected_visit, timepoint, data_bytes, endoflip_screenshot)
+                            conduct_endoflip_file_upload(self.selected_visit, timepoint, data_bytes,
+                                                         endoflip_screenshot)
                 self.ui.endoflip_file_text.setText(str(len(filenames)) + " File(s) uploaded")
             self.default_path = os.path.dirname(filename)
 
@@ -1131,7 +1146,8 @@ class DataWindow(QMainWindow):
 
     def __add_botox_complications(self):
         botox_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
-        if not botox_complications or botox_complications and ShowMessage.to_update_for_visit("complications for the botox therapy"):
+        if not botox_complications or botox_complications and ShowMessage.to_update_for_visit(
+                "complications for the botox therapy"):
             botox_complications_dict = {'visit_id': self.selected_visit,
                                         'bleeding': self.ui.bleeding_botox.currentText(),
                                         'perforation': self.ui.perforation_botox.currentText(),
@@ -1146,7 +1162,8 @@ class DataWindow(QMainWindow):
                 return
 
             if botox_complications:
-                self.complications_service.update_complications(botox_complications.complication_id, botox_complications_dict)
+                self.complications_service.update_complications(botox_complications.complication_id,
+                                                                botox_complications_dict)
             else:
                 self.complications_service.create_complications(botox_complications_dict)
             self.__init_botox()
@@ -1159,30 +1176,31 @@ class DataWindow(QMainWindow):
     def __add_pneumatic_dilatation(self):
         pneumatic_dilatation = self.pneumatic_dilatation_service.get_pneumatic_dilatation_for_visit(self.selected_visit)
         if not pneumatic_dilatation or pneumatic_dilatation and ShowMessage.to_update_for_visit(
-            "pneumatic dilatation data"):
+                "pneumatic dilatation data"):
             dilatation_dict = {'visit_id': self.selected_visit,
-                              'ballon_volume': self.ui.pd_ballon_volume_dropdown.currentText(),
-                              'quantity': self.ui.pd_quantity_spin.value()}
+                               'ballon_volume': self.ui.pd_ballon_volume_dropdown.currentText(),
+                               'quantity': self.ui.pd_quantity_spin.value()}
             dilatation_dict, error = DataValidation.validate_visitdata(dilatation_dict)
 
             if error:
                 return
 
             if pneumatic_dilatation:
-                self.pneumatic_dilatation_service.update_pneumatic_dilatation(pneumatic_dilatation.pneumatic_dilatation_id, dilatation_dict)
+                self.pneumatic_dilatation_service.update_pneumatic_dilatation(
+                    pneumatic_dilatation.pneumatic_dilatation_id, dilatation_dict)
             else:
                 self.pneumatic_dilatation_service.create_pneumatic_dilatation(dilatation_dict)
         pd_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
         if not pd_complications or pd_complications and ShowMessage.to_update_for_visit(
                 "complications for the pneumatic dilatation therapy"):
             pd_complications_dict = {'visit_id': self.selected_visit,
-                                        'bleeding': self.ui.bleeding_pd.currentText(),
-                                        'perforation': self.ui.perforation_pd.currentText(),
-                                        'capnoperitoneum': self.ui.capnoperitoneum_pd.currentText(),
-                                        'mucosal_tears': self.ui.mucusal_tears_pd.currentText(),
-                                        'pneumothorax': self.ui.pneumothorax_pd.currentText(),
-                                        'pneumomediastinum': self.ui.pneumomediastinum_pd.currentText(),
-                                        'other': self.ui.other_pd.currentText()}
+                                     'bleeding': self.ui.bleeding_pd.currentText(),
+                                     'perforation': self.ui.perforation_pd.currentText(),
+                                     'capnoperitoneum': self.ui.capnoperitoneum_pd.currentText(),
+                                     'mucosal_tears': self.ui.mucusal_tears_pd.currentText(),
+                                     'pneumothorax': self.ui.pneumothorax_pd.currentText(),
+                                     'pneumomediastinum': self.ui.pneumomediastinum_pd.currentText(),
+                                     'other': self.ui.other_pd.currentText()}
             pd_complications_dict, error = DataValidation.validate_complications(pd_complications_dict)
 
             if error:
@@ -1231,13 +1249,13 @@ class DataWindow(QMainWindow):
         if not lhm_complications or lhm_complications and ShowMessage.to_update_for_visit(
                 "complications for the LHM therapy"):
             lhm_complications_dict = {'visit_id': self.selected_visit,
-                                     'bleeding': self.ui.bleeding_lhm.currentText(),
-                                     'perforation': self.ui.perforation_lhm.currentText(),
-                                     'capnoperitoneum': self.ui.capnoperitoneum_lhm.currentText(),
-                                     'mucosal_tears': self.ui.mucusal_tears_lhm.currentText(),
-                                     'pneumothorax': self.ui.pneumothorax_lhm.currentText(),
-                                     'pneumomediastinum': self.ui.pneumomediastinum_lhm.currentText(),
-                                     'other': self.ui.other_lhm.currentText()}
+                                      'bleeding': self.ui.bleeding_lhm.currentText(),
+                                      'perforation': self.ui.perforation_lhm.currentText(),
+                                      'capnoperitoneum': self.ui.capnoperitoneum_lhm.currentText(),
+                                      'mucosal_tears': self.ui.mucusal_tears_lhm.currentText(),
+                                      'pneumothorax': self.ui.pneumothorax_lhm.currentText(),
+                                      'pneumomediastinum': self.ui.pneumomediastinum_lhm.currentText(),
+                                      'other': self.ui.other_lhm.currentText()}
             lhm_complications_dict, error = DataValidation.validate_complications(lhm_complications_dict)
 
             if error:
@@ -1268,13 +1286,13 @@ class DataWindow(QMainWindow):
         if not poem or poem and ShowMessage.to_update_for_visit("POEM data"):
             procedure_duration = (self.ui.poem_time.time().hour() * 60) + self.ui.poem_time.time().minute()
             poem_dict = {'visit_id': self.selected_visit,
-                        'procedure_duration': procedure_duration,
-                        'height_mucosal_incision': self.ui.peom_incision_height_spin.value(),
-                        'length_mucosal_incision': self.ui.peom_incision_leght_spin.value(),
-                        'length_submuscosal_tunnel': self.ui.peom_tunnel_length_spin.value(),
-                        'localization_myotomy': self.ui.peom_localisation_dropdown.currentText(),
-                        'length_tubular_myotomy': self.ui.peom_tubular_myotomy_length_spin.value(),
-                        'length_gastric_myotomy': self.ui.poem_gastric_myotomy_length_spin.value()}
+                         'procedure_duration': procedure_duration,
+                         'height_mucosal_incision': self.ui.peom_incision_height_spin.value(),
+                         'length_mucosal_incision': self.ui.peom_incision_leght_spin.value(),
+                         'length_submuscosal_tunnel': self.ui.peom_tunnel_length_spin.value(),
+                         'localization_myotomy': self.ui.peom_localisation_dropdown.currentText(),
+                         'length_tubular_myotomy': self.ui.peom_tubular_myotomy_length_spin.value(),
+                         'length_gastric_myotomy': self.ui.poem_gastric_myotomy_length_spin.value()}
             poem_dict, error = DataValidation.validate_poem(poem_dict)
 
             if error:
@@ -1289,13 +1307,13 @@ class DataWindow(QMainWindow):
         if not poem_complications or poem_complications and ShowMessage.to_update_for_visit(
                 "complications for the POEM therapy"):
             poem_complications_dict = {'visit_id': self.selected_visit,
-                                     'bleeding': self.ui.bleeding_poem.currentText(),
-                                     'perforation': self.ui.perforation_poem.currentText(),
-                                     'capnoperitoneum': self.ui.capnoperitoneum_poem.currentText(),
-                                     'mucosal_tears': self.ui.mucusal_tears_poem.currentText(),
-                                     'pneumothorax': self.ui.pneumothorax_poem.currentText(),
-                                     'pneumomediastinum': self.ui.pneumomediastinum_poem.currentText(),
-                                     'other': self.ui.other_poem.currentText()}
+                                       'bleeding': self.ui.bleeding_poem.currentText(),
+                                       'perforation': self.ui.perforation_poem.currentText(),
+                                       'capnoperitoneum': self.ui.capnoperitoneum_poem.currentText(),
+                                       'mucosal_tears': self.ui.mucusal_tears_poem.currentText(),
+                                       'pneumothorax': self.ui.pneumothorax_poem.currentText(),
+                                       'pneumomediastinum': self.ui.pneumomediastinum_poem.currentText(),
+                                       'other': self.ui.other_poem.currentText()}
             poem_complications_dict, error = DataValidation.validate_complications(poem_complications_dict)
 
             if error:
