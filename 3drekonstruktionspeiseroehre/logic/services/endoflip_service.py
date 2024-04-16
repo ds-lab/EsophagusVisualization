@@ -99,7 +99,7 @@ class EndoflipFileService:
             if result:
                 return [row[0] for row in result]
             else:
-                return []
+                return None
         except OperationalError as e:
             self.show_error_msg()
 

@@ -28,7 +28,7 @@ from logic.services.eckardtscore_service import EckardtscoreService
 from logic.services.manometry_service import ManometryService, ManometryFileService
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyService, EndoscopyFileService
-from logic.services.endoflip_service import EndoflipFileService, EndoflipImageService
+from logic.services.endoflip_service import EndoflipService, EndoflipFileService, EndoflipImageService
 from logic.services.barium_swallow_service import BariumSwallowService, BariumSwallowFileService
 from logic.services.botox_injection_service import BotoxInjectionService
 from logic.services.complications_service import ComplicationsService
@@ -78,6 +78,7 @@ class DataWindow(QMainWindow):
         self.barium_swallow_file_service = BariumSwallowFileService(self.db)
         self.endoscopy_file_service = EndoscopyFileService(self.db)
         self.endoscopy_service = EndoscopyService(self.db)
+        self.endoflip_service = EndoflipService(self.db)
         self.endoflip_file_service = EndoflipFileService(self.db)
         self.endoflip_image_service = EndoflipImageService(self.db)
         self.botox_injection_service = BotoxInjectionService(self.db)
@@ -688,7 +689,7 @@ class DataWindow(QMainWindow):
         self.__init_botox()
         self.__init_pneumatic_dilatation()
         self.__init_lhm()
-        self.__poem()
+        self.__init_poem()
 
         visit = self.visit_service.get_visit(
             self.selected_visit)
@@ -712,11 +713,11 @@ class DataWindow(QMainWindow):
             self.endoscopy_pixmaps = endoscopy_images
             self.endoscopy_image_index = 0
             self.__load_endoscopy_image()
-        endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
-        if endoflip_images:
-            self.endoflip_pixmaps = endoflip_images
-            self.endoflip_image_index = 0
-            self.__load_endoflip_image()
+        #endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
+        #if endoflip_images:
+        #    self.endoflip_pixmaps = endoflip_images
+        #    self.endoflip_image_index = 0
+        #    self.__load_endoflip_image()
 
     def __add_eckardt_score(self):
         eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
