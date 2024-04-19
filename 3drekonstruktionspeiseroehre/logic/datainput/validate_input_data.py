@@ -279,6 +279,12 @@ class DataValidation:
                                "values.")
             QMessageBox.critical(None, 'Invalid Value(s) Detected', invalid_message)
             error = True
+        if not null_values and values_sum != int(eckardt_dict.get('total_score')):
+            invalid_message = ("Incompatible values: "
+                               "The individual values and the total score are incompatible. Please provide valid "
+                               "values.")
+            QMessageBox.critical(None, 'Invalid Value(s) Detected', invalid_message)
+            error = True
         return eckardt_dict, error
 
 
