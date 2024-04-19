@@ -59,7 +59,7 @@ class DataWindow(QMainWindow):
         # For displaying images
         self.endoscopy_image_index = None
 
-        self.ui = uic.loadUi("./ui-files/show_data_window_design_neu2.ui", self)
+        self.ui = uic.loadUi("./ui-files/show_data_window_design_neu3.ui", self)
 
         self.patient_tableView = self.ui.patient_tableView
         self.therapy_tableView = self.ui.therapy_tableView
@@ -136,6 +136,7 @@ class DataWindow(QMainWindow):
         self.ui.delete_tbe_button.clicked.connect(self.__delete_barium_swallow)
         self.ui.tbe_file_upload_button.clicked.connect(self.__upload_barium_swallow_images)
         # Endoscopy / EGD
+
         self.ui.egd_file_upload_button.clicked.connect(self.__upload_endoscopy_images)
         # Endoflip
         self.ui.add_endoflip_button.clicked.connect(self.__add_endoflip)
@@ -934,9 +935,9 @@ class DataWindow(QMainWindow):
         egd = self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit)
         if not egd or egd and ShowMessage.to_update_for_visit("Endoscopy (EGD) data"):
             egd_dict = {'visit_id': self.selected_visit,
-                        'type_contrast_medium': self.ui.egd_position_les_spin.value()}
+                        'position_les': self.ui.egd_position_les_spin.value()}
 
-            tbe_dict, error = DataValidation.validate_visitdata(egd_dict)
+            egd_dict, error = DataValidation.validate_visitdata(egd_dict)
 
             if error:
                 return
