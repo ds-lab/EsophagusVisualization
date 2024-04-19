@@ -949,7 +949,7 @@ class DataWindow(QMainWindow):
 
     def __init_endoscopy(self):
         endoscopy = self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit)
-        self.ui.tbe_text.setText(setText.set_text(endoscopy, "endoscopy (EGD) data"))
+        self.ui.egd_text.setText(setText.set_text(endoscopy, "endoscopy (EGD) data"))
 
     def __delete_endoscopy(self):
         self.endoscopy_service.delete_endoscopy_for_visit(
