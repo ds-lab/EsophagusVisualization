@@ -716,11 +716,11 @@ class DataWindow(QMainWindow):
             self.endoscopy_pixmaps = endoscopy_images
             self.endoscopy_image_index = 0
             self.__load_endoscopy_image()
-        #endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
-        #if endoflip_images:
-        #    self.endoflip_pixmaps = endoflip_images
-        #    self.endoflip_image_index = 0
-        #    self.__load_endoflip_image()
+        endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
+        if endoflip_images:
+            self.endoflip_pixmaps = endoflip_images
+            self.endoflip_image_index = 0
+            self.__load_endoflip_image()
 
     def __add_eckardt_score(self):
         eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
