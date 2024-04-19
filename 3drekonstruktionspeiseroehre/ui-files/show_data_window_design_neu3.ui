@@ -3216,7 +3216,7 @@ p, li { white-space: pre-wrap; }
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
@@ -3962,8 +3962,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1384</width>
-             <height>649</height>
+             <width>792</width>
+             <height>139</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4150,7 +4150,7 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QPushButton" name="manometrie_delete_button_5">
+                <widget class="QPushButton" name="delete_endoflip_button">
                  <property name="text">
                   <string>Delete Impedance planimetry (EndoFlip) data</string>
                  </property>
@@ -4572,8 +4572,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>674</width>
-             <height>122</height>
+             <width>1384</width>
+             <height>649</height>
             </rect>
            </property>
            <attribute name="label">

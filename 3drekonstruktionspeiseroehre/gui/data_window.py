@@ -141,6 +141,7 @@ class DataWindow(QMainWindow):
         self.ui.egd_file_upload_button.clicked.connect(self.__upload_endoscopy_images)
         # Endoflip
         self.ui.add_endoflip_button.clicked.connect(self.__add_endoflip)
+        self.ui.delete_endoflip_button.clicked.connect(self.__delete_endoflip)
         self.ui.endoflip_file_upload_button.clicked.connect(self.__upload_endoflip_files)
         # Therapy Buttons
         # Botox
@@ -1042,6 +1043,10 @@ class DataWindow(QMainWindow):
     def __init_endoflip(self):
         endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
         self.ui.endoflip_text.setText(setText.set_text(endoflip, "EndoFlip data"))
+
+    def __delete_endoflip(self):
+        self.endoflip_service.delete_endoflip_for_visit(self.selected_visit)
+        self.__init_endoflip()
 
     def __upload_endoflip_files(self):
         """
