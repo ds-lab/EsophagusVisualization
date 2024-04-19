@@ -136,7 +136,8 @@ class DataWindow(QMainWindow):
         self.ui.delete_tbe_button.clicked.connect(self.__delete_barium_swallow)
         self.ui.tbe_file_upload_button.clicked.connect(self.__upload_barium_swallow_images)
         # Endoscopy / EGD
-
+        self.ui.add_egd_button.clicked.connect(self.__add_endoscopy)
+        self.ui.delete_egd_button.clicked.connect(self.__delete_endoscopy)
         self.ui.egd_file_upload_button.clicked.connect(self.__upload_endoscopy_images)
         # Endoflip
         self.ui.add_endoflip_button.clicked.connect(self.__add_endoflip)
