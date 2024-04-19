@@ -143,6 +143,7 @@ class DataWindow(QMainWindow):
         self.ui.add_endoflip_button.clicked.connect(self.__add_endoflip)
         self.ui.delete_endoflip_button.clicked.connect(self.__delete_endoflip)
         self.ui.endoflip_file_upload_button.clicked.connect(self.__upload_endoflip_files)
+        self.ui.endoflip_image_upload_button.clicked.connect(self.__upload_endoflip_image)
         # Therapy Buttons
         # Botox
         self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
@@ -164,7 +165,7 @@ class DataWindow(QMainWindow):
         self.ui.tbe_previous_button.clicked.connect(self.__barium_swallow_previous_button_clicked)
         self.ui.tbe_next_button.clicked.connect(self.__barium_swallow_next_button_clicked)
         self.ui.endoflip_previous_button.clicked.connect(self.__endoflip_previous_button_clicked)
-        self.ui.endoflip_next_button.clicked.connect(self.__endoscopy_next_button_clicked)
+        self.ui.endoflip_next_button.clicked.connect(self.__endoflip_next_button_clicked)
 
         self.widget_names = {
             "Botox injection": 1,
@@ -1103,7 +1104,7 @@ class DataWindow(QMainWindow):
 
             if not error:
                 process_and_upload_endoflip_images(self.selected_visit, filenames)
-                self.ui.endflip_image_text.setText(str(len(filenames)) + " File(s) uploaded")
+                self.ui.endoflip_image_text.setText(str(len(filenames)) + " File(s) uploaded")
                 # load the pixmaps of the images to make them viewable
                 endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(
                     self.selected_visit)

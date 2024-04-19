@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QMessageBox
-from PyQt6.uic.properties import QtGui
+from PyQt6 import QtGui
 from sqlalchemy import select, delete, update, insert
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
@@ -232,8 +232,8 @@ class EndoflipImageService:
             results = self.db.execute(stmt).all()
             pixmaps = []
             if results:
-                for endoscopy_file in results:
-                    image = endoscopy_file[0].file
+                for endoflip_file in results:
+                    image = endoflip_file[0].file
                     pixmap = QtGui.QPixmap()
                     pixmap.loadFromData(image, 'jpeg')
                     pixmaps.append(pixmap)
