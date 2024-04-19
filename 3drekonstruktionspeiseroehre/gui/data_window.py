@@ -1014,15 +1014,15 @@ class DataWindow(QMainWindow):
         if not endoflip or endoflip and ShowMessage.to_update_for_visit("EndoFlip data"):
             endoflip_dict = {'visit_id': self.selected_visit,
                              'csa_before': self.ui.endflip_before_csa_spin.value(),
-                             'dist_before': self.ui.endflip_before_di_spin.value(),
-                             'dmin_before': self.ui.self.ui.endflip_before_dmin_spin.value(),
+                             'di_before': self.ui.endflip_before_di_spin.value(),
+                             'dmin_before': self.ui.endflip_before_dmin_spin.value(),
                              'ibp_before': self.ui.endflip_before_ibp_spin.value(),
                              'csa_during': self.ui.endflip_during_csa_spin.value(),
-                             'dist_during': self.ui.endflip_during_di_spin.value(),
+                             'di_during': self.ui.endflip_during_di_spin.value(),
                              'dmin_during': self.ui.endflip_during_dmin_spin.value(),
                              'ibp_during': self.ui.endflip_during_ibp_spin.value(),
                              'csa_after': self.ui.endflip_after_csa_spin.value(),
-                             'dist_after': self.ui.endflip_after_di_spin.value(),
+                             'di_after': self.ui.endflip_after_di_spin.value(),
                              'dmin_after': self.ui.endflip_after_dmin_spin.value(),
                              'ibp_after': self.ui.endflip_after_ibp_spin.value()}
 
