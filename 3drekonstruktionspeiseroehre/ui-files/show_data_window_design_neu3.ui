@@ -896,6 +896,12 @@ p, li { white-space: pre-wrap; }
                  <property name="autoRepeat">
                   <bool>false</bool>
                  </property>
+                 <property name="autoExclusive">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="buttonGroup">
+                  <string notr="true">buttonGroup</string>
+                 </attribute>
                 </widget>
                </item>
                <item>
@@ -903,6 +909,9 @@ p, li { white-space: pre-wrap; }
                  <property name="text">
                   <string>no</string>
                  </property>
+                 <attribute name="buttonGroup">
+                  <string notr="true">buttonGroup</string>
+                 </attribute>
                 </widget>
                </item>
               </layout>
@@ -914,6 +923,9 @@ p, li { white-space: pre-wrap; }
                  <property name="text">
                   <string>yes</string>
                  </property>
+                 <attribute name="buttonGroup">
+                  <string notr="true">buttonGroup_2</string>
+                 </attribute>
                 </widget>
                </item>
                <item>
@@ -921,6 +933,9 @@ p, li { white-space: pre-wrap; }
                  <property name="text">
                   <string>no</string>
                  </property>
+                 <attribute name="buttonGroup">
+                  <string notr="true">buttonGroup_2</string>
+                 </attribute>
                 </widget>
                </item>
               </layout>
@@ -4716,4 +4731,8 @@ p, li { white-space: pre-wrap; }
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+ </buttongroups>
 </ui>

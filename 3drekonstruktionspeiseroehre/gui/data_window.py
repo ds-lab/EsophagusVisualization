@@ -752,6 +752,7 @@ class DataWindow(QMainWindow):
     def __delete_eckardt_score(self):
         self.eckardtscore_service.delete_eckardtscore_for_visit(
             self.selected_visit)
+        self.__init_eckardt_score()
 
     def __add_gerd(self):
         gerd = self.gerd_service.get_gerd_for_visit(self.selected_visit)
@@ -790,6 +791,7 @@ class DataWindow(QMainWindow):
     def __delete_gerd(self):
         self.gerd_service.delete_gerd_for_visit(
             self.selected_visit)
+        self.__init_gerd()
 
     def __add_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
