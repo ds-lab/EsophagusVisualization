@@ -33,6 +33,7 @@ from logic.services.barium_swallow_service import BariumSwallowService, BariumSw
 from logic.services.botox_injection_service import BotoxInjectionService
 from logic.services.complications_service import ComplicationsService
 from logic.services.pneumatic_dilatation_service import PneumaticDilatationService
+from logic.services.medication_service import MedicationService
 from logic.services.lhm_service import LHMService
 from logic.services.poem_service import POEMService
 from logic.services.gerd_service import GerdService
@@ -87,6 +88,7 @@ class DataWindow(QMainWindow):
         self.lhm_service = LHMService(self.db)
         self.poem_service = POEMService(self.db)
         self.gerd_service = GerdService(self.db)
+        self.medication_service = MedicationService(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -125,6 +127,9 @@ class DataWindow(QMainWindow):
         # GERD
         self.ui.add_gerd_button.clicked.connect(self.__add_gerd)
         self.ui.delete_gerd_button.clicked.connect(self.__delete_gerd)
+        # Medication
+        self.ui.add_medication_button.clicked.connect(self.__add_medication)
+        self.ui.delete_medication_button.clicked.connect(self.__delete_medication)
 
         # Visit Data Tab
         # Manometry
@@ -648,6 +653,9 @@ class DataWindow(QMainWindow):
         self.__init_pneumatic_dilatation()
         self.__init_lhm()
         self.__poem()
+        self.__init_eckardt_score()
+        self.__init_gerd()
+        self.__init_medication()
 
         self.ui.eckardt_score.setEnabled(False)
         self.ui.visit_data.setEnabled(False)
@@ -694,6 +702,9 @@ class DataWindow(QMainWindow):
         self.__init_pneumatic_dilatation()
         self.__init_lhm()
         self.__init_poem()
+        self.__init_eckardt_score()
+        self.__init_gerd()
+        self.__init_medication()
 
         visit = self.visit_service.get_visit(
             self.selected_visit)
@@ -707,7 +718,8 @@ class DataWindow(QMainWindow):
                 self.ui.stackedWidget.setCurrentIndex(0)
 
         # Show images
-        barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
+        barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
+            self.selected_visit)
         if barium_swallow_images:
             self.barium_swallow_pixmaps = barium_swallow_images
             self.barium_swallow_image_index = 0
@@ -777,7 +789,6 @@ class DataWindow(QMainWindow):
             if error:
                 return
 
-            # check if an eckardt score is already in the DB for the selected visit
             if gerd:
                 self.gerd_service.update_gerd(gerd.gerd_id, gerd_dict)
             else:
@@ -789,9 +800,28 @@ class DataWindow(QMainWindow):
         self.ui.gerd_text.setText(setText.set_text(gerd, "GERD"))
 
     def __delete_gerd(self):
-        self.gerd_service.delete_gerd_for_visit(
-            self.selected_visit)
+        self.gerd_service.delete_gerd_for_visit(self.selected_visit)
         self.__init_gerd()
+
+    def __add_medication(self):
+        medication_dict = {'visit_id': self.selected_visit,
+                           'medication_use': self.ui.medication_use_dropdown.currentText(),
+                           'medication_name': self.ui.medication_name_text.text(),
+                           'medication_dose': round(self.ui.medication_dose_spin.value(), 2)}
+        medication_dict, error = DataValidation.validate_visitdata(medication_dict)
+        if error:
+            return
+        self.medication_service.create_medication(medication_dict)
+
+        self.__init_medication()
+
+    def __init_medication(self):
+        medication = self.medication_service.get_medications_for_visit(self.selected_visit)
+        self.ui.medication_text.setText(setText.set_text_many(medication, "medication data"))
+
+    def __delete_medication(self):
+        self.medication_service.delete_medications_for_visit(self.selected_visit)
+        self.__init_medication()
 
     def __add_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
@@ -1150,9 +1180,9 @@ class DataWindow(QMainWindow):
     def __init_botox(self):
         botox = self.botox_injection_service.get_botox_injections_for_visit(self.selected_visit)
         complications = self.complications_service.get_complications_for_visit(self.selected_visit)
-        botox_text = setText.set_text_botox(botox, "Botox data")
+        botox_text = setText.set_text_many(botox, "Botox data")
         complications_text = setText.set_text(complications, "Complication data")
-        text = botox_text + "--- Complications ---\n" + complications_text
+        text = botox_text + "\n" + "--- Complications ---\n" + complications_text
         self.ui.botox_text.setText(text)
 
     def __add_botox_complications(self):
