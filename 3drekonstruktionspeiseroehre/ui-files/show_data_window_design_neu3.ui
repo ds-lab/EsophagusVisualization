@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1426</width>
-    <height>1287</height>
+    <height>1285</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -1010,7 +1010,17 @@ p, li { white-space: pre-wrap; }
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QSpinBox" name="medication_dose_spin"/>
+              <widget class="QDoubleSpinBox" name="medication_dose_spin">
+               <property name="minimum">
+                <double>-1.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.010000000000000</double>
+               </property>
+               <property name="value">
+                <double>-1.000000000000000</double>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -1413,7 +1423,7 @@ p, li { white-space: pre-wrap; }
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="empty">
            <layout class="QGridLayout" name="gridLayout_71"/>
@@ -2595,6 +2605,9 @@ p, li { white-space: pre-wrap; }
                    <property name="maximum">
                     <double>10.000000000000000</double>
                    </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
                    <property name="value">
                     <double>-1.000000000000000</double>
                    </property>
@@ -2682,17 +2695,17 @@ p, li { white-space: pre-wrap; }
               <layout class="QGridLayout" name="gridLayout_56">
                <item row="0" column="0">
                 <layout class="QGridLayout" name="gridLayout_59">
-                 <item row="5" column="0">
-                  <widget class="QLabel" name="label_69">
-                   <property name="text">
-                    <string>Length of submucosal tunnel:</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="0" column="2">
                   <widget class="QLabel" name="label_70">
                    <property name="text">
                     <string>Localisation of myotomy:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_69">
+                   <property name="text">
+                    <string>Length of submucosal tunnel:</string>
                    </property>
                   </widget>
                  </item>
@@ -2711,21 +2724,11 @@ p, li { white-space: pre-wrap; }
                    <property name="maximum">
                     <double>25.000000000000000</double>
                    </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
                    <property name="value">
                     <double>-1.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QSpinBox" name="peom_incision_height_spin">
-                   <property name="minimum">
-                    <number>-1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>40</number>
-                   </property>
-                   <property name="value">
-                    <number>-1</number>
                    </property>
                   </widget>
                  </item>
@@ -2744,40 +2747,11 @@ p, li { white-space: pre-wrap; }
                    <property name="maximum">
                     <double>25.000000000000000</double>
                    </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
                    <property name="value">
                     <double>-1.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_62">
-                   <property name="text">
-                    <string>Length of mucosal incision:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QTimeEdit" name="poem_time">
-                   <property name="maximumTime">
-                    <time>
-                     <hour>3</hour>
-                     <minute>0</minute>
-                     <second>0</second>
-                    </time>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_67">
-                   <property name="text">
-                    <string>Height of mucosal incision (distance from LES):</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_64">
-                   <property name="text">
-                    <string>Procedure duration:</string>
                    </property>
                   </widget>
                  </item>
@@ -2790,23 +2764,42 @@ p, li { white-space: pre-wrap; }
                     <double>5.000000000000000</double>
                    </property>
                    <property name="singleStep">
-                    <double>0.000000000000000</double>
+                    <double>0.010000000000000</double>
                    </property>
                    <property name="value">
                     <double>-1.000000000000000</double>
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="3">
-                  <widget class="QDoubleSpinBox" name="poem_gastric_myotomy_length_spin">
-                   <property name="minimum">
-                    <double>-1.000000000000000</double>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_67">
+                   <property name="text">
+                    <string>Height of mucosal incision (distance from LES):</string>
                    </property>
-                   <property name="maximum">
-                    <double>5.000000000000000</double>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_62">
+                   <property name="text">
+                    <string>Length of mucosal incision:</string>
                    </property>
-                   <property name="value">
-                    <double>-1.000000000000000</double>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_64">
+                   <property name="text">
+                    <string>Procedure duration:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QTimeEdit" name="poem_time">
+                   <property name="maximumTime">
+                    <time>
+                     <hour>3</hour>
+                     <minute>0</minute>
+                     <second>0</second>
+                    </time>
                    </property>
                   </widget>
                  </item>
@@ -2822,6 +2815,22 @@ p, li { white-space: pre-wrap; }
                     </size>
                    </property>
                   </spacer>
+                 </item>
+                 <item row="4" column="3">
+                  <widget class="QDoubleSpinBox" name="poem_gastric_myotomy_length_spin">
+                   <property name="minimum">
+                    <double>-1.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>5.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>-1.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                  <item row="0" column="3">
                   <widget class="QComboBox" name="peom_localisation_dropdown">
@@ -2890,6 +2899,22 @@ p, li { white-space: pre-wrap; }
                      <string>12 o'clock</string>
                     </property>
                    </item>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QDoubleSpinBox" name="peom_incision_height_spin">
+                   <property name="minimum">
+                    <double>-1.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>40.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>-1.000000000000000</double>
+                   </property>
                   </widget>
                  </item>
                 </layout>
@@ -4144,7 +4169,7 @@ p, li { white-space: pre-wrap; }
              <x>0</x>
              <y>0</y>
              <width>1384</width>
-             <height>649</height>
+             <height>647</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4249,6 +4274,9 @@ p, li { white-space: pre-wrap; }
                       <property name="maximum">
                        <double>200.000000000000000</double>
                       </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4268,6 +4296,9 @@ p, li { white-space: pre-wrap; }
                       </property>
                       <property name="maximum">
                        <double>15.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
                       </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
@@ -4289,6 +4320,9 @@ p, li { white-space: pre-wrap; }
                       <property name="maximum">
                        <double>15.000000000000000</double>
                       </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4308,6 +4342,9 @@ p, li { white-space: pre-wrap; }
                       </property>
                       <property name="maximum">
                        <double>100.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
                       </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
@@ -4342,6 +4379,9 @@ p, li { white-space: pre-wrap; }
                       <property name="maximum">
                        <double>200.000000000000000</double>
                       </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4361,6 +4401,9 @@ p, li { white-space: pre-wrap; }
                       </property>
                       <property name="maximum">
                        <double>15.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
                       </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
@@ -4382,6 +4425,9 @@ p, li { white-space: pre-wrap; }
                       <property name="maximum">
                        <double>15.000000000000000</double>
                       </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4401,6 +4447,9 @@ p, li { white-space: pre-wrap; }
                       </property>
                       <property name="maximum">
                        <double>100.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
                       </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
@@ -4435,6 +4484,9 @@ p, li { white-space: pre-wrap; }
                       <property name="maximum">
                        <double>200.000000000000000</double>
                       </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4454,6 +4506,9 @@ p, li { white-space: pre-wrap; }
                       </property>
                       <property name="maximum">
                        <double>15.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
                       </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
@@ -4475,6 +4530,9 @@ p, li { white-space: pre-wrap; }
                       <property name="maximum">
                        <double>15.000000000000000</double>
                       </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4494,6 +4552,9 @@ p, li { white-space: pre-wrap; }
                       </property>
                       <property name="maximum">
                        <double>100.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
                       </property>
                       <property name="value">
                        <double>-1.000000000000000</double>
