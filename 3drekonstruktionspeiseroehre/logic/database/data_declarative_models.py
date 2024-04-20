@@ -87,7 +87,7 @@ class Medication(Base):
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     medication_use = mapped_column(String)
     medication_name = mapped_column(String)
-    medication_dose = mapped_column(Integer)
+    medication_dose = mapped_column(Float)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}

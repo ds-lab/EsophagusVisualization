@@ -49,7 +49,7 @@ CREATE TABLE medications (
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     medication_use VARCHAR,
     medication_name VARCHAR,
-    medication_dose INT
+    medication_dose FLOAT
 );
 
 CREATE TABLE botox_injections (
