@@ -959,12 +959,12 @@ p, li { white-space: pre-wrap; }
              <item row="0" column="0">
               <widget class="QLabel" name="label_14">
                <property name="text">
-                <string>Type of Medication</string>
+                <string>Medication use</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QComboBox" name="medication_name_dropdown">
+              <widget class="QComboBox" name="medication_use_dropdown">
                <item>
                 <property name="text">
                  <string>---</string>
@@ -982,12 +982,12 @@ p, li { white-space: pre-wrap; }
                </item>
                <item>
                 <property name="text">
-                 <string>None</string>
+                 <string>Other medication</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>Other</string>
+                 <string>No relevant medication</string>
                 </property>
                </item>
               </widget>
@@ -1000,7 +1000,7 @@ p, li { white-space: pre-wrap; }
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="medication_type_text"/>
+              <widget class="QLineEdit" name="medication_name_text"/>
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="label_16">

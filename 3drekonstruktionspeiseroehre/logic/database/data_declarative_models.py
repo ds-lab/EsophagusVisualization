@@ -85,12 +85,9 @@ class Medication(Base):
     __tablename__ = "medications"
     medication_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    use_antithrombotic_medication = mapped_column(Boolean)
-    type_antithrombotic_medication = mapped_column(String)
-    dose_antithrombotic_medication = mapped_column(Integer)
-    use_anticoagulation = mapped_column(Boolean)
-    type_anticoagulation = mapped_column(String)
-    dose_anticoagulation = mapped_column(Integer)
+    medication_use = mapped_column(String)
+    medication_name = mapped_column(String)
+    medication_dose = mapped_column(Integer)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}

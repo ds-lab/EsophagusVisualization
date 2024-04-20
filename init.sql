@@ -47,12 +47,9 @@ CREATE TABLE gerd_scores (
 CREATE TABLE medications (
     medication_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    use_antithrombotic_medication BOOLEAN,
-    type_antithrombotic_medication VARCHAR,
-    dose_antithrombotic_medication INT,
-    use_anticoagulation BOOLEAN,
-    type_anticoagulation VARCHAR,
-    dose_anticoagulation INT
+    medication_use VARCHAR,
+    medication_name VARCHAR,
+    medication_dose INT
 );
 
 CREATE TABLE botox_injections (
