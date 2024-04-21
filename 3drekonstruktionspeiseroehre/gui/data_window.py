@@ -808,6 +808,7 @@ class DataWindow(QMainWindow):
                            'medication_use': self.ui.medication_use_dropdown.currentText(),
                            'medication_name': self.ui.medication_name_text.text(),
                            'medication_dose': round(self.ui.medication_dose_spin.value(), 2)}
+        # ToDo Validate Medication
         medication_dict, error = DataValidation.validate_visitdata(medication_dict)
         if error:
             return
@@ -1379,3 +1380,5 @@ class DataWindow(QMainWindow):
         self.poem_service.delete_poem_for_visit(self.selected_visit)
         self.complications_service.delete_complications_for_visit(self.selected_visit)
         self.__init_poem()
+
+    # ToDo Locale bei DoubleSpinBoxen umstellen!

@@ -221,9 +221,3 @@ CREATE TABLE visualization_data_list (
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     visualization_data BYTEA NOT NULL
 );
-
-CREATE TABLE visualization_data_list (
-    visualization_id SERIAL PRIMARY KEY,
-    visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    visualization_data BYTEA NOT NULL
-);
