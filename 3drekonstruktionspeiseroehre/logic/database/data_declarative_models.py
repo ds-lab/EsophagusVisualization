@@ -185,6 +185,7 @@ class ManometryFile(Base):
     manometry_file_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     file = mapped_column(PickleType, nullable=False)
+    pressure_matrix = mapped_column(PickleType, nullable=False)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}

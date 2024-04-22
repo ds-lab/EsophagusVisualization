@@ -118,7 +118,8 @@ CREATE TABLE manometries (
 CREATE TABLE manometry_files (
     manometry_file_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    file BYTEA NOT NULL
+    file BYTEA NOT NULL,
+    pressure_matrix BYTEA NOT NULL
 );
 
 CREATE TABLE barium_swallows (

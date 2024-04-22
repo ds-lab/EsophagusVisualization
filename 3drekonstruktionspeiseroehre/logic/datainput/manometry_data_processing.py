@@ -9,8 +9,8 @@ from logic.database import database
 def process_and_upload_manometry_file(selected_visit, filename):
     error = False
     try:
-        df = pd.read_csv(filename, skiprows=config.csv_skiprows, header=0, index_col=0)
-        df = df.drop(config.csv_drop_columns, axis=1)
+        file = pd.read_csv(filename, skiprows=config.csv_skiprows, header=0, index_col=0)
+        df = file.drop(config.csv_drop_columns, axis=1)
         matrix = df.to_numpy()
         matrix = matrix.T  # sensors in axis 0
         pressure_matrix = np.flipud(matrix)  # sensors from top to bottom
@@ -21,9 +21,11 @@ def process_and_upload_manometry_file(selected_visit, filename):
 
     if not error:
         pressure_matrix_bytes = pressure_matrix.tobytes()
+        file_bytes = file.tobytes()
         manometry_file_dict = {
             'visit_id': selected_visit,
-            'file': pressure_matrix_bytes
+            'file': file_bytes,
+            'pressure_matrix': pressure_matrix_bytes
         }
         db = database.get_db()
         manometry_file_service = ManometryFileService(db)
