@@ -1,7 +1,6 @@
 import os
 import re
 from pathlib import Path
-from datetime import datetime
 import config
 
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
@@ -38,6 +37,9 @@ from logic.services.lhm_service import LHMService
 from logic.services.poem_service import POEMService
 from logic.services.gerd_service import GerdService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
+from logic.visit_data import VisitData
+from logic.visualization_data import VisualizationData
+from logic.patient_data import PatientData
 
 
 class DataWindow(QMainWindow):
@@ -920,7 +922,7 @@ class DataWindow(QMainWindow):
         barium_swallow_exists = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
             self.selected_visit)
         if not barium_swallow_exists or barium_swallow_exists and ShowMessage.to_update_for_visit("TBE Images"):
-            self.barium_swallow_file_service.delete_barium_swallow_file_for_visit(self.selected_visit)
+            self.barium_swallow_file_service.delete_barium_swallow_files_for_visit(self.selected_visit)
 
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
@@ -1379,3 +1381,35 @@ class DataWindow(QMainWindow):
         self.poem_service.delete_poem_for_visit(self.selected_visit)
         self.complications_service.delete_complications_for_visit(self.selected_visit)
         self.__init_poem()
+
+    def __create_visualization(self):
+        barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
+            self.selected_visit)
+        manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+
+        if barium_swallow_files is None or manometry_file is None:
+            QMessageBox.critical(self, 'Missing Data', 'The Manometry file and at least one barium swallow image '
+                                                       'are necessary for the 3D reconstruction.')
+            return
+        else:
+            for file in barium_swallow_files:
+                visualization_data = VisualizationData()
+                visualization_data.xray_filename = file.filename
+                visualization_data.pressure_matrix = barium_swallow_files.pressure_matrix
+
+
+        patient = self.patient_service.get_patient(self.selected_patient)
+        visit = self.visit_service.get_visit(self.selected_visit)
+        name = patient.patient_id + "_" + visit.visit_type + "_" + visit.year_of_visit
+        # visit = VisitData(name)
+        # for xray_filename in self.xray_filenames:
+        #     visualization_data = VisualizationData()
+        #     visualization_data.xray_filename = xray_filename
+        #
+        #     visualization_data.pressure_matrix = self.pressure_matrix
+        #     visualization_data.endoflip_screenshot = self.endoflip_screenshot
+        #     visualization_data.endoscopy_filenames = self.endoscopy_filenames
+        #     visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
+        #     visit.add_visualization(visualization_data)
+        #
+        # ManageXrayWindows(self.master_window, visit, self.patient_data)

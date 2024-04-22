@@ -94,6 +94,17 @@ class BariumSwallowFileService:
         except OperationalError as e:
             self.show_error_msg()
 
+    def get_barium_swallow_files_for_visit(self, visit_id: int) -> list[BariumSwallowFile, None]:
+        stmt = select(BariumSwallowFile).where(BariumSwallowFile.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt).all()
+            if result:
+                return [row[0] for row in result]
+            else:
+                return None
+        except OperationalError as e:
+            self.show_error_msg()
+
     def delete_barium_swallow_file(self, id: str):
         stmt = delete(BariumSwallowFile).where(BariumSwallowFile.tbe_file_id == id)
         try:
@@ -104,7 +115,7 @@ class BariumSwallowFileService:
             self.db.rollback()
             self.show_error_msg()
 
-    def delete_barium_swallow_file_for_visit(self, visit_id: str):
+    def delete_barium_swallow_files_for_visit(self, visit_id: str):
         stmt = delete(BariumSwallowFile).where(BariumSwallowFile.visit_id == visit_id)
         try:
             result = self.db.execute(stmt)
@@ -160,8 +171,8 @@ class BariumSwallowFileService:
             results = self.db.execute(stmt).all()
             pixmaps = []
             if results:
-                for endoscopy_file in results:
-                    image = endoscopy_file[0].file
+                for barium_swallow_file in results:
+                    image = barium_swallow_file[0].file
                     pixmap = QtGui.QPixmap()
                     pixmap.loadFromData(image, 'jpeg')
                     pixmaps.append(pixmap)
