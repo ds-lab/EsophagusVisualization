@@ -1089,13 +1089,6 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
-         <widget class="QPushButton" name="pushButton_16">
-          <property name="text">
-           <string>Create Visualization for selected Patient and selected Visit</string>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="0">
          <widget class="QGroupBox" name="eckardt_score">
           <property name="enabled">
@@ -1367,6 +1360,13 @@ p, li { white-space: pre-wrap; }
           </layout>
          </widget>
         </item>
+        <item row="5" column="0" colspan="4">
+         <widget class="QPushButton" name="pushButton_16">
+          <property name="text">
+           <string>Create Visualization for selected Patient and selected Visit</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="visit_data">
@@ -1432,7 +1432,7 @@ p, li { white-space: pre-wrap; }
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>3</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="empty">
            <layout class="QGridLayout" name="gridLayout_71"/>
@@ -2608,6 +2608,9 @@ p, li { white-space: pre-wrap; }
                  </item>
                  <item row="2" column="1">
                   <widget class="QDoubleSpinBox" name="lhm_length_spin">
+                   <property name="locale">
+                    <locale language="English" country="UnitedKingdom"/>
+                   </property>
                    <property name="minimum">
                     <double>-1.000000000000000</double>
                    </property>
@@ -2727,6 +2730,9 @@ p, li { white-space: pre-wrap; }
                  </item>
                  <item row="5" column="1">
                   <widget class="QDoubleSpinBox" name="peom_tunnel_length_spin">
+                   <property name="locale">
+                    <locale language="English" country="UnitedKingdom"/>
+                   </property>
                    <property name="minimum">
                     <double>-1.000000000000000</double>
                    </property>
@@ -2750,6 +2756,9 @@ p, li { white-space: pre-wrap; }
                  </item>
                  <item row="2" column="3">
                   <widget class="QDoubleSpinBox" name="peom_tubular_myotomy_length_spin">
+                   <property name="locale">
+                    <locale language="English" country="UnitedKingdom"/>
+                   </property>
                    <property name="minimum">
                     <double>-1.000000000000000</double>
                    </property>
@@ -2766,6 +2775,9 @@ p, li { white-space: pre-wrap; }
                  </item>
                  <item row="4" column="1">
                   <widget class="QDoubleSpinBox" name="peom_incision_leght_spin">
+                   <property name="locale">
+                    <locale language="English" country="UnitedKingdom"/>
+                   </property>
                    <property name="minimum">
                     <double>-1.000000000000000</double>
                    </property>
@@ -2827,6 +2839,9 @@ p, li { white-space: pre-wrap; }
                  </item>
                  <item row="4" column="3">
                   <widget class="QDoubleSpinBox" name="poem_gastric_myotomy_length_spin">
+                   <property name="locale">
+                    <locale language="English" country="UnitedKingdom"/>
+                   </property>
                    <property name="minimum">
                     <double>-1.000000000000000</double>
                    </property>
@@ -2912,6 +2927,9 @@ p, li { white-space: pre-wrap; }
                  </item>
                  <item row="2" column="1">
                   <widget class="QDoubleSpinBox" name="peom_incision_height_spin">
+                   <property name="locale">
+                    <locale language="English" country="UnitedKingdom"/>
+                   </property>
                    <property name="minimum">
                     <double>-1.000000000000000</double>
                    </property>
@@ -3693,8 +3711,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1384</width>
-             <height>649</height>
+             <width>965</width>
+             <height>321</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4277,6 +4295,9 @@ p, li { white-space: pre-wrap; }
                    <layout class="QGridLayout" name="gridLayout_41">
                     <item row="1" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_before_csa_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4300,6 +4321,9 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item row="2" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_before_di_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4323,6 +4347,9 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item row="3" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_before_dmin_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4346,6 +4373,9 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item row="4" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_before_ibp_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4382,6 +4412,9 @@ p, li { white-space: pre-wrap; }
                    <layout class="QGridLayout" name="gridLayout_60">
                     <item row="1" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_during_csa_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4405,6 +4438,9 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item row="2" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_during_di_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4428,6 +4464,9 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item row="3" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_during_dmin_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4451,6 +4490,9 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item row="4" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_during_ibp_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4487,6 +4529,9 @@ p, li { white-space: pre-wrap; }
                    <layout class="QGridLayout" name="gridLayout_79">
                     <item row="1" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_after_csa_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4510,6 +4555,9 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item row="2" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_after_di_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4533,6 +4581,9 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item row="3" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_after_dmin_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4556,6 +4607,9 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item row="4" column="1">
                      <widget class="QDoubleSpinBox" name="endflip_after_ibp_spin">
+                      <property name="locale">
+                       <locale language="English" country="UnitedKingdom"/>
+                      </property>
                       <property name="minimum">
                        <double>-1.000000000000000</double>
                       </property>
@@ -4657,8 +4711,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1384</width>
-             <height>649</height>
+             <width>674</width>
+             <height>122</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4802,7 +4856,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
