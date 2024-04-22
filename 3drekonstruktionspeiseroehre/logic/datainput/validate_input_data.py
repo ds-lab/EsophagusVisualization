@@ -314,5 +314,39 @@ class DataValidation:
                 error = True
         return gerd_dict, error
 
+    @staticmethod
+    def validate_medication(medication_dict):
+        null_values = []
+        invalid_values = []
+        mandatory_values = []
+        error = False
+        for key, value in medication_dict.items():
+            if key == "patient_id" and value is None:
+                QMessageBox.critical(None, "No patient selected", "Error: Please select a patient.")
+                error = True
+                return medication_dict, error
+            if value == config.missing_text or value == config.missing_dropdown or value == config.missing_int:
+                null_values.append(key)
+                medication_dict[key] = None
+        for key, value in medication_dict.items():
+            if value is None and key in config.mandatory_values_medication:
+                mandatory_values.append(key)
+        if mandatory_values:
+            null_message = (f"The following mandatory value is not set: " + ", ".join(mandatory_values) +
+                            ". Please provide this value.")
+            QMessageBox.critical(None, 'Null Value Detected', null_message)
+            error = True
+            return medication_dict, error
+        if (medication_dict.get('medication_use') != 'No relevant medication' and
+                (medication_dict.get('medication_name') is None or medication_dict.get('medication_dose') is None)):
+            null_message = "The following optional values are not set: " + ", ".join(
+                null_values) + ". Do you want to set them to null/unknown?"
+            reply = QMessageBox.question(None, 'Null Values Detected', null_message,
+                                         QMessageBox.StandardButton.Yes |
+                                         QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.No:
+                error = True
+        return medication_dict, error
+
 
 
