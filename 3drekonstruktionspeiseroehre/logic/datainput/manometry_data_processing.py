@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QMessageBox
 import config
 from logic.services.manometry_service import ManometryFileService
 from logic.database import database
+import pickle
 
 
 def process_and_upload_manometry_file(selected_visit, filename):
@@ -21,7 +22,7 @@ def process_and_upload_manometry_file(selected_visit, filename):
 
     if not error:
         pressure_matrix_bytes = pressure_matrix.tobytes()
-        file_bytes = file.tobytes()
+        file_bytes = pickle.dumps(file)
         manometry_file_dict = {
             'visit_id': selected_visit,
             'file': file_bytes,

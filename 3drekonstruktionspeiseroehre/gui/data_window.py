@@ -12,6 +12,7 @@ from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from gui.set_textfields import setText
 from gui.show_message import ShowMessage
+from gui.xray_window_managment import ManageXrayWindows
 from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload, \
     process_and_upload_endoflip_images
 from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
@@ -132,6 +133,8 @@ class DataWindow(QMainWindow):
         # Medication
         self.ui.add_medication_button.clicked.connect(self.__add_medication)
         self.ui.delete_medication_button.clicked.connect(self.__delete_medication)
+        # Create Visualization
+        self.ui.visits_create_visualization_button.clicked.connect(self.__create_visualization)
 
         # Visit Data Tab
         # Manometry
@@ -165,6 +168,8 @@ class DataWindow(QMainWindow):
         # POEM
         self.ui.add_poem_button.clicked.connect(self.__add_poem)
         self.ui.delete_poem_button.clicked.connect(self.__delete_poem)
+        # Create Visualization
+        self.ui.visitdata_create_visualization_button.clicked.connect(self.__create_visualization)
 
         # Buttons of the Image Viewers
         self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
@@ -1383,7 +1388,7 @@ class DataWindow(QMainWindow):
         self.__init_poem()
 
     def __create_visualization(self):
-        barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
+        barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(
             self.selected_visit)
         manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
 
@@ -1392,15 +1397,25 @@ class DataWindow(QMainWindow):
                                                        'are necessary for the 3D reconstruction.')
             return
         else:
+            patient = self.patient_service.get_patient(self.selected_patient)
+            visit = self.visit_service.get_visit(self.selected_visit)
+            name = patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
+            visit = VisitData(name)
             for file in barium_swallow_files:
                 visualization_data = VisualizationData()
                 visualization_data.xray_filename = file.filename
-                visualization_data.pressure_matrix = barium_swallow_files.pressure_matrix
+
+                visualization_data.pressure_matrix = manometry_file.pressure_matrix
+
+                visualization_data.endoflip_screenshot = self.endoflip_screenshot
+                visualization_data.endoscopy_filenames = self.endoscopy_filenames
+                visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
+                visit.add_visualization(visualization_data)
+
+            ManageXrayWindows(self.master_window, visit, self.patient_data)
 
 
-        patient = self.patient_service.get_patient(self.selected_patient)
-        visit = self.visit_service.get_visit(self.selected_visit)
-        name = patient.patient_id + "_" + visit.visit_type + "_" + visit.year_of_visit
+
         # visit = VisitData(name)
         # for xray_filename in self.xray_filenames:
         #     visualization_data = VisualizationData()
