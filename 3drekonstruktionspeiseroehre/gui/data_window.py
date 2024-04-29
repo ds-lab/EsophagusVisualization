@@ -1,8 +1,11 @@
 import os
+import pickle
 import re
 from pathlib import Path
 import config
+from io import BytesIO
 
+import numpy as np
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QCompleter
@@ -1404,8 +1407,10 @@ class DataWindow(QMainWindow):
             for file in barium_swallow_files:
                 visualization_data = VisualizationData()
                 visualization_data.xray_filename = file.filename
+                visualization_data.xray_file = BytesIO(file.file)
 
-                visualization_data.pressure_matrix = manometry_file.pressure_matrix
+                pressure_matrix = pickle.loads(manometry_file.pressure_matrix)
+                visualization_data.pressure_matrix = pressure_matrix
 
                 visualization_data.endoflip_screenshot = self.endoflip_screenshot
                 visualization_data.endoscopy_filenames = self.endoscopy_filenames
@@ -1413,18 +1418,3 @@ class DataWindow(QMainWindow):
                 visit.add_visualization(visualization_data)
 
             ManageXrayWindows(self.master_window, visit, self.patient_data)
-
-
-
-        # visit = VisitData(name)
-        # for xray_filename in self.xray_filenames:
-        #     visualization_data = VisualizationData()
-        #     visualization_data.xray_filename = xray_filename
-        #
-        #     visualization_data.pressure_matrix = self.pressure_matrix
-        #     visualization_data.endoflip_screenshot = self.endoflip_screenshot
-        #     visualization_data.endoscopy_filenames = self.endoscopy_filenames
-        #     visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
-        #     visit.add_visualization(visualization_data)
-        #
-        # ManageXrayWindows(self.master_window, visit, self.patient_data)

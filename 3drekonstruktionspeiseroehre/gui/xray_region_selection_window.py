@@ -13,6 +13,8 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from shapely.geometry import Polygon
 from skimage import io
+from PIL import Image
+
 
 
 class XrayRegionSelectionWindow(QMainWindow):
@@ -57,7 +59,9 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         # Load the X-ray image
         # ToDo von DB statt von File einlesen
-        self.xray_image = io.imread(self.visualization_data.xray_filename)
+        #self.xray_image = io.imread(self.visualization_data.xray_filename)
+        image = Image.open(self.visualization_data.xray_file)
+        self.xray_image = np.array(image)
 
         # Display the X-ray image
         self.plot_ax.imshow(self.xray_image)

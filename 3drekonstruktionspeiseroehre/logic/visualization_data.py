@@ -6,6 +6,7 @@ class VisualizationData:
         init VisualizationData
         """
         self._xray_filename = None
+        self._xray_file = None
         self._endoscopy_filenames = None
 
         self._xray_polygon = None
@@ -34,6 +35,14 @@ class VisualizationData:
         self._figure_x = None
         self._figure_y = None
         self._figure_z = None
+
+    @property
+    def xray_file(self):
+        return self._xray_file
+
+    @xray_file.setter
+    def xray_file(self, value):
+        self._xray_file = value
 
     @property
     def xray_filename(self):
