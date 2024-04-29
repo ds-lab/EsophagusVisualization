@@ -21,15 +21,12 @@ def process_and_upload_manometry_file(selected_visit, filename):
         QMessageBox.critical(None, "Invalid File", "Error: The file does not have the expected format.")
 
     if not error:
-        pressure_matrix_bytes = pressure_matrix.tobytes()
-        pressure_matrix_shape = pressure_matrix.shape
+        pressure_matrix_bytes = pickle.dumps(pressure_matrix)
         file_bytes = pickle.dumps(file)
         manometry_file_dict = {
             'visit_id': selected_visit,
             'file': file_bytes,
-            'pressure_matrix': pressure_matrix_bytes,
-            'pressure_matrix_shape_0': pressure_matrix_shape[0],
-            'pressure_matrix_shape_1': pressure_matrix_shape[1]
+            'pressure_matrix': pressure_matrix_bytes
         }
         db = database.get_db()
         manometry_file_service = ManometryFileService(db)
