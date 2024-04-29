@@ -47,7 +47,7 @@ class PositionSelectionWindow(QMainWindow):
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
 
-        if len(self.visualization_data.endoscopy_filenames) > 0:
+        if len(self.visualization_data.endoscopy_files) > 0:
             self.ui.endoscopy_button.clicked.connect(self.__endoscopy_button_clicked)
         else:
             self.ui.endoscopy_groupbox.setHidden(True)
@@ -161,7 +161,7 @@ class PositionSelectionWindow(QMainWindow):
                             self.visualization_data.endoflip_pos = (
                             int(self.endoflip_pos[0]), int(self.endoflip_pos[1]))
 
-                        if len(self.visualization_data.endoscopy_filenames) > 0:
+                        if len(self.visualization_data.endoscopy_files) > 0:
                             self.visualization_data.endoscopy_start_pos = \
                                 (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1]))
 
@@ -169,7 +169,7 @@ class PositionSelectionWindow(QMainWindow):
                         if self.next_window:
                             self.master_window.switch_to(self.next_window)
                         # Handle Endoscopy annotation
-                        elif len(self.visualization_data.endoscopy_filenames) > 0:
+                        elif len(self.visualization_data.endoscopy_files) > 0:
                             endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
                                                                                   self.patient_data, self.visit)
                             self.master_window.switch_to(endoscopy_selection_window)
@@ -223,7 +223,7 @@ class PositionSelectionWindow(QMainWindow):
         :return: True or False
         """
         return self.first_sensor_pos and self.second_sensor_pos and self.sphincter_upper_pos and self.esophagus_exit_pos \
-            and (self.endoscopy_pos or len(self.visualization_data.endoscopy_filenames) == 0) \
+            and (self.endoscopy_pos or len(self.visualization_data.endoscopy_files) == 0) \
             and (self.endoflip_pos or self.visualization_data.endoflip_screenshot == None)       
     
     def __is_sensor_order_correct(self):
@@ -253,6 +253,6 @@ class PositionSelectionWindow(QMainWindow):
             or self.sphincter_upper_pos[0] < poly_x_min or self.sphincter_upper_pos[0] > poly_x_max \
             or self.esophagus_exit_pos[1] < poly_y_min or self.esophagus_exit_pos[1] > poly_y_max \
             or self.esophagus_exit_pos[0] < poly_x_min or self.esophagus_exit_pos[0] > poly_x_max \
-            or (len(self.visualization_data.endoscopy_filenames) > 0 and
+            or (len(self.visualization_data.endoscopy_files) > 0 and
                 (self.endoscopy_pos[1] < poly_y_min or self.endoscopy_pos[1] > poly_y_max
                  or self.endoscopy_pos[0] < poly_x_min or self.endoscopy_pos[0] > poly_x_max))

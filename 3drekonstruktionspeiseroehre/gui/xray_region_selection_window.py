@@ -58,8 +58,6 @@ class XrayRegionSelectionWindow(QMainWindow):
         self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color='red'))
 
         # Load the X-ray image
-        # ToDo von DB statt von File einlesen
-        #self.xray_image = io.imread(self.visualization_data.xray_filename)
         image = Image.open(self.visualization_data.xray_file)
         self.xray_image = np.array(image)
 

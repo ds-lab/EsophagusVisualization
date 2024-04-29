@@ -101,9 +101,9 @@ class DataWindow(QMainWindow):
         self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
         self.import_filenames = []
-        self.endoscopy_filenames = []
         self.xray_filenames = []
         self.endoscopy_image_positions = []
+        self.endoscopy_files = []
         self.endoflip_screenshot = None
 
         # Connect Buttons to Functions
@@ -1412,9 +1412,22 @@ class DataWindow(QMainWindow):
                 pressure_matrix = pickle.loads(manometry_file.pressure_matrix)
                 visualization_data.pressure_matrix = pressure_matrix
 
-                visualization_data.endoflip_screenshot = self.endoflip_screenshot
-                visualization_data.endoscopy_filenames = self.endoscopy_filenames
+                endoscopy = self.endoscopy_file_service.get_endoscopy_files_for_visit(self.selected_visit)
+                if endoscopy:
+                    endoscopy_image_positions_cm = []
+                    endoscopy_images = []
+                    for endoscopy_file in endoscopy:
+                        endoscopy_image_positions_cm.append(endoscopy_file.image_position)
+                        endoscopy_images.append(BytesIO(endoscopy_file.file))
+
+                    self.endoscopy_image_positions = endoscopy_image_positions_cm
+                    self.endoscopy_files = endoscopy_images
+
                 visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
+                visualization_data.endoscopy_files = self.endoscopy_files
+
+                visualization_data.endoflip_screenshot = self.endoflip_screenshot
+
                 visit.add_visualization(visualization_data)
 
             ManageXrayWindows(self.master_window, visit, self.patient_data)

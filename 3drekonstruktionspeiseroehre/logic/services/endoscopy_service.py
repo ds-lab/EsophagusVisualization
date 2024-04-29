@@ -93,6 +93,17 @@ class EndoscopyFileService:
         except OperationalError as e:
             self.show_error_msg()
 
+    def get_endoscopy_files_for_visit(self, visit_id: int) -> list[EndoscopyFile, None]:
+        stmt = select(EndoscopyFile).where(EndoscopyFile.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt).all()
+            if result:
+                return [row[0] for row in result]
+            else:
+                return None
+        except OperationalError as e:
+            self.show_error_msg()
+
     def delete_endoscopy_file(self, id: str):
         stmt = delete(EndoscopyFile).where(EndoscopyFile.endoscopy_id == id)
         try:

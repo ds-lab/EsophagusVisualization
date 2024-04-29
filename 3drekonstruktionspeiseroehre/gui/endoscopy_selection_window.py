@@ -13,6 +13,7 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMessageBox
 from shapely.geometry import Polygon
 from skimage import io
+from PIL import Image
 
 
 class EndoscopySelectionWindow(QtWidgets.QMainWindow):
@@ -50,7 +51,9 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
 
         # Get endoscopy images (same for all visualisation data since only xray differ)
         # ToDo Endoscopy Images von der DB einlesen
-        self.endoscopy_images = [io.imread(filename) for filename in visit.visualization_data_list[0].endoscopy_filenames]
+        #self.endoscopy_images = [io.imread(filename) for filename in visit.visualization_data_list[0].endoscopy_filenames]
+        self.endoscopy_images = [np.array(Image.open(file)) for file in
+                                 visit.visualization_data_list[0].endoscopy_files]
 
         self.__load_image(self.endoscopy_images[0])
         self.__update_button_text()

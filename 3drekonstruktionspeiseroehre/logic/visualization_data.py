@@ -7,6 +7,8 @@ class VisualizationData:
         """
         self._xray_filename = None
         self._xray_file = None
+
+        self._endoscopy_files = None
         self._endoscopy_filenames = None
 
         self._xray_polygon = None
@@ -99,6 +101,14 @@ class VisualizationData:
     @endoflip_screenshot.setter
     def endoflip_screenshot(self, value):
         self._endoflip_screenshot = value
+
+    @property
+    def endoscopy_files(self):
+        return self._endoscopy_files
+
+    @endoscopy_files.setter
+    def endoscopy_files(self, value):
+        self._endoscopy_files = value
 
     @property
     def endoscopy_filenames(self):
