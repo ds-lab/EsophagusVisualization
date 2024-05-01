@@ -1132,7 +1132,7 @@ class DataWindow(QMainWindow):
     def __upload_endoflip_image(self):
         endoflip_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
         if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip images"):
-            self.endoflip_image_service.delete_endoflip_image_for_visit(self.selected_visit)
+            self.endoflip_image_service.delete_endoflip_images_for_visit(self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
             error = False
@@ -1423,10 +1423,18 @@ class DataWindow(QMainWindow):
                     self.endoscopy_image_positions = endoscopy_image_positions_cm
                     self.endoscopy_files = endoscopy_images
 
+                # ToDo: das in else
                 visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
                 visualization_data.endoscopy_files = self.endoscopy_files
 
-                visualization_data.endoflip_screenshot = self.endoflip_screenshot
+                endoflip = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
+                if len(endoflip) == 1:
+                    visualization_data.endoflip_screenshot = pickle.loads(endoflip[0].screenshot)
+                elif len(endoflip) > 1:
+                    # ToDo nicht immer den ersten endoflip screenshot nehmen
+                    visualization_data.endoflip_screenshot = pickle.loads(endoflip[0].screenshot)
+                else:
+                    visualization_data.endoflip_screenshot = self.endoflip_screenshot
 
                 visit.add_visualization(visualization_data)
 

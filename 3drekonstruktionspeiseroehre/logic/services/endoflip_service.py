@@ -176,7 +176,7 @@ class EndoflipImageService:
             self.db.rollback()
             self.show_error_msg()
 
-    def delete_endoflip_image_for_visit(self, visit_id: str):
+    def delete_endoflip_images_for_visit(self, visit_id: str):
         stmt = delete(EndoflipImage).where(EndoflipImage.visit_id == visit_id)
         try:
             result = self.db.execute(stmt)
