@@ -20,11 +20,11 @@ class Patient(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
-    def __str__(self) -> str:
-        return f"[patient_id: {self.patient_id}, birth_year: {self.birth_year}]"
+    #def __str__(self) -> str:
+    #    return f"[patient_id: {self.patient_id}, birth_year: {self.birth_year}]"
 
-    def __repr__(self) -> str:
-        return f"[patient_id: {self.patient_id}, birth_year: {self.birth_year}]"
+    #def __repr__(self) -> str:
+    #    return f"[patient_id: {self.patient_id}, birth_year: {self.birth_year}]"
 
 
 class PreviousTherapy(Base):

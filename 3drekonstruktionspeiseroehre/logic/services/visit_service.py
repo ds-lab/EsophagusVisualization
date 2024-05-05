@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QMessageBox
-from sqlalchemy import select, delete, update, insert
+from sqlalchemy import select, delete, update, insert, and_
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
-from logic.database.data_declarative_models import Visit, Patient
+from logic.database.data_declarative_models import Patient, PreviousTherapy, Visit, EckardtScore, Gerd, Medication, BotoxInjection, PneumaticDilatation, LHM, POEM, Complications, Manometry, ManometryFile, BariumSwallow, BariumSwallowFile, Endoscopy, EndoscopyFile, Endoflip, EndoflipFile, EndoflipImage, Endosonography, EndosonographyFile, Metric, VisualizationData
 
 class VisitService:
     
@@ -53,6 +53,29 @@ class VisitService:
             return result.rowcount  # Return the number of rows affected
         except OperationalError as e:
             self.db.rollback()
+            self.show_error_msg()
+
+    def get_all_data_for_visit(self, visit_id: int):
+        try:
+            patients = Patient.__table__
+            visits = Visit.__table__
+            previous_therapies = PreviousTherapy.__table__
+
+            stmt = (
+                select(patients, visits, previous_therapies)
+                .select_from(visits.outerjoin(patients, visits.c.patient_id == patients.c.patient_id).
+                             outerjoin(previous_therapies, patients.c.patient_id == previous_therapies.c.patient_id))
+                .where(visits.c.visit_id == visit_id)
+            )
+
+            result = self.db.execute(stmt).all()
+            if result:
+                print(result)
+                return result
+            else:
+                return None
+
+        except OperationalError as e:
             self.show_error_msg()
 
     def show_error_msg(self):

@@ -1117,7 +1117,6 @@ class DataWindow(QMainWindow):
                             error = True
                         if error or len(endoflip_screenshot['30']['aggregates']) != 4 or len(
                                 endoflip_screenshot['40']['aggregates']) != 4:
-                            print(error)
                             self.ui.endoflip_file_text.setText("")
                             QMessageBox.critical(self, "Invalid File",
                                                  "Error: The file does not have the expected format.")
@@ -1391,6 +1390,8 @@ class DataWindow(QMainWindow):
         self.__init_poem()
 
     def __create_visualization(self):
+        visit_data = self.visit_service.get_all_data_for_visit(self.selected_visit)
+        print(f"VISIT DATA: {visit_data}")
         barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(
             self.selected_visit)
         manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
