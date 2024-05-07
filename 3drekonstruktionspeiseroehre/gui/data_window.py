@@ -44,6 +44,7 @@ from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapy
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
 from logic.patient_data import PatientData
+from logic.dataoutput.get_export_data import GetExportData
 
 
 class DataWindow(QMainWindow):
@@ -95,6 +96,7 @@ class DataWindow(QMainWindow):
         self.poem_service = POEMService(self.db)
         self.gerd_service = GerdService(self.db)
         self.medication_service = MedicationService(self.db)
+        self.data_output = GetExportData(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -1390,7 +1392,7 @@ class DataWindow(QMainWindow):
         self.__init_poem()
 
     def __create_visualization(self):
-        visit_data = self.visit_service.get_all_data_for_visit(self.selected_visit)
+        visit_data = self.export_data.get_all_data_for_visit(self.selected_visit)
         print(f"VISIT DATA: {visit_data}")
         barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(
             self.selected_visit)
