@@ -62,7 +62,7 @@ CREATE TABLE botox_injections (
 CREATE TABLE pneumatic_dilatations (
     pneumatic_dilatation_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    ballon_volume VARCHAR(5),
+    balloon_volume VARCHAR(5),
     quantity INT
 );
 
@@ -96,13 +96,13 @@ CREATE TABLE complications (
     mucosal_tears VARCHAR(10),
     pneumothorax VARCHAR(10),
     pneumomediastinum VARCHAR(10),
-    other VARCHAR(10)
+    other_complication VARCHAR(10)
 );
 
 CREATE TABLE manometries (
     manometry_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    catheder_type VARCHAR(20),
+    catheter_type VARCHAR(20),
     patient_position VARCHAR(20),
     resting_pressure INT,
     ipr4 INT,
@@ -127,12 +127,12 @@ CREATE TABLE barium_swallows (
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     type_contrast_medium VARCHAR(50),
     amount_contrast_medium INT,
-    height_contast_medium_1min INT,
-    height_contast_medium_2min INT,
-    height_contast_medium_5min INT,
-    width_contast_medium_1min INT,
-    width_contast_medium_2min INT,
-    width_contast_medium_5min INT
+    height_contrast_medium_1min INT,
+    height_contrast_medium_2min INT,
+    height_contrast_medium_5min INT,
+    width_contrast_medium_1min INT,
+    width_contrast_medium_2min INT,
+    width_contrast_medium_5min INT
 );
 
 CREATE TABLE barium_swallow_files (

@@ -108,7 +108,7 @@ class PneumaticDilatation(Base):
     __tablename__ = "pneumatic_dilatations"
     pneumatic_dilatation_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    ballon_volume = mapped_column(String(5))
+    balloon_volume = mapped_column(String(5))
     quantity = mapped_column(Integer)
 
     def toDict(self):
@@ -154,7 +154,7 @@ class Complications(Base):
     mucosal_tears = mapped_column(String(10))
     pneumothorax = mapped_column(String(10))
     pneumomediastinum = mapped_column(String(10))
-    other = mapped_column(String(10))
+    other_complication = mapped_column(String(10))
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
@@ -164,7 +164,7 @@ class Manometry(Base):
     __tablename__ = "manometries"
     manometry_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    catheder_type = mapped_column(String(20))
+    catheter_type = mapped_column(String(20))
     patient_position = mapped_column(String(20))
     resting_pressure = mapped_column(Integer)
     ipr4 = mapped_column(Integer)
@@ -197,12 +197,12 @@ class BariumSwallow(Base):
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     type_contrast_medium = mapped_column(String(50))
     amount_contrast_medium = mapped_column(Integer)
-    height_contast_medium_1min = mapped_column(Integer)
-    height_contast_medium_2min = mapped_column(Integer)
-    height_contast_medium_5min = mapped_column(Integer)
-    width_contast_medium_1min = mapped_column(Integer)
-    width_contast_medium_2min = mapped_column(Integer)
-    width_contast_medium_5min = mapped_column(Integer)
+    height_contrast_medium_1min = mapped_column(Integer)
+    height_contrast_medium_2min = mapped_column(Integer)
+    height_contrast_medium_5min = mapped_column(Integer)
+    width_contrast_medium_1min = mapped_column(Integer)
+    width_contrast_medium_2min = mapped_column(Integer)
+    width_contrast_medium_5min = mapped_column(Integer)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
