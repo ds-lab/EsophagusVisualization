@@ -1,10 +1,8 @@
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QMessageBox
-from flask import jsonify
 from sqlalchemy import select, delete, update, insert, func
 from sqlalchemy.orm import Session
 from logic.database.data_declarative_models import EndoscopyFile, Endoscopy, Visit
-from sqlalchemy import inspect
 from sqlalchemy.exc import OperationalError
 
 class EndoscopyService:

@@ -12,7 +12,6 @@ from PyQt6 import QtWidgets, uic
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMessageBox
 from shapely.geometry import Polygon
-from skimage import io
 from PIL import Image
 
 

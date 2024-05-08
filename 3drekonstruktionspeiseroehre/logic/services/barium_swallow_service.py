@@ -1,10 +1,8 @@
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QMessageBox
-from flask import jsonify
-from sqlalchemy import select, delete, update, insert, func
+from sqlalchemy import select, delete, update, insert
 from sqlalchemy.orm import Session
-from logic.database.data_declarative_models import BariumSwallowFile, BariumSwallow, Visit
-from sqlalchemy import inspect
+from logic.database.data_declarative_models import BariumSwallowFile, BariumSwallow
 from sqlalchemy.exc import OperationalError
 
 

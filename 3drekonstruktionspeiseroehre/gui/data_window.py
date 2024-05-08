@@ -5,7 +5,6 @@ from pathlib import Path
 import config
 from io import BytesIO
 
-import numpy as np
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QCompleter
@@ -43,7 +42,6 @@ from logic.services.gerd_service import GerdService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
-from logic.patient_data import PatientData
 from logic.dataoutput.export_data import ExportData
 
 

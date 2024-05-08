@@ -1,4 +1,3 @@
-from PyQt6.QtWidgets import QMessageBox
 from logic.database import database
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService

@@ -1,6 +1,5 @@
-from sqlalchemy import Boolean, ForeignKey, Integer, PickleType, String, Enum, Date, Float, create_engine, inspect
-from sqlalchemy.orm import DeclarativeBase, mapped_column, sessionmaker
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Boolean, ForeignKey, Integer, PickleType, String, Float, inspect
+from sqlalchemy.orm import DeclarativeBase, mapped_column
 
 
 class Base(DeclarativeBase):

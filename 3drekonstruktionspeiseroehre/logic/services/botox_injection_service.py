@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QMessageBox
 from sqlalchemy import select, delete, update, insert
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
-from logic.database.data_declarative_models import Visit, Patient, BotoxInjection
+from logic.database.data_declarative_models import BotoxInjection
 
 
 class BotoxInjectionService:
