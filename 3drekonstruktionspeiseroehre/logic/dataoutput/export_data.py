@@ -6,9 +6,10 @@ from logic.database.data_declarative_models import Patient, PreviousTherapy, Vis
     BotoxInjection, PneumaticDilatation, LHM, POEM, Complications, Manometry, ManometryFile, BariumSwallow, \
     BariumSwallowFile, Endoscopy, EndoscopyFile, Endoflip, EndoflipFile, EndoflipImage, Endosonography, \
     EndosonographyFile, Metric, VisualizationData
+import csv
 
 
-class GetExportData:
+class ExportData:
 
     def __init__(self, db_session: Session):
         self.db = db_session
@@ -120,3 +121,13 @@ class GetExportData:
         msg.setText("An error occurred.")
         msg.setInformativeText("Please check the connection to the database.")
         msg.exec()
+
+    @staticmethod
+    def export_csv(data, csv_file_path):
+        with open(csv_file_path, mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+
+            headers = ['Column1', 'Column2', 'Column3', ...]
+            writer.writerow(headers)
+
+            writer.writerows(data)

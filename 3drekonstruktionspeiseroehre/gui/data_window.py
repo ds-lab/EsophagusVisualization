@@ -44,7 +44,7 @@ from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapy
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
 from logic.patient_data import PatientData
-from logic.dataoutput.get_export_data import GetExportData
+from logic.dataoutput.export_data import ExportData
 
 
 class DataWindow(QMainWindow):
@@ -96,7 +96,7 @@ class DataWindow(QMainWindow):
         self.poem_service = POEMService(self.db)
         self.gerd_service = GerdService(self.db)
         self.medication_service = MedicationService(self.db)
-        self.export_data = GetExportData(self.db)
+        self.export_data = ExportData(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
