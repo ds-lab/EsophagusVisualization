@@ -96,7 +96,7 @@ class DataWindow(QMainWindow):
         self.poem_service = POEMService(self.db)
         self.gerd_service = GerdService(self.db)
         self.medication_service = MedicationService(self.db)
-        self.data_output = GetExportData(self.db)
+        self.export_data = GetExportData(self.db)
 
         # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
@@ -1392,7 +1392,8 @@ class DataWindow(QMainWindow):
         self.__init_poem()
 
     def __create_visualization(self):
-        visit_data = self.export_data.get_all_data_for_visit(self.selected_visit)
+        print("CREATE VISUALISATION")
+        visit_data = self.export_data.get_all_data()
         print(f"VISIT DATA: {visit_data}")
         barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(
             self.selected_visit)

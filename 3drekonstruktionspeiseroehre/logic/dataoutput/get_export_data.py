@@ -37,7 +37,7 @@ class GetExportData:
                        botox_injections, pneumatic_dilatations, lhms, poems, complications, manometries,
                        barium_swallows, endoscopies, endoflips, endosonographies)
                 .select_from(visits.outerjoin(patients, visits.c.patient_id == patients.c.patient_id)
-                             .outerjoin(previous_therapies, visits.c.visit_id == previous_therapies.c.visit_id)
+                             .outerjoin(previous_therapies, patients.c.patient_id == previous_therapies.c.patient_id)
                              .outerjoin(eckardt_scores, visits.c.visit_id == eckardt_scores.c.visit_id)
                              .outerjoin(gerd_scores, visits.c.visit_id == gerd_scores.c.visit_id)
                              .outerjoin(medications, visits.c.visit_id == medications.c.visit_id)
@@ -87,7 +87,7 @@ class GetExportData:
                        botox_injections, pneumatic_dilatations, lhms, poems, complications, manometries,
                        barium_swallows, endoscopies, endoflips, endosonographies)
                 .select_from(visits.outerjoin(patients, visits.c.patient_id == patients.c.patient_id)
-                             .outerjoin(previous_therapies, visits.c.visit_id == previous_therapies.c.visit_id)
+                             .outerjoin(previous_therapies, patients.c.patient_id == previous_therapies.c.patient_id)
                              .outerjoin(eckardt_scores, visits.c.visit_id == eckardt_scores.c.visit_id)
                              .outerjoin(gerd_scores, visits.c.visit_id == gerd_scores.c.visit_id)
                              .outerjoin(medications, visits.c.visit_id == medications.c.visit_id)
