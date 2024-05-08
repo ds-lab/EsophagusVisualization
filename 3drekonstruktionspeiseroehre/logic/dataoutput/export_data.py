@@ -87,7 +87,7 @@ class ExportData:
                 select(patients, visits, previous_therapies, eckardt_scores, gerd_scores, medications,
                        botox_injections, pneumatic_dilatations, lhms, poems, complications, manometries,
                        barium_swallows, endoscopies, endoflips, endosonographies)
-                .select_from(visits.outerjoin(patients, visits.c.patient_id == patients.c.patient_id)
+                .select_from(patients.outerjoin(visits, visits.c.patient_id == patients.c.patient_id)
                              .outerjoin(previous_therapies, patients.c.patient_id == previous_therapies.c.patient_id)
                              .outerjoin(eckardt_scores, visits.c.visit_id == eckardt_scores.c.visit_id)
                              .outerjoin(gerd_scores, visits.c.visit_id == gerd_scores.c.visit_id)
@@ -127,7 +127,41 @@ class ExportData:
         with open(csv_file_path, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
 
-            headers = ['Column1', 'Column2', 'Column3', ...]
+            headers = [
+                "patients.patient_id", "patients.gender", "patients.ethnicity", "patients.birth_year",
+                "patients.year_first_diagnosis", "patients.year_first_symptoms", "patients.center",
+                "previous_therapies.previous_therapy_id", "previous_therapies.therapy", "previous_therapies.year",
+                "visits.visit_id", "visits.year_of_visit", "visits.visit_type", "visits.therapy_type",
+                "visits.months_after_therapy", "eckardt_scores.dysphagia", "eckardt_scores.retrosternal_pain",
+                "eckardt_scores.regurgitation", "eckardt_scores.weightloss", "eckardt_scores.total_score",
+                "gerd_scores.grade", "gerd_scores.heart_burn", "gerd_scores.ppi_use", "gerd_scores.acid_exposure_time",
+                "medications.medication_id", "medications.medication_use", "medications.medication_name",
+                "medications.medication_dose", "botox_injections.botox_id", "botox_injections.botox_units",
+                "botox_injections.botox_height", "pneumatic_dilatations.pneumatic_dilatation_id",
+                "pneumatic_dilatations.ballon_volume", "pneumatic_dilatations.quantity", "lhms.lhm_id",
+                "lhms.op_duration", "lhms.length_myotomy", "lhms.fundoplicatio", "lhms.type_fundoplicatio",
+                "poems.poem_id", "poems.procedure_duration", "poems.height_mucosal_incision",
+                "poems.length_mucosal_incision", "poems.length_submuscosal_tunnel", "poems.localization_myotomy",
+                "poems.length_tubular_myotomy", "poems.length_gastric_myotomy", "complications.complication_id",
+                "complications.bleeding", "complications.perforation", "complications.capnoperitoneum",
+                "complications.mucosal_tears", "complications.pneumothorax", "complications.pneumomediastinum",
+                "complications.other", "manometries.manometry_id", "manometries.catheder_type",
+                "manometries.patient_position", "manometries.resting_pressure", "manometries.ipr4", "manometries.dci",
+                "manometries.dl", "manometries.ues_upper_boundary", "manometries.ues_lower_boundary",
+                "manometries.les_upper_boundary", "manometries.les_lower_boundary", "manometries.les_length",
+                "barium_swallows.tbe_id", "barium_swallows.type_contrast_medium",
+                "barium_swallows.amount_contrast_medium",
+                "barium_swallows.height_contast_medium_1min", "barium_swallows.height_contast_medium_2min",
+                "barium_swallows.height_contast_medium_5min", "barium_swallows.width_contast_medium_1min",
+                "barium_swallows.width_contast_medium_2min", "barium_swallows.width_contast_medium_5min",
+                "endoscopies.egd_id", "endoscopies.position_les", "endoflips.endoflip_id", "endoflips.csa_before",
+                "endoflips.di_before", "endoflips.dmin_before", "endoflips.ibp_before", "endoflips.csa_during",
+                "endoflips.di_during", "endoflips.dmin_during", "endoflips.ibp_during", "endoflips.csa_after",
+                "endoflips.di_after", "endoflips.dmin_after", "endoflips.ibp_after",
+                "endosonographies.endosonography_id",
+                "endosonographies.esophageal_wall_thickness"
+            ]
+
             writer.writerow(headers)
 
             writer.writerows(data)
