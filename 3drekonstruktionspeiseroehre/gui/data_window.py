@@ -222,8 +222,6 @@ class DataWindow(QMainWindow):
         self.__initialize_patient_model(filter_column, filter_expression)
         self.patient_tableView.setModel(self.patient_proxyModel)
         self.patient_tableView.setSortingEnabled(True)
-        self.patient_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.patient_tableView.customContextMenuRequested.connect(self.__context_menu_patient)
         self.patient_tableView.verticalHeader().setDefaultSectionSize(30)
         self.patient_tableView.setColumnWidth(0, 50)
         self.patient_tableView.resizeColumnsToContents()
@@ -248,15 +246,6 @@ class DataWindow(QMainWindow):
             self.__patient_id_filled)
 
     # Patient Functions
-
-    def __context_menu_patient(self):
-        menu = QtWidgets.QMenu()
-        if self.patient_tableView.selectedIndexes():
-            remove_data = menu.addAction("Remove Data")
-            remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
-            remove_data.triggered.connect(lambda: self.patient_model.removeRows(self.patient_tableView.currentIndex()))
-        cursor = QtGui.QCursor()
-        menu.exec(cursor.pos())
 
     def __patient_add_button_clicked(self):
         # Check if Patient alread exists
@@ -559,24 +548,12 @@ class DataWindow(QMainWindow):
             self.selected_patient)
         self.previous_therapies_model = CustomPreviousTherapyModel(self.previous_therapies_array)
         self.therapy_tableView.setModel(self.previous_therapies_model)
-        self.therapy_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.therapy_tableView.customContextMenuRequested.connect(self.__context_menu_previous_therapies)
         self.therapy_tableView.verticalHeader().setDefaultSectionSize(30)
         self.therapy_tableView.setColumnWidth(0, 50)
         self.therapy_tableView.resizeColumnsToContents()
         self.therapy_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.therapy_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.therapy_tableView.clicked.connect(self.__show_selected_previous_therapy_data)
-
-    def __context_menu_previous_therapies(self):
-        menu = QtWidgets.QMenu()
-        if self.patient_tableView.selectedIndexes():
-            remove_data = menu.addAction("Remove Data")
-            remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
-            remove_data.triggered.connect(
-                lambda: self.previous_therapies_model.removeRows(self.therapy_tableView.currentIndex()))
-        cursor = QtGui.QCursor()
-        menu.exec(cursor.pos())
 
     def __show_selected_previous_therapy_data(self):
         selected_indexes = self.therapy_tableView.selectedIndexes()  # Get the indexes of all selected cells
@@ -622,23 +599,12 @@ class DataWindow(QMainWindow):
         self.visits_array = self.visit_service.get_visits_for_patient(self.selected_patient)
         self.visits_model = CustomVisitsModel(self.visits_array)
         self.visits_tableView.setModel(self.visits_model)
-        self.visits_tableView.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.visits_tableView.customContextMenuRequested.connect(self.__context_menu_visit)
         self.visits_tableView.verticalHeader().setDefaultSectionSize(30)
         self.visits_tableView.setColumnWidth(0, 50)
         self.visits_tableView.resizeColumnsToContents()
         self.visits_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.visits_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.visits_tableView.clicked.connect(self.__select_visit)
-
-    def __context_menu_visit(self):
-        menu = QtWidgets.QMenu()
-        if self.visits_tableView.selectedIndexes():
-            remove_data = menu.addAction("Remove Data")
-            remove_data.setIcon(QtGui.QIcon("./media/remove.png"))
-            remove_data.triggered.connect(lambda: self.visits_model.removeRows(self.visits_tableView.currentIndex()))
-        cursor = QtGui.QCursor()
-        menu.exec(cursor.pos())
 
     def __visit_add_button_clicked(self):
         visit_dict = {'patient_id': self.selected_patient,
