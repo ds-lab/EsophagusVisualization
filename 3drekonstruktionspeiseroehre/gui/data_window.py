@@ -839,7 +839,7 @@ class DataWindow(QMainWindow):
                 "Timed Barium Swallow (TBE) data"):
             les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
             manometry_dict = {'visit_id': self.selected_visit,
-                              'catheder_type': self.ui.manometry_cathedertype_dropdown.currentText(),
+                              'catheter_type': self.ui.manometry_cathedertype_dropdown.currentText(),
                               'patient_position': self.ui.manometry_patientposition_dropdown.currentText(),
                               'resting_pressure': self.ui.manometry_restingpressure_spin.value(),
                               'ipr4': self.ui.manometry_ipr4_spin.value(),
@@ -896,12 +896,12 @@ class DataWindow(QMainWindow):
             tbe_dict = {'visit_id': self.selected_visit,
                         'type_contrast_medium': self.ui.tbe_cm_dropdown.currentText(),
                         'amount_contrast_medium': self.ui.tbe_amount_cm_spin.value(),
-                        'height_contast_medium_1min': self.ui.tbe_height_cm_1_spin.value(),
-                        'height_contast_medium_2min': self.ui.tbe_height_cm_2_spin.value(),
-                        'height_contast_medium_5min': self.ui.tbe_height_cm_5_spin.value(),
-                        'width_contast_medium_1min': self.ui.tbe_width_cm_1_spin.value(),
-                        'width_contast_medium_2min': self.ui.tbe_width_cm_2_spin.value(),
-                        'width_contast_medium_5min': self.ui.tbe_width_cm_5_spin.value()}
+                        'height_contrast_medium_1min': self.ui.tbe_height_cm_1_spin.value(),
+                        'height_contrast_medium_2min': self.ui.tbe_height_cm_2_spin.value(),
+                        'height_contrast_medium_5min': self.ui.tbe_height_cm_5_spin.value(),
+                        'width_contrast_medium_1min': self.ui.tbe_width_cm_1_spin.value(),
+                        'width_contrast_medium_2min': self.ui.tbe_width_cm_2_spin.value(),
+                        'width_contrast_medium_5min': self.ui.tbe_width_cm_5_spin.value()}
             tbe_dict, error = DataValidation.validate_visitdata(tbe_dict)
 
             if error:
@@ -1205,7 +1205,7 @@ class DataWindow(QMainWindow):
                                         'mucosal_tears': self.ui.mucusal_tears_botox.currentText(),
                                         'pneumothorax': self.ui.pneumothorax_botox.currentText(),
                                         'pneumomediastinum': self.ui.pneumomediastinum_botox.currentText(),
-                                        'other': self.ui.other_botox.currentText()}
+                                        'other_complication': self.ui.other_botox.currentText()}
             botox_complications_dict, error = DataValidation.validate_complications(botox_complications_dict)
 
             if error:
@@ -1228,7 +1228,7 @@ class DataWindow(QMainWindow):
         if not pneumatic_dilatation or pneumatic_dilatation and ShowMessage.to_update_for_visit(
                 "pneumatic dilatation data"):
             dilatation_dict = {'visit_id': self.selected_visit,
-                               'ballon_volume': self.ui.pd_ballon_volume_dropdown.currentText(),
+                               'balloon_volume': self.ui.pd_ballon_volume_dropdown.currentText(),
                                'quantity': self.ui.pd_quantity_spin.value()}
             dilatation_dict, error = DataValidation.validate_visitdata(dilatation_dict)
 
@@ -1250,7 +1250,7 @@ class DataWindow(QMainWindow):
                                      'mucosal_tears': self.ui.mucusal_tears_pd.currentText(),
                                      'pneumothorax': self.ui.pneumothorax_pd.currentText(),
                                      'pneumomediastinum': self.ui.pneumomediastinum_pd.currentText(),
-                                     'other': self.ui.other_pd.currentText()}
+                                     'other_complication': self.ui.other_pd.currentText()}
             pd_complications_dict, error = DataValidation.validate_complications(pd_complications_dict)
 
             if error:
@@ -1305,7 +1305,7 @@ class DataWindow(QMainWindow):
                                       'mucosal_tears': self.ui.mucusal_tears_lhm.currentText(),
                                       'pneumothorax': self.ui.pneumothorax_lhm.currentText(),
                                       'pneumomediastinum': self.ui.pneumomediastinum_lhm.currentText(),
-                                      'other': self.ui.other_lhm.currentText()}
+                                      'other_complication': self.ui.other_lhm.currentText()}
             lhm_complications_dict, error = DataValidation.validate_complications(lhm_complications_dict)
 
             if error:
@@ -1363,7 +1363,7 @@ class DataWindow(QMainWindow):
                                        'mucosal_tears': self.ui.mucusal_tears_poem.currentText(),
                                        'pneumothorax': self.ui.pneumothorax_poem.currentText(),
                                        'pneumomediastinum': self.ui.pneumomediastinum_poem.currentText(),
-                                       'other': self.ui.other_poem.currentText()}
+                                       'other_complication': self.ui.other_poem.currentText()}
             poem_complications_dict, error = DataValidation.validate_complications(poem_complications_dict)
 
             if error:
