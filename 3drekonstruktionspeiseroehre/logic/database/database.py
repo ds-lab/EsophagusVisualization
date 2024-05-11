@@ -1,18 +1,12 @@
-import os
-
 from PyQt6.QtWidgets import QMessageBox
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import sessionmaker
 from logic.database.data_declarative_models import Base
 
-# ToDo: Pfad anpassen - Wo soll die lokale DB später gespeichert werden?
-if os.environ.get('TESTING'):
-    DATABASE_URL = 'sqlite:///test_database.db'
-else:
-    DATABASE_URL = 'postgresql+psycopg2://admin:123+qwe@127.0.0.1:5432/3drekonstruktion'
+DATABASE_URL = 'postgresql+psycopg2://admin:123+qwe@127.0.0.1:5432/3drekonstruktion'
 
-# echo in Produktion auf false setzen
+# ToDo echo in Produktion auf false setzen
 engine_local = create_engine(DATABASE_URL, pool_pre_ping=True, echo=True)
 Session = sessionmaker(bind=engine_local)
 
