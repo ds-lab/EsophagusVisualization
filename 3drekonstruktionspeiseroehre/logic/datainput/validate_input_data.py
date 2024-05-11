@@ -83,7 +83,6 @@ class DataValidation:
                 error = True
         return prev_therapy_dict, error
 
-
     @staticmethod
     def validate_visit(visit_dict):
         null_values = []
@@ -106,6 +105,16 @@ class DataValidation:
         for key, value in visit_dict.items():
             if value is None and key in config.mandatory_values_visit:
                 mandatory_values.append(key)
+        if ((visit_dict.get('visit_type') == "Initial Diagnostic" or visit_dict.get('visit_type') == "Therapy") and
+                visit_dict.get('months_after_therapy') is not None):
+            invalid_values.append('visit_type')
+            invalid_values.append('months_after_therapy')
+        if visit_dict.get('visit_type') == "Follow-Up Diagnostic" and visit_dict.get('months_after_therapy') is None:
+            invalid_values.append('visit_type')
+            invalid_values.append('months_after_therapy')
+        if visit_dict.get('visit_type') == "Therapy" and visit_dict.get('therapy_type') is None:
+            invalid_values.append('visit_type')
+            invalid_values.append('therapy_type')
         if mandatory_values:
             null_message = (f"The following mandatory value(s) are not set: " + ", ".join(mandatory_values) +
                             ". Please provide these/this value(s).")
@@ -113,7 +122,7 @@ class DataValidation:
             error = True
             return visit_dict, error
         if invalid_values:
-            invalid_message = "The values for the following variable(s) are invalid: " + ", ".join(
+            invalid_message = "The values for the following variable(s) are invalid/incompatible: " + ", ".join(
                 invalid_values) + ". Please provide valid values."
             QMessageBox.critical(None, 'Invalid Value(s) Detected', invalid_message)
             error = True
@@ -130,7 +139,6 @@ class DataValidation:
             error = True
             return visit_dict, error
         return visit_dict, error
-
 
     @staticmethod
     def validate_visitdata(visit_data_dict):
@@ -287,7 +295,6 @@ class DataValidation:
             error = True
         return eckardt_dict, error
 
-
     @staticmethod
     def validate_gerd(gerd_dict):
         null_values = []
@@ -347,6 +354,3 @@ class DataValidation:
             if reply == QMessageBox.StandardButton.No:
                 error = True
         return medication_dict, error
-
-
-

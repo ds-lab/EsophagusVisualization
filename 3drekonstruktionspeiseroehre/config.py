@@ -7,7 +7,7 @@ missing_dropdown = "---"
 missing_text = ""
 mandatory_values_patient = ["patient_id", "birth_year", "center"]
 mandatory_values_prev_therapy = ["therapy"]
-mandatory_values_visit = ["year_of_visit", "visit_type", "months_after_therapy"]
+mandatory_values_visit = ["year_of_visit", "visit_type"]
 mandatory_values_medication = ["medication_use"]
 
 
