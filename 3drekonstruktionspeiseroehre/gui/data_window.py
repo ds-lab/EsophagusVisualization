@@ -1430,10 +1430,8 @@ class DataWindow(QMainWindow):
                 visualization_data.endoscopy_files = self.endoscopy_files
 
                 endoflip = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
-                if len(endoflip) == 1:
-                    visualization_data.endoflip_screenshot = pickle.loads(endoflip[0].screenshot)
-                elif len(endoflip) > 1:
-                    # ToDo nicht immer den ersten endoflip screenshot nehmen
+                if endoflip is not None:
+                    # The first endoflip screenshot is used, because the app can only process one endoflip screenshot
                     visualization_data.endoflip_screenshot = pickle.loads(endoflip[0].screenshot)
                 else:
                     visualization_data.endoflip_screenshot = self.endoflip_screenshot
