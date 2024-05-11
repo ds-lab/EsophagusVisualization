@@ -22,7 +22,7 @@ CREATE TABLE visits (
     year_of_visit INT NOT NULL,
     visit_type VARCHAR(50) NOT NULL,
     therapy_type VARCHAR(50),
-    months_after_therapy INT NOT NULL
+    months_after_therapy INT
 );
 
 CREATE TABLE eckardt_scores (

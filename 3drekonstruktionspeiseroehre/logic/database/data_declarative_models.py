@@ -41,7 +41,7 @@ class Visit(Base):
     year_of_visit = mapped_column(Integer, nullable=False)
     visit_type = mapped_column(String(50), nullable=False)
     therapy_type = mapped_column(String(50), nullable=True)
-    months_after_therapy = mapped_column(Integer, nullable=False)
+    months_after_therapy = mapped_column(Integer, nullable=True)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
