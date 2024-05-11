@@ -129,10 +129,10 @@ class ExportData:
             headers = [
                 "patients.patient_id", "patients.gender", "patients.ethnicity", "patients.birth_year",
                 "patients.year_first_diagnosis", "patients.year_first_symptoms", "patients.center",
-                "previous_therapies.previous_therapy_id", "previous_therapies.patient_id",
-                "previous_therapies.therapy", "previous_therapies.year", "previous_therapies.center"
                 "visits.visit_id", "visits.patient_id", "visits.year_of_visit", "visits.visit_type",
                 "visits.therapy_type", "visits.months_after_therapy",
+                "previous_therapies.previous_therapy_id", "previous_therapies.patient_id",
+                "previous_therapies.therapy", "previous_therapies.year", "previous_therapies.center",
                 "eckardt_scores.eckardt_id", "eckardt_scores.visit_id",
                 "eckardt_scores.dysphagia", "eckardt_scores.retrosternal_pain",
                 "eckardt_scores.regurgitation", "eckardt_scores.weightloss", "eckardt_scores.total_score",
@@ -149,7 +149,7 @@ class ExportData:
                 "poems.poem_id", "poems.visit_id", "poems.procedure_duration", "poems.height_mucosal_incision",
                 "poems.length_mucosal_incision", "poems.length_submuscosal_tunnel", "poems.localization_myotomy",
                 "poems.length_tubular_myotomy", "poems.length_gastric_myotomy",
-                "complications.complication_id", "complications.visit_id"
+                "complications.complication_id", "complications.visit_id",
                 "complications.bleeding", "complications.perforation", "complications.capnoperitoneum",
                 "complications.mucosal_tears", "complications.pneumothorax", "complications.pneumomediastinum",
                 "complications.other_complication",
@@ -167,7 +167,7 @@ class ExportData:
                 "endoflips.di_before", "endoflips.dmin_before", "endoflips.ibp_before", "endoflips.csa_during",
                 "endoflips.di_during", "endoflips.dmin_during", "endoflips.ibp_during", "endoflips.csa_after",
                 "endoflips.di_after", "endoflips.dmin_after", "endoflips.ibp_after",
-                "endosonographies.endosonography_id", "endosonographies.visit_id"
+                "endosonographies.endosonography_id", "endosonographies.visit_id",
                 "endosonographies.esophageal_wall_thickness"
             ]
 

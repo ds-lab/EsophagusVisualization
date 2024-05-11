@@ -106,6 +106,11 @@ class DataWindow(QMainWindow):
         self.endoscopy_files = []
         self.endoflip_screenshot = None
 
+        # Add Download Button to UI
+        menu_button = QAction("Download Data", self)
+        menu_button.triggered.connect(self.__download_data)
+        self.ui.menubar.addAction(menu_button)
+
         # Connect Buttons to Functions
         # Patients Tab
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
@@ -1390,9 +1395,6 @@ class DataWindow(QMainWindow):
         self.__init_poem()
 
     def __create_visualization(self):
-        print("CREATE VISUALISATION")
-        visit_data = self.export_data.get_all_data()
-        print(f"VISIT DATA: {visit_data}")
         barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(
             self.selected_visit)
         manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
@@ -1439,3 +1441,11 @@ class DataWindow(QMainWindow):
                 visit.add_visualization(visualization_data)
 
             ManageXrayWindows(self.master_window, visit, self.patient_data)
+
+    def __download_data(self):
+        # Prompt the user to choose a destination directory
+        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "CSV Files (*.csv)")
+
+        if destination_file_path:
+            data = self.export_data.get_all_data()
+            ExportData.export_csv(data, destination_file_path)
