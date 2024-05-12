@@ -103,6 +103,17 @@ class BariumSwallowFileService:
         except OperationalError as e:
             self.show_error_msg()
 
+    def get_barium_swallow_minutes_for_visit(self, visit_id: int) -> list[BariumSwallowFile, None]:
+        stmt = select(BariumSwallowFile).where(BariumSwallowFile.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt).all()
+            if result:
+                return [row[0].minute_of_picture for row in result]
+            else:
+                return None
+        except OperationalError as e:
+            self.show_error_msg()
+
     def delete_barium_swallow_file(self, id: str):
         stmt = delete(BariumSwallowFile).where(BariumSwallowFile.tbe_file_id == id)
         try:

@@ -704,6 +704,9 @@ class DataWindow(QMainWindow):
         if barium_swallow_images:
             self.barium_swallow_pixmaps = barium_swallow_images
             self.barium_swallow_image_index = 0
+        barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(self.selected_visit)
+        if barium_swallow_minutes:
+            self.barium_swallow_minutes = barium_swallow_minutes
             self.__load_barium_swallow_image()
         endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
         if endoscopy_images:
@@ -928,9 +931,11 @@ class DataWindow(QMainWindow):
                 # load the pixmaps of the images to make them viewable
                 barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
                     self.selected_visit)
+                barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(self.selected_visit)
                 if barium_swallow_images:
                     self.barium_swallow_pixmaps = barium_swallow_images
                     self.barium_swallow_image_index = 0
+                    self.barium_swallow_minutes = barium_swallow_minutes
                     self.__load_barium_swallow_image()
 
     def __load_barium_swallow_image(self):
@@ -940,6 +945,8 @@ class DataWindow(QMainWindow):
             scaled_size = scaled_pixmap.size()
             self.ui.tbe_imageview.setPixmap(scaled_pixmap)
             self.ui.tbe_imageview.setFixedSize(scaled_size)
+            text = "Minute of image: " + str(self.barium_swallow_minutes[self.barium_swallow_image_index])
+            self.ui.tbe_imagedescription_text.setText(text)
 
     def __barium_swallow_previous_button_clicked(self):
         # Show the previous image
