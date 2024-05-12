@@ -709,6 +709,9 @@ class DataWindow(QMainWindow):
         if endoscopy_images:
             self.endoscopy_pixmaps = endoscopy_images
             self.endoscopy_image_index = 0
+        endoscopy_positions = self.endoscopy_file_service.get_endoscopy_positions_for_visit(self.selected_visit)
+        if endoscopy_positions:
+            self.endoscopy_positions = endoscopy_positions
             self.__load_endoscopy_image()
         endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
         if endoflip_images:
@@ -1001,9 +1004,11 @@ class DataWindow(QMainWindow):
 
                 # load the pixmaps of the images to make them viewable
                 endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
+                endoscopy_positions = self.endoscopy_file_service.get_endoscopy_positions_for_visit(self.selected_visit)
                 if endoscopy_images:
                     self.endoscopy_pixmaps = endoscopy_images
                     self.endoscopy_image_index = 0
+                    self.endoscopy_positions = endoscopy_positions
                     self.__load_endoscopy_image()
 
     def __load_endoscopy_image(self):
@@ -1013,6 +1018,8 @@ class DataWindow(QMainWindow):
             scaled_size = scaled_pixmap.size()
             self.ui.endoscopy_imageview.setPixmap(scaled_pixmap)
             self.ui.endoscopy_imageview.setFixedSize(scaled_size)
+            text = "Image position: " + str(self.endoscopy_positions[self.endoscopy_image_index])
+            self.ui.endoscopy_image_text.setText(text)
 
     def __endoscopy_previous_button_clicked(self):
         # Show the previous image

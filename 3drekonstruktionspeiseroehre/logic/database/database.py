@@ -11,10 +11,6 @@ engine_local = create_engine(DATABASE_URL, pool_pre_ping=True, echo=True)
 Session = sessionmaker(bind=engine_local)
 
 
-# def create_db_and_tables_local():
-#    data_models.metadata_obj.create_all(engine_local)
-
-
 def create_db_and_tables_local_declarative():
     try:
         Base.metadata.create_all(engine_local)
@@ -22,7 +18,7 @@ def create_db_and_tables_local_declarative():
         show_error_msg()
 
 
-def create_db_and_tables_remote():  # für Postgresql-Server (oder Docker-Container...)
+def create_db_and_tables_remote():
     pass
 
 
