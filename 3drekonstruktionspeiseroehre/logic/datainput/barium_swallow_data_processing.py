@@ -27,6 +27,7 @@ def process_and_upload_barium_swallow_images(selected_visit, filenames):
 
             tbe_file_dict = {
                 'visit_id': selected_visit,
+                'minute_of_picture': time,
                 'filename': filename,  # ToDo Filename langfristig besser nicht abspeichern
                 'file': file_bytes
             }
