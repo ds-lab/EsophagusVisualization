@@ -717,6 +717,9 @@ class DataWindow(QMainWindow):
         if endoflip_images:
             self.endoflip_pixmaps = endoflip_images
             self.endoflip_image_index = 0
+        endoflip_timepoints = self.endoflip_image_service.get_endoflip_timepoints_for_visit(self.selected_visit)
+        if endoflip_timepoints:
+            self.endoflip_timepoints = endoflip_timepoints
             self.__load_endoflip_image()
 
     def __add_eckardt_score(self):
@@ -1019,7 +1022,7 @@ class DataWindow(QMainWindow):
             self.ui.endoscopy_imageview.setPixmap(scaled_pixmap)
             self.ui.endoscopy_imageview.setFixedSize(scaled_size)
             text = "Image position: " + str(self.endoscopy_positions[self.endoscopy_image_index])
-            self.ui.endoscopy_image_text.setText(text)
+            self.ui.endoscopy_imagedescription_text.setText(text)
 
     def __endoscopy_previous_button_clicked(self):
         # Show the previous image
@@ -1123,13 +1126,15 @@ class DataWindow(QMainWindow):
 
             if not error:
                 process_and_upload_endoflip_images(self.selected_visit, filenames)
-                self.ui.endoflip_image_text.setText(str(len(filenames)) + " File(s) uploaded")
+                self.ui.endoflip_imagedescription_text.setText(str(len(filenames)) + " File(s) uploaded")
                 # load the pixmaps of the images to make them viewable
                 endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(
                     self.selected_visit)
+                endoflip_timepoints = self.endoflip_image_service.get_endoflip_timepoints_for_visit(self.selected_visit)
                 if endoflip_images:
                     self.endoflip_pixmaps = endoflip_images
                     self.endoflip_image_index = 0
+                    self.endoflip_timepoints = endoflip_timepoints
                     self.__load_endoflip_image()
 
     def __load_endoflip_image(self):
@@ -1139,6 +1144,8 @@ class DataWindow(QMainWindow):
             scaled_size = scaled_pixmap.size()
             self.ui.endoflip_imageview.setPixmap(scaled_pixmap)
             self.ui.endoflip_imageview.setFixedSize(scaled_size)
+            text = "Image timepoint: " + str(self.endoflip_timepoints[self.endoflip_image_index])
+            self.ui.endoflip_imagedescription_text.setText(text)
 
     def __endoflip_previous_button_clicked(self):
         # Show the previous image

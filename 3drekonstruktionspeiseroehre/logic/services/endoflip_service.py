@@ -166,6 +166,17 @@ class EndoflipImageService:
         except OperationalError as e:
             self.show_error_msg()
 
+    def get_endoflip_timepoints_for_visit(self, visit_id: int) -> list[EndoflipImage, None]:
+        stmt = select(EndoflipImage).where(EndoflipImage.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt).all()
+            if result:
+                return [row[0].timepoint for row in result]
+            else:
+                return None
+        except OperationalError as e:
+            self.show_error_msg()
+
     def delete_endoflip_image(self, id: str):
         stmt = delete(EndoflipImage).where(EndoflipImage.endoflip_image_id == id)
         try:
