@@ -198,7 +198,7 @@ CREATE TABLE endosonography_images (
 CREATE TABLE endosonography_videos (
     endosonography_video_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    file BYTEA NOT NULL
+    file OID NOT NULL
 );
 
 CREATE TABLE metrics (
