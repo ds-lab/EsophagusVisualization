@@ -189,14 +189,14 @@ CREATE TABLE endoflip_images (
     file BYTEA
 );
 
-CREATE TABLE endosonographies (
-    endosonography_id SERIAL PRIMARY KEY,
+CREATE TABLE endosonography_images (
+    endosonography_image_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    esophageal_wall_thickness INT
+    file BYTEA NOT NULL
 );
 
-CREATE TABLE endosonography_files (
-    endosonography_file_id SERIAL PRIMARY KEY,
+CREATE TABLE endosonography_videos (
+    endosonography_video_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     file BYTEA NOT NULL
 );

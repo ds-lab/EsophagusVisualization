@@ -279,19 +279,19 @@ class EndoflipImage(Base):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
-class Endosonography(Base):
-    __tablename__ = "endosonographies"
-    endosonography_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+class EndosonographyImage(Base):
+    __tablename__ = "endosonography_images"
+    endosonography_image_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    esophageal_wall_thickness = mapped_column(Integer)
+    file = mapped_column(PickleType, nullable=False)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
-class EndosonographyFile(Base):
-    __tablename__ = "endosonography_files"
-    endosonography_file_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+class EndosonographyVideo(Base):
+    __tablename__ = "endosonography_videos"
+    endosonography_video_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     file = mapped_column(PickleType, nullable=False)
 
