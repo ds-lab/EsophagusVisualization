@@ -30,7 +30,6 @@ class ExportData:
             barium_swallows = BariumSwallow.__table__
             endoscopies = Endoscopy.__table__
             endoflips = Endoflip.__table__
-            endosonographies = Endosonography.__table__
 
             stmt = (
                 select(patients, visits, previous_therapies, eckardt_scores, gerd_scores, medications,
@@ -49,8 +48,7 @@ class ExportData:
                              .outerjoin(manometries, visits.c.visit_id == manometries.c.visit_id)
                              .outerjoin(barium_swallows, visits.c.visit_id == barium_swallows.c.visit_id)
                              .outerjoin(endoscopies, visits.c.visit_id == endoscopies.c.visit_id)
-                             .outerjoin(endoflips, visits.c.visit_id == endoflips.c.visit_id)
-                             .outerjoin(endosonographies, visits.c.visit_id == endosonographies.c.visit_id))
+                             .outerjoin(endoflips, visits.c.visit_id == endoflips.c.visit_id))
                 .where(visits.c.visit_id == visit_id)
             )
 
@@ -80,7 +78,6 @@ class ExportData:
             barium_swallows = BariumSwallow.__table__
             endoscopies = Endoscopy.__table__
             endoflips = Endoflip.__table__
-            endosonographies = Endosonography.__table__
 
             stmt = (
                 select(patients, visits, previous_therapies, eckardt_scores, gerd_scores, medications,
@@ -100,8 +97,7 @@ class ExportData:
                              .outerjoin(manometries, visits.c.visit_id == manometries.c.visit_id)
                              .outerjoin(barium_swallows, visits.c.visit_id == barium_swallows.c.visit_id)
                              .outerjoin(endoscopies, visits.c.visit_id == endoscopies.c.visit_id)
-                             .outerjoin(endoflips, visits.c.visit_id == endoflips.c.visit_id)
-                             .outerjoin(endosonographies, visits.c.visit_id == endosonographies.c.visit_id))
+                             .outerjoin(endoflips, visits.c.visit_id == endoflips.c.visit_id))
             )
 
             result = self.db.execute(stmt).all()
@@ -166,9 +162,7 @@ class ExportData:
                 "endoflips.endoflip_id", "endoflips.visit_id", "endoflips.csa_before",
                 "endoflips.di_before", "endoflips.dmin_before", "endoflips.ibp_before", "endoflips.csa_during",
                 "endoflips.di_during", "endoflips.dmin_during", "endoflips.ibp_during", "endoflips.csa_after",
-                "endoflips.di_after", "endoflips.dmin_after", "endoflips.ibp_after",
-                "endosonographies.endosonography_id", "endosonographies.visit_id",
-                "endosonographies.esophageal_wall_thickness"
+                "endoflips.di_after", "endoflips.dmin_after", "endoflips.ibp_after"
             ]
 
             writer.writerow(headers)
