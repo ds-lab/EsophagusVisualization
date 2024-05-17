@@ -2,8 +2,9 @@ from PyQt6 import QtGui
 from PyQt6.QtWidgets import QMessageBox
 from sqlalchemy import select, delete, update, insert, func
 from sqlalchemy.orm import Session
-from logic.database.data_declarative_models import EndoscopyFile, Endoscopy, Visit
+from logic.database.data_declarative_models import EndoscopyFile, Endoscopy
 from sqlalchemy.exc import OperationalError
+
 
 class EndoscopyService:
 
@@ -161,14 +162,6 @@ class EndoscopyFileService:
         except OperationalError as e:
             self.show_error_msg()
 
-    def count_endoscopy_files(self) -> int:
-        stmt = select(func.count()).select_from(EndoscopyFile).join(Visit).where(Visit.visit_id == id)
-        try:
-            result = self.db.execute(stmt).scalar()
-            return result
-        except OperationalError as e:
-            self.show_error_msg()
-
     def get_endoscopy_image(self, id: int):
         stmt = select(EndoscopyFile).where(EndoscopyFile.endoscopy_id == id)
         try:
@@ -203,4 +196,3 @@ class EndoscopyFileService:
         msg.setText("An error occurred.")
         msg.setInformativeText("Please check the connection to the database.")
         msg.exec()
-
