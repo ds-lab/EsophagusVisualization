@@ -31,6 +31,7 @@ from logic.services.manometry_service import ManometryService, ManometryFileServ
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyService, EndoscopyFileService
 from logic.services.endoflip_service import EndoflipService, EndoflipFileService, EndoflipImageService
+from logic.services.endosonography_service import EndosonographyImageService, EndosonographyVideoService
 from logic.services.barium_swallow_service import BariumSwallowService, BariumSwallowFileService
 from logic.services.botox_injection_service import BotoxInjectionService
 from logic.services.complications_service import ComplicationsService
@@ -73,6 +74,7 @@ class DataWindow(QMainWindow):
 
         self.master_window = master_window
         self.db = database.get_db()
+        self.engine = database.get_engine()
 
         self.patient_service = PatientService(self.db)
         self.previous_therapy_service = PreviousTherapyService(self.db)
@@ -87,6 +89,7 @@ class DataWindow(QMainWindow):
         self.endoflip_service = EndoflipService(self.db)
         self.endoflip_file_service = EndoflipFileService(self.db)
         self.endoflip_image_service = EndoflipImageService(self.db)
+        self.endosonography_video_service = EndosonographyVideoService(self.db, self.engine)
         self.botox_injection_service = BotoxInjectionService(self.db)
         self.complications_service = ComplicationsService(self.db)
         self.pneumatic_dilatation_service = PneumaticDilatationService(self.db)
@@ -96,7 +99,6 @@ class DataWindow(QMainWindow):
         self.medication_service = MedicationService(self.db)
         self.export_data = ExportData(self.db)
 
-        # ToDo Evtl. diese erst später initalisieren, wenn die Rekonstruktion erstellt werden soll
         # Data from DB have to be loaded into the correct data-structure for processing
         self.patient_data: PatientData = patient_data
         self.default_path = str(Path.home())
@@ -162,6 +164,8 @@ class DataWindow(QMainWindow):
         self.ui.delete_endoflip_button.clicked.connect(self.__delete_endoflip)
         self.ui.endoflip_file_upload_button.clicked.connect(self.__upload_endoflip_files)
         self.ui.endoflip_image_upload_button.clicked.connect(self.__upload_endoflip_image)
+        # Endosonography
+        self.ui.endosono_video_upload_button.clicked.connect(self.__upload_endosonography_video)
         # Therapy Buttons
         # Botox
         self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
@@ -1165,6 +1169,13 @@ class DataWindow(QMainWindow):
         if self.endoflip_image_index < len(self.endoflip_pixmaps) - 1:
             self.endoflip_image_index += 1
             self.__load_endoflip_image()
+
+    def __upload_endosonography_video(self):
+        filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
+                                                    "Video Files (*.mp4 *.flv *.ts *.mts *.avi)")
+        for filename in filenames:
+            print(filename)
+            self.endosonography_video_service.save_video_for_visit(visit_id=1, video_file_path=filename)
 
     def __add_botox_injection(self):
         botox_dict = {'visit_id': self.selected_visit,

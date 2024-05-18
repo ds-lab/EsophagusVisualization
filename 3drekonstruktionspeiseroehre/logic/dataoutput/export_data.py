@@ -4,7 +4,7 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 from logic.database.data_declarative_models import Patient, PreviousTherapy, Visit, EckardtScore, Gerd, Medication, \
     BotoxInjection, PneumaticDilatation, LHM, POEM, Complications, Manometry, BariumSwallow, \
-    Endoscopy, Endoflip, Endosonography
+    Endoscopy, Endoflip
 import csv
 
 

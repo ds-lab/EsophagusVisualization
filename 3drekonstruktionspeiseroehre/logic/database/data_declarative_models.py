@@ -293,7 +293,7 @@ class EndosonographyVideo(Base):
     __tablename__ = "endosonography_videos"
     endosonography_video_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    file = mapped_column(LargeBinary, nullable=False)
+    video_oid = mapped_column(Integer, nullable=False)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}

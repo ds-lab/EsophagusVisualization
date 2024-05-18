@@ -31,6 +31,14 @@ def get_db():
         return None
 
 
+def get_engine():
+    try:
+        return engine_local
+    except OperationalError as e:
+        show_error_msg()
+        return None
+
+
 def show_error_msg():
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Icon.Critical)
