@@ -36,7 +36,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -4719,13 +4719,76 @@ p, li { white-space: pre-wrap; }
             <string>Endosonography</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_29">
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_35">
+              <property name="title">
+               <string>Saved Endosonography data:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_44">
+               <item row="0" column="0">
+                <widget class="QTextEdit" name="textEdit_10">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_38">
+              <property name="title">
+               <string>Endosonography pictures:</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_61">
+               <item row="2" column="0" alignment="Qt::AlignHCenter">
+                <widget class="QLabel" name="label_80">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>no Endosonography Images are loaded</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QPushButton" name="manometrie_delete_button_11">
+                   <property name="text">
+                    <string>previous</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_27">
+                   <property name="text">
+                    <string>next</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLineEdit" name="lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item row="0" column="0">
              <widget class="QGroupBox" name="groupBox_34">
               <property name="title">
                <string>Endosonography</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_43">
-               <item row="2" column="1">
+               <item row="3" column="1">
                 <spacer name="verticalSpacer_5">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -4787,66 +4850,10 @@ p, li { white-space: pre-wrap; }
                  </item>
                 </layout>
                </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_35">
-              <property name="title">
-               <string>Saved Endosonography data:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_44">
-               <item row="0" column="0">
-                <widget class="QTextEdit" name="textEdit_10">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QGroupBox" name="groupBox_38">
-              <property name="title">
-               <string>Endosonography pictures:</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_61">
-               <item row="2" column="0" alignment="Qt::AlignHCenter">
-                <widget class="QLabel" name="label_80">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
+               <item row="2" column="1">
+                <widget class="QPushButton" name="endosono_video_download_button">
                  <property name="text">
-                  <string>no Endosonography Images are loaded</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <item>
-                  <widget class="QPushButton" name="manometrie_delete_button_11">
-                   <property name="text">
-                    <string>previous</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_27">
-                   <property name="text">
-                    <string>next</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLineEdit" name="lineEdit">
-                 <property name="enabled">
-                  <bool>false</bool>
+                  <string>Download Videos</string>
                  </property>
                 </widget>
                </item>

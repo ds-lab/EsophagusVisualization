@@ -166,6 +166,7 @@ class DataWindow(QMainWindow):
         self.ui.endoflip_image_upload_button.clicked.connect(self.__upload_endoflip_image)
         # Endosonography
         self.ui.endosono_video_upload_button.clicked.connect(self.__upload_endosonography_video)
+        self.ui.endosono_video_download_button.clicked.connect(self.__download_endosonography_video)
         # Therapy Buttons
         # Botox
         self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
@@ -1175,7 +1176,16 @@ class DataWindow(QMainWindow):
                                                     "Video Files (*.mp4 *.flv *.ts *.mts *.avi)")
         for filename in filenames:
             print(filename)
-            self.endosonography_video_service.save_video_for_visit(visit_id=1, video_file_path=filename)
+            self.endosonography_video_service.save_video_for_visit(visit_id=self.selected_visit, video_file_path=filename)
+
+    def __download_endosonography_video(self):
+        destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        if destination_directory:
+            videos = self.endosonography_video_service.get_endosonography_videos_for_visit(visit_id=self.selected_visit)
+            for i, video_data in enumerate(videos):
+                path = os.path.join(destination_directory, f"{i}.mp4")
+                with open(path, 'wb') as f:
+                    f.write(video_data)
 
     def __add_botox_injection(self):
         botox_dict = {'visit_id': self.selected_visit,

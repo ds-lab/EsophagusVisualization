@@ -1,6 +1,7 @@
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QMessageBox
 from sqlalchemy import select, delete, update, insert, func
+import psycopg2
 from sqlalchemy.orm import Session
 from logic.database.data_declarative_models import EndosonographyImage, EndosonographyVideo
 from sqlalchemy.exc import OperationalError
@@ -121,54 +122,62 @@ class EndosonographyVideoService:
         self.db_engine = db_engine
 
     def save_video_for_visit(self, visit_id: int, video_file_path: str):
-        # Abrufen der rohen Verbindung für psycopg2-Operationen
         conn = self.db_engine.raw_connection()
         try:
-            # Lesen der Videodatei als binäre Daten
             with open(video_file_path, 'rb') as f:
                 video_data = f.read()
 
-            # Erstellen eines neuen Large Object und Abrufen der OID
             with conn.cursor() as cursor:
+                # Sicherstellen, dass die Transaktion gestartet wird
+                conn.autocommit = False
+
                 cursor.execute("SELECT lo_create(0)")
                 oid = cursor.fetchone()[0]
+                print(f"Created Large Object with OID: {oid}")
 
-                # Öffnen des Large Objects im Schreibmodus
                 lo = conn.lobject(oid, 'wb')
                 lo.write(video_data)
                 lo.close()
+
+                # Sicherstellen, dass die Transaktion abgeschlossen wird
+                conn.commit()
 
                 # Speichern der OID in der Datenbanktabelle
                 new_video = EndosonographyVideo(visit_id=visit_id, video_oid=oid)
                 self.db.add(new_video)
                 self.db.commit()
+                print(f"Saved video for visit_id: {visit_id} with OID: {oid}")
         except Exception as e:
             self.db.rollback()
+            print(f"Error saving video: {e}")
             raise e
         finally:
             conn.close()
 
     def get_endosonography_videos_for_visit(self, visit_id: int):
-        # Abrufen der rohen Verbindung für psycopg2-Operationen
         conn = self.db_engine.raw_connection()
         try:
-            # Abfragen der Videodaten-Records basierend auf visit_id
             stmt = select(EndosonographyVideo).where(EndosonographyVideo.visit_id == visit_id)
             results = self.db.execute(stmt).scalars().all()
-
             videos = []
             if results:
                 with conn.cursor() as cursor:
                     for video_record in results:
                         oid = video_record.video_oid
-                        # Öffnen des Large Objects im Lesemodus und Abrufen der Videodaten
-                        lo = conn.lobject(oid, 'rb')
-                        video_data = lo.read()
-                        lo.close()
-                        videos.append(video_data)
+                        print(f"Fetching video with OID: {oid}")
+                        try:
+                            lo = conn.lobject(oid, 'rb')
+                            video_data = lo.read()
+                            lo.close()
+                            videos.append(video_data)
+                        except psycopg2.Error as e:
+                            print(f"Error fetching Large Object with OID {oid}: {e}")
+                            continue
             return videos
         except Exception as e:
+            print(f"Error: {e}")
             self.show_error_msg()
+            return []
         finally:
             conn.close()
 
