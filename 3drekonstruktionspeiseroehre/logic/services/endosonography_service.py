@@ -5,7 +5,7 @@ import psycopg2
 from sqlalchemy.orm import Session
 from logic.database.data_declarative_models import EndosonographyImage, EndosonographyVideo
 from sqlalchemy.exc import OperationalError
-
+from gui.show_message import ShowMessage
 
 class EndosonographyImageService:
 
@@ -211,6 +211,7 @@ class EndosonographyVideoService:
         try:
             stmt = select(EndosonographyVideo).where(EndosonographyVideo.visit_id == visit_id)
             results = self.db.execute(stmt).scalars().all()
+            print(f"results: {results}")
             videos = []
             if results:
                 with conn.cursor() as cursor:
@@ -225,6 +226,8 @@ class EndosonographyVideoService:
                         except psycopg2.Error as e:
                             print(f"Error fetching Large Object with OID {oid}: {e}")
                             continue
+            else:
+                ShowMessage.no_data_to_download("videos")
             return videos
         except Exception as e:
             print(f"Error: {e}")

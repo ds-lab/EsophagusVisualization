@@ -12,3 +12,7 @@ class ShowMessage:
         if reply == QMessageBox.StandardButton.Yes:
             return True
         return False
+
+    @staticmethod
+    def no_data_to_download(data_to_download: str):
+        QMessageBox.critical(None, f'No {data_to_download}', f'There are no {data_to_download} for this visit.')
