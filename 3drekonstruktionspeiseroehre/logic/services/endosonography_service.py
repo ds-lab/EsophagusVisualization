@@ -121,6 +121,58 @@ class EndosonographyVideoService:
         self.db = db_session
         self.db_engine = db_engine
 
+    def get_endosonography_files_for_visit(self, visit_id: int) -> list[EndosonographyVideo, None]:
+        stmt = select(EndosonographyVideo).where(EndosonographyVideo.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt).all()
+            if result:
+                return [row[0] for row in result]
+            else:
+                return None
+        except OperationalError as e:
+            self.show_error_msg()
+
+    def get_video_oids_for_visit(self, visit_id: int):
+        stmt = select(EndosonographyVideo).where(EndosonographyVideo.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt).all()
+            if result:
+                return [row[0].video_oid for row in result]
+            else:
+                return None
+        except OperationalError as e:
+            self.show_error_msg()
+
+    def delete_videos_for_visit(self, visit_id: int):
+        oids = self.get_video_oids_for_visit(visit_id)
+        print(f"oids: {oids}")
+        if not oids:
+            print(f"No videos found for visit_id: {visit_id}")
+            return
+
+        conn = self.db_engine.raw_connection()
+        try:
+            with conn.cursor() as cursor:
+                for oid in oids:
+                    try:
+                        cursor.execute("SELECT lo_unlink(%s)", (oid,))
+                        print(f"Deleted Large Object with OID: {oid}")
+                    except psycopg2.Error as e:
+                        print(f"Error deleting Large Object with OID {oid}: {e}")
+
+            conn.commit()
+
+            # Entfernen der Einträge aus der Tabelle
+            self.db.query(EndosonographyVideo).filter(EndosonographyVideo.visit_id == visit_id).delete()
+            self.db.commit()
+            print(f"Deleted video records for visit_id: {visit_id}")
+        except Exception as e:
+            conn.rollback()
+            self.db.rollback()
+            print(f"Error deleting videos for visit_id {visit_id}: {e}")
+        finally:
+            conn.close()
+
     def save_video_for_visit(self, visit_id: int, video_file_path: str):
         conn = self.db_engine.raw_connection()
         try:

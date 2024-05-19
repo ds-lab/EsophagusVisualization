@@ -1172,11 +1172,13 @@ class DataWindow(QMainWindow):
             self.__load_endoflip_image()
 
     def __upload_endosonography_video(self):
-        filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
-                                                    "Video Files (*.mp4 *.flv *.ts *.mts *.avi)")
-        for filename in filenames:
-            print(filename)
-            self.endosonography_video_service.save_video_for_visit(visit_id=self.selected_visit, video_file_path=filename)
+        endosono_exists = self.endosonography_video_service.get_endosonography_files_for_visit(self.selected_visit)
+        if not endosono_exists or endosono_exists and ShowMessage.to_update_for_visit("Endosonography videos"):
+            self.endosonography_video_service.delete_videos_for_visit(visit_id=self.selected_visit)
+            filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
+                                                        "Video Files (*.mp4 *.flv *.ts *.mts *.avi)")
+            for filename in filenames:
+                self.endosonography_video_service.save_video_for_visit(visit_id=self.selected_visit, video_file_path=filename)
 
     def __download_endosonography_video(self):
         destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
