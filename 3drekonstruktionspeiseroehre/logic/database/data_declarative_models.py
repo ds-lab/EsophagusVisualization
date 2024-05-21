@@ -299,6 +299,16 @@ class EndosonographyVideo(Base):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
+class Reconstruction(Base):
+    __tablename__ = "reconstructions"
+    reconstruction_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
+    reconstruction_file = mapped_column(PickleType, nullable=False)
+
+    def toDict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+
+
 class Metric(Base):
     __tablename__ = "metrics"
     metric_id = mapped_column(Integer, primary_key=True, autoincrement=True)
