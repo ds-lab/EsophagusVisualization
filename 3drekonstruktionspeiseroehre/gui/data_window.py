@@ -1416,7 +1416,7 @@ class DataWindow(QMainWindow):
         else:
             patient = self.patient_service.get_patient(self.selected_patient)
             visit = self.visit_service.get_visit(self.selected_visit)
-            name = patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
+            name = "[" + str(self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
             visit = VisitData(name)
             for file in barium_swallow_files:
                 visualization_data = VisualizationData()
@@ -1437,7 +1437,6 @@ class DataWindow(QMainWindow):
                     self.endoscopy_image_positions = endoscopy_image_positions_cm
                     self.endoscopy_files = endoscopy_images
 
-                # ToDo: das in else
                 visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
                 visualization_data.endoscopy_files = self.endoscopy_files
 

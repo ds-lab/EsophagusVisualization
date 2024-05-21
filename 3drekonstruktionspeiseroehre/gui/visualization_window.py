@@ -1,6 +1,8 @@
 import csv
 import os
 import pickle
+import re
+
 import numpy as np
 
 import gui.file_selection_window
@@ -8,9 +10,12 @@ from dash_server import DashServer
 from gui.drag_and_drop import *
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
+from gui.show_message import ShowMessage
 from logic.figure_creator.figure_creation_thread import FigureCreationThread
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
+from logic.database import database
+from logic.services.reconstruction_service import ReconstructionService
 
 from PyQt6 import uic
 from PyQt6.QtCore import QUrl
@@ -42,6 +47,9 @@ class VisualizationWindow(QMainWindow):
         self.patient_data = patient_data
         self.visits = self.patient_data.visit_data_dict
 
+        self.db = database.get_db()
+        self.reconstruction_service = ReconstructionService(self.db)
+
         # Create Menu-Buttons
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -58,6 +66,9 @@ class VisualizationWindow(QMainWindow):
         menu_button_7 = QAction("Download für 3d-Druck", self)
         menu_button_7.triggered.connect(self.__download_stl_file)
         self.ui.menubar.addAction(menu_button_7)
+        menu_button_8 = QAction("Save in Reconstruction in DB", self)
+        menu_button_8.triggered.connect(self.__save_reconstruction_in_db)
+        self.ui.menubar.addAction(menu_button_8)
         menu_button_4 = QAction("Weitere Rekonstruktion einfügen", self)
         menu_button_4.triggered.connect(self.__extend_patient_data)
         self.ui.menubar.addAction(menu_button_4)
@@ -200,6 +211,28 @@ class VisualizationWindow(QMainWindow):
             QMessageBox.information(
                 self, "Export erfolgreich",
                 f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
+            )
+
+    def __save_reconstruction_in_db(self):
+        for name, visit_data in self.patient_data.visit_data_dict.items():
+            match = re.search(r'(\d+)', name)
+            visit = match.group(1)
+            reconstruction_bytes = pickle.dumps(visit_data)
+            reconstruction = self.reconstruction_service.get_reconstruction_for_visit(visit)
+            savings = False
+            if not visit or visit and ShowMessage.to_update_for_visit("3d reconstruction"):
+                reconstruction_dict = {'visit_id': visit,
+                                       'reconstruction_file': reconstruction_bytes}
+                if reconstruction:
+                    self.reconstruction_service.update_reconstruction(reconstruction.reconstruction_id, reconstruction_dict)
+                else:
+                    self.reconstruction_service.create_reconstruction(reconstruction_dict)
+                savings = True
+        # Inform the user that the export is complete
+        if savings:
+            QMessageBox.information(
+                self, "Saving done",
+                f"Reconstruction(s) has/have been saved in the database."
             )
 
     def __download_html_file(self):
