@@ -327,9 +327,9 @@ class VisualizationWindow(QMainWindow):
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
-                    ["Id", "Barium Swallow Image", "Tubular Index (Mean)", "Sphinkter Index (Mean)", "Volume Tubular",
-                     "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)", "Index Tublar (Max)",
-                     "Index Sphinkter (Max)", "Index Tublar (Min)", "Index Sphinkter (Min)", "Esophagus Length (cm)"])
+                    ["Id", "Barium Swallow Image", "Tubular Index (Mean)", "Sphincter Index (Mean)", "Volume Tubular",
+                     "Volume Sphincter", "Pressure Tubular (Max)", "Pressure Sphincter (Max)", "Index Tubular (Max)",
+                     "Index Sphincter (Max)", "Index Tubular (Min)", "Index Sphincter (Min)", "Esophagus Length (cm)"])
 
                 # loop through all visits.items (these are figures which are displayed in different threads)
                 for i, (name, visit_data) in enumerate(self.visits.items()):
@@ -343,25 +343,25 @@ class VisualizationWindow(QMainWindow):
                     for j in range(len(visit_data.visualization_data_list)):
                         xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
                         tubular_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[0]
-                        sphinkter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
+                        sphincter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
                         volume_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[2]
-                        volume_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[3]
+                        volume_sphincter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[3]
                         max_pressure_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[4]
-                        max_pressure_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[5]
+                        max_pressure_sphincter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[5]
                         max_metric_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[6]
-                        max_metric_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[7]
+                        max_metric_sphincter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[7]
                         min_metric_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[8]
-                        min_metric_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[9]
+                        min_metric_sphincter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[9]
                         esophagus_length = visit_data.visualization_data_list[
                             j].figure_creator.get_esophagus_full_length_cm()
 
                         # Write metrics data to CSV file
                         writer.writerow([visit_name, xray_name, round(np.mean(tubular_metric), 2),
-                                         round(np.mean(sphinkter_metric), 2), round(volume_tubular, 2),
-                                         round(volume_sphinkter, 2), round(max_pressure_tubular, 2),
-                                         round(max_pressure_sphinkter, 2), round(max_metric_tubular, 2),
-                                         round(max_metric_sphinkter, 2), round(min_metric_tubular, 2),
-                                         round(min_metric_sphinkter, 2),
+                                         round(np.mean(sphincter_metric), 2), round(volume_tubular, 2),
+                                         round(volume_sphincter, 2), round(max_pressure_tubular, 2),
+                                         round(max_pressure_sphincter, 2), round(max_metric_tubular, 2),
+                                         round(max_metric_sphincter, 2), round(min_metric_tubular, 2),
+                                         round(min_metric_sphincter, 2),
                                          round(esophagus_length, 2)])
 
             # Inform the user that the export is complete
