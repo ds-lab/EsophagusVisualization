@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
+ <class>EndoscopySelection</class>
  <widget class="QMainWindow" name="EndoscopySelection">
   <property name="geometry">
    <rect>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Auswahl des Querschnitts des Ösophagus</string>
+   <string>Selection of the cross-section of the esophagus</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -30,7 +30,7 @@
     <item row="1" column="0">
      <widget class="QPushButton" name="reset_button">
       <property name="text">
-       <string>Neue Auswahl starten</string>
+       <string>Start new selection</string>
       </property>
      </widget>
     </item>
@@ -43,7 +43,7 @@
        </sizepolicy>
       </property>
       <property name="text">
-       <string>Visualisierung generieren</string>
+       <string>Generate visualization</string>
       </property>
       <property name="default">
        <bool>true</bool>
@@ -60,8 +60,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>694</width>
-     <height>22</height>
+     <width>722</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
