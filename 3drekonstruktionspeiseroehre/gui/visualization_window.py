@@ -220,7 +220,7 @@ class VisualizationWindow(QMainWindow):
             reconstruction_bytes = pickle.dumps(visit_data)
             reconstruction = self.reconstruction_service.get_reconstruction_for_visit(visit)
             savings = False
-            if not visit or visit and ShowMessage.to_update_for_visit("3d reconstruction"):
+            if not reconstruction or reconstruction and ShowMessage.to_update_for_visit("3d reconstruction"):
                 reconstruction_dict = {'visit_id': visit,
                                        'reconstruction_file': reconstruction_bytes}
                 if reconstruction:
