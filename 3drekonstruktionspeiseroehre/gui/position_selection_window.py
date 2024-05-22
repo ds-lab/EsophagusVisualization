@@ -182,14 +182,13 @@ class PositionSelectionWindow(QMainWindow):
                             self.master_window.switch_to(visualization_window)
                             self.close()
                     else:
-                        QMessageBox.critical(self, "Fehler", "Die Positionen müssen sich innerhalb des zuvor " +
-                                             "markierten Umrisses des Ösophagus befinden")
+                        QMessageBox.critical(self, "Error", "The positions must be within the previously marked outline of the esophagus.")
                 else:
-                    QMessageBox.critical(self, "Fehler", "Positionen der Sensoren scheinen vertauscht zu sein")
+                    QMessageBox.critical(self, "Error", "The positions of the sensors seem to be swapped.")
             else:
-                QMessageBox.critical(self, "Fehler", "Bitte wählen Sie zwei unterschiedliche Sensoren aus")
+                QMessageBox.critical(self, "Error", "Please select two different sensors.")
         else:
-            QMessageBox.critical(self, "Fehler", "Bitte tragen Sie alle benötigten Positionen in die Graphik ein")
+            QMessageBox.critical(self, "Error", "Please enter all required items into the graph.")
 
     def __menu_button_clicked(self):
         """

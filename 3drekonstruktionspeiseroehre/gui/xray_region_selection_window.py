@@ -103,9 +103,9 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.master_window.switch_to(position_selection_window)
                 self.close()
             else:
-                QMessageBox.critical(self, "Fehler", "Die Auswahl darf keine Schnittpunkte besitzen")
+                QMessageBox.critical(self, "Error", "The selection must not have any intersections.")
         else:
-            QMessageBox.critical(self, "Fehler", "Bitte die Form des Ösophagus als Polygon einzeichnen")
+            QMessageBox.critical(self, "Error", "Please draw the shape of the esophagus as a polygon.")
 
     def __reset_selector(self):
         """

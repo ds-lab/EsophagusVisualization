@@ -95,7 +95,6 @@ class FileSelectionWindow(QMainWindow):
 
 
     def __patient_id_filled(self):
-        # ToDo: Felder mit echten Daten aus der DB für den jeweiligen Patienten füllen, wenn vorhanden
         d = QDate(2020, 6, 10)
         self.ui.birthdate_calendar.setDate(d)
         self.ui.gender_dropdown.setCurrentIndex(1)

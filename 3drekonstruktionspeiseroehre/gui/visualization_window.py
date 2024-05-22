@@ -54,22 +54,22 @@ class VisualizationWindow(QMainWindow):
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
-        menu_button_2 = QAction("Download für Import", self)
+        menu_button_2 = QAction("Save Reconstruction as file", self)
         menu_button_2.triggered.connect(self.__download_object_files)
         self.ui.menubar.addAction(menu_button_2)
-        menu_button_3 = QAction("Download für Darstellung", self)
+        menu_button_3 = QAction("Download for Display", self)
         menu_button_3.triggered.connect(self.__download_html_file)
         self.ui.menubar.addAction(menu_button_3)
-        menu_button_6 = QAction("CSV Metriken Download", self)
+        menu_button_6 = QAction("CSV Metrics Download", self)
         menu_button_6.triggered.connect(self.__download_csv_file)
         self.ui.menubar.addAction(menu_button_6)
-        menu_button_7 = QAction("Download für 3d-Druck", self)
+        menu_button_7 = QAction("Download for 3d-Printing", self)
         menu_button_7.triggered.connect(self.__download_stl_file)
         self.ui.menubar.addAction(menu_button_7)
         menu_button_8 = QAction("Save in Reconstruction in DB", self)
         menu_button_8.triggered.connect(self.__save_reconstruction_in_db)
         self.ui.menubar.addAction(menu_button_8)
-        menu_button_4 = QAction("Weitere Rekonstruktion einfügen", self)
+        menu_button_4 = QAction("Add Reconstruction(s)", self)
         menu_button_4.triggered.connect(self.__extend_patient_data)
         self.ui.menubar.addAction(menu_button_4)
         menu_button_5 = QAction("Reset", self)
@@ -96,8 +96,8 @@ class VisualizationWindow(QMainWindow):
 
         self.setCentralWidget(self.visualization_layout)
 
-        self.progress_dialog = QProgressDialog("Visualisierung wird erstellt", None, 0, 100, None)
-        self.progress_dialog.setWindowTitle("Fortschritt")
+        self.progress_dialog = QProgressDialog("Creating Visualisation", None, 0, 100, None)
+        self.progress_dialog.setWindowTitle("Processing...")
         self.progress_dialog.show()
 
         print(f"PatientData: {self.patient_data}")
@@ -209,8 +209,8 @@ class VisualizationWindow(QMainWindow):
 
             # Inform the user that the export is complete
             QMessageBox.information(
-                self, "Export erfolgreich",
-                f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
+                self, "Export Successful",
+                f"The files were successfully exported to {destination_directory}."
             )
 
     def __save_reconstruction_in_db(self):
@@ -253,7 +253,7 @@ class VisualizationWindow(QMainWindow):
                 # Write the figure to an HTML file
                 figure.write_html(destination_directory + "\\" + html_file_name)
         # Inform the user that the export is complete
-        QMessageBox.information(self, "Export Complete", "HTML Dateien wurden erfolgreich exportiert.")
+        QMessageBox.information(self, "Export Complete", "HTML files were successfully exported.")
 
 
 
@@ -311,10 +311,9 @@ class VisualizationWindow(QMainWindow):
 
             # Inform the user that the export is complete
             QMessageBox.information(
-                self, "Export erfolgreich",
-                f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
+                self, "Export Successful",
+                f"The files have been successfully exported to {destination_directory}."
             )
-
 
     def __download_csv_file(self):
         """
@@ -328,7 +327,7 @@ class VisualizationWindow(QMainWindow):
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
-                    ["Id", "Breischluckbild", "Tubular Index (Mean)", "Sphinkter Index (Mean)", "Volume Tubular",
+                    ["Id", "Barium Swallow Image", "Tubular Index (Mean)", "Sphinkter Index (Mean)", "Volume Tubular",
                      "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)", "Index Tublar (Max)",
                      "Index Sphinkter (Max)", "Index Tublar (Min)", "Index Sphinkter (Min)", "Esophagus Length (cm)"])
 
@@ -366,13 +365,14 @@ class VisualizationWindow(QMainWindow):
                                          round(esophagus_length, 2)])
 
             # Inform the user that the export is complete
-            QMessageBox.information(self, "Export Complete",
-                                "csv Datei wurde erfolgreich exportiert.")
+            QMessageBox.information(self, "Export Complete", "CSV file has been successfully exported.")
+
 
     def __extend_patient_data(self):
         """
         Callback for extending patient data
         """
+        #ToDo richtig verknüpfen mit Datenbank nicht mit FileSelection Window
         # Open File selection window
         file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
         self.master_window.switch_to(file_selection_window)
