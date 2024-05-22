@@ -214,12 +214,12 @@ class VisualizationWindow(QMainWindow):
             )
 
     def __save_reconstruction_in_db(self):
+        savings = False
         for name, visit_data in self.patient_data.visit_data_dict.items():
-            match = re.search(r'(\d+)', name)
+            match = re.search(r'Visit_Id: (\d+)', name)
             visit = match.group(1)
             reconstruction_bytes = pickle.dumps(visit_data)
             reconstruction = self.reconstruction_service.get_reconstruction_for_visit(visit)
-            savings = False
             if not reconstruction or reconstruction and ShowMessage.to_update_for_visit("3d reconstruction"):
                 reconstruction_dict = {'visit_id': visit,
                                        'reconstruction_file': reconstruction_bytes}

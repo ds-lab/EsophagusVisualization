@@ -1416,7 +1416,7 @@ class DataWindow(QMainWindow):
         else:
             patient = self.patient_service.get_patient(self.selected_patient)
             visit = self.visit_service.get_visit(self.selected_visit)
-            name = "[" + str(self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
+            name = "[Visit_ID: " + str(self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
             visit = VisitData(name)
             for file in barium_swallow_files:
                 visualization_data = VisualizationData()
