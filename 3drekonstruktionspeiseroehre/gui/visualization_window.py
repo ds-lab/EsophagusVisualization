@@ -372,10 +372,9 @@ class VisualizationWindow(QMainWindow):
         """
         Callback for extending patient data
         """
-        #ToDo richtig verknüpfen mit Datenbank nicht mit FileSelection Window
-        # Open File selection window
-        file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
-        self.master_window.switch_to(file_selection_window)
+        # Open the Data Window to enable selection of new data
+        data_window = gui.data_window.DataWindow(self.master_window, self.patient_data)
+        self.master_window.switch_to(data_window)
 
         # Stop all threads
         for dash_server in self.dash_servers:
@@ -390,9 +389,9 @@ class VisualizationWindow(QMainWindow):
         # Empty the patient data object
         self.patient_data.visit_data_dict = {}
 
-        # Open file selection window
-        file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
-        self.master_window.switch_to(file_selection_window)
+        # Open the Data Window to enable selection of new data
+        data_window = gui.data_window.DataWindow(self.master_window, self.patient_data)
+        self.master_window.switch_to(data_window)
 
         # Stop all threads
         for dash_server in self.dash_servers:
