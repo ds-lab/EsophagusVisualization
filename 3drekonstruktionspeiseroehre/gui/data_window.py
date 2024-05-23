@@ -40,6 +40,7 @@ from logic.services.medication_service import MedicationService
 from logic.services.lhm_service import LHMService
 from logic.services.poem_service import POEMService
 from logic.services.gerd_service import GerdService
+from logic.services.reconstruction_service import ReconstructionService
 from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
@@ -98,6 +99,7 @@ class DataWindow(QMainWindow):
         self.gerd_service = GerdService(self.db)
         self.medication_service = MedicationService(self.db)
         self.export_data = ExportData(self.db)
+        self.reconstruction_service = ReconstructionService(self.db)
 
         # Data from DB have to be loaded into the correct data-structure for processing
         self.patient_data: PatientData = patient_data
@@ -1418,38 +1420,43 @@ class DataWindow(QMainWindow):
             visit = self.visit_service.get_visit(self.selected_visit)
             name = "[Visit_ID: " + str(self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
             visit = VisitData(name)
-            for file in barium_swallow_files:
-                visualization_data = VisualizationData()
-                visualization_data.xray_filename = file.filename
-                visualization_data.xray_file = BytesIO(file.file)
 
-                pressure_matrix = pickle.loads(manometry_file.pressure_matrix)
-                visualization_data.pressure_matrix = pressure_matrix
+            reconstruction = self.reconstruction_service.get_reconstruction_for_visit(visit)
 
-                endoscopy = self.endoscopy_file_service.get_endoscopy_files_for_visit(self.selected_visit)
-                if endoscopy:
-                    endoscopy_image_positions_cm = []
-                    endoscopy_images = []
-                    for endoscopy_file in endoscopy:
-                        endoscopy_image_positions_cm.append(endoscopy_file.image_position)
-                        endoscopy_images.append(BytesIO(endoscopy_file.file))
+            if not reconstruction or reconstruction and not ShowMessage.load_saved_reconstruction():
 
-                    self.endoscopy_image_positions = endoscopy_image_positions_cm
-                    self.endoscopy_files = endoscopy_images
+                for file in barium_swallow_files:
+                    visualization_data = VisualizationData()
+                    visualization_data.xray_filename = file.filename
+                    visualization_data.xray_file = BytesIO(file.file)
 
-                visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
-                visualization_data.endoscopy_files = self.endoscopy_files
+                    pressure_matrix = pickle.loads(manometry_file.pressure_matrix)
+                    visualization_data.pressure_matrix = pressure_matrix
 
-                endoflip = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
-                if endoflip is not None:
-                    # The first endoflip screenshot is used, because the app can only process one endoflip screenshot
-                    visualization_data.endoflip_screenshot = pickle.loads(endoflip[0].screenshot)
-                else:
-                    visualization_data.endoflip_screenshot = self.endoflip_screenshot
+                    endoscopy = self.endoscopy_file_service.get_endoscopy_files_for_visit(self.selected_visit)
+                    if endoscopy:
+                        endoscopy_image_positions_cm = []
+                        endoscopy_images = []
+                        for endoscopy_file in endoscopy:
+                            endoscopy_image_positions_cm.append(endoscopy_file.image_position)
+                            endoscopy_images.append(BytesIO(endoscopy_file.file))
 
-                visit.add_visualization(visualization_data)
+                        self.endoscopy_image_positions = endoscopy_image_positions_cm
+                        self.endoscopy_files = endoscopy_images
 
-            ManageXrayWindows(self.master_window, visit, self.patient_data)
+                    visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
+                    visualization_data.endoscopy_files = self.endoscopy_files
+
+                    endoflip = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
+                    if endoflip is not None:
+                        # The first endoflip screenshot is used, because the app can only process one endoflip screenshot
+                        visualization_data.endoflip_screenshot = pickle.loads(endoflip[0].screenshot)
+                    else:
+                        visualization_data.endoflip_screenshot = self.endoflip_screenshot
+
+                    visit.add_visualization(visualization_data)
+
+                ManageXrayWindows(self.master_window, visit, self.patient_data)
 
     def __download_data(self):
         # Prompt the user to choose a destination directory
