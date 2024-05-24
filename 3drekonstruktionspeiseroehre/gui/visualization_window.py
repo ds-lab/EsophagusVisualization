@@ -5,12 +5,12 @@ import re
 
 import numpy as np
 
-import gui.file_selection_window
 from dash_server import DashServer
 from gui.drag_and_drop import *
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.show_message import ShowMessage
+import gui.data_window
 from logic.figure_creator.figure_creation_thread import FigureCreationThread
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
