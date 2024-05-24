@@ -68,7 +68,7 @@ class DataWindow(QMainWindow):
         # For displaying images
         self.endoscopy_image_index = None
 
-        self.ui = uic.loadUi("./ui-files/show_data_window_design.ui", self)
+        self.ui = uic.loadUi("./ui-files/data_window_design.ui", self)
 
         self.patient_tableView = self.ui.patient_tableView
         self.therapy_tableView = self.ui.therapy_tableView
