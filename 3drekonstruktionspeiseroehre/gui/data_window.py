@@ -15,6 +15,7 @@ from gui.info_window import InfoWindow
 from gui.set_textfields import setText
 from gui.show_message import ShowMessage
 from gui.xray_window_managment import ManageXrayWindows
+from gui.visualization_window import VisualizationWindow
 from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload, \
     process_and_upload_endoflip_images
 from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
@@ -1410,20 +1411,21 @@ class DataWindow(QMainWindow):
         barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(
             self.selected_visit)
         manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+        reconstruction = self.reconstruction_service.get_reconstruction_for_visit(self.selected_visit)
 
-        if barium_swallow_files is None or manometry_file is None:
-            QMessageBox.critical(self, 'Missing Data', 'The Manometry file and at least one barium swallow image '
-                                                       'are necessary for the 3D reconstruction.')
-            return
-        else:
-            patient = self.patient_service.get_patient(self.selected_patient)
-            visit = self.visit_service.get_visit(self.selected_visit)
-            name = "[Visit_ID: " + str(self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
-            visit = VisitData(name)
+        patient = self.patient_service.get_patient(self.selected_patient)
+        visit = self.visit_service.get_visit(self.selected_visit)
+        visit_name = "[Visit_ID: " + str(
+            self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
 
-            reconstruction = self.reconstruction_service.get_reconstruction_for_visit(visit)
+        if not reconstruction or reconstruction and not ShowMessage.load_saved_reconstruction():
 
-            if not reconstruction or reconstruction and not ShowMessage.load_saved_reconstruction():
+            if barium_swallow_files is None or manometry_file is None:
+                QMessageBox.critical(self, 'Missing Data', 'The Manometry file and at least one barium swallow image '
+                                                           'are necessary for the 3D reconstruction.')
+                return
+            else:
+                visit = VisitData(visit_name)
 
                 for file in barium_swallow_files:
                     visualization_data = VisualizationData()
@@ -1457,6 +1459,15 @@ class DataWindow(QMainWindow):
                     visit.add_visualization(visualization_data)
 
                 ManageXrayWindows(self.master_window, visit, self.patient_data)
+
+        else:
+            print(f"reconstruction: {reconstruction}")
+            reconstruction = pickle.loads(reconstruction.reconstruction_file)
+            self.patient_data.add_visit(visit_name, reconstruction)
+
+            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
+            self.master_window.switch_to(visualization_window)
+            self.close()
 
     def __download_data(self):
         # Prompt the user to choose a destination directory
