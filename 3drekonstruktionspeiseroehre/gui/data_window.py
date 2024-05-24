@@ -212,10 +212,10 @@ class DataWindow(QMainWindow):
 
     def __menu_button_clicked(self):
         """
-        Info button callback. Shows information about file selection.
+        Info button callback. Shows information about the data window
         """
         info_window = InfoWindow()
-        info_window.show_file_selection_info()
+        info_window.show_data_window_info()
         info_window.show()
 
     def __initialize_patient_model(self, filter_column: int = 6, filter_expression: str = '.*'):

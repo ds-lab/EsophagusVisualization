@@ -12,26 +12,9 @@ class InfoWindow(QDialog):
         super().__init__()
         self.ui = uic.loadUi("./ui-files/info_window_design.ui", self)
 
-    def show_file_selection_info(self):
-        # ToDo Updaten mit Erklärung DB und entsprechenden Pfaden
-        text = """In diesem Fenster werden die für die Generierung der 3D-Darstellung benötigten Dateien ausgewählt. 
-        <br><br>Die Manometriedatei stammt dabei aus der 'Laborie stationary measurement & analysis software' der Firma 
-        Medical Measurement Systems B.V. Sie kann dort nach der Auswahl des relevanten Messzeitraums über den 
-        Menüpunkt 'Export'->'CSV' exportiert werden.<br><br>Das Röntgenbild sollte idealerweise einen möglichst 
-        hohen Kontrast haben und beide Ösophagussphinkter beeinhalten.<br><br>
-        Die Auswahl von Endoskopiebildern ist optional. Falls sie nicht ausgewählt werden, wird in der 3D-Darstellung 
-        ein kreisförmiger Querschnitt verwendet. <br>Die Endoskopiebilder benötigen jeweils im Dateinamen eine 
-        Positionsangabe z.B. 'name_10cm.png' (Format: Unterstrich + Ganzzahl + cm). <br>Die Zahl gibt hierbei die 
-        Position dieser Aufnahme im Ösophagus ausgehend von einer in einem späteren Schritt einzutragenden 
-        Position 0 an (von unten nach oben). <br>Bei den Endoskopiebildern ist außerdem darauf zu achten, dass diese 
-        so angefertigt wurden, dass bezüglich der Drehung die linke Seite der Aufnahme der linken Seite auf dem 
-        Röntgenbild entspricht (rechte Seite analog). 
-        <br> Optional können Endoflip-Untersuchungsergebnisse hinzugefügt werden. Diese sollten im Format .xlsx 
-        vorliegen und hierbei ein einzelnes Excel-Sheet beinhalten. <br>
-        <br> Falls erwünscht, kann einer Rekonstruktion ein eindeutiger Name zugewiesen werden, welcher auch für den 
-        Export verwendet wird.
-        <br><br> Es ist ebenfalls möglich, ein oder mehrere zuvor exportierte Rekonstruktionen zu importieren.
-        """
+    def show_data_window_info(self):
+        # ToDo Text noch schreiben
+        text = """TEXT TO BE DEFINED"""
         self.ui.textEdit.setHtml(text)
 
     def show_xray_region_selection_info(self):
