@@ -677,6 +677,7 @@ class DataWindow(QMainWindow):
     def __visit_selected(self, visit_data):
         self.ui.eckardt_score.setEnabled(True)
         self.ui.visit_data.setEnabled(True)
+        self.ui.visits_create_visualization_button.setEnabled(True)
         self.ui.gerd.setEnabled(True)
         self.ui.medication.setEnabled(True)
 
@@ -1179,7 +1180,7 @@ class DataWindow(QMainWindow):
         if not endosono_exists or endosono_exists and ShowMessage.to_update_for_visit("Endosonography videos"):
             self.endosonography_video_service.delete_videos_for_visit(visit_id=self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
-                                                        "Video Files (*.mp4 *.flv *.ts *.mts *.avi)")
+                                                        "Video Files (*.mp4)")
             for filename in filenames:
                 self.endosonography_video_service.save_video_for_visit(visit_id=self.selected_visit, video_file_path=filename)
 

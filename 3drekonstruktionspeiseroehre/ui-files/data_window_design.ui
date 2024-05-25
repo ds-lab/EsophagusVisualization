@@ -593,8 +593,8 @@
               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;please select a patient&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;please select a patient&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
@@ -616,8 +616,8 @@ p, li { white-space: pre-wrap; }
               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;please select a visit&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;please select a visit&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
@@ -1362,6 +1362,9 @@ p, li { white-space: pre-wrap; }
         </item>
         <item row="5" column="0" colspan="4">
          <widget class="QPushButton" name="visits_create_visualization_button">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Create Visualization for selected Patient and selected Visit</string>
           </property>
@@ -1371,7 +1374,7 @@ p, li { white-space: pre-wrap; }
       </widget>
       <widget class="QWidget" name="visit_data">
        <property name="enabled">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <attribute name="title">
         <string>Visit-Data</string>
@@ -1507,7 +1510,7 @@ p, li { white-space: pre-wrap; }
                   <item row="5" column="0">
                    <widget class="QLabel" name="label_155">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Pneumothorax</string>
@@ -1517,7 +1520,7 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="1">
                    <widget class="QComboBox" name="bleeding_botox">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -1544,7 +1547,7 @@ p, li { white-space: pre-wrap; }
                   <item row="2" column="1">
                    <widget class="QComboBox" name="perforation_botox">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -1571,7 +1574,7 @@ p, li { white-space: pre-wrap; }
                   <item row="4" column="1">
                    <widget class="QComboBox" name="mucusal_tears_botox">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -1598,7 +1601,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="0">
                    <widget class="QLabel" name="label_157">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Capnoperitoneum</string>
@@ -1608,7 +1611,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="1">
                    <widget class="QComboBox" name="capnoperitoneum_botox">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -1635,7 +1638,7 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="0">
                    <widget class="QLabel" name="label_156">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Bleeding</string>
@@ -1645,7 +1648,7 @@ p, li { white-space: pre-wrap; }
                   <item row="7" column="0">
                    <widget class="QLabel" name="label_158">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Other</string>
@@ -1655,7 +1658,7 @@ p, li { white-space: pre-wrap; }
                   <item row="5" column="1">
                    <widget class="QComboBox" name="pneumothorax_botox">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -1682,7 +1685,7 @@ p, li { white-space: pre-wrap; }
                   <item row="6" column="1">
                    <widget class="QComboBox" name="pneumomediastinum_botox">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -1709,7 +1712,7 @@ p, li { white-space: pre-wrap; }
                   <item row="2" column="0">
                    <widget class="QLabel" name="label_159">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Perforation</string>
@@ -1719,7 +1722,7 @@ p, li { white-space: pre-wrap; }
                   <item row="4" column="0">
                    <widget class="QLabel" name="label_160">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Mucosal tears</string>
@@ -1729,7 +1732,7 @@ p, li { white-space: pre-wrap; }
                   <item row="6" column="0">
                    <widget class="QLabel" name="label_161">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Pneumomediastinum</string>
@@ -1739,7 +1742,7 @@ p, li { white-space: pre-wrap; }
                   <item row="7" column="1">
                    <widget class="QComboBox" name="other_botox">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -1912,7 +1915,7 @@ p, li { white-space: pre-wrap; }
                   <item row="0" column="1">
                    <widget class="QComboBox" name="bleeding_pd">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -1939,7 +1942,7 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="1">
                    <widget class="QComboBox" name="perforation_pd">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -1966,7 +1969,7 @@ p, li { white-space: pre-wrap; }
                   <item row="4" column="0">
                    <widget class="QLabel" name="label_134">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Pneumothorax</string>
@@ -1976,7 +1979,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="1">
                    <widget class="QComboBox" name="mucusal_tears_pd">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2003,7 +2006,7 @@ p, li { white-space: pre-wrap; }
                   <item row="2" column="1">
                    <widget class="QComboBox" name="capnoperitoneum_pd">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2030,7 +2033,7 @@ p, li { white-space: pre-wrap; }
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_135">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Bleeding</string>
@@ -2040,7 +2043,7 @@ p, li { white-space: pre-wrap; }
                   <item row="2" column="0">
                    <widget class="QLabel" name="label_136">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Capnoperitoneum</string>
@@ -2050,7 +2053,7 @@ p, li { white-space: pre-wrap; }
                   <item row="6" column="0">
                    <widget class="QLabel" name="label_137">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Other</string>
@@ -2060,7 +2063,7 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="0">
                    <widget class="QLabel" name="label_138">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Perforation</string>
@@ -2070,7 +2073,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="0">
                    <widget class="QLabel" name="label_139">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Mucosal tears</string>
@@ -2080,7 +2083,7 @@ p, li { white-space: pre-wrap; }
                   <item row="5" column="0">
                    <widget class="QLabel" name="label_140">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Pneumomediastinum</string>
@@ -2090,7 +2093,7 @@ p, li { white-space: pre-wrap; }
                   <item row="4" column="1">
                    <widget class="QComboBox" name="pneumothorax_pd">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2117,7 +2120,7 @@ p, li { white-space: pre-wrap; }
                   <item row="5" column="1">
                    <widget class="QComboBox" name="pneumomediastinum_pd">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2144,7 +2147,7 @@ p, li { white-space: pre-wrap; }
                   <item row="6" column="1">
                    <widget class="QComboBox" name="other_pd">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2324,7 +2327,7 @@ p, li { white-space: pre-wrap; }
                   <item row="0" column="1">
                    <widget class="QComboBox" name="bleeding_lhm">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2351,7 +2354,7 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="1">
                    <widget class="QComboBox" name="perforation_lhm">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2378,7 +2381,7 @@ p, li { white-space: pre-wrap; }
                   <item row="4" column="0">
                    <widget class="QLabel" name="label_141">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Pneumothorax</string>
@@ -2388,7 +2391,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="1">
                    <widget class="QComboBox" name="mucusal_tears_lhm">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2415,7 +2418,7 @@ p, li { white-space: pre-wrap; }
                   <item row="2" column="1">
                    <widget class="QComboBox" name="capnoperitoneum_lhm">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2442,7 +2445,7 @@ p, li { white-space: pre-wrap; }
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_142">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Bleeding</string>
@@ -2452,7 +2455,7 @@ p, li { white-space: pre-wrap; }
                   <item row="2" column="0">
                    <widget class="QLabel" name="label_143">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Capnoperitoneum</string>
@@ -2462,7 +2465,7 @@ p, li { white-space: pre-wrap; }
                   <item row="6" column="0">
                    <widget class="QLabel" name="label_144">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Other</string>
@@ -2472,7 +2475,7 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="0">
                    <widget class="QLabel" name="label_145">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Perforation</string>
@@ -2482,7 +2485,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="0">
                    <widget class="QLabel" name="label_146">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Mucosal tears</string>
@@ -2492,7 +2495,7 @@ p, li { white-space: pre-wrap; }
                   <item row="5" column="0">
                    <widget class="QLabel" name="label_147">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Pneumomediastinum</string>
@@ -2502,7 +2505,7 @@ p, li { white-space: pre-wrap; }
                   <item row="4" column="1">
                    <widget class="QComboBox" name="pneumothorax_lhm">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2529,7 +2532,7 @@ p, li { white-space: pre-wrap; }
                   <item row="5" column="1">
                    <widget class="QComboBox" name="pneumomediastinum_lhm">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2556,7 +2559,7 @@ p, li { white-space: pre-wrap; }
                   <item row="6" column="1">
                    <widget class="QComboBox" name="other_lhm">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2961,7 +2964,7 @@ p, li { white-space: pre-wrap; }
                   <item row="0" column="1">
                    <widget class="QComboBox" name="bleeding_poem">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -2988,7 +2991,7 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="1">
                    <widget class="QComboBox" name="perforation_poem">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3015,7 +3018,7 @@ p, li { white-space: pre-wrap; }
                   <item row="4" column="0">
                    <widget class="QLabel" name="label_148">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Pneumothorax</string>
@@ -3025,7 +3028,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="1">
                    <widget class="QComboBox" name="mucusal_tears_poem">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3052,7 +3055,7 @@ p, li { white-space: pre-wrap; }
                   <item row="2" column="1">
                    <widget class="QComboBox" name="capnoperitoneum_poem">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3079,7 +3082,7 @@ p, li { white-space: pre-wrap; }
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_149">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Bleeding</string>
@@ -3089,7 +3092,7 @@ p, li { white-space: pre-wrap; }
                   <item row="2" column="0">
                    <widget class="QLabel" name="label_150">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Capnoperitoneum</string>
@@ -3099,7 +3102,7 @@ p, li { white-space: pre-wrap; }
                   <item row="6" column="0">
                    <widget class="QLabel" name="label_151">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Other</string>
@@ -3109,7 +3112,7 @@ p, li { white-space: pre-wrap; }
                   <item row="1" column="0">
                    <widget class="QLabel" name="label_152">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Perforation</string>
@@ -3119,7 +3122,7 @@ p, li { white-space: pre-wrap; }
                   <item row="3" column="0">
                    <widget class="QLabel" name="label_153">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Mucosal tears</string>
@@ -3129,7 +3132,7 @@ p, li { white-space: pre-wrap; }
                   <item row="5" column="0">
                    <widget class="QLabel" name="label_154">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="text">
                      <string>Pneumomediastinum</string>
@@ -3139,7 +3142,7 @@ p, li { white-space: pre-wrap; }
                   <item row="4" column="1">
                    <widget class="QComboBox" name="pneumothorax_poem">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3166,7 +3169,7 @@ p, li { white-space: pre-wrap; }
                   <item row="5" column="1">
                    <widget class="QComboBox" name="pneumomediastinum_poem">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3193,7 +3196,7 @@ p, li { white-space: pre-wrap; }
                   <item row="6" column="1">
                    <widget class="QComboBox" name="other_poem">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <item>
                      <property name="text">
@@ -3283,15 +3286,15 @@ p, li { white-space: pre-wrap; }
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>4</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>468</width>
-             <height>337</height>
+             <width>1370</width>
+             <height>524</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3711,8 +3714,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>736</width>
-             <height>268</height>
+             <width>1166</width>
+             <height>368</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4029,8 +4032,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>591</width>
-             <height>107</height>
+             <width>936</width>
+             <height>165</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4195,8 +4198,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>559</width>
-             <height>479</height>
+             <width>909</width>
+             <height>676</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4711,8 +4714,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1390</width>
-             <height>727</height>
+             <width>1370</width>
+             <height>524</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4880,7 +4883,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>1420</width>
-     <height>18</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
@@ -4888,7 +4891,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
