@@ -308,35 +308,3 @@ class Reconstruction(Base):
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
-
-class Metric(Base):
-    __tablename__ = "metrics"
-    metric_id = mapped_column(Integer, primary_key=True, autoincrement=True)
-    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    # Zeitpunkt des Breischluckbildes
-    time = mapped_column(Integer, nullable=False)
-    metric_tubular_mean = mapped_column(Float, nullable=False)
-    metric_sphincter_mean = mapped_column(Float, nullable=False)
-    metric_tubular_max = mapped_column(Float, nullable=False)
-    metric_sphincter_max = mapped_column(Float, nullable=False)
-    metric_tubular_min = mapped_column(Float, nullable=False)
-    metric_sphincter_min = mapped_column(Float, nullable=False)
-    pressure_tubular_max = mapped_column(Float, nullable=False)
-    pressure_sphincter_max = mapped_column(Float, nullable=False)
-    volume_tubular = mapped_column(Float, nullable=False)
-    volume_sphincter = mapped_column(Float, nullable=False)
-    esophagus_length_cm = mapped_column(Float, nullable=False)
-
-    def toDict(self):
-        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
-
-
-class VisualizationData(Base):
-    __tablename__ = "visualization_data_list"
-    visualization_id = mapped_column(
-        Integer, primary_key=True, autoincrement=True)
-    visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    visualization_data = mapped_column(PickleType, nullable=False)
-
-    def toDict(self):
-        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}

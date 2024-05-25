@@ -205,27 +205,5 @@ CREATE TABLE reconstructions (
     reconstruction_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     reconstruction_file BYTEA NOT NULL
-)
-
-CREATE TABLE metrics (
-    metric_id SERIAL PRIMARY KEY,
-    visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    time INT NOT NULL,
-    metric_tubular_mean FLOAT NOT NULL,
-    metric_sphincter_mean FLOAT NOT NULL,
-    metric_tubular_max FLOAT NOT NULL,
-    metric_sphincter_max FLOAT NOT NULL,
-    metric_tubular_min FLOAT NOT NULL,
-    metric_sphincter_min FLOAT NOT NULL,
-    pressure_tubular_max FLOAT NOT NULL,
-    pressure_sphincter_max FLOAT NOT NULL,
-    volume_tubular FLOAT NOT NULL,
-    volume_sphincter FLOAT NOT NULL,
-    esophagus_length_cm FLOAT NOT NULL
 );
 
-CREATE TABLE visualization_data_list (
-    visualization_id SERIAL PRIMARY KEY,
-    visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    visualization_data BYTEA NOT NULL
-);
