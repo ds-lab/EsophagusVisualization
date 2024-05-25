@@ -14,7 +14,25 @@ class InfoWindow(QDialog):
 
     def show_data_window_info(self):
         # ToDo Text noch schreiben
-        text = """TEXT TO BE DEFINED"""
+        text = """In this window, patients and visits can be created.<br>
+    Most data are not mandatory.<br>
+    Patients and visits can be selected by clicking on them in the patient or visit list to add further data.<br><br>
+    To create a 3D reconstruction, at least the following data are required:<br>
+
+    <ol>
+        <li>A patient must be created or selected from the patient list.</li>
+        <li>A visit must be selected or created for the selected patient.</li>
+        <li>The following data must be entered for the selected visit:
+            <ul>
+                <li>Manometry file from the 'Laborie stationary measurement & analysis software' by Medical Measurement Systems B.V. in CSV format.</li>
+                <li>One or more Barium Swallow images in JPG format.</li>
+                <li>Additionally, endoscopy images can be optionally added to improve the reconstruction.</li>
+                <li>Endoflip data are also optional but will be used for additional representation in the 3D reconstruction if entered.</li>
+                <li>The remaining visit data serve to build a knowledge database to learn the correlation between different patient and treatment parameters and the outcome.</li>
+            </ul>
+        </li>
+        <li>When a visit with the necessary data is selected, the reconstruction can be created by clicking "Create Visualization for selected Patient and selected Visit". If a reconstruction for this visit has already been saved, you may load this reconstruction or create a new one.</li>
+    </ol>"""
         self.ui.textEdit.setHtml(text)
 
     def show_xray_region_selection_info(self):
