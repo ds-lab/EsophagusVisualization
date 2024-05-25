@@ -1,9 +1,9 @@
-from PyQt5.QtCore import QMimeData, Qt
-from PyQt5.QtGui import QDrag, QPixmap
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
+from PyQt6.QtCore import QMimeData, Qt, pyqtSignal
+from PyQt6.QtGui import QDrag, QPixmap
+from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 
-# Based on -> https://www.pythonguis.com/faq/pyqt-drag-drop-widgets/ 
+# Based on -> https://www.pythonguis.com/faq/pyqt-drag-drop-widgets/
 
 # A draggable item/widget.
 class DragItem(QWidget):
@@ -11,8 +11,7 @@ class DragItem(QWidget):
         super().__init__(*args, **kwargs)
 
     def mouseMoveEvent(self, e):
-
-        if e.buttons() == Qt.LeftButton:
+        if e.buttons() == Qt.MouseButton.LeftButton:
             # Create a drag object and set its mime data.
             drag = QDrag(self)
             mime = QMimeData()
@@ -24,7 +23,7 @@ class DragItem(QWidget):
             drag.setPixmap(pixmap)
 
             # Execute the drag-and-drop operation as a move action.
-            drag.exec_(Qt.MoveAction)
+            drag.exec(Qt.DropAction.MoveAction)
 
 
 # A container/widget that holds several DragItems and accepts drag-and-drop actions.
@@ -49,16 +48,16 @@ class DragWidget(QWidget):
 
     def dropEvent(self, e):
         # Get Position and currently dragged DragItem.
-        pos = e.pos()
+        pos = e.position()
         widget = e.source()
 
         for n in range(self.blayout.count()):
             # Get the widget at each index
             w = self.blayout.itemAt(n).widget()
 
-            if n == self.blayout.count()-1:
-                    # DragItem (widget) is being dragged beyond the last element of DragWidget -> Drop item to the very right or bottom
-                    self.blayout.insertWidget(n, widget)
+            if n == self.blayout.count() - 1:
+                # DragItem (widget) is being dragged beyond the last element of DragWidget -> Drop item to the very right or bottom
+                self.blayout.insertWidget(n, widget)
 
             if self.orientation == Qt.Orientation.Vertical:
                 # Drag drop vertically.
@@ -76,13 +75,13 @@ class DragWidget(QWidget):
                     # Check if pos.x() is greater than the current widget's x-coordinate.
                     # If so, move to the next widget.
                     continue
-                
+
                 # Drop position found
                 drop_here = pos.x() < w.x() + w.size().width() // 2
 
             if drop_here:
                 # Drop item left of the current widget
-                self.blayout.insertWidget(n-1, widget)
+                self.blayout.insertWidget(n - 1, widget)
                 break
 
         # Accept the drop event.
@@ -96,4 +95,3 @@ class DragWidget(QWidget):
         # Remove a DragItem from the DragWidget's layout.
         self.blayout.removeWidget(item)
         item.setParent(None)
-        

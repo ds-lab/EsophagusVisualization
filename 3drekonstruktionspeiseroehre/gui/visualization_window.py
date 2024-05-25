@@ -1,21 +1,27 @@
 import csv
 import os
 import pickle
+import re
+
 import numpy as np
 
-import gui.file_selection_window
 from dash_server import DashServer
 from gui.drag_and_drop import *
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
+from gui.show_message import ShowMessage
+import gui.data_window
 from logic.figure_creator.figure_creation_thread import FigureCreationThread
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
-from PyQt5 import uic
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QFont
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import (QAction, QFileDialog, QLabel, QMainWindow,
+from logic.database import database
+from logic.services.reconstruction_service import ReconstructionService
+
+from PyQt6 import uic
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QFont, QAction
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWidgets import (QFileDialog, QLabel, QMainWindow,       # QAction
                              QMessageBox, QProgressDialog, QPushButton,
                              QSizePolicy, QStyle, QVBoxLayout)
 import pyvista as pv
@@ -33,6 +39,7 @@ class VisualizationWindow(QMainWindow):
             patient_data (PatientData): PatientData object
         """
         super().__init__()
+        self.setAcceptDrops(True)
         self.ui = uic.loadUi("./ui-files/visualization_window_design.ui", self)
         self.master_window = master_window
         # Maximize window to show the whole 3d reconstruction (necessary if visualization_data is imported)
@@ -40,23 +47,29 @@ class VisualizationWindow(QMainWindow):
         self.patient_data = patient_data
         self.visits = self.patient_data.visit_data_dict
 
+        self.db = database.get_db()
+        self.reconstruction_service = ReconstructionService(self.db)
+
         # Create Menu-Buttons
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
-        menu_button_2 = QAction("Download für Import", self)
+        menu_button_2 = QAction("Save Reconstruction as file", self)
         menu_button_2.triggered.connect(self.__download_object_files)
         self.ui.menubar.addAction(menu_button_2)
-        menu_button_3 = QAction("Download für Darstellung", self)
+        menu_button_3 = QAction("Download for Display", self)
         menu_button_3.triggered.connect(self.__download_html_file)
         self.ui.menubar.addAction(menu_button_3)
-        menu_button_6 = QAction("CSV Metriken Download", self)
+        menu_button_6 = QAction("CSV Metrics Download", self)
         menu_button_6.triggered.connect(self.__download_csv_file)
         self.ui.menubar.addAction(menu_button_6)
-        menu_button_7 = QAction("Download für 3d-Druck", self)
+        menu_button_7 = QAction("Download for 3d-Printing", self)
         menu_button_7.triggered.connect(self.__download_stl_file)
         self.ui.menubar.addAction(menu_button_7)
-        menu_button_4 = QAction("Weitere Rekonstruktion einfügen", self)
+        menu_button_8 = QAction("Save in Reconstruction in DB", self)
+        menu_button_8.triggered.connect(self.__save_reconstruction_in_db)
+        self.ui.menubar.addAction(menu_button_8)
+        menu_button_4 = QAction("Add Reconstruction(s)", self)
         menu_button_4.triggered.connect(self.__extend_patient_data)
         self.ui.menubar.addAction(menu_button_4)
         menu_button_5 = QAction("Reset", self)
@@ -83,9 +96,12 @@ class VisualizationWindow(QMainWindow):
 
         self.setCentralWidget(self.visualization_layout)
 
-        self.progress_dialog = QProgressDialog("Visualisierung wird erstellt", None, 0, 100, None)
-        self.progress_dialog.setWindowTitle("Fortschritt")
+        self.progress_dialog = QProgressDialog("Creating Visualisation", None, 0, 100, None)
+        self.progress_dialog.setWindowTitle("Processing...")
         self.progress_dialog.show()
+
+        print(f"PatientData: {self.patient_data}")
+        print(f"patient_data.visit_data_dict.items() = Visits: {self.patient_data.visit_data_dict.items()}")
 
     def __menu_button_clicked(self):
         """
@@ -141,13 +157,15 @@ class VisualizationWindow(QMainWindow):
         else:
             visit_name = visit.name
         label = QLabel(visit_name)
-        label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        #label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        label.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
         label.setFont(QFont('Arial', 14))
         vbox.addWidget(label)
 
         # Create a button with a trash can icon that triggers the removal of the visualization
         button = QPushButton()
-        button.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_TitleBarCloseButton')))
+        #button.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_TitleBarCloseButton')))
+        button.setIcon(self.style().standardIcon(getattr(QStyle.StandardPixmap, 'SP_TitleBarCloseButton')))
         button.setFixedSize(20, 20)
         button.clicked.connect(lambda _, visit_name=visit_name, item=item: self.__delete_visualization(visit_name,
                                                                                                        item))  # Connect the button's clicked signal to the delete visualization method
@@ -179,6 +197,7 @@ class VisualizationWindow(QMainWindow):
         if destination_directory:
             # Iterate over each VisualizationData object in the visit_data_dict
             for name, visit_data in self.patient_data.visit_data_dict.items():
+                print(f"visit_data: {visit_data}")
                 # Generate a file name for each pickle file
                 file_name = f"{name.split('.')[0]}.achalasie"
                 # Construct the file path by joining the destination directory and the file name
@@ -190,8 +209,30 @@ class VisualizationWindow(QMainWindow):
 
             # Inform the user that the export is complete
             QMessageBox.information(
-                self, "Export erfolgreich",
-                f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
+                self, "Export Successful",
+                f"The files were successfully exported to {destination_directory}."
+            )
+
+    def __save_reconstruction_in_db(self):
+        savings = False
+        for name, visit_data in self.patient_data.visit_data_dict.items():
+            match = re.search(r'Visit_ID: (\d+)', name)
+            visit = match.group(1)
+            reconstruction_bytes = pickle.dumps(visit_data)
+            reconstruction = self.reconstruction_service.get_reconstruction_for_visit(visit)
+            if not reconstruction or reconstruction and ShowMessage.to_update_for_visit("3d reconstruction"):
+                reconstruction_dict = {'visit_id': visit,
+                                       'reconstruction_file': reconstruction_bytes}
+                if reconstruction:
+                    self.reconstruction_service.update_reconstruction(reconstruction.reconstruction_id, reconstruction_dict)
+                else:
+                    self.reconstruction_service.create_reconstruction(reconstruction_dict)
+                savings = True
+        # Inform the user that the export is complete
+        if savings:
+            QMessageBox.information(
+                self, "Saving done",
+                f"Reconstruction(s) has/have been saved in the database."
             )
 
     def __download_html_file(self):
@@ -212,7 +253,7 @@ class VisualizationWindow(QMainWindow):
                 # Write the figure to an HTML file
                 figure.write_html(destination_directory + "\\" + html_file_name)
         # Inform the user that the export is complete
-        QMessageBox.information(self, "Export Complete", "HTML Dateien wurden erfolgreich exportiert.")
+        QMessageBox.information(self, "Export Complete", "HTML files were successfully exported.")
 
 
 
@@ -270,10 +311,9 @@ class VisualizationWindow(QMainWindow):
 
             # Inform the user that the export is complete
             QMessageBox.information(
-                self, "Export erfolgreich",
-                f"Die Dateien wurden erfolgreich exportiert in {destination_directory}."
+                self, "Export Successful",
+                f"The files have been successfully exported to {destination_directory}."
             )
-
 
     def __download_csv_file(self):
         """
@@ -287,9 +327,9 @@ class VisualizationWindow(QMainWindow):
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
-                    ["Id", "Breischluckbild", "Tubular Index (Mean)", "Sphinkter Index (Mean)", "Volume Tubular",
-                     "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)", "Index Tublar (Max)",
-                     "Index Sphinkter (Max)", "Index Tublar (Min)", "Index Sphinkter (Min)", "Esophagus Length (cm)"])
+                    ["Id", "Barium Swallow Image", "Tubular Index (Mean)", "Sphincter Index (Mean)", "Volume Tubular",
+                     "Volume Sphincter", "Pressure Tubular (Max)", "Pressure Sphincter (Max)", "Index Tubular (Max)",
+                     "Index Sphincter (Max)", "Index Tubular (Min)", "Index Sphincter (Min)", "Esophagus Length (cm)"])
 
                 # loop through all visits.items (these are figures which are displayed in different threads)
                 for i, (name, visit_data) in enumerate(self.visits.items()):
@@ -303,38 +343,38 @@ class VisualizationWindow(QMainWindow):
                     for j in range(len(visit_data.visualization_data_list)):
                         xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
                         tubular_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[0]
-                        sphinkter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
+                        sphincter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
                         volume_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[2]
-                        volume_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[3]
+                        volume_sphincter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[3]
                         max_pressure_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[4]
-                        max_pressure_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[5]
+                        max_pressure_sphincter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[5]
                         max_metric_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[6]
-                        max_metric_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[7]
+                        max_metric_sphincter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[7]
                         min_metric_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[8]
-                        min_metric_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[9]
+                        min_metric_sphincter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[9]
                         esophagus_length = visit_data.visualization_data_list[
                             j].figure_creator.get_esophagus_full_length_cm()
 
                         # Write metrics data to CSV file
                         writer.writerow([visit_name, xray_name, round(np.mean(tubular_metric), 2),
-                                         round(np.mean(sphinkter_metric), 2), round(volume_tubular, 2),
-                                         round(volume_sphinkter, 2), round(max_pressure_tubular, 2),
-                                         round(max_pressure_sphinkter, 2), round(max_metric_tubular, 2),
-                                         round(max_metric_sphinkter, 2), round(min_metric_tubular, 2),
-                                         round(min_metric_sphinkter, 2),
+                                         round(np.mean(sphincter_metric), 2), round(volume_tubular, 2),
+                                         round(volume_sphincter, 2), round(max_pressure_tubular, 2),
+                                         round(max_pressure_sphincter, 2), round(max_metric_tubular, 2),
+                                         round(max_metric_sphincter, 2), round(min_metric_tubular, 2),
+                                         round(min_metric_sphincter, 2),
                                          round(esophagus_length, 2)])
 
             # Inform the user that the export is complete
-            QMessageBox.information(self, "Export Complete",
-                                "csv Datei wurde erfolgreich exportiert.")
+            QMessageBox.information(self, "Export Complete", "CSV file has been successfully exported.")
+
 
     def __extend_patient_data(self):
         """
         Callback for extending patient data
         """
-        # Open File selection window
-        file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
-        self.master_window.switch_to(file_selection_window)
+        # Open the Data Window to enable selection of new data
+        data_window = gui.data_window.DataWindow(self.master_window, self.patient_data)
+        self.master_window.switch_to(data_window)
 
         # Stop all threads
         for dash_server in self.dash_servers:
@@ -349,9 +389,9 @@ class VisualizationWindow(QMainWindow):
         # Empty the patient data object
         self.patient_data.visit_data_dict = {}
 
-        # Open file selection window
-        file_selection_window = gui.file_selection_window.FileSelectionWindow(self.master_window, self.patient_data)
-        self.master_window.switch_to(file_selection_window)
+        # Open the Data Window to enable selection of new data
+        data_window = gui.data_window.DataWindow(self.master_window, self.patient_data)
+        self.master_window.switch_to(data_window)
 
         # Stop all threads
         for dash_server in self.dash_servers:

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Auswahl der benötigten Positionen</string>
+   <string>Selection of required positions</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -55,7 +55,7 @@
       <item row="3" column="1">
        <widget class="QGroupBox" name="groupBox_4">
         <property name="title">
-         <string>Länge des UÖS</string>
+         <string>Length of LES:</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
@@ -87,7 +87,7 @@
       <item row="6" column="1">
        <widget class="QGroupBox" name="groupBox_5">
         <property name="title">
-         <string>Ösophagus Ausgang</string>
+         <string>Esophageal exit point:</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_8">
          <item>
@@ -98,7 +98,7 @@
               <string notr="true">color: rgb(255,105,180);</string>
              </property>
              <property name="text">
-              <string>Einzeichnen</string>
+              <string>Mark</string>
              </property>
             </widget>
            </item>
@@ -129,7 +129,7 @@
          </sizepolicy>
         </property>
         <property name="title">
-         <string>Nullposition der Endoskopiebilder</string>
+         <string>Zero position of the endoscopic images:</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
@@ -140,7 +140,7 @@
               <string notr="true">color: rgb(191, 71, 64);</string>
              </property>
              <property name="text">
-              <string>Einzeichnen</string>
+              <string>Mark</string>
              </property>
              <property name="autoDefault">
               <bool>false</bool>
@@ -167,7 +167,7 @@
          <string notr="true"/>
         </property>
         <property name="title">
-         <string>Erste Sensorposition</string>
+         <string>First sensor position</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
@@ -202,7 +202,7 @@
          </sizepolicy>
         </property>
         <property name="title">
-         <string>Zweite Sensorposition</string>
+         <string>Second sensor position</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="0" column="1">
@@ -211,7 +211,7 @@
             <string notr="true">color: rgb(114, 159, 207);</string>
            </property>
            <property name="text">
-            <string>Einzeichnen</string>
+            <string>Mark</string>
            </property>
            <property name="autoDefault">
             <bool>false</bool>
@@ -231,7 +231,7 @@
       <item row="2" column="1">
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
-         <string>Obere Grenze des UÖS</string>
+         <string>Upper boundary of LES:</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
@@ -276,7 +276,7 @@
               </palette>
              </property>
              <property name="text">
-              <string>Einzeichnen</string>
+              <string>Mark</string>
              </property>
             </widget>
            </item>
@@ -294,7 +294,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Weiter</string>
+         <string>Continue</string>
         </property>
         <property name="autoDefault">
          <bool>false</bool>
@@ -304,7 +304,7 @@
       <item row="5" column="1">
        <widget class="QGroupBox" name="endoflip_groupbox">
         <property name="title">
-         <string>Endoflip-Messung, Sensor P1</string>
+         <string>EndoFlip, Sensor P1:</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_10">
          <item>
@@ -315,7 +315,7 @@
               <string notr="true">color: rgb(153,50,204);</string>
              </property>
              <property name="text">
-              <string>Einzeichnen</string>
+              <string>Mark</string>
              </property>
             </widget>
            </item>
@@ -334,7 +334,7 @@
      <x>0</x>
      <y>0</y>
      <width>935</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

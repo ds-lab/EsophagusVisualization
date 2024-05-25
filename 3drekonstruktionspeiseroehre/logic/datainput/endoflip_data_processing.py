@@ -1,5 +1,25 @@
+import os
+from PIL import Image
+from io import BytesIO
 import pandas as pd
 import re
+from logic.services.endoflip_service import EndoflipFileService, EndoflipImageService
+from logic.database import database
+import pickle
+
+
+def conduct_endoflip_file_upload(selected_visit, timepoint, data_bytes, endoflip_screenshot):
+    endoflip_bytes = pickle.dumps(endoflip_screenshot)
+    endoflip_file_dict = {
+        'visit_id': selected_visit,
+        'timepoint': timepoint,
+        'file': data_bytes,
+        'screenshot': endoflip_bytes
+    }
+    db = database.get_db()
+    endoflip_file_service = EndoflipFileService(db)
+    endoflip_file_service.create_endoflip_file(endoflip_file_dict)
+
 
 def process_endoflip_xlsx(file_path: str) -> dict:
     """
@@ -16,11 +36,12 @@ def process_endoflip_xlsx(file_path: str) -> dict:
 
     # Read the Excel file
     data = pd.read_excel(file_path, header=None)
+    data_bytes = pickle.dumps(data)
 
     # Find starting header row (doctors use the first couple rows for their annotations)
     row_start = 0
     for row in range(data.shape[0]):
-        if str(data.iat[row,0]).startswith("Time,"):
+        if str(data.iat[row, 0]).startswith("Time,"):
             row_start = row
             break
 
@@ -30,7 +51,7 @@ def process_endoflip_xlsx(file_path: str) -> dict:
     column_names = [name.strip() for name in column_names]
 
     # Drop the starting rows that don't contain data
-    data = data.iloc[row_start+1:]
+    data = data.iloc[row_start + 1:]
 
     # Drop rows where all values are NaN
     data = data.dropna(how='all')
@@ -47,12 +68,12 @@ def process_endoflip_xlsx(file_path: str) -> dict:
 
     # Define the regex pattern to select columns starting with 'E' and ending with 'DS050*' 
     pattern = re.compile(r'^E\d+DS(050|100)\*$')
-    
+
     # Calculate the min,max,mean and median for both 30ml and 40ml
     aggregations = {}
     for name, group in grouped_data:
         selected_columns = group.filter(regex=pattern)
-        
+
         # Extract distance (5mm or 10mm) in cm
         distance_string = pattern.search(selected_columns.columns[0]).group(1)
         if distance_string == "050":
@@ -66,4 +87,35 @@ def process_endoflip_xlsx(file_path: str) -> dict:
             'aggregates': selected_columns.astype(float).agg(['min', 'max', 'mean', 'median'])
         }
 
-    return aggregations
+    return data_bytes, aggregations
+
+
+def process_and_upload_endoflip_images(selected_visit, filenames):
+    for i, filename in enumerate(filenames):
+        match = re.search(r'(before|during|after)', filename)
+        if match:
+            timepoint = match.group(0)
+            fileextension = os.path.splitext(filename)[1][1:]
+            print(fileextension)
+            if fileextension.lower() in ['jpg', 'jpeg']:
+                extension = 'JPEG'
+            elif fileextension.lower() in ['png']:
+                extension = 'PNG'
+            else:
+                # Handle unsupported file extensions
+                continue
+
+            file = Image.open(filename)
+            file_bytes = BytesIO()
+            file.save(file_bytes, format=extension)
+            file_bytes = file_bytes.getvalue()
+
+            endoflip_image_dict = {
+                'visit_id': selected_visit,
+                'timepoint': timepoint,
+                'file': file_bytes
+            }
+
+            db = database.get_db()
+            endoflip_service = EndoflipImageService(db)
+            endoflip_service.create_endoflip_image(endoflip_image_dict)
