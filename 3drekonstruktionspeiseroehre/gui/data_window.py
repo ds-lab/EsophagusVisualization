@@ -21,6 +21,7 @@ from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, cond
 from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
 from logic.datainput.barium_swallow_data_processing import process_and_upload_barium_swallow_images
 from logic.datainput.manometry_data_processing import process_and_upload_manometry_file
+from logic.datainput.endosonography_data_processing import process_and_upload_endosonography_images
 from logic.database import database
 from logic.datainput.validate_input_data import DataValidation
 from logic.datainput.check_data_existence import CheckDataExistence
@@ -91,6 +92,7 @@ class DataWindow(QMainWindow):
         self.endoflip_service = EndoflipService(self.db)
         self.endoflip_file_service = EndoflipFileService(self.db)
         self.endoflip_image_service = EndoflipImageService(self.db)
+        self.endosonography_image_service = EndosonographyImageService(self.db, self.engine)
         self.endosonography_video_service = EndosonographyVideoService(self.db, self.engine)
         self.botox_injection_service = BotoxInjectionService(self.db)
         self.complications_service = ComplicationsService(self.db)
@@ -168,6 +170,7 @@ class DataWindow(QMainWindow):
         self.ui.endoflip_file_upload_button.clicked.connect(self.__upload_endoflip_files)
         self.ui.endoflip_image_upload_button.clicked.connect(self.__upload_endoflip_image)
         # Endosonography
+        self.ui.endosono_image_upload_button.clicked.connect(self.__upload_endosonography_images)
         self.ui.endosono_video_upload_button.clicked.connect(self.__upload_endosonography_video)
         self.ui.endosono_video_download_button.clicked.connect(self.__download_endosonography_video)
         # Therapy Buttons
@@ -707,6 +710,8 @@ class DataWindow(QMainWindow):
                 self.ui.stackedWidget.setCurrentIndex(0)
 
         # Show images
+        # ToDo prüfen ob dieser Code besser bei den __init Funktionen aufgehoben ist, damit er auch ausgeführt wird, wenn ein Visit gelöscht wird
+        # Barium Swallow
         barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
             self.selected_visit)
         if barium_swallow_images:
@@ -716,6 +721,7 @@ class DataWindow(QMainWindow):
         if barium_swallow_minutes:
             self.barium_swallow_minutes = barium_swallow_minutes
             self.__load_barium_swallow_image()
+        # Endoscopy
         endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
         if endoscopy_images:
             self.endoscopy_pixmaps = endoscopy_images
@@ -724,6 +730,7 @@ class DataWindow(QMainWindow):
         if endoscopy_positions:
             self.endoscopy_positions = endoscopy_positions
             self.__load_endoscopy_image()
+        # EndoFlip
         endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
         if endoflip_images:
             self.endoflip_pixmaps = endoflip_images
@@ -732,6 +739,16 @@ class DataWindow(QMainWindow):
         if endoflip_timepoints:
             self.endoflip_timepoints = endoflip_timepoints
             self.__load_endoflip_image()
+        # Endosonography
+        endosono_images = self.endosonography_image_service.get_endosonography_images_for_visit(self.selected_visit)
+        if endosono_images:
+            self.endosono_pixmaps = endosono_images
+            self.endosono_image_index = 0
+        endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(self.selected_visit)
+        if endoflip_timepoints:
+            self.endosono_positions = endosono_positions
+            self.__load_endosonography_image()
+
 
     def __add_eckardt_score(self):
         eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
@@ -1173,6 +1190,64 @@ class DataWindow(QMainWindow):
         if self.endoflip_image_index < len(self.endoflip_pixmaps) - 1:
             self.endoflip_image_index += 1
             self.__load_endoflip_image()
+
+    def __upload_endosonography_images(self):
+        """
+        Endosonography button callback. Handles Endosonography file selection.
+        """
+        # If endosonography images are already uploaded in the database, images are deleted and updated with new images
+        endosono_exists = self.endosonography_image_service.get_endosonography_images_for_visit(
+            self.selected_visit)
+        if not endosono_exists or endosono_exists and ShowMessage.to_update_for_visit("Endosonography Images"):
+            self.endosonography_image_service.delete_endosonography_file_for_visit(self.selected_visit)
+
+            filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
+                                                        "Images (*.jpg *.JPG *.png *.PNG)")
+            error = False
+
+            for filename in filenames:
+                match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+                if not match:
+                    error = True
+                    QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
+                                         "' does not contain the required positional information, for example, 'name_10cm.png' (Format: Underscore + Integer + cm)")
+                    break
+
+            # if all images are named in the correct format, process and upload them
+            if not error:
+                process_and_upload_endosonography_images(self.selected_visit, filenames)
+                self.ui.endosono_images_text.setText(str(len(filenames)) + " File(s) uploaded")
+                # load the pixmaps of the images to make them viewable
+                endosono_images = self.endosonography_image_service.get_endosonography_images_for_visit(
+                    self.selected_visit)
+                endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(self.selected_visit)
+                if endosono_images:
+                    self.endosono_pixmaps = endosono_images
+                    self.endosono_image_index = 0
+                    self.endosono_positions = endosono_positions
+                    self.__load_endosonography_image()
+
+    def __load_endosonography_image(self):
+        # Load and display the current image
+        if 0 <= self.endosono_image_index < len(self.endosono_pixmaps):
+            scaled_pixmap = self.endosono_pixmaps[self.endosono_image_index].scaledToWidth(200)
+            scaled_size = scaled_pixmap.size()
+            self.ui.tbe_imageview.setPixmap(scaled_pixmap)
+            self.ui.tbe_imageview.setFixedSize(scaled_size)
+            text = "Position of image: " + str(self.endosono_positions[self.endosono_image_index])
+            self.ui.endosono_imagedescription_text.setText(text)
+
+    def __endosonography_previous_button_clicked(self):
+        # Show the previous image
+        if self.endosono_image_index > 0:
+            self.endosono_image_index -= 1
+            self.__load_endosonography_image()
+
+    def __endosonography_next_button_clicked(self):
+        # Show the next image
+        if self.endosono_image_index < len(self.endosono_pixmaps) - 1:
+            self.endosono_image_index += 1
+            self.__load_endosonography_image()
 
     def __upload_endosonography_video(self):
         endosono_exists = self.endosonography_video_service.get_endosonography_files_for_visit(self.selected_visit)
