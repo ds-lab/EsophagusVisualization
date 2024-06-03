@@ -192,6 +192,7 @@ CREATE TABLE endoflip_images (
 CREATE TABLE endosonography_images (
     endosonography_image_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
+    image_position INT NOT NULL,
     file BYTEA NOT NULL
 );
 
