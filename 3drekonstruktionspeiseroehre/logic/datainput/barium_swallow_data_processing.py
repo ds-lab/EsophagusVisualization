@@ -1,9 +1,9 @@
 from PIL import Image
-import re
 from io import BytesIO
 import os
 from logic.services.barium_swallow_service import BariumSwallowFileService
 from logic.database import database
+from gui.show_message import ShowMessage
 
 def process_and_upload_barium_swallow_images(selected_visit, filenames):
     for i, filename in enumerate(filenames):
@@ -15,8 +15,8 @@ def process_and_upload_barium_swallow_images(selected_visit, filenames):
         elif fileextension.lower() in ['png']:
             extension = 'PNG'
         else:
-            # Handle unsupported file extensions
-            continue
+            ShowMessage.wrong_format(fileextension, ['JPEG', 'PNG'])
+            break
 
         file = Image.open(filename)
         file_bytes = BytesIO()

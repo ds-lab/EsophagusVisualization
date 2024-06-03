@@ -27,3 +27,10 @@ class ShowMessage:
             return True
         return False
 
+    @staticmethod
+    def wrong_format(fileextension, acceptable_formats):
+        QMessageBox.critical(None, f'{fileextension} is no valid format', f'Please choose one of the following formats: ' + ", ".join(
+                acceptable_formats))
+
+
+

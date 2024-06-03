@@ -633,7 +633,6 @@ class DataWindow(QMainWindow):
         self.ui.selected_visit_text_visitview.setText("please select a visit")
         self.ui.selected_visit_text_visitdataview.setText("please select a visit")
 
-        # ToDo überprüfen ob das passt
         self.__init_manometry()
         self.__init_barium_swallow()
         self.__init_endoscopy()

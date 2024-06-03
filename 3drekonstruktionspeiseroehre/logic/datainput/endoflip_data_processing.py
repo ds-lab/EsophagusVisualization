@@ -6,6 +6,7 @@ import re
 from logic.services.endoflip_service import EndoflipFileService, EndoflipImageService
 from logic.database import database
 import pickle
+from gui.show_message import ShowMessage
 
 
 def conduct_endoflip_file_upload(selected_visit, timepoint, data_bytes, endoflip_screenshot):
@@ -102,8 +103,8 @@ def process_and_upload_endoflip_images(selected_visit, filenames):
             elif fileextension.lower() in ['png']:
                 extension = 'PNG'
             else:
-                # Handle unsupported file extensions
-                continue
+                ShowMessage.wrong_format(fileextension, ['JPEG', 'PNG'])
+                break
 
             file = Image.open(filename)
             file_bytes = BytesIO()
