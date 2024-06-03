@@ -103,3 +103,6 @@ class InfoWindow(QDialog):
         'Reset' can be used to reset the input and load new files.
         """
         self.ui.textEdit.setHtml(text)
+
+    def show_dci_selection_info(self):
+        text = """In this window, the area of interest for the calculation of the DCI is selected. <br><br>""" # TODO: improve text
