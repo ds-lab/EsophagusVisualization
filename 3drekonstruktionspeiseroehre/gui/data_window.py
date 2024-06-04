@@ -645,7 +645,7 @@ class DataWindow(QMainWindow):
         self.__init_botox()
         self.__init_pneumatic_dilatation()
         self.__init_lhm()
-        self.__poem()
+        self.__init_poem()
         self.__init_eckardt_score()
         self.__init_gerd()
         self.__init_medication()
