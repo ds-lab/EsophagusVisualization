@@ -67,7 +67,7 @@ class DataWindow(QMainWindow):
         self.visits_array = None
 
         # For displaying images
-        self.endoscopy_image_index = None
+        self.endoscopy_image_index = None #ToDo prüfen ob es weg kann
 
         self.ui = uic.loadUi("./ui-files/data_window_design.ui", self)
 
@@ -92,7 +92,7 @@ class DataWindow(QMainWindow):
         self.endoflip_service = EndoflipService(self.db)
         self.endoflip_file_service = EndoflipFileService(self.db)
         self.endoflip_image_service = EndoflipImageService(self.db)
-        self.endosonography_image_service = EndosonographyImageService(self.db, self.engine)
+        self.endosonography_image_service = EndosonographyImageService(self.db)
         self.endosonography_video_service = EndosonographyVideoService(self.db, self.engine)
         self.botox_injection_service = BotoxInjectionService(self.db)
         self.complications_service = ComplicationsService(self.db)
@@ -197,6 +197,8 @@ class DataWindow(QMainWindow):
         self.ui.tbe_next_button.clicked.connect(self.__barium_swallow_next_button_clicked)
         self.ui.endoflip_previous_button.clicked.connect(self.__endoflip_previous_button_clicked)
         self.ui.endoflip_next_button.clicked.connect(self.__endoflip_next_button_clicked)
+        self.ui.endosono_previous_button.clicked.connect(self.__endosonography_previous_button_clicked)
+        self.ui.endosono_next_button.clicked.connect(self.__endosonography_next_button_clicked)
 
         self.widget_names = {
             "Botox injection": 1,
@@ -744,8 +746,9 @@ class DataWindow(QMainWindow):
         if endosono_images:
             self.endosono_pixmaps = endosono_images
             self.endosono_image_index = 0
-        endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(self.selected_visit)
-        if endoflip_timepoints:
+        endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(
+            self.selected_visit)
+        if endosono_positions:
             self.endosono_positions = endosono_positions
             self.__load_endosonography_image()
 
@@ -1232,8 +1235,8 @@ class DataWindow(QMainWindow):
         if 0 <= self.endosono_image_index < len(self.endosono_pixmaps):
             scaled_pixmap = self.endosono_pixmaps[self.endosono_image_index].scaledToWidth(200)
             scaled_size = scaled_pixmap.size()
-            self.ui.tbe_imageview.setPixmap(scaled_pixmap)
-            self.ui.tbe_imageview.setFixedSize(scaled_size)
+            self.ui.endosono_imageview.setPixmap(scaled_pixmap)
+            self.ui.endosono_imageview.setFixedSize(scaled_size)
             text = "Position of image: " + str(self.endosono_positions[self.endosono_image_index])
             self.ui.endosono_imagedescription_text.setText(text)
 
