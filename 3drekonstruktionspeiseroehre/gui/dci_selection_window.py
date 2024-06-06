@@ -1,21 +1,19 @@
 from gui.master_window import MasterWindow
 from PyQt6.QtWidgets import QMainWindow
-from PyQt6.QtWidgets import QWidget, QVBoxLayout
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from matplotlib.widgets import RectangleSelector
 from PyQt6 import uic
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from PyQt6.QtGui import QAction
-from matplotlib.figure import Figure
 from gui.info_window import InfoWindow
 from gui.endoscopy_selection_window import EndoscopySelectionWindow
 from gui.visualization_window import VisualizationWindow
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.interpolate import griddata
 from matplotlib.colors import LinearSegmentedColormap
 import config
+from scipy import interpolate
 
 # for RectangleSelector: https://matplotlib.org/3.1.1/gallery/widgets/rectangle_selector.html
 
@@ -83,7 +81,6 @@ class DCISelectionWindow(QMainWindow):
 
     def __plot_data(self):
         number_of_measurements = len(self.visualization_data.pressure_matrix[1])
-        number_of_sensors = len(self.visualization_data.pressure_matrix[0])
 
         # Define the colors and positions for the color map
         colors = [(16/255, 1/255, 255/255), (5/255, 252/255, 252/255), (19/255, 254/255, 3/255), 
@@ -114,14 +111,33 @@ class DCISelectionWindow(QMainWindow):
                     value_before = self.visualization_data.pressure_matrix[sensor_counter - 1, i]
                     value_after = self.visualization_data.pressure_matrix[sensor_counter, i]
                     estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = ((position - coords_sensors[sensor_counter - 1]) * value_after + (coords_sensors[sensor_counter] - position) * value_before) / (coords_sensors[sensor_counter] - coords_sensors[sensor_counter - 1])
-                    # print(f"value_before: {value_before}, value_after: {value_after}, value_estimated: {estimated_pressure_matrix[(position - first_sensor) // min_gap, i]}")
-                    # (position - coords_sensors[sensor_counter]) / (coords_sensors[sensor_counter + 1] - coords_sensors[sensor_counter]) * (value_after - value_before) + value_before
-                    #np.mean([self.visualization_data.pressure_matrix[coords_sensors.index(sensor), i] for sensor in coords_sensors if sensor < position and sensor > position + min_gap])
-                #print(f"position: {position}, sensor_counter: {sensor_counter}, value: {estimated_pressure_matrix[(position - first_sensor) // min_gap, i]}")
                 position += min_gap
 
-        im = ax.imshow(estimated_pressure_matrix, cmap=cmap, interpolation='nearest', vmin=config.cmin, vmax=config.cmax)
+        x = np.arange(estimated_pressure_matrix.shape[1])
+        y = np.arange(estimated_pressure_matrix.shape[0])
+        f = interpolate.interp2d(x, y, estimated_pressure_matrix, kind='cubic')
+
+        # Define the higher resolution grid
+        xnew = np.linspace(0, estimated_pressure_matrix.shape[1], estimated_pressure_matrix.shape[1]*50)
+        ynew = np.linspace(0, estimated_pressure_matrix.shape[0], estimated_pressure_matrix.shape[0]*50)
+        pressure_matrix_high_res = f(xnew, ynew)
+
+        im = ax.imshow(pressure_matrix_high_res, cmap=cmap, interpolation='nearest', vmin=config.cmin, vmax=config.cmax)
+
+        # Calculate the time for each measurement
+        time = np.arange(0, estimated_pressure_matrix.shape[1]) / config.csv_values_per_second
+
+        # Set the tick labels
+        x_ticks = np.linspace(0, pressure_matrix_high_res.shape[1], len(time)//10+1)
+        y_ticks = np.linspace(0, pressure_matrix_high_res.shape[0], estimated_pressure_matrix.shape[0]//10+1)
+        ax.set_xticks(x_ticks)
+        ax.set_yticks(y_ticks)
+        ax.set_xticklabels(np.round(time[::10], 2))  # Display only every 10th time point, rounded to 2 decimal places
+        ax.set_yticklabels(np.arange(0, estimated_pressure_matrix.shape[0]+1, 10))
+
         fig.colorbar(im, ax=ax, label='Pressure')
+        ax.set_ylabel('Height along esophagus (cm)')
+        ax.set_xlabel('Time (s)')
 
         self.figure_canvas = FigureCanvasQTAgg(figure=fig)
         self.ui.gridLayout.addWidget(self.figure_canvas)
@@ -130,52 +146,6 @@ class DCISelectionWindow(QMainWindow):
         self.selector = RectangleSelector(ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=2, linestyle='-'), interactive=True)
 
         self.figure_canvas.draw()
-
-    """def __plot_data(self):
-        # time_data = np.linspace(0, 10, 100)  # replace with your actual data
-        # height_data = np.sin(time_data)  # replace with your actual data
-
-        # self.plot_ax.plot(time_data, height_data)
-        # self.figure_canvas.draw()
-
-        # Assuming self.visualization_data.pressure_matrix is a 2D array
-        data = self.visualization_data.pressure_matrix
-
-        # Create a grid of the same size as the data
-        grid_x, grid_y = np.mgrid[0:data.shape[0]:1, 0:data.shape[1]:1]
-
-        # Create a finer grid
-        fine_grid_x, fine_grid_y = np.mgrid[0:data.shape[0]:0.01, 0:data.shape[1]:0.01]
-
-        # Interpolate the data onto the finer grid
-        fine_data = griddata((grid_x.ravel(), grid_y.ravel()), data.ravel(), (fine_grid_x, fine_grid_y), method='cubic')
-
-        # Create a new figure and subplot
-        fig, ax = plt.subplots()
-
-        # Define the colors and positions for the color map
-        colors = [(16/255, 1/255, 255/255), (5/255, 252/255, 252/255), (19/255, 254/255, 3/255), 
-                (252/255, 237/255, 3/255), (255/255, 0/255, 0/255), (91/255, 5/255, 132/255)] # replace with values from config.py
-        positions = [0, 0.123552143573761, 0.274131298065186, 0.5, 0.702702701091766, 1]
-
-        # Create the color map
-        cmap = LinearSegmentedColormap.from_list('custom_cmap', list(zip(positions, colors)))
-
-        # Plot the interpolated data
-        im = ax.imshow(fine_data, cmap=cmap, interpolation='nearest', vmin=config.cmin, vmax=config.cmax)
-        fig.colorbar(im, ax=ax, label='Pressure')
-
-        # Create a canvas and add the plot to it
-        canvas = FigureCanvasQTAgg(fig)
-
-        # Create a new QWidget and set it as the central widget
-        central_widget = QWidget(self)
-        self.setCentralWidget(central_widget)
-
-        # Create a layout and add the canvas to it
-        layout = QVBoxLayout(central_widget)
-        layout.addWidget(canvas)"""
-
 
 
     def __apply_button_clicked(self):
