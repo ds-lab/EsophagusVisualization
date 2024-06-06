@@ -39,6 +39,7 @@ class DCISelectionWindow(QMainWindow):
         self.visualization_data = visit.visualization_data_list[n]
         self.n = n
         self.rectangle = None
+        self.pressure_matrix_high_res = None
         print(self.visualization_data.pressure_matrix)
         print(self.visualization_data.pressure_matrix.shape)
         # self.visualization_data.pressure_matrix stores arrays of pressure values of each sensor; index 0 is sensor P22 (top), index 1 is sensor P1 (bottom)
@@ -57,13 +58,19 @@ class DCISelectionWindow(QMainWindow):
 
         self.__plot_data()
 
+    def __onselect(self, eclick, erelease):
+        # eclick and erelease are the press and release events
+        x1, y1 = int(eclick.xdata), int(eclick.ydata)
+        x2, y2 = int(erelease.xdata), int(erelease.ydata)
 
-    def __onselect(self, eventpress, eventrelease):
-        # TODO: do sth useful with the selected rectangle
-        'eventpress and eventrelease are the press and release events'
-        x1, y1 = eventpress.xdata, eventpress.ydata
-        x2, y2 = eventrelease.xdata, eventrelease.ydata
-        print(f"Selection started at ({x1}, {y1}) and ended at ({x2}, {y2})")
+        # Extract the selected data
+        selected_data = self.pressure_matrix_high_res[y1:y2, x1:x2]
+
+        height_in_cm = selected_data.shape[0] / self.pressure_matrix_high_res.shape[0] * np.sort(config.coords_sensors)[-1]
+        time_in_s = selected_data.shape[1] / self.pressure_matrix_high_res.shape[1] * (self.visualization_data.pressure_matrix.shape[1] / config.csv_values_per_second)
+
+        # Now you can do something with the selected data
+        print(self.calculateDCI(selected_data, height_in_cm, time_in_s))
 
     def __reset_button_clicked(self):
         """
@@ -117,10 +124,14 @@ class DCISelectionWindow(QMainWindow):
         y = np.arange(estimated_pressure_matrix.shape[0])
         f = interpolate.interp2d(x, y, estimated_pressure_matrix, kind='cubic')
 
+        relation_x_y = estimated_pressure_matrix.shape[1] / estimated_pressure_matrix.shape[0]
+        goal_relation = 16 / 9
+
         # Define the higher resolution grid
         xnew = np.linspace(0, estimated_pressure_matrix.shape[1], estimated_pressure_matrix.shape[1]*50)
-        ynew = np.linspace(0, estimated_pressure_matrix.shape[0], estimated_pressure_matrix.shape[0]*50)
+        ynew = np.linspace(0, estimated_pressure_matrix.shape[0], int(np.floor(estimated_pressure_matrix.shape[0]*50 * relation_x_y / goal_relation)))
         pressure_matrix_high_res = f(xnew, ynew)
+        self.pressure_matrix_high_res = pressure_matrix_high_res
 
         im = ax.imshow(pressure_matrix_high_res, cmap=cmap, interpolation='nearest', vmin=config.cmin, vmax=config.cmax)
 
@@ -128,11 +139,11 @@ class DCISelectionWindow(QMainWindow):
         time = np.arange(0, estimated_pressure_matrix.shape[1]) / config.csv_values_per_second
 
         # Set the tick labels
-        x_ticks = np.linspace(0, pressure_matrix_high_res.shape[1], len(time)//10+1)
+        x_ticks = np.linspace(0, pressure_matrix_high_res.shape[1], len(time)//int(np.ceil(10 * relation_x_y / goal_relation)) + 1)
         y_ticks = np.linspace(0, pressure_matrix_high_res.shape[0], estimated_pressure_matrix.shape[0]//10+1)
         ax.set_xticks(x_ticks)
         ax.set_yticks(y_ticks)
-        ax.set_xticklabels(np.round(time[::10], 2))  # Display only every 10th time point, rounded to 2 decimal places
+        ax.set_xticklabels(np.round(time[::int(np.ceil(10 * relation_x_y / goal_relation))], 1))  # Display only every 10th time point, rounded to 1 decimal place
         ax.set_yticklabels(np.arange(0, estimated_pressure_matrix.shape[0]+1, 10))
 
         fig.colorbar(im, ax=ax, label='Pressure')
@@ -141,6 +152,8 @@ class DCISelectionWindow(QMainWindow):
 
         self.figure_canvas = FigureCanvasQTAgg(figure=fig)
         self.ui.gridLayout.addWidget(self.figure_canvas)
+
+        plt.contour(self.pressure_matrix_high_res > 30, levels=[0.5], colors='k', linestyles='solid', linewidths=0.3) # threshold for the contour plot is 30 mmHg
 
         # Create a polygon selector for user interaction
         self.selector = RectangleSelector(ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=2, linestyle='-'), interactive=True)
@@ -172,3 +185,18 @@ class DCISelectionWindow(QMainWindow):
         """
         self.selector.clear()
         self.selector.set_active(True)
+
+    def calculateDCI(self, pressure_matrix, height, time):
+            """
+            calculates the DCI value of the selected rectangle
+            :param pressure_matrix: the pressure matrix of the selected rectangle
+            :param height: the height of the selected rectangle
+            :param time: the time span of the selected rectangle
+            :return: the DCI value
+            """
+            # Create a mask of all values above 20 mmHg
+            mask = pressure_matrix > 20
+
+            # Calculate the mean of these values
+            mean_pressure = np.mean(pressure_matrix[mask])
+            return np.round(mean_pressure * height * time, 2)
