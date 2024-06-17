@@ -724,31 +724,6 @@ class FigureCreator(ABC):
                 if surfacecolor_list[j][i] > max_pressure_tubular:
                     max_pressure_tubular = surfacecolor_list[j][i]
 
-        # Save metrics in local database
-        # ToDO: Wie damit umgehen, dass die Daten jeweils nur einmal gespeichert werden sollen und nicht z.B. wenn die Rekonstruktion nochmals betrachtet wird erneut?
-        # z.B. vorher Abfrage ob die Daten (visit_id und time) bereits in der Datenbank sind oder (visit_id und time) als primary_key?
-        """
-        with database.engine_local.connect() as conn:
-            conn.execute(
-                insert(data_models.metrics_table).
-                values(visit_id=1,  # ToDO: bisher gibt es noch keine visit-id -> anpassen
-                       time=1, #anpassen
-                       metric_tubular_mean=np.mean(metric_tubular),
-                       metric_sphincter_mean=np.mean(metric_sphincter),
-                       metric_tubular_max=max(metric_tubular),
-                       metric_sphincter_max=max(metric_sphincter),
-                       metric_tubular_min=min(metric_tubular),
-                       metric_sphincter_min=min(metric_sphincter),
-                       pressure_tubular_max=max_pressure_tubular,
-                       pressure_sphincter_max=max_pressure_sphincter,
-                       volume_tubular=volume_sum_tubular,
-                       volume_sphincter=volume_sum_sphincter,
-                       esophagus_length_cm=esophagus_full_length_cm)
-            )
-            conn.commit()
-        """
-        
-
         return metric_tubular, metric_sphincter, volume_sum_tubular, volume_sum_sphincter, \
             max_pressure_tubular, max_pressure_sphincter, max(metric_tubular), max(metric_sphincter), min(
             metric_tubular), min(metric_sphincter)
