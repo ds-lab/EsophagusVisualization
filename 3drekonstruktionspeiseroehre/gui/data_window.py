@@ -6,7 +6,7 @@ import config
 from io import BytesIO
 
 from PyQt6 import QtCore, uic, QtWidgets, QtGui
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QPixmap
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QCompleter
 from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
 from logic.patient_data import PatientData
@@ -650,6 +650,22 @@ class DataWindow(QMainWindow):
         self.__init_gerd()
         self.__init_medication()
 
+        # Delete images
+        # Barium Swallow
+        self.ui.tbe_imageview.setText("No TBE images are loaded")
+        self.ui.tbe_imagedescription_text.setText("")
+        # Endoscopy
+        self.ui.endoscopy_imageview.setPixmap(QPixmap())
+        self.ui.endoscopy_imagedescription_text.setText("")
+        # EndoFlip
+        self.ui.endoflip_imageview.setPixmap(QPixmap())
+        self.ui.endoflip_imagedescription_text.setText("")
+        # Endosonography
+        #self.ui.endosono_imageview.setPixmap(QPixmap())
+        self.ui.endosono_imageview.setText("No Endosonography Images are loaded")
+        self.ui.endosono_imagedescription_text.setText("")
+
+        # Disable Buttons until visit is selected
         self.ui.eckardt_score.setEnabled(False)
         self.ui.visit_data.setEnabled(False)
         self.ui.gerd.setEnabled(False)
@@ -712,7 +728,6 @@ class DataWindow(QMainWindow):
                 self.ui.stackedWidget.setCurrentIndex(0)
 
         # Show images
-        # ToDo prüfen ob dieser Code besser bei den __init Funktionen aufgehoben ist, damit er auch ausgeführt wird, wenn ein Visit gelöscht wird
         # Barium Swallow
         barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
             self.selected_visit)
