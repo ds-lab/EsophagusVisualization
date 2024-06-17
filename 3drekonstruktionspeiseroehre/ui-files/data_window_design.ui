@@ -3286,15 +3286,15 @@ p, li { white-space: pre-wrap; }
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>4</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1378</width>
-             <height>631</height>
+             <width>636</width>
+             <height>399</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4166,7 +4166,7 @@ p, li { white-space: pre-wrap; }
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>no Endoscopy Images are loaded</string>
+                  <string>No Endoscopy Images are loaded</string>
                  </property>
                 </widget>
                </item>
@@ -4269,7 +4269,7 @@ p, li { white-space: pre-wrap; }
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>no Endoflip Images are loaded</string>
+                  <string>No Endoflip Images are loaded</string>
                  </property>
                 </widget>
                </item>
@@ -4819,7 +4819,7 @@ p, li { white-space: pre-wrap; }
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>no Endosonography Images are loaded</string>
+                  <string>No Endosonography Images are loaded</string>
                  </property>
                 </widget>
                </item>
@@ -4875,7 +4875,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>

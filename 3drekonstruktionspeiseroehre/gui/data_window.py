@@ -652,17 +652,16 @@ class DataWindow(QMainWindow):
 
         # Delete images
         # Barium Swallow
-        self.ui.tbe_imageview.setText("No TBE images are loaded")
+        self.ui.tbe_imageview.setText("No images are loaded")
         self.ui.tbe_imagedescription_text.setText("")
         # Endoscopy
-        self.ui.endoscopy_imageview.setPixmap(QPixmap())
+        self.ui.endoscopy_imageview.setText("No images are loaded")
         self.ui.endoscopy_imagedescription_text.setText("")
         # EndoFlip
-        self.ui.endoflip_imageview.setPixmap(QPixmap())
+        self.ui.endoflip_imageview.setText("No images are loaded")
         self.ui.endoflip_imagedescription_text.setText("")
         # Endosonography
-        #self.ui.endosono_imageview.setPixmap(QPixmap())
-        self.ui.endosono_imageview.setText("No Endosonography Images are loaded")
+        self.ui.endosono_imageview.setText("No images are loaded")
         self.ui.endosono_imagedescription_text.setText("")
 
         # Disable Buttons until visit is selected
