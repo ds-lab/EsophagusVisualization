@@ -13,7 +13,6 @@ class InfoWindow(QDialog):
         self.ui = uic.loadUi("./ui-files/info_window_design.ui", self)
 
     def show_data_window_info(self):
-        # ToDo Text noch schreiben
         text = """In this window, patients and visits can be created.<br>
     Most data are not mandatory.<br>
     Patients and visits can be selected by clicking on them in the patient or visit list to add further data.<br><br>
