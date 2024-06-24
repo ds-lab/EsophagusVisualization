@@ -10,32 +10,10 @@ DATABASE_URL = 'postgresql+psycopg2://admin:123+qwe@127.0.0.1:5432/3drekonstrukt
 engine_local = create_engine(DATABASE_URL, pool_pre_ping=True, echo=True)
 Session = sessionmaker(bind=engine_local)
 
-# Create Trigger Function to delete Large Objects automatically
-def create_trigger_and_function(conn):
-    conn.execute("""
-    CREATE OR REPLACE FUNCTION delete_large_object() RETURNS TRIGGER AS $$
-    BEGIN
-        PERFORM lo_unlink(OLD.video_oid);
-        RETURN OLD;
-    END;
-    $$ LANGUAGE plpgsql;
-    """)
-
-    conn.execute("""
-    CREATE TRIGGER trg_delete_large_object
-    AFTER DELETE ON endosonography_videos
-    FOR EACH ROW
-    EXECUTE FUNCTION delete_large_object();
-    """)
-
 
 def create_db_and_tables_local_declarative():
     try:
         Base.metadata.create_all(engine_local)
-
-        # Create Trigger-Function and Trigger
-        with engine_local.connect() as conn:
-            create_trigger_and_function(conn)
     except OperationalError as e:
         show_error_msg()
 
@@ -68,4 +46,3 @@ def show_error_msg():
     msg.setText("An error occurred.")
     msg.setInformativeText("Please check the connection to the database.")
     msg.exec()
-
