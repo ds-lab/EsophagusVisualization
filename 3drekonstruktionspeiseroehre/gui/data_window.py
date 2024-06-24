@@ -910,7 +910,7 @@ class DataWindow(QMainWindow):
                                                       "CSV (*.csv *.CSV)")
             if len(filename) > 0:
                 process_and_upload_manometry_file(self.selected_visit, filename)
-                self.ui.manometry_file_text.setText(filename)
+                self.ui.manometry_file_text.setText("Manometry File uploaded")
 
     def __add_barium_swallow(self):
         tbe = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
@@ -969,7 +969,7 @@ class DataWindow(QMainWindow):
             # if all images are named in the correct format, process and upload them
             if not error:
                 process_and_upload_barium_swallow_images(self.selected_visit, filenames)
-                self.ui.tbe_file_text.setText(str(len(filenames)) + " File(s) uploaded")
+                self.ui.tbe_file_text.setText(str(len(filenames)) + " Image(s) uploaded")
                 # load the pixmaps of the images to make them viewable
                 barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
                     self.selected_visit)
@@ -1052,7 +1052,7 @@ class DataWindow(QMainWindow):
             # if all images have valid names, process and upload them
             if not error:
                 process_and_upload_endoscopy_images(self.selected_visit, filenames)
-                self.ui.egd_file_text.setText(str(len(filenames)) + " File(s) uploaded")
+                self.ui.egd_file_text.setText(str(len(filenames)) + " Image(s) uploaded")
 
                 # load the pixmaps of the images to make them viewable
                 endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
@@ -1175,7 +1175,7 @@ class DataWindow(QMainWindow):
 
             if not error:
                 process_and_upload_endoflip_images(self.selected_visit, filenames)
-                self.ui.endoflip_imagedescription_text.setText(str(len(filenames)) + " File(s) uploaded")
+                self.ui.endoflip_imagedescription_text.setText(str(len(filenames)) + " Image(s) uploaded")
                 # load the pixmaps of the images to make them viewable
                 endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(
                     self.selected_visit)
@@ -1233,7 +1233,7 @@ class DataWindow(QMainWindow):
             # if all images are named in the correct format, process and upload them
             if not error:
                 process_and_upload_endosonography_images(self.selected_visit, filenames)
-                self.ui.endosono_images_text.setText(str(len(filenames)) + " File(s) uploaded")
+                self.ui.endosono_images_text.setText(str(len(filenames)) + " Images(s) uploaded")
                 # load the pixmaps of the images to make them viewable
                 endosono_images = self.endosonography_image_service.get_endosonography_images_for_visit(
                     self.selected_visit)
@@ -1271,9 +1271,10 @@ class DataWindow(QMainWindow):
         if not endosono_exists or endosono_exists and ShowMessage.to_update_for_visit("Endosonography videos"):
             self.endosonography_video_service.delete_videos_for_visit(visit_id=self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
-                                                        "Video Files (*.mp4)")
+                                                        "Video Files (*.avi)")
             for filename in filenames:
                 self.endosonography_video_service.save_video_for_visit(visit_id=self.selected_visit, video_file_path=filename)
+            self.ui.endosono_videos_text.setText(str(len(filenames)) + " Videos(s) uploaded")
 
     def __download_endosonography_video(self):
         destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
