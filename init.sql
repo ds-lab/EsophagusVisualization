@@ -208,3 +208,17 @@ CREATE TABLE reconstructions (
     reconstruction_file BYTEA NOT NULL
 );
 
+-- Trigger-Function for deleting Large Objects
+CREATE OR REPLACE FUNCTION delete_large_object() RETURNS TRIGGER AS $$
+BEGIN
+    PERFORM lo_unlink(OLD.video_oid);
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger for deleting Large Objects
+CREATE TRIGGER trg_delete_large_object
+AFTER DELETE ON endosonography_videos
+FOR EACH ROW
+EXECUTE FUNCTION delete_large_object();
+
