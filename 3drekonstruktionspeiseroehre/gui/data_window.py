@@ -1461,7 +1461,7 @@ class DataWindow(QMainWindow):
 
             if poem:
                 self.poem_service.update_poem(
-                    poem.lhm_id, poem_dict)
+                    poem.poem_id, poem_dict)
             else:
                 self.poem_service.create_poem(poem_dict)
         poem_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
