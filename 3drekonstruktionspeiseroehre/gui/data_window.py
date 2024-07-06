@@ -1449,7 +1449,7 @@ class DataWindow(QMainWindow):
             poem_dict = {'visit_id': self.selected_visit,
                          'procedure_duration': procedure_duration,
                          'height_mucosal_incision': self.ui.peom_incision_height_spin.value(),
-                         'length_mucosal_incision': self.ui.peom_incision_leght_spin.value(),
+                         'length_mucosal_incision': self.ui.peom_incision_length_spin.value(),
                          'length_submuscosal_tunnel': self.ui.peom_tunnel_length_spin.value(),
                          'localization_myotomy': self.ui.peom_localisation_dropdown.currentText(),
                          'length_tubular_myotomy': self.ui.peom_tubular_myotomy_length_spin.value(),

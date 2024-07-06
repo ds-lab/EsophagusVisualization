@@ -1444,7 +1444,7 @@ p, li { white-space: pre-wrap; }
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="empty">
            <layout class="QGridLayout" name="gridLayout_71"/>
@@ -2786,7 +2786,7 @@ p, li { white-space: pre-wrap; }
                   </widget>
                  </item>
                  <item row="4" column="1">
-                  <widget class="QDoubleSpinBox" name="peom_incision_leght_spin">
+                  <widget class="QDoubleSpinBox" name="peom_incision_length_spin">
                    <property name="locale">
                     <locale language="English" country="UnitedKingdom"/>
                    </property>
@@ -2853,6 +2853,9 @@ p, li { white-space: pre-wrap; }
                   <widget class="QDoubleSpinBox" name="poem_gastric_myotomy_length_spin">
                    <property name="locale">
                     <locale language="English" country="UnitedKingdom"/>
+                   </property>
+                   <property name="decimals">
+                    <number>2</number>
                    </property>
                    <property name="minimum">
                     <double>-1.000000000000000</double>
@@ -3295,15 +3298,15 @@ p, li { white-space: pre-wrap; }
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="manometry">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>636</width>
-             <height>399</height>
+             <width>1378</width>
+             <height>631</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4041,8 +4044,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>792</width>
-             <height>139</height>
+             <width>1378</width>
+             <height>631</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4207,8 +4210,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>757</width>
-             <height>584</height>
+             <width>1378</width>
+             <height>631</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4723,8 +4726,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>523</width>
-             <height>142</height>
+             <width>1378</width>
+             <height>631</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4881,10 +4884,203 @@ p, li { white-space: pre-wrap; }
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>selected_patient_text_patientview</tabstop>
+  <tabstop>patient_id_field</tabstop>
+  <tabstop>birthyear_calendar</tabstop>
+  <tabstop>gender_dropdown</tabstop>
+  <tabstop>ethnicity_dropdown</tabstop>
+  <tabstop>firstdiagnosis_calendar</tabstop>
+  <tabstop>firstsymptoms_calendar</tabstop>
+  <tabstop>center_text</tabstop>
+  <tabstop>patient_add_button</tabstop>
+  <tabstop>patient_delete_button</tabstop>
+  <tabstop>patient_update_button</tabstop>
+  <tabstop>patient_id_radio</tabstop>
+  <tabstop>birthyear_radio</tabstop>
+  <tabstop>gender_radio</tabstop>
+  <tabstop>ethnicity_radio</tabstop>
+  <tabstop>firstdiagnosis_radio</tabstop>
+  <tabstop>firstsymptoms_radio</tabstop>
+  <tabstop>center_radio</tabstop>
+  <tabstop>patient_reset_filter_button</tabstop>
+  <tabstop>patient_tableView</tabstop>
+  <tabstop>selected_therapy_text_patientview</tabstop>
+  <tabstop>therapy_dropdown</tabstop>
+  <tabstop>therapy_calendar</tabstop>
+  <tabstop>center_previous_therapy_text</tabstop>
+  <tabstop>previous_therapy_add_button</tabstop>
+  <tabstop>previous_therapy_delete_button</tabstop>
+  <tabstop>therapy_tableView</tabstop>
+  <tabstop>selected_patient_text_visitview</tabstop>
+  <tabstop>selected_visit_text_visitview</tabstop>
+  <tabstop>year_of_visit_calendar</tabstop>
+  <tabstop>visit_type_dropdown</tabstop>
+  <tabstop>therapy_type_dropdown</tabstop>
+  <tabstop>months_after_therapy_spin</tabstop>
+  <tabstop>visit_add_button</tabstop>
+  <tabstop>visit_delete_button</tabstop>
+  <tabstop>visits_tableView</tabstop>
+  <tabstop>eckardt_dysphagia_dropdown</tabstop>
+  <tabstop>eckardt_retro_pain_dropdown</tabstop>
+  <tabstop>eckardt_regurgitation_dropdown</tabstop>
+  <tabstop>eckardt_weightloss_dropdown</tabstop>
+  <tabstop>eckardt_totalscore_dropdown</tabstop>
+  <tabstop>add_eckardt_score_button</tabstop>
+  <tabstop>delete_eckardt_score_button</tabstop>
+  <tabstop>eckardt_score_text</tabstop>
+  <tabstop>gerd_reflux_dropdown</tabstop>
+  <tabstop>heartburn_yes_ratio</tabstop>
+  <tabstop>heartburn_no_ratio</tabstop>
+  <tabstop>ppi_yes_ratio</tabstop>
+  <tabstop>ppi_no_ratio</tabstop>
+  <tabstop>gerd_acidexposure_spin</tabstop>
+  <tabstop>add_gerd_button</tabstop>
+  <tabstop>delete_gerd_button</tabstop>
+  <tabstop>gerd_text</tabstop>
+  <tabstop>medication_use_dropdown</tabstop>
+  <tabstop>medication_name_text</tabstop>
+  <tabstop>medication_dose_spin</tabstop>
+  <tabstop>add_medication_button</tabstop>
+  <tabstop>delete_medication_button</tabstop>
+  <tabstop>medication_text</tabstop>
+  <tabstop>visits_create_visualization_button</tabstop>
+  <tabstop>selected_patient_text_visitdataview</tabstop>
+  <tabstop>selected_visit_text_visitdataview</tabstop>
+  <tabstop>manometry_cathedertype_dropdown</tabstop>
+  <tabstop>manometry_patientposition_dropdown</tabstop>
+  <tabstop>manometry_restingpressure_spin</tabstop>
+  <tabstop>manometry_ipr4_spin</tabstop>
+  <tabstop>manometry_dci_spin</tabstop>
+  <tabstop>manometry_dl_spin</tabstop>
+  <tabstop>manometry_upperboundary_ues_spin</tabstop>
+  <tabstop>manometry_lowerboundary_ues_spin</tabstop>
+  <tabstop>manometry_upperboundary_les_spin</tabstop>
+  <tabstop>manometry_lowerboundary_les_spin</tabstop>
+  <tabstop>manometry_length_les_text</tabstop>
+  <tabstop>add_manometry_button</tabstop>
+  <tabstop>delete_manometry_button</tabstop>
+  <tabstop>manometry_file_upload_button</tabstop>
+  <tabstop>manometry_file_text</tabstop>
+  <tabstop>manometry_text</tabstop>
+  <tabstop>tbe_cm_dropdown</tabstop>
+  <tabstop>tbe_amount_cm_spin</tabstop>
+  <tabstop>tbe_height_cm_1_spin</tabstop>
+  <tabstop>tbe_height_cm_2_spin</tabstop>
+  <tabstop>tbe_height_cm_5_spin</tabstop>
+  <tabstop>tbe_width_cm_1_spin</tabstop>
+  <tabstop>tbe_width_cm_2_spin</tabstop>
+  <tabstop>tbe_width_cm_5_spin</tabstop>
+  <tabstop>add_tbe_button</tabstop>
+  <tabstop>delete_tbe_button</tabstop>
+  <tabstop>tbe_file_upload_button</tabstop>
+  <tabstop>tbe_text</tabstop>
+  <tabstop>tbe_file_text</tabstop>
+  <tabstop>tbe_previous_button</tabstop>
+  <tabstop>tbe_next_button</tabstop>
+  <tabstop>tbe_imagedescription_text</tabstop>
+  <tabstop>egd_position_les_spin</tabstop>
+  <tabstop>add_egd_button</tabstop>
+  <tabstop>delete_egd_button</tabstop>
+  <tabstop>egd_file_upload_button</tabstop>
+  <tabstop>egd_text</tabstop>
+  <tabstop>egd_file_text</tabstop>
+  <tabstop>endoscopy_previous_button</tabstop>
+  <tabstop>endoscopy_next_button</tabstop>
+  <tabstop>endoscopy_imagedescription_text</tabstop>
+  <tabstop>endflip_before_csa_spin</tabstop>
+  <tabstop>endflip_before_di_spin</tabstop>
+  <tabstop>endflip_before_dmin_spin</tabstop>
+  <tabstop>endflip_before_ibp_spin</tabstop>
+  <tabstop>endflip_during_csa_spin</tabstop>
+  <tabstop>endflip_during_di_spin</tabstop>
+  <tabstop>endflip_during_dmin_spin</tabstop>
+  <tabstop>endflip_during_ibp_spin</tabstop>
+  <tabstop>endflip_after_csa_spin</tabstop>
+  <tabstop>endflip_after_di_spin</tabstop>
+  <tabstop>endflip_after_dmin_spin</tabstop>
+  <tabstop>endflip_after_ibp_spin</tabstop>
+  <tabstop>add_endoflip_button</tabstop>
+  <tabstop>delete_endoflip_button</tabstop>
+  <tabstop>endoflip_file_upload_button</tabstop>
+  <tabstop>endoflip_image_upload_button</tabstop>
+  <tabstop>endoflip_text</tabstop>
+  <tabstop>endoflip_file_text</tabstop>
+  <tabstop>endoflip_image_text</tabstop>
+  <tabstop>endoflip_previous_button</tabstop>
+  <tabstop>endoflip_next_button</tabstop>
+  <tabstop>endoflip_imagedescription_text</tabstop>
+  <tabstop>endosono_video_upload_button</tabstop>
+  <tabstop>endosono_image_upload_button</tabstop>
+  <tabstop>endosono_video_download_button</tabstop>
+  <tabstop>endosono_videos_text</tabstop>
+  <tabstop>endosono_images_text</tabstop>
+  <tabstop>endosono_previous_button</tabstop>
+  <tabstop>endosono_next_button</tabstop>
+  <tabstop>endosono_imagedescription_text</tabstop>
+  <tabstop>botox_units_spin</tabstop>
+  <tabstop>botox_height_spin</tabstop>
+  <tabstop>add_botox_side_button</tabstop>
+  <tabstop>bleeding_botox</tabstop>
+  <tabstop>perforation_botox</tabstop>
+  <tabstop>capnoperitoneum_botox</tabstop>
+  <tabstop>mucusal_tears_botox</tabstop>
+  <tabstop>pneumothorax_botox</tabstop>
+  <tabstop>pneumomediastinum_botox</tabstop>
+  <tabstop>other_botox</tabstop>
+  <tabstop>add_botox_button</tabstop>
+  <tabstop>delete_botox_button</tabstop>
+  <tabstop>botox_text</tabstop>
+  <tabstop>pd_ballon_volume_dropdown</tabstop>
+  <tabstop>pd_quantity_spin</tabstop>
+  <tabstop>bleeding_pd</tabstop>
+  <tabstop>perforation_pd</tabstop>
+  <tabstop>capnoperitoneum_pd</tabstop>
+  <tabstop>mucusal_tears_pd</tabstop>
+  <tabstop>pneumothorax_pd</tabstop>
+  <tabstop>pneumomediastinum_pd</tabstop>
+  <tabstop>other_pd</tabstop>
+  <tabstop>add_pd_button</tabstop>
+  <tabstop>delete_pd_button</tabstop>
+  <tabstop>pd_text</tabstop>
+  <tabstop>lhm_time</tabstop>
+  <tabstop>lhm_length_spin</tabstop>
+  <tabstop>lhm_fundo_bool</tabstop>
+  <tabstop>lhm_fundo_type_dropdown</tabstop>
+  <tabstop>bleeding_lhm</tabstop>
+  <tabstop>perforation_lhm</tabstop>
+  <tabstop>capnoperitoneum_lhm</tabstop>
+  <tabstop>mucusal_tears_lhm</tabstop>
+  <tabstop>pneumothorax_lhm</tabstop>
+  <tabstop>pneumomediastinum_lhm</tabstop>
+  <tabstop>other_lhm</tabstop>
+  <tabstop>add_lhm_button</tabstop>
+  <tabstop>delete_lhm_button</tabstop>
+  <tabstop>lhm_text</tabstop>
+  <tabstop>poem_time</tabstop>
+  <tabstop>peom_incision_height_spin</tabstop>
+  <tabstop>peom_incision_length_spin</tabstop>
+  <tabstop>peom_tunnel_length_spin</tabstop>
+  <tabstop>peom_localisation_dropdown</tabstop>
+  <tabstop>peom_tubular_myotomy_length_spin</tabstop>
+  <tabstop>poem_gastric_myotomy_length_spin</tabstop>
+  <tabstop>bleeding_poem</tabstop>
+  <tabstop>perforation_poem</tabstop>
+  <tabstop>capnoperitoneum_poem</tabstop>
+  <tabstop>mucusal_tears_poem</tabstop>
+  <tabstop>pneumothorax_poem</tabstop>
+  <tabstop>pneumomediastinum_poem</tabstop>
+  <tabstop>other_poem</tabstop>
+  <tabstop>add_poem_button</tabstop>
+  <tabstop>delete_poem_button</tabstop>
+  <tabstop>poem_text</tabstop>
+  <tabstop>visitdata_create_visualization_button</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
