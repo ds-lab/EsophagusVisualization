@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DownloadData</class>
+ <widget class="QMainWindow" name="DownloadData">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>309</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Download Data</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="1,0,0,0">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Basic patient and visit data will always be included in the download. 
+ 
+ Which additional data would you like to include in your CSV file? 
+ 
+ Please note that adding more data will increase the complexity of the resulting CSV table.</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::AutoText</enum>
+      </property>
+      <property name="scaledContents">
+       <bool>false</bool>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="eckardt_score_check">
+        <property name="text">
+         <string>Eckardt Score</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="gerd_score_check">
+        <property name="text">
+         <string>GERD Score</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="tbe_check">
+        <property name="text">
+         <string>TBE</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="egd_check">
+        <property name="text">
+         <string>EGD</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="manometry_check">
+        <property name="text">
+         <string>Manometry</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="previous_therapies_check">
+        <property name="text">
+         <string>Previous Therapies</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QCheckBox" name="endosonography_check">
+        <property name="text">
+         <string>Endosonography</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QCheckBox" name="endoflip_check">
+        <property name="text">
+         <string>EndoFlip</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="medication_check">
+        <property name="text">
+         <string>Medication</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="botox_injection_check">
+        <property name="text">
+         <string>Botox Injection</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="poem_check">
+        <property name="text">
+         <string>POEM</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QCheckBox" name="pneumatic_dilation_check">
+        <property name="text">
+         <string>Pneumatic Dilation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QCheckBox" name="lhm_check">
+        <property name="text">
+         <string>LHM</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QCheckBox" name="complications_check">
+        <property name="text">
+         <string>Complications</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="3" column="0">
+     <widget class="QPushButton" name="download_data_button">
+      <property name="text">
+       <string>Download data</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="check_all_button">
+        <property name="text">
+         <string>Check all</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="uncheck_all_button">
+        <property name="text">
+         <string>Uncheck all</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>check_all_button</tabstop>
+  <tabstop>uncheck_all_button</tabstop>
+  <tabstop>previous_therapies_check</tabstop>
+  <tabstop>eckardt_score_check</tabstop>
+  <tabstop>gerd_score_check</tabstop>
+  <tabstop>medication_check</tabstop>
+  <tabstop>manometry_check</tabstop>
+  <tabstop>tbe_check</tabstop>
+  <tabstop>egd_check</tabstop>
+  <tabstop>endoflip_check</tabstop>
+  <tabstop>endosonography_check</tabstop>
+  <tabstop>botox_injection_check</tabstop>
+  <tabstop>poem_check</tabstop>
+  <tabstop>pneumatic_dilation_check</tabstop>
+  <tabstop>lhm_check</tabstop>
+  <tabstop>complications_check</tabstop>
+  <tabstop>download_data_button</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

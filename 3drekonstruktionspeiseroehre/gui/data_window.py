@@ -1568,4 +1568,4 @@ class DataWindow(QMainWindow):
 
         if destination_file_path:
             data = self.export_data.get_all_data()
-            ExportData.export_csv(data, destination_file_path)
+            ExportData.export_csv(data, ['patients', 'visits', 'previous_therapies'], destination_file_path)
