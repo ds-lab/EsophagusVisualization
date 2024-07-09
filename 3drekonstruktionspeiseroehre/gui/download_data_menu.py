@@ -1,8 +1,8 @@
 from PyQt6 import uic, QtCore
-from PyQt6.QtWidgets import QDialog, QFileDialog
+from PyQt6.QtWidgets import QMainWindow, QFileDialog
 
 
-class DownloadData(QDialog):
+class DownloadData(QMainWindow):  # Ändere die Basisklasse zu QMainWindow
     data_selected = QtCore.pyqtSignal(list, str)
 
     def __init__(self):
