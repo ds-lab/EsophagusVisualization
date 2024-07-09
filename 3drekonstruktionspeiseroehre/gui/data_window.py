@@ -16,6 +16,7 @@ from gui.set_textfields import setText
 from gui.show_message import ShowMessage
 from gui.xray_window_managment import ManageXrayWindows
 from gui.visualization_window import VisualizationWindow
+from gui.download_data_menu import DownloadData
 from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload, \
     process_and_upload_endoflip_images
 from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
@@ -1563,9 +1564,10 @@ class DataWindow(QMainWindow):
             self.close()
 
     def __download_data(self):
-        # Prompt the user to choose a destination directory
-        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "CSV Files (*.csv)")
+        self.download_data = DownloadData()
+        self.download_data.data_selected.connect(self.__handle_data_selected)
+        self.download_data.show()
 
-        if destination_file_path:
-            data = self.export_data.get_all_data()
-            ExportData.export_csv(data, ['patients', 'visits', 'previous_therapies'], destination_file_path)
+    def __handle_data_selected(self, selected_data, destination_file_path):
+        print("Selected data:", selected_data)
+        print("Destination file path:", destination_file_path)

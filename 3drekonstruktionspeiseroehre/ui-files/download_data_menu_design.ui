@@ -38,98 +38,91 @@
     <item row="2" column="0">
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="1" column="0">
-       <widget class="QCheckBox" name="eckardt_score_check">
+       <widget class="QCheckBox" name="eckardt_score">
         <property name="text">
          <string>Eckardt Score</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QCheckBox" name="gerd_score_check">
+       <widget class="QCheckBox" name="gerd_score">
         <property name="text">
          <string>GERD Score</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QCheckBox" name="tbe_check">
+       <widget class="QCheckBox" name="barium_swallow">
         <property name="text">
          <string>TBE</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QCheckBox" name="egd_check">
+       <widget class="QCheckBox" name="endoscopy">
         <property name="text">
          <string>EGD</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QCheckBox" name="manometry_check">
+       <widget class="QCheckBox" name="manometry">
         <property name="text">
          <string>Manometry</string>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QCheckBox" name="previous_therapies_check">
+       <widget class="QCheckBox" name="previous_therapies">
         <property name="text">
          <string>Previous Therapies</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QCheckBox" name="endosonography_check">
-        <property name="text">
-         <string>Endosonography</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="1">
-       <widget class="QCheckBox" name="endoflip_check">
+       <widget class="QCheckBox" name="endoflip">
         <property name="text">
          <string>EndoFlip</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QCheckBox" name="medication_check">
+       <widget class="QCheckBox" name="medication">
         <property name="text">
          <string>Medication</string>
         </property>
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QCheckBox" name="botox_injection_check">
+       <widget class="QCheckBox" name="botox_injection">
         <property name="text">
          <string>Botox Injection</string>
         </property>
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QCheckBox" name="poem_check">
+       <widget class="QCheckBox" name="poem">
         <property name="text">
          <string>POEM</string>
         </property>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QCheckBox" name="pneumatic_dilation_check">
+       <widget class="QCheckBox" name="pneumatic_dilation">
         <property name="text">
          <string>Pneumatic Dilation</string>
         </property>
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QCheckBox" name="lhm_check">
+       <widget class="QCheckBox" name="lhm">
         <property name="text">
          <string>LHM</string>
         </property>
        </widget>
       </item>
       <item row="4" column="2">
-       <widget class="QCheckBox" name="complications_check">
+       <widget class="QCheckBox" name="complications">
         <property name="text">
          <string>Complications</string>
         </property>
@@ -168,20 +161,19 @@
  <tabstops>
   <tabstop>check_all_button</tabstop>
   <tabstop>uncheck_all_button</tabstop>
-  <tabstop>previous_therapies_check</tabstop>
-  <tabstop>eckardt_score_check</tabstop>
-  <tabstop>gerd_score_check</tabstop>
-  <tabstop>medication_check</tabstop>
-  <tabstop>manometry_check</tabstop>
-  <tabstop>tbe_check</tabstop>
-  <tabstop>egd_check</tabstop>
-  <tabstop>endoflip_check</tabstop>
-  <tabstop>endosonography_check</tabstop>
-  <tabstop>botox_injection_check</tabstop>
-  <tabstop>poem_check</tabstop>
-  <tabstop>pneumatic_dilation_check</tabstop>
-  <tabstop>lhm_check</tabstop>
-  <tabstop>complications_check</tabstop>
+  <tabstop>previous_therapies</tabstop>
+  <tabstop>eckardt_score</tabstop>
+  <tabstop>gerd_score</tabstop>
+  <tabstop>medication</tabstop>
+  <tabstop>manometry</tabstop>
+  <tabstop>barium_swallow</tabstop>
+  <tabstop>endoscopy</tabstop>
+  <tabstop>endoflip</tabstop>
+  <tabstop>botox_injection</tabstop>
+  <tabstop>poem</tabstop>
+  <tabstop>pneumatic_dilation</tabstop>
+  <tabstop>lhm</tabstop>
+  <tabstop>complications</tabstop>
   <tabstop>download_data_button</tabstop>
  </tabstops>
  <resources/>
