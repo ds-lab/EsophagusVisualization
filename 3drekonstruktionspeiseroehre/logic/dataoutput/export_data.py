@@ -61,7 +61,7 @@ class ExportData:
     #     except OperationalError as e:
     #         self.show_error_msg()
 
-    def get_all_data(self):
+    def get_data(self, selected_tables):
         try:
             tables = {
                 "patients": Patient.__table__,
@@ -81,7 +81,7 @@ class ExportData:
                 "endoflips": Endoflip.__table__,
             }
 
-            selected_tables = ['patients', 'visits', 'previous_therapies']
+            selected_tables = selected_tables
 
             selected_table_objs = [tables[table] for table in selected_tables]
 
