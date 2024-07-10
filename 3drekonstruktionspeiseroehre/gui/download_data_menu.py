@@ -16,17 +16,17 @@ class DownloadData(QMainWindow):  # Ändere die Basisklasse zu QMainWindow
 
         self.checkboxes = [
             self.ui.previous_therapies,
-            self.ui.eckardt_score,
-            self.ui.gerd_score,
-            self.ui.medication,
-            self.ui.manometry,
-            self.ui.barium_swallow,
-            self.ui.endoscopy,
-            self.ui.endoflip,
-            self.ui.botox_injection,
-            self.ui.poem,
-            self.ui.pneumatic_dilation,
-            self.ui.lhm,
+            self.ui.eckardt_scores,
+            self.ui.gerd_scores,
+            self.ui.medications,
+            self.ui.manometries,
+            self.ui.barium_swallows,
+            self.ui.endoscopies,
+            self.ui.endoflips,
+            self.ui.botox_injections,
+            self.ui.poems,
+            self.ui.pneumatic_dilations,
+            self.ui.lhms,
             self.ui.complications
         ]
 
@@ -42,7 +42,7 @@ class DownloadData(QMainWindow):  # Ändere die Basisklasse zu QMainWindow
         selected_data = ['patients', 'visits']
         for checkbox in self.checkboxes:
             if checkbox.isChecked():
-                selected_data.append(checkbox.text())
+                selected_data.append(checkbox.objectName())
 
         # Prompt the user to choose a destination directory
         destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "CSV Files (*.csv)")

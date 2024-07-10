@@ -71,7 +71,7 @@ class ExportData:
                 "gerd_scores": Gerd.__table__,
                 "medications": Medication.__table__,
                 "botox_injections": BotoxInjection.__table__,
-                "pneumatic_dilatations": PneumaticDilatation.__table__,
+                "pneumatic_dilations": PneumaticDilatation.__table__,
                 "lhms": LHM.__table__,
                 "poems": POEM.__table__,
                 "complications": Complications.__table__,
@@ -116,7 +116,8 @@ class ExportData:
         msg.setInformativeText("Please check the connection to the database.")
         msg.exec()
 
-    def export_csv(self, selected_tables, csv_file_path):
+    @staticmethod
+    def export_csv(data, selected_tables, csv_file_path):
         with open(csv_file_path, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
 
@@ -131,7 +132,7 @@ class ExportData:
                 "gerd_scores": ["gerd_id", "visit_id", "grade", "heart_burn", "ppi_use", "acid_exposure_time"],
                 "medications": ["medication_id", "visit_id", "medication_use", "medication_name", "medication_dose"],
                 "botox_injections": ["botox_id", "visit_id", "botox_units", "botox_height"],
-                "pneumatic_dilatations": ["pneumatic_dilatation_id", "visit_id", "balloon_volume", "quantity"],
+                "pneumatic_dilations": ["pneumatic_dilatation_id", "visit_id", "balloon_volume", "quantity"],
                 "lhms": ["lhm_id", "visit_id", "op_duration", "length_myotomy", "fundoplicatio", "type_fundoplicatio"],
                 "poems": ["poem_id", "visit_id", "procedure_duration", "height_mucosal_incision",
                           "length_mucosal_incision", "length_submuscosal_tunnel", "localization_myotomy",
@@ -154,4 +155,4 @@ class ExportData:
             headers = [f"{table}.{col}" for table in selected_tables for col in headers_dict[table]]
             writer.writerow(headers)
 
-            writer.writerows(self)
+            writer.writerows(data)

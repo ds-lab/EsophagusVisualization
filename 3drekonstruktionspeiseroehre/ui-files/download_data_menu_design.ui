@@ -76,35 +76,35 @@
        <number>5</number>
       </property>
       <item row="1" column="0">
-       <widget class="QCheckBox" name="eckardt_score">
+       <widget class="QCheckBox" name="eckardt_scores">
         <property name="text">
          <string>Eckardt Score</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QCheckBox" name="gerd_score">
+       <widget class="QCheckBox" name="gerd_scores">
         <property name="text">
          <string>GERD Score</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QCheckBox" name="barium_swallow">
+       <widget class="QCheckBox" name="barium_swallows">
         <property name="text">
          <string>TBE</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QCheckBox" name="endoscopy">
+       <widget class="QCheckBox" name="endoscopies">
         <property name="text">
          <string>EGD</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QCheckBox" name="manometry">
+       <widget class="QCheckBox" name="manometries">
         <property name="text">
          <string>Manometry</string>
         </property>
@@ -118,42 +118,42 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QCheckBox" name="endoflip">
+       <widget class="QCheckBox" name="endoflips">
         <property name="text">
          <string>EndoFlip</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QCheckBox" name="medication">
+       <widget class="QCheckBox" name="medications">
         <property name="text">
          <string>Medication</string>
         </property>
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QCheckBox" name="botox_injection">
+       <widget class="QCheckBox" name="botox_injections">
         <property name="text">
          <string>Botox Injection</string>
         </property>
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QCheckBox" name="poem">
+       <widget class="QCheckBox" name="poems">
         <property name="text">
          <string>POEM</string>
         </property>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QCheckBox" name="pneumatic_dilation">
+       <widget class="QCheckBox" name="pneumatic_dilations">
         <property name="text">
          <string>Pneumatic Dilation</string>
         </property>
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QCheckBox" name="lhm">
+       <widget class="QCheckBox" name="lhms">
         <property name="text">
          <string>LHM</string>
         </property>
@@ -195,17 +195,17 @@
   <tabstop>check_all_button</tabstop>
   <tabstop>uncheck_all_button</tabstop>
   <tabstop>previous_therapies</tabstop>
-  <tabstop>eckardt_score</tabstop>
-  <tabstop>gerd_score</tabstop>
-  <tabstop>medication</tabstop>
-  <tabstop>manometry</tabstop>
-  <tabstop>barium_swallow</tabstop>
-  <tabstop>endoscopy</tabstop>
-  <tabstop>endoflip</tabstop>
-  <tabstop>botox_injection</tabstop>
-  <tabstop>poem</tabstop>
-  <tabstop>pneumatic_dilation</tabstop>
-  <tabstop>lhm</tabstop>
+  <tabstop>eckardt_scores</tabstop>
+  <tabstop>gerd_scores</tabstop>
+  <tabstop>medications</tabstop>
+  <tabstop>manometries</tabstop>
+  <tabstop>barium_swallows</tabstop>
+  <tabstop>endoscopies</tabstop>
+  <tabstop>endoflips</tabstop>
+  <tabstop>botox_injections</tabstop>
+  <tabstop>poems</tabstop>
+  <tabstop>pneumatic_dilations</tabstop>
+  <tabstop>lhms</tabstop>
   <tabstop>complications</tabstop>
  </tabstops>
  <resources/>

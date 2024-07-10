@@ -1572,4 +1572,4 @@ class DataWindow(QMainWindow):
 
     def __handle_data_selected(self, selected_data, destination_file_path):
         data = self.export_data.get_data(selected_data)
-        data.export_csv(selected_data, destination_file_path)
+        ExportData.export_csv(data, selected_data, destination_file_path)
