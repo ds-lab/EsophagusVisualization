@@ -116,8 +116,7 @@ class ExportData:
         msg.setInformativeText("Please check the connection to the database.")
         msg.exec()
 
-    @staticmethod
-    def export_csv(data, selected_tables, csv_file_path):
+    def export_csv(self, selected_tables, csv_file_path):
         with open(csv_file_path, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
 
@@ -155,4 +154,4 @@ class ExportData:
             headers = [f"{table}.{col}" for table in selected_tables for col in headers_dict[table]]
             writer.writerow(headers)
 
-            writer.writerows(data)
+            writer.writerows(self)

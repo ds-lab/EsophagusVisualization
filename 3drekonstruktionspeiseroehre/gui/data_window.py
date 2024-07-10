@@ -68,7 +68,7 @@ class DataWindow(QMainWindow):
         self.visits_array = None
 
         # For displaying images
-        self.endoscopy_image_index = None #ToDo prüfen ob es weg kann
+        self.endoscopy_image_index = None  # ToDo prüfen ob es weg kann
 
         self.ui = uic.loadUi("./ui-files/data_window_design.ui", self)
 
@@ -734,7 +734,8 @@ class DataWindow(QMainWindow):
         if barium_swallow_images:
             self.barium_swallow_pixmaps = barium_swallow_images
             self.barium_swallow_image_index = 0
-        barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(self.selected_visit)
+        barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(
+            self.selected_visit)
         if barium_swallow_minutes:
             self.barium_swallow_minutes = barium_swallow_minutes
             self.__load_barium_swallow_image()
@@ -766,7 +767,6 @@ class DataWindow(QMainWindow):
         if endosono_positions:
             self.endosono_positions = endosono_positions
             self.__load_endosonography_image()
-
 
     def __add_eckardt_score(self):
         eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
@@ -974,7 +974,8 @@ class DataWindow(QMainWindow):
                 # load the pixmaps of the images to make them viewable
                 barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
                     self.selected_visit)
-                barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(self.selected_visit)
+                barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(
+                    self.selected_visit)
                 if barium_swallow_images:
                     self.barium_swallow_pixmaps = barium_swallow_images
                     self.barium_swallow_image_index = 0
@@ -1238,7 +1239,8 @@ class DataWindow(QMainWindow):
                 # load the pixmaps of the images to make them viewable
                 endosono_images = self.endosonography_image_service.get_endosonography_images_for_visit(
                     self.selected_visit)
-                endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(self.selected_visit)
+                endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(
+                    self.selected_visit)
                 if endosono_images:
                     self.endosono_pixmaps = endosono_images
                     self.endosono_image_index = 0
@@ -1274,7 +1276,8 @@ class DataWindow(QMainWindow):
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Video Files (*.avi)")
             for filename in filenames:
-                self.endosonography_video_service.save_video_for_visit(visit_id=self.selected_visit, video_file_path=filename)
+                self.endosonography_video_service.save_video_for_visit(visit_id=self.selected_visit,
+                                                                       video_file_path=filename)
             self.ui.endosono_videos_text.setText(str(len(filenames)) + " Videos(s) uploaded")
 
     def __download_endosonography_video(self):
@@ -1570,4 +1573,4 @@ class DataWindow(QMainWindow):
 
     def __handle_data_selected(self, selected_data, destination_file_path):
         data = self.export_data.get_data(selected_data)
-        ExportData.export_csv(data, selected_data, destination_file_path)
+        data.export_csv(selected_data, destination_file_path)
