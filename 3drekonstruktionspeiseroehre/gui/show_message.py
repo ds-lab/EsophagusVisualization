@@ -32,5 +32,22 @@ class ShowMessage:
         QMessageBox.critical(None, f'{fileextension} is no valid format', f'Please choose one of the following formats: ' + ", ".join(
                 acceptable_formats))
 
+    @staticmethod
+    def update_confirmed():
+        reply = QMessageBox.question(None, 'This Patient already exists in the database.',
+                                     "Should the Patients data be updated?", QMessageBox.StandardButton.Yes |
+                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            return True
+        return False
+    @staticmethod
+    def add_confirmed():
+        reply = QMessageBox.question(None, 'This Patient does not exists in the database.',
+                                     "Should the patient be created?", QMessageBox.StandardButton.Yes |
+                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            return True
+        return False
+
 
 

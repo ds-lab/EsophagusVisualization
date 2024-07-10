@@ -26,7 +26,6 @@ from logic.datainput.endosonography_data_processing import process_and_upload_en
 from logic.database import database
 from logic.datainput.validate_input_data import DataValidation
 from logic.datainput.check_data_existence import CheckDataExistence
-from logic.datainput.popup_windows import PopupWindow
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.eckardtscore_service import EckardtscoreService
@@ -265,7 +264,7 @@ class DataWindow(QMainWindow):
         # Check if Patient alread exists
         if CheckDataExistence.patient_exists(self):
             # If Patient exists in database, ask user if their data should be updated
-            if PopupWindow.update_confirmed():
+            if ShowMessage.update_confirmed():
                 pat_dict = {'gender': self.ui.gender_dropdown.currentText(),
                             'ethnicity': self.ui.ethnicity_dropdown.currentText(),
                             'birth_year': self.ui.birthyear_calendar.date().toPyDate().year,
@@ -319,7 +318,7 @@ class DataWindow(QMainWindow):
 
     def __patient_update_button_clicked(self):
         if not CheckDataExistence.patient_exists(self):
-            if PopupWindow.add_confirmed():
+            if ShowMessage.add_confirmed():
                 pat_dict = {'patient_id': self.ui.patient_id_field.text(),
                             'gender': self.ui.gender_dropdown.currentText(),
                             'ethnicity': self.ui.ethnicity_dropdown.currentText(),
