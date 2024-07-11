@@ -2,7 +2,6 @@ from gui.endoscopy_selection_window import EndoscopySelectionWindow
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.visualization_window import VisualizationWindow
-from gui.dci_selection_window import DCISelectionWindow
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
@@ -169,11 +168,20 @@ class PositionSelectionWindow(QMainWindow):
                         # If there are more visualizations in this visit continue with the next xray selection
                         if self.next_window:
                             self.master_window.switch_to(self.next_window)
-                        # calculate DCI
-                        else:
-                            dci_selection_window = DCISelectionWindow(self.master_window, self.patient_data, self.visit, self.n)
-                            self.master_window.switch_to(dci_selection_window)
+                        # Handle Endoscopy annotation
+                        elif len(self.visualization_data.endoscopy_files) > 0:
+                            endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
+                                                                                  self.patient_data, self.visit)
+                            self.master_window.switch_to(endoscopy_selection_window)
                             self.close()
+                        # Else show the visualization
+                        else:
+                            # Add new visit to patient data
+                            self.patient_data.add_visit(self.visit.name, self.visit)
+                            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
+                            self.master_window.switch_to(visualization_window)
+                            self.close()
+
                     else:
                         QMessageBox.critical(self, "Error", "The positions must be within the previously marked outline of the esophagus.")
                 else:

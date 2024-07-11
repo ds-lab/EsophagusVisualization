@@ -7,7 +7,7 @@ from PyQt6 import uic
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from PyQt6.QtGui import QAction
 from gui.info_window import InfoWindow
-from gui.endoscopy_selection_window import EndoscopySelectionWindow
+from gui.xray_window_managment import ManageXrayWindows
 from gui.visualization_window import VisualizationWindow
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,7 +20,7 @@ class DCISelectionWindow(QMainWindow):
 
     next_window = None
 
-    def __init__(self, master_window: MasterWindow, patient_data: PatientData, visit: VisitData, n):
+    def __init__(self, master_window: MasterWindow, patient_data: PatientData, visit: VisitData):
         """
         init DciSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
@@ -34,8 +34,8 @@ class DCISelectionWindow(QMainWindow):
         self.patient_data = patient_data
         self.master_window.maximize()
         self.visit = visit
-        self.visualization_data = visit.visualization_data_list[n]
-        self.n = n
+        self.visualization_data = visit.visualization_data_list[0]
+        
         self.rectangle = None
         self.pressure_matrix_high_res = None
 
@@ -168,20 +168,7 @@ class DCISelectionWindow(QMainWindow):
         """
         apply-button callback
         """
-        # TODO: refactor; until now, only what stood in position_selection_window.py was copied
-        # TODO: maybe store DCI in database
-        if len(self.visualization_data.endoscopy_files) > 0:
-            endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
-                                                                    self.patient_data, self.visit)
-            self.master_window.switch_to(endoscopy_selection_window)
-            self.close()
-        # Else show the visualization
-        else:
-            # Add new visit to patient data
-            self.patient_data.add_visit(self.visit.name, self.visit)
-            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
-            self.master_window.switch_to(visualization_window)
-            self.close()
+        ManageXrayWindows(self.master_window, self.visit, self.patient_data)
 
     def __reset_selector(self):
         """
