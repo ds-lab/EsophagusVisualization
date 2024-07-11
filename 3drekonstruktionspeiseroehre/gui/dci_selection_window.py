@@ -2,13 +2,13 @@ from gui.master_window import MasterWindow
 from PyQt6.QtWidgets import QMainWindow
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
-from matplotlib.widgets import RectangleSelector
+from gui.rectangle_selector import CustomRectangleSelector
 from PyQt6 import uic
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from PyQt6.QtGui import QAction
+from gui.draggable_horizontal_line import DraggableHorizontalLine
 from gui.info_window import InfoWindow
 from gui.xray_window_managment import ManageXrayWindows
-from gui.visualization_window import VisualizationWindow
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
@@ -45,6 +45,10 @@ class DCISelectionWindow(QMainWindow):
         # Create a new figure and subplot
         self.fig, self.ax = plt.subplots()
         self.dci_text = self.ax.text(0.5, 1.05, r"Pressure Index: 0.0 mmHg$\cdot$s$\cdot$cm", transform=self.ax.transAxes, ha='center')
+
+        self.lower_ues = None
+        self.lower_les = None
+        self.upper_les = None
         
         # Connect button click events to methods
         self.ui.reset_button.clicked.connect(self.__reset_button_clicked)
@@ -56,11 +60,7 @@ class DCISelectionWindow(QMainWindow):
 
         self.__plot_data()
 
-    def __onselect(self, eclick, erelease):
-        # eclick and erelease are the press and release events
-        x1, y1 = int(eclick.xdata), int(eclick.ydata)
-        x2, y2 = int(erelease.xdata), int(erelease.ydata)
-
+    def __update_DCI_value(self, x1, x2, y1, y2):
         # Extract the selected data
         selected_data = self.pressure_matrix_high_res[y1:y2, x1:x2]
 
@@ -68,18 +68,38 @@ class DCISelectionWindow(QMainWindow):
         time_in_s = selected_data.shape[1] / self.pressure_matrix_high_res.shape[1] * (self.visualization_data.pressure_matrix.shape[1] / config.csv_values_per_second)
 
         dci_value = self.calculateDCI(selected_data, height_in_cm, time_in_s)
-        print(dci_value)
-        # Update the DCI text
         if self.dci_text is not None:
             self.dci_text.remove()
-        self.dci_text = self.ax.text(0.5, 1.05, f"DCI: {dci_value} mmHg$\cdot$s$\cdot$cm", transform=self.ax.transAxes, ha='center')
+        self.dci_text = self.ax.text(0.5, 1.05, f"Pressure Index: {dci_value} mmHg$\cdot$s$\cdot$cm", transform=self.ax.transAxes, ha='center')
         self.figure_canvas.draw()
+
+
+    def __onselect(self, eclick, erelease):
+        # eclick and erelease are the press and release events
+        x1, y1 = int(eclick.xdata), int(eclick.ydata)
+        x2, y2 = int(erelease.xdata), int(erelease.ydata)
+        self.__update_DCI_value(x1, x2, y1, y2)
+        
+
+    def __initialize_plot_analysis(self):
+        # Create a polygon selector for user interaction
+        self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=2, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
+
+        len_y, len_x = self.pressure_matrix_high_res.shape
+        self.selector.extents = (len_x * 0.25, len_x * 0.75, len_y * 0.25, len_y * 0.75) # TODO: improve the initial rectangle
+
+
+        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=len_y * 0.75, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
+        self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=len_y * 0.20, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
+        self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=len_y * 0.70, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
+        self.__update_DCI_value(int(len_x * 0.25), int(len_x * 0.75), int(len_y * 0.25), int(len_y * 0.75))
+        # self.__simulate_click(1, 1)
 
     def __reset_button_clicked(self):
         """
         reset-button callback
         """
-        self.__reset_selector()
+        self.__initialize_plot_analysis()
 
     def __menu_button_clicked(self):
         """
@@ -155,13 +175,8 @@ class DCISelectionWindow(QMainWindow):
 
         plt.contour(self.pressure_matrix_high_res > 30, levels=[0.5], colors='k', linestyles='solid', linewidths=0.3) # threshold for the contour plot is 30 mmHg
 
-        # Create a polygon selector for user interaction
-        self.selector = RectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=2, linestyle='-'), interactive=True)
-
-        len_y, len_x = pressure_matrix_high_res.shape
-        self.selector.extents = (len_x * 0.25, len_x * 0.75, len_y * 0.25, len_y * 0.75) # TODO: improve the initial rectangle
-
         self.figure_canvas.draw()
+        self.__initialize_plot_analysis()
 
 
     def __apply_button_clicked(self):
@@ -170,12 +185,6 @@ class DCISelectionWindow(QMainWindow):
         """
         ManageXrayWindows(self.master_window, self.visit, self.patient_data)
 
-    def __reset_selector(self):
-        """
-        starts the selection of a new rectangle/resets the rectangle selector
-        """
-        self.selector.clear()
-        self.selector.set_active(True)
 
     def calculateDCI(self, pressure_matrix, height, time):
         """
@@ -192,11 +201,11 @@ class DCISelectionWindow(QMainWindow):
         if len(pressure_matrix[mask]) != 0:
             # Calculate the mean of these values
             mean_pressure = np.mean(np.maximum(pressure_matrix - 20, 0)) # TODO: check if calculation is correct
-        print(f"Height: {height} cm")
+        """print(f"Height: {height} cm")
         print(f"Time: {time} s")
         print(f"Mean pressure with np.mean(np.maximum(pressure_matrix - 20, 0)): {mean_pressure} mmHg")
         print(f"Mean pressure with np.mean(np.maximum(pressure_matrix[mask] - 20, 0)): {np.mean(np.maximum(pressure_matrix[mask] - 20, 0))} mmHg")
         print(f"Mean pressure with np.mean(pressure_matrix) - 20: {np.mean(pressure_matrix) - 20} mmHg")
         print(f"Mean pressure with np.mean(pressure_matrix[mask]) - 20: {np.mean(pressure_matrix[mask]) - 20} mmHg")
-        print(f"Mean pressure with np.divide(np.sum(pressure_matrix[mask]), pressure_matrix.size): {np.divide(np.sum(pressure_matrix[mask]), pressure_matrix.size)} mmHg")
+        print(f"Mean pressure with np.divide(np.sum(pressure_matrix[mask]), pressure_matrix.size): {np.divide(np.sum(pressure_matrix[mask]), pressure_matrix.size)} mmHg")"""
         return np.round(mean_pressure * height * time, 2)
