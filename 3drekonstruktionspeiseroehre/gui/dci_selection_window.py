@@ -44,7 +44,7 @@ class DCISelectionWindow(QMainWindow):
 
         # Create a new figure and subplot
         self.fig, self.ax = plt.subplots()
-        self.dci_text = self.ax.text(0.5, 1.05, r"DCI: 0.0 mmHg$\cdot$s$\cdot$cm", transform=self.ax.transAxes, ha='center')
+        self.dci_text = self.ax.text(0.5, 1.05, r"Pressure Index: 0.0 mmHg$\cdot$s$\cdot$cm", transform=self.ax.transAxes, ha='center')
         
         # Connect button click events to methods
         self.ui.reset_button.clicked.connect(self.__reset_button_clicked)
@@ -158,6 +158,9 @@ class DCISelectionWindow(QMainWindow):
         # Create a polygon selector for user interaction
         self.selector = RectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=2, linestyle='-'), interactive=True)
 
+        len_y, len_x = pressure_matrix_high_res.shape
+        self.selector.extents = (len_x * 0.25, len_x * 0.75, len_y * 0.25, len_y * 0.75) # TODO: improve the initial rectangle
+
         self.figure_canvas.draw()
 
 
@@ -201,5 +204,12 @@ class DCISelectionWindow(QMainWindow):
         mean_pressure = 0
         if len(pressure_matrix[mask]) != 0:
             # Calculate the mean of these values
-            mean_pressure = np.mean(pressure_matrix[mask]) - 20 # TODO: check if -20 is correct
+            mean_pressure = np.mean(np.maximum(pressure_matrix - 20, 0)) # TODO: check if calculation is correct
+        print(f"Height: {height} cm")
+        print(f"Time: {time} s")
+        print(f"Mean pressure with np.mean(np.maximum(pressure_matrix - 20, 0)): {mean_pressure} mmHg")
+        print(f"Mean pressure with np.mean(np.maximum(pressure_matrix[mask] - 20, 0)): {np.mean(np.maximum(pressure_matrix[mask] - 20, 0))} mmHg")
+        print(f"Mean pressure with np.mean(pressure_matrix) - 20: {np.mean(pressure_matrix) - 20} mmHg")
+        print(f"Mean pressure with np.mean(pressure_matrix[mask]) - 20: {np.mean(pressure_matrix[mask]) - 20} mmHg")
+        print(f"Mean pressure with np.divide(np.sum(pressure_matrix[mask]), pressure_matrix.size): {np.divide(np.sum(pressure_matrix[mask]), pressure_matrix.size)} mmHg")
         return np.round(mean_pressure * height * time, 2)
