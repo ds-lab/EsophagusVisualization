@@ -49,5 +49,9 @@ class ShowMessage:
             return True
         return False
 
+    @staticmethod
+    def data_not_written():
+        QMessageBox.critical(None, 'Error', "Could not write data to the CSV file. Please ensure the file is writable and not open in another program.")
+
 
 
