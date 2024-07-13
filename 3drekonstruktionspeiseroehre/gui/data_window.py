@@ -368,28 +368,29 @@ class DataWindow(QMainWindow):
         self.ui.selected_therapy_text_patientview.setText("")
 
     def __patient_delete_button_clicked(self):
-        self.patient_service.delete_patient(
-            self.selected_patient)
-        self.__init_ui()
-        self.__init_previous_therapies()
-        self.__init_visits_of_patient()
+        if ShowMessage.deletion_confirmed("patient"):
+            self.patient_service.delete_patient(
+                self.selected_patient)
+            self.__init_ui()
+            self.__init_previous_therapies()
+            self.__init_visits_of_patient()
 
-        self.selected_patient = None
-        self.ui.selected_patient_text_patientview.setText("please select a patient")
-        self.ui.selected_patient_text_visitview.setText("please select a patient")
-        self.ui.selected_patient_text_visitdataview.setText("please select a patient")
-        # Set the text of the selected visit to "please select a visit"
-        self.ui.selected_visit_text_visitview.setText("please select a visit")
-        self.ui.selected_visit_text_visitdataview.setText("please select a visit")
-        # Set the text of the select previous therapy to ""
-        self.ui.selected_therapy_text_patientview.setText("")
-        # Set the text for the manometry data
-        self.ui.manometry_text.setText("")
+            self.selected_patient = None
+            self.ui.selected_patient_text_patientview.setText("please select a patient")
+            self.ui.selected_patient_text_visitview.setText("please select a patient")
+            self.ui.selected_patient_text_visitdataview.setText("please select a patient")
+            # Set the text of the selected visit to "please select a visit"
+            self.ui.selected_visit_text_visitview.setText("please select a visit")
+            self.ui.selected_visit_text_visitdataview.setText("please select a visit")
+            # Set the text of the select previous therapy to ""
+            self.ui.selected_therapy_text_patientview.setText("")
+            # Set the text for the manometry data
+            self.ui.manometry_text.setText("")
 
-        self.ui.visits.setEnabled(False)
-        self.ui.eckardt_score.setEnabled(False)
-        self.ui.visit_data.setEnabled(False)
-        self.ui.previous_therapies.setEnabled(False)
+            self.ui.visits.setEnabled(False)
+            self.ui.eckardt_score.setEnabled(False)
+            self.ui.visit_data.setEnabled(False)
+            self.ui.previous_therapies.setEnabled(False)
 
     def __patient_id_filled(self):
         patient = self.patient_service.get_patient(
@@ -602,10 +603,11 @@ class DataWindow(QMainWindow):
         self.__init_previous_therapies()
 
     def __previous_therapy_delete_button_clicked(self):
-        self.previous_therapy_service.delete_previous_therapy(self.selected_previous_therapy)
-        self.__init_previous_therapies()
-        self.selected_previous_therapy = None
-        self.ui.selected_therapy_text_patientview.setText("")
+        if ShowMessage.deletion_confirmed("previous therapies"):
+            self.previous_therapy_service.delete_previous_therapy(self.selected_previous_therapy)
+            self.__init_previous_therapies()
+            self.selected_previous_therapy = None
+            self.ui.selected_therapy_text_patientview.setText("")
 
     # Visit Functions
     def __init_visits_of_patient(self):
@@ -632,23 +634,24 @@ class DataWindow(QMainWindow):
         self.__init_visits_of_patient()
 
     def __visit_delete_button_clicked(self):
-        self.visit_service.delete_visit(self.selected_visit)
-        self.__init_visits_of_patient()
-        self.selected_visit = None
-        self.ui.selected_visit_text_visitview.setText("please select a visit")
-        self.ui.selected_visit_text_visitdataview.setText("please select a visit")
+        if ShowMessage.deletion_confirmed("visit"):
+            self.visit_service.delete_visit(self.selected_visit)
+            self.__init_visits_of_patient()
+            self.selected_visit = None
+            self.ui.selected_visit_text_visitview.setText("please select a visit")
+            self.ui.selected_visit_text_visitdataview.setText("please select a visit")
 
-        self.__init_manometry()
-        self.__init_barium_swallow()
-        self.__init_endoscopy()
-        self.__init_endoflip()
-        self.__init_botox()
-        self.__init_pneumatic_dilatation()
-        self.__init_lhm()
-        self.__init_poem()
-        self.__init_eckardt_score()
-        self.__init_gerd()
-        self.__init_medication()
+            self.__init_manometry()
+            self.__init_barium_swallow()
+            self.__init_endoscopy()
+            self.__init_endoflip()
+            self.__init_botox()
+            self.__init_pneumatic_dilatation()
+            self.__init_lhm()
+            self.__init_poem()
+            self.__init_eckardt_score()
+            self.__init_gerd()
+            self.__init_medication()
 
         # Delete images
         # Barium Swallow
@@ -794,9 +797,10 @@ class DataWindow(QMainWindow):
         self.ui.eckardt_score_text.setText(setText.set_text(eckardt, "eckardt score"))
 
     def __delete_eckardt_score(self):
-        self.eckardtscore_service.delete_eckardtscore_for_visit(
-            self.selected_visit)
-        self.__init_eckardt_score()
+        if ShowMessage.deletion_confirmed("eckardt score"):
+            self.eckardtscore_service.delete_eckardtscore_for_visit(
+                self.selected_visit)
+            self.__init_eckardt_score()
 
     def __add_gerd(self):
         gerd = self.gerd_service.get_gerd_for_visit(self.selected_visit)
@@ -832,8 +836,9 @@ class DataWindow(QMainWindow):
         self.ui.gerd_text.setText(setText.set_text(gerd, "GERD"))
 
     def __delete_gerd(self):
-        self.gerd_service.delete_gerd_for_visit(self.selected_visit)
-        self.__init_gerd()
+        if ShowMessage.deletion_confirmed("gerd score"):
+            self.gerd_service.delete_gerd_for_visit(self.selected_visit)
+            self.__init_gerd()
 
     def __add_medication(self):
         medication_dict = {'visit_id': self.selected_visit,
@@ -852,8 +857,9 @@ class DataWindow(QMainWindow):
         self.ui.medication_text.setText(setText.set_text_many(medication, "medication data"))
 
     def __delete_medication(self):
-        self.medication_service.delete_medications_for_visit(self.selected_visit)
-        self.__init_medication()
+        if ShowMessage.deletion_confirmed("medications"):
+            self.medication_service.delete_medications_for_visit(self.selected_visit)
+            self.__init_medication()
 
     def __add_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
@@ -884,9 +890,10 @@ class DataWindow(QMainWindow):
             self.__init_manometry()
 
     def __delete_manometry(self):
-        self.manometry_service.delete_manometry_for_visit(
-            self.selected_visit)
-        self.__init_manometry()
+        if ShowMessage.deletion_confirmed("manometry"):
+            self.manometry_service.delete_manometry_for_visit(
+                self.selected_visit)
+            self.__init_manometry()
 
     def __validate_manometry(self):
         if (
@@ -940,9 +947,10 @@ class DataWindow(QMainWindow):
         self.ui.tbe_text.setText(setText.set_text(barium_swallow, "timed barium swallow data"))
 
     def __delete_barium_swallow(self):
-        self.barium_swallow_service.delete_barium_swallow_for_visit(
-            self.selected_visit)
-        self.__init_barium_swallow()
+        if ShowMessage.deletion_confirmed("barium swallow"):
+            self.barium_swallow_service.delete_barium_swallow_for_visit(
+                self.selected_visit)
+            self.__init_barium_swallow()
 
     def __upload_barium_swallow_images(self):
         """
@@ -1025,9 +1033,10 @@ class DataWindow(QMainWindow):
         self.ui.egd_text.setText(setText.set_text(endoscopy, "endoscopy (EGD) data"))
 
     def __delete_endoscopy(self):
-        self.endoscopy_service.delete_endoscopy_for_visit(
-            self.selected_visit)
-        self.__init_endoscopy()
+        if ShowMessage.deletion_confirmed("endoscopy"):
+            self.endoscopy_service.delete_endoscopy_for_visit(
+                self.selected_visit)
+            self.__init_endoscopy()
 
     def __upload_endoscopy_images(self):
         """
@@ -1119,8 +1128,9 @@ class DataWindow(QMainWindow):
         self.ui.endoflip_text.setText(setText.set_text(endoflip, "EndoFlip data"))
 
     def __delete_endoflip(self):
-        self.endoflip_service.delete_endoflip_for_visit(self.selected_visit)
-        self.__init_endoflip()
+        if ShowMessage.deletion_confirmed("EndoFlip"):
+            self.endoflip_service.delete_endoflip_for_visit(self.selected_visit)
+            self.__init_endoflip()
 
     def __upload_endoflip_files(self):
         """
@@ -1333,9 +1343,10 @@ class DataWindow(QMainWindow):
             self.__init_botox()
 
     def __delete_botox(self):
-        self.botox_injection_service.delete_botox_injections_for_visit(self.selected_visit)
-        self.complications_service.delete_complications_for_visit(self.selected_visit)
-        self.__init_botox()
+        if ShowMessage.deletion_confirmed("botox injections"):
+            self.botox_injection_service.delete_botox_injections_for_visit(self.selected_visit)
+            self.complications_service.delete_complications_for_visit(self.selected_visit)
+            self.__init_botox()
 
     def __add_pneumatic_dilatation(self):
         pneumatic_dilatation = self.pneumatic_dilatation_service.get_pneumatic_dilatation_for_visit(self.selected_visit)
@@ -1386,9 +1397,10 @@ class DataWindow(QMainWindow):
         self.ui.pd_text.setText(text)
 
     def __delete_pneumatic_dilatation(self):
-        self.pneumatic_dilatation_service.delete_pneumatic_dilatation_for_visit(self.selected_visit)
-        self.complications_service.delete_complications_for_visit(self.selected_visit)
-        self.__init_pneumatic_dilatation()
+        if ShowMessage.deletion_confirmed("pneumatic dilations"):
+            self.pneumatic_dilatation_service.delete_pneumatic_dilatation_for_visit(self.selected_visit)
+            self.complications_service.delete_complications_for_visit(self.selected_visit)
+            self.__init_pneumatic_dilatation()
 
     def __add_lhm(self):
         lhm = self.lhm_service.get_lhm_for_visit(self.selected_visit)
@@ -1441,9 +1453,10 @@ class DataWindow(QMainWindow):
         self.ui.lhm_text.setText(text)
 
     def __delete_lhm(self):
-        self.lhm_service.delete_lhm_for_visit(self.selected_visit)
-        self.complications_service.delete_complications_for_visit(self.selected_visit)
-        self.__init_lhm()
+        if ShowMessage.deletion_confirmed("LHM"):
+            self.lhm_service.delete_lhm_for_visit(self.selected_visit)
+            self.complications_service.delete_complications_for_visit(self.selected_visit)
+            self.__init_lhm()
 
     def __add_poem(self):
         poem = self.poem_service.get_poem_for_visit(self.selected_visit)
@@ -1499,9 +1512,10 @@ class DataWindow(QMainWindow):
         self.ui.poem_text.setText(text)
 
     def __delete_poem(self):
-        self.poem_service.delete_poem_for_visit(self.selected_visit)
-        self.complications_service.delete_complications_for_visit(self.selected_visit)
-        self.__init_poem()
+        if ShowMessage.deletion_confirmed("POEM"):
+            self.poem_service.delete_poem_for_visit(self.selected_visit)
+            self.complications_service.delete_complications_for_visit(self.selected_visit)
+            self.__init_poem()
 
     def __create_visualization(self):
         barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(

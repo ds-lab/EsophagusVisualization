@@ -40,6 +40,7 @@ class ShowMessage:
         if reply == QMessageBox.StandardButton.Yes:
             return True
         return False
+
     @staticmethod
     def add_confirmed():
         reply = QMessageBox.question(None, 'This Patient does not exists in the database.',
@@ -52,6 +53,16 @@ class ShowMessage:
     @staticmethod
     def data_not_written():
         QMessageBox.critical(None, 'Error', "Could not write data to the CSV file. Please ensure the file is writable and not open in another program.")
+
+    @staticmethod
+    def deletion_confirmed(data_type):
+        reply = QMessageBox.question(None, 'Confirm deletion',
+                                     f"Are you absolutely sure you want to delete ALL data related to this {data_type}?\n"
+                                     f"This action cannot be undone.", QMessageBox.StandardButton.Yes |
+                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            return True
+        return False
 
 
 
