@@ -30,7 +30,6 @@ def process_and_upload_endoscopy_images(selected_visit, filenames):
             endoscopy_file_dict = {
                 'visit_id': selected_visit,
                 'image_position': position,
-                'filename': filename,  # ToDo Filename langfristig besser nicht abspeichern
                 'file': file_bytes
             }
 

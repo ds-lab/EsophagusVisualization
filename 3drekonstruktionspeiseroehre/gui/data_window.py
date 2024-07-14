@@ -67,7 +67,6 @@ class DataWindow(QMainWindow):
         self.visits_array = None
 
         # For displaying images
-        self.endoscopy_image_index = None  # ToDo prüfen ob es weg kann
 
         self.ui = uic.loadUi("./ui-files/data_window_design.ui", self)
 
