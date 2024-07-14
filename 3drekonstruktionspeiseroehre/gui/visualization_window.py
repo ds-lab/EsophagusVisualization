@@ -279,7 +279,7 @@ class VisualizationWindow(QMainWindow):
                 # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
                 for j in range(len(visit_data.visualization_data_list)):
                     # extract the name
-                    xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
+                    xray_name = visit_data.visualization_data_list[j].xray_minute
 
                     # get the data to create the .stl-object
                     figure_x = visit_data.visualization_data_list[j].figure_x
@@ -341,7 +341,7 @@ class VisualizationWindow(QMainWindow):
 
                     # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
                     for j in range(len(visit_data.visualization_data_list)):
-                        xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
+                        xray_name = visit_data.visualization_data_list[j].xray_minute
                         tubular_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[0]
                         sphincter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
                         volume_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[2]

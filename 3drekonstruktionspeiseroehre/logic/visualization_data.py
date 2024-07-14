@@ -9,13 +9,12 @@ class VisualizationData:
         self._xray_minute = None
         self._xray_file = None
 
-        self._endoscopy_files = None
-
         self._xray_polygon = None
         self._xray_image_height = None
         self._xray_image_width = None
         self._xray_mask = None
 
+        self._endoscopy_files = None
         self._endoscopy_polygons = None
         self._endoscopy_image_positions_cm = None
 
