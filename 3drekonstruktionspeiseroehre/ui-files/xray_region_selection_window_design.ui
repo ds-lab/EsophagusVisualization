@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>The selection of the esophagus on the X-ray image</string>
+   <string>Selection of the esophagus on the X-ray image</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -61,7 +61,7 @@
      <x>0</x>
      <y>0</y>
      <width>690</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

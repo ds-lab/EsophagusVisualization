@@ -1,3 +1,4 @@
+import numpy as np
 from gui.endoscopy_selection_window import EndoscopySelectionWindow
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
@@ -12,7 +13,7 @@ from PyQt6 import uic
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from skimage import io
-
+from PIL import Image
 
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
@@ -60,7 +61,9 @@ class PositionSelectionWindow(QMainWindow):
         self.figure_canvas = FigureCanvasQTAgg(Figure())
         self.ui.gridLayout.addWidget(self.figure_canvas)
 
-        self.xray_image = io.imread(self.visualization_data.xray_filename)
+        # Load the X-ray image
+        image = Image.open(self.visualization_data.xray_file)
+        self.xray_image = np.array(image)
         self.plot_ax = self.figure_canvas.figure.subplots()
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
         self.plot_ax.imshow(self.xray_image)

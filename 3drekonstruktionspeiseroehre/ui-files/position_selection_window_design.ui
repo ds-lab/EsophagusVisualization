@@ -181,7 +181,7 @@
               <string notr="true">color: rgb(138, 226, 52);</string>
              </property>
              <property name="text">
-              <string>Einzeichnen</string>
+              <string>Mark</string>
              </property>
              <property name="autoDefault">
               <bool>false</bool>
@@ -334,7 +334,7 @@
      <x>0</x>
      <y>0</y>
      <width>935</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

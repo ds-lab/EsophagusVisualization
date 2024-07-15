@@ -206,7 +206,6 @@ class BariumSwallowFile(Base):
     tbe_file_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     minute_of_picture = mapped_column(Integer)
-    filename = mapped_column(String)
     file = mapped_column(PickleType)
 
     def toDict(self):
@@ -228,7 +227,6 @@ class EndoscopyFile(Base):
     endoscopy_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     image_position = mapped_column(Integer, nullable=False)
-    filename = mapped_column(String, nullable=False)
     file = mapped_column(PickleType, nullable=False)
 
     def toDict(self):
@@ -282,6 +280,7 @@ class EndoflipImage(Base):
 class EndosonographyImage(Base):
     __tablename__ = "endosonography_images"
     endosonography_image_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    image_position = mapped_column(Integer, nullable=False)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     file = mapped_column(PickleType, nullable=False)
 

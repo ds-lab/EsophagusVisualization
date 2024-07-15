@@ -35,7 +35,7 @@ class DashServer:
         self.selected_figure_index = 0
         for visualization_data in self.visit.visualization_data_list:
             self.visit_figures.append(visualization_data.figure_creator.get_figure())
-            self.xray_names.append(visualization_data.xray_filename.split("/")[-1].split(".")[0])
+            self.xray_names.append(visualization_data.xray_minute)
         self.current_figure = self.visit_figures[0]
 
         if self.visit.visualization_data_list[0].endoflip_screenshot:

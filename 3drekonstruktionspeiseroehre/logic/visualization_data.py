@@ -6,16 +6,15 @@ class VisualizationData:
         init VisualizationData
         """
         self._xray_filename = None
+        self._xray_minute = None
         self._xray_file = None
-
-        self._endoscopy_files = None
-        self._endoscopy_filenames = None
 
         self._xray_polygon = None
         self._xray_image_height = None
         self._xray_image_width = None
         self._xray_mask = None
 
+        self._endoscopy_files = None
         self._endoscopy_polygons = None
         self._endoscopy_image_positions_cm = None
 
@@ -53,6 +52,14 @@ class VisualizationData:
     @xray_filename.setter
     def xray_filename(self, value):
         self._xray_filename = value
+
+    @property
+    def xray_minute(self):
+        return self._xray_minute
+
+    @xray_minute.setter
+    def xray_minute(self, value):
+        self._xray_minute = value
 
     @property
     def xray_polygon(self):
@@ -109,14 +116,6 @@ class VisualizationData:
     @endoscopy_files.setter
     def endoscopy_files(self, value):
         self._endoscopy_files = value
-
-    @property
-    def endoscopy_filenames(self):
-        return self._endoscopy_filenames
-
-    @endoscopy_filenames.setter
-    def endoscopy_filenames(self, value):
-        self._endoscopy_filenames = value
 
     @property
     def endoscopy_image_positions_cm(self):

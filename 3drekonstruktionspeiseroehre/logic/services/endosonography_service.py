@@ -7,6 +7,7 @@ from logic.database.data_declarative_models import EndosonographyImage, Endosono
 from sqlalchemy.exc import OperationalError
 from gui.show_message import ShowMessage
 
+
 class EndosonographyImageService:
 
     def __init__(self, db_session: Session):
@@ -27,6 +28,17 @@ class EndosonographyImageService:
             result = self.db.execute(stmt).all()
             if result:
                 return [row[0] for row in result]
+            else:
+                return None
+        except OperationalError as e:
+            self.show_error_msg()
+
+    def get_endosonography_positions_for_visit(self, visit_id: int) -> list[EndosonographyImage, None]:
+        stmt = select(EndosonographyImage).where(EndosonographyImage.visit_id == visit_id)
+        try:
+            result = self.db.execute(stmt).all()
+            if result:
+                return [row[0].image_position for row in result]
             else:
                 return None
         except OperationalError as e:
@@ -243,4 +255,3 @@ class EndosonographyVideoService:
         msg.setText("An error occurred.")
         msg.setInformativeText("Please check the connection to the database.")
         msg.exec()
-
