@@ -11,6 +11,9 @@ pandas==2.0.1
 plotly==5.14.1
 PyQt6==6.6.1
 PyQt6-WebEngine==6.6.0
+PyQt6-Qt6==6.6.1
+PyQt6-sip==13.6.0
+PyQt6-WebEngine-Qt6==6.6.1
 scikit-image==0.20.0
 scipy==1.9.1
 shapely==2.0.1
@@ -25,7 +28,6 @@ meshio==5.3.4
 tcod==16.2.0
 sqlalchemy==2.0.23
 pillow==10.0.1
-pymysql==1.1.0
 cryptography==42.0.2
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
