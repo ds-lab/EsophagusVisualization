@@ -1,26 +1,24 @@
 import sys
 
-from gui.file_selection_window import FileSelectionWindow
 from gui.master_window import MasterWindow
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QApplication
-
-QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
-QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts, True)
+from logic.database.database import create_db_and_tables_local_declarative
+from PyQt6.QtWidgets import QApplication
+from gui.data_window import DataWindow
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     # create the MasterWindow and show the first UI
+
     master_window = MasterWindow()
     master_window.show()
     master_window.activate()
-    file_selection_window = FileSelectionWindow(master_window)
-    master_window.switch_to(file_selection_window)
+    data_window = DataWindow(master_window)
+    master_window.switch_to(data_window)
+    create_db_and_tables_local_declarative()
     try:
         # close the splash screen if running as pyinstaller-exe
         import pyi_splash
         pyi_splash.close()
     except ModuleNotFoundError:
         pass
-    app.exec_()
+    app.exec()

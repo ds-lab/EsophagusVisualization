@@ -12,13 +12,14 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Polygon
 import matplotlib.pyplot as plt
 from matplotlib.widgets import PolygonSelector
-from PyQt5 import uic
-from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
-from skimage import io
+from PyQt6 import uic
+from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from PyQt6.QtGui import QAction
 from logic.figure_creator.figure_creator import FigureCreator
 import numpy as np
 import cv2
 import config
+from PIL import Image
 
 class SensorCenterPathWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
@@ -50,7 +51,8 @@ class SensorCenterPathWindow(QMainWindow):
         self.figure_canvas = FigureCanvasQTAgg(Figure())
         self.ui.gridLayout.addWidget(self.figure_canvas)
         self.plot_ax = self.figure_canvas.figure.subplots()
-        self.xray_image = io.imread(self.visualization_data.xray_filename)
+        image = Image.open(self.visualization_data.xray_file)
+        self.xray_image = np.array(image)
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis('off')
@@ -195,7 +197,7 @@ class SensorCenterPathWindow(QMainWindow):
         if self.next_window:
             self.master_window.switch_to(self.next_window)
         # Handle Endoscopy annotation
-        elif len(self.visualization_data.endoscopy_filenames) > 0:
+        elif len(self.visualization_data.endoscopy_files) > 0:
             endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
                                                                   self.patient_data, self.visit)
             self.master_window.switch_to(endoscopy_selection_window)

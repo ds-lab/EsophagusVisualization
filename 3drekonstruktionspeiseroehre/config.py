@@ -1,6 +1,17 @@
 import sys
 # Config file
 
+# data validation for database:
+min_value_year = 1900
+missing_int = -1
+missing_dropdown = "---"
+missing_text = ""
+mandatory_values_patient = ["patient_id", "birth_year", "center"]
+mandatory_values_prev_therapy = ["therapy"]
+mandatory_values_visit = ["year_of_visit", "visit_type"]
+mandatory_values_medication = ["medication_use"]
+
+
 # dash server:
 dash_port_range = (50000, 50100)  # the dash server tries to use a port inside this range
 
@@ -21,7 +32,7 @@ colorscale = [[0, "rgb(16, 1, 255)"],
 cmin = -15  # min pressure -> 0 in colorscale
 cmax = 200  # max pressure -> 1 in colorscale
 
-# manometry sensor: sensor positions in cm for catheter CE4-0062 (from top to bottom)
+# manometry sensor: sensor positions in cm for catheter CE4-0062 (from top to bottom) P22 - 0cm und P1 - 40cm
 coords_sensors = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 23, 24, 26, 28, 30, 31, 32, 33, 34, 35, 40]
 
 # csv import

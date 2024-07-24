@@ -15,7 +15,6 @@ from matplotlib import cm
 from logic.visualization_data import VisualizationData
 
 
-
 class FigureCreator(ABC):
     """Abstract base class for figure creation"""
 
@@ -224,9 +223,9 @@ class FigureCreator(ABC):
         :param sensor_path: estimated path of the sensor catheter as list of coordinates
         :return: widths and centers as lists of lists and offsets as int
         """
-        widths = []     # width of the esophagus shape for every height on the x-ray image
-        centers = []    # center of the esophagus shape for every height on the x-ray image
-        slopes = []     # slope of esophagus segment using linear regression
+        widths = []  # width of the esophagus shape for every height on the x-ray image
+        centers = []  # center of the esophagus shape for every height on the x-ray image
+        slopes = []  # slope of esophagus segment using linear regression
         offset_top = sensor_path[0][0]  # y-value of first point in path
 
         num_points_for_polyfit = config.num_points_for_polyfit_smooth
@@ -234,7 +233,7 @@ class FigureCreator(ABC):
         point_distance = config.point_distance_in_polyfit
         for i in range(len(sensor_path)):
             # if there is a sharp edge, more points are used to refine the line
-            if i > (point_distance*2) and abs(sensor_path[i][1] - sensor_path[i - (point_distance*2)][1]) < abs(
+            if i > (point_distance * 2) and abs(sensor_path[i][1] - sensor_path[i - (point_distance * 2)][1]) < abs(
                     sensor_path[i][1] - sensor_path[i - point_distance][1]):
                 num_points_for_polyfit = config.num_points_for_polyfit_sharp
                 count = 1
@@ -388,7 +387,7 @@ class FigureCreator(ABC):
             # Calculate the midpoint between two boundary points
             if boundary_1 is not None and boundary_2 is not None:
                 center = (np.array(boundary_1) + np.array(boundary_2)) / 2
-                center = (int(center[0]), int(center[1]))
+                center = [int(center[0]), int(center[1])]
 
             # Store the calculated width and center
             widths.append(width)
@@ -537,7 +536,7 @@ class FigureCreator(ABC):
         # take max from (top_y - config.expansion_delta) and 1 to avoid out-of-range plus (1 instead of 0)
         # to leave at least one "none-esophagus" line at the top (to avoid errors
         # due to missing boundary-points in case of very skewed esophagus)
-        for row in range(max(top_y - config.expansion_delta, 1), middle_y+1):
+        for row in range(max(top_y - config.expansion_delta, 1), middle_y + 1):
             for col in range(x1, x2):
                 array[row][col] = 0
 
@@ -555,9 +554,33 @@ class FigureCreator(ABC):
         # Use annotated endpoint as end of the shortest path
         endpoint = visualization_data.esophagus_exit_pos
 
+        # Edge distance: to simulate the manometrie path better (never directly on the edge)
+        border_distance = 25   # In pixels
+
+        contours, _ = cv2.findContours(array.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contour_mask = np.zeros_like(array)
+        cv2.drawContours(contour_mask, contours, -1, 1, thickness=border_distance)
+        border_mask = np.array(contour_mask.astype(bool))
+        scaling_factor = 15  # Adjust this as needed
+        cost_increase = border_mask * scaling_factor
+        cost2 = array + cost_increase
+        cost2 = cost2.astype(np.uint8)
         # Shortest path calculation
         cost = np.where(array, 1, 0)  # define costs according to needs of library tcod
-        graph_path = tcod.path.SimpleGraph(cost=cost, cardinal=config.cardinal_cost, diagonal=config.diagonal_cost)
+        graph_path = tcod.path.SimpleGraph(cost=cost2, cardinal=config.cardinal_cost, diagonal=config.diagonal_cost)
+
+        imf_cost = (cost*255).astype(np.uint8)
+        imf_cost2 = cost2.astype(np.uint8)
+        img_border = (255*border_mask).astype(np.uint8)
+        img_costincrease = (cost_increase).astype(np.uint8)
+
+        print(cost[100])
+
+        cv2.imwrite("output_img1.png", imf_cost)
+        cv2.imwrite("output_img2.png", imf_cost2)
+        cv2.imwrite("border_mask.png", img_border)
+        cv2.imwrite("img_costincrease.png", img_costincrease)
+
         pf = tcod.path.Pathfinder(graph_path)
         pf.add_root((middle_y, middle_x))
         path = np.array(pf.path_to((endpoint[1], endpoint[0])).tolist())
@@ -681,14 +704,14 @@ class FigureCreator(ABC):
         """
         # Find index of lower sphincter boundary
         ls_upper_pos = visualization_data.sphincter_upper_pos
-        ls_upper_pos = [ls_upper_pos[1], ls_upper_pos[0]]  # Because sensor_path is of shape (y,x)
+        ls_upper_pos = [ls_upper_pos[1], ls_upper_pos[0]] # Because sensor_path is of shape (y,x)
         ls_lower_pos = visualization_data.esophagus_exit_pos
-        ls_lower_pos = [ls_lower_pos[1], ls_lower_pos[0]]  # Because sensor_path is of shape (y,x)
+        ls_lower_pos = [ls_lower_pos[1], ls_lower_pos[0]] # Because sensor_path is of shape (y,x)
 
         # Calculate the closest points on the sensor_path for the user given upper and lower boundary of the lower esophagus
         _, ls_index_upper = spatial.KDTree(np.array(sensor_path)).query(np.array(ls_upper_pos))
         _, ls_index_lower = spatial.KDTree(np.array(sensor_path)).query(np.array(ls_lower_pos))
-        lower_sphincter_boundary = [ls_index_upper, ls_index_lower]
+        lower_sphincter_boundary = [ls_index_upper,ls_index_lower]
 
         # Tubular upper boundary
         tubular_part_upper_pos = sensor_path[0]
@@ -696,7 +719,7 @@ class FigureCreator(ABC):
 
         one_px_as_cm = esophagus_full_length_cm / esophagus_full_length_px
 
-        # SECTION =====
+    # SECTION =====
         """# Calculate tubular metric between upper tubular boundary and upper lower sphincter boundary
         # Length according to frames in surfacecolor_list
         metric_tubular = np.zeros(len(surfacecolor_list))
@@ -735,7 +758,7 @@ class FigureCreator(ABC):
                     max_pressure_sphincter = max_pressure_sphincter_at_timepoint
             else:
                 metric_sphincter[j] = 0"""
-        # SZENARIO 1: ==========
+    # SZENARIO 1: ==========
         # Calculate volume tubular
         volume_sum_tubular = 0
         for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
@@ -756,8 +779,7 @@ class FigureCreator(ABC):
 
         # Calculate max, min, mean pressure over time and space for tubular part of esophagus
         np_surfacecolor_list = np.array(surfacecolor_list)
-        tubular_section_surfacecolor_list = np_surfacecolor_list[:,
-                                            tubular_part_upper_boundary:lower_sphincter_boundary[0] + 1]
+        tubular_section_surfacecolor_list = np_surfacecolor_list[:, tubular_part_upper_boundary:lower_sphincter_boundary[0]+1]
         max_pressure_tubular_per_frame = np.max(tubular_section_surfacecolor_list, axis=1)
         max_pressure_tubular = np.max(max_pressure_tubular_per_frame)
         min_pressure_tubular_per_frame = np.min(tubular_section_surfacecolor_list, axis=1)
@@ -773,20 +795,19 @@ class FigureCreator(ABC):
         metric_mean_tubular_all = np.mean(metric_mean_tubular)
 
         pressure_tubular_overall = [max_pressure_tubular, min_pressure_tubular, mean_pressure_tubular]
-        pressure_tubular_per_frame = [max_pressure_tubular_per_frame, min_pressure_tubular_per_frame,
-                                      mean_pressure_tubular_per_frame]
+        pressure_tubular_per_frame = [max_pressure_tubular_per_frame, min_pressure_tubular_per_frame, mean_pressure_tubular_per_frame]
         metric_tubular = [metric_max_tubular, metric_min_tubular, metric_mean_tubular]
         metric_tubular_overall = [metric_max_tubular_all, metric_min_tubular_all, metric_mean_tubular_all]
 
+
         # Calculate max pressure over timeline for lower_sphincter_center
         # (lower_sphincter_center is the region with the max pressure in space)
-        ls_section_surfacecolor_list = np_surfacecolor_list[:,
-                                       lower_sphincter_boundary[0]:lower_sphincter_boundary[1] + 1]
+        ls_section_surfacecolor_list = np_surfacecolor_list[:,lower_sphincter_boundary[0]:lower_sphincter_boundary[1]+1]
         min_pressure_sphincter_per_frame = np.min(ls_section_surfacecolor_list, axis=1)
         min_pressure_sphincter = np.mean(min_pressure_sphincter_per_frame)
         max_pressure_sphincter_per_frame = np.max(ls_section_surfacecolor_list, axis=1)
         max_pressure_sphincter = np.mean(max_pressure_sphincter_per_frame)
-        mean_pressure_sphincter_per_frame = np.mean(ls_section_surfacecolor_list, axis=1)
+        mean_pressure_sphincter_per_frame = np.mean(ls_section_surfacecolor_list, axis = 1)
         mean_pressure_sphincter = np.mean(mean_pressure_sphincter_per_frame)
         # Metrics Sphincter
         # Avoid division by zero
@@ -799,11 +820,19 @@ class FigureCreator(ABC):
             metric_mean_sphincter = np.where(mask, volume_sum_sphincter / max_pressure_sphincter_per_frame, 0)
             metric_mean_sphincter_all = np.mean(metric_mean_sphincter)
 
-        pressure_sphincter_per_frame = [max_pressure_sphincter_per_frame, min_pressure_sphincter_per_frame,
-                                        mean_pressure_sphincter_per_frame]
+        pressure_sphincter_per_frame = [max_pressure_sphincter_per_frame, min_pressure_sphincter_per_frame, mean_pressure_sphincter_per_frame]
         pressure_sphincter_overall = [max_pressure_sphincter, min_pressure_sphincter, mean_pressure_sphincter]
         metric_sphincter = [metric_max_sphincter, metric_min_sphincter, metric_mean_sphincter]
         metric_sphincter_overall = [metric_max_sphincter_all, metric_min_sphincter_all, metric_mean_sphincter_all]
+
+
+        # SZENARIO 2: =========
+        sum_tub_pressure_per_frame = np.sum(tubular_section_surfacecolor_list, axis=1)
+        sum_ls_pressure_per_frame = np.sum(ls_section_surfacecolor_list, axis=1)
+
+        metric_tub_2 = sum_tub_pressure_per_frame * volume_sum_tubular
+        metric_ls_2 = sum_ls_pressure_per_frame / volume_sum_sphincter
+
 
         return_val = [
             metric_tubular, metric_sphincter,
@@ -825,12 +854,12 @@ class FigureCreator(ABC):
         common_columns = natsorted(set(data['30']['aggregates'].keys()) & set(data['40']['aggregates'].keys()))
         # Reverse List because P16 is on top and P1 is at the bottom
         common_columns = common_columns[::-1]
-        for agg in ['median','min','max','mean']:
+        for agg in ['median', 'min', 'max', 'mean']:
             cell_texts_30 = []
             cell_texts_40 = []
 
             # rainbow to visualize high/low diameters
-            colorscale = px.colors.sample_colorscale("jet", [(30-(n+1))/(30-1) for n in range(30)])
+            colorscale = px.colors.sample_colorscale("jet", [(30 - (n + 1)) / (30 - 1) for n in range(30)])
 
             for column in common_columns:
                 # Get aggregated values for each dataset
@@ -840,7 +869,8 @@ class FigureCreator(ABC):
                 cell_texts_30.append(f'{agg_30:.2f}')
                 cell_texts_40.append(f'{agg_40:.2f}')
 
-            color_30_40 = [np.array(colorscale)[[int(float(x)) for x in cell_texts_30]], np.array(colorscale)[[int(float(x)) for x in cell_texts_40]]]
+            color_30_40 = [np.array(colorscale)[[int(float(x)) for x in cell_texts_30]],
+                           np.array(colorscale)[[int(float(x)) for x in cell_texts_40]]]
 
             # Create a table with colored cells and text annotations
             table = go.Table(
@@ -849,12 +879,12 @@ class FigureCreator(ABC):
                             fill_color='white',
                             font=dict(color='black', size=13)),
                 cells=dict(values=[cell_texts_30,
-                                cell_texts_40],
-                            fill_color=color_30_40,
-                            line_color=color_30_40,
-                            font=dict(color='white', size=11),
-                            height=20),
-                columnwidth=[1,1],
+                                   cell_texts_40],
+                           fill_color=color_30_40,
+                           line_color=color_30_40,
+                           font=dict(color='white', size=11),
+                           height=20),
+                columnwidth=[1, 1],
             )
 
             figure = go.Figure(data=[table])
@@ -885,7 +915,7 @@ class FigureCreator(ABC):
 
         # Color change criterion for each sensor
         sensor_length_fraction = distance_cm / esophagus_full_length_cm
-        sensor_length_px =  esophagus_full_length_px * sensor_length_fraction
+        sensor_length_px = esophagus_full_length_px * sensor_length_fraction
 
         surface_color_collect = {}
 
@@ -903,27 +933,30 @@ class FigureCreator(ABC):
                 color_index = 0
 
                 # Iterate over sensor_path from bottom to top (P1 is at the bottom of the sphincter, P16 at the top)
-                for i in range(len(sensor_path)-1, -1, -1):
+                for i in range(len(sensor_path) - 1, -1, -1):
                     # Find endoflip section on esophagus
-                    if i < null_pos_index and current_length < measurement_length_px and color_index + 1 < len(endoflip_colors):
-                        current_length += np.sqrt((sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
-                                                                                                    sensor_path[i + 1][
-                                                                                                        1]) ** 2)
+                    if i < null_pos_index and current_length < measurement_length_px and color_index + 1 < len(
+                            endoflip_colors):
+                        current_length += np.sqrt(
+                            (sensor_path[i][0] - sensor_path[i + 1][0]) ** 2 + (sensor_path[i][1] -
+                                                                                sensor_path[i + 1][
+                                                                                    1]) ** 2)
                         # Append appropriate color for endoflip sensor
                         current_sensor = endoflip_colors[color_index]
                         next_sensor = endoflip_colors[color_index + 1]
                         # Smooth color transition
                         endoflip_value = current_sensor + (next_sensor - current_sensor) * (
-                                        (current_length - sensor_length_px * (color_index)) / (
-                                        sensor_length_px * (color_index+1) -
-                                        sensor_length_px * (color_index)))
+                                (current_length - sensor_length_px * (color_index)) / (
+                                sensor_length_px * (color_index + 1) -
+                                sensor_length_px * (color_index)))
                         endoflip_surface_color.append(endoflip_value)
 
                         # Check if the next endoflip sensor has been reached
-                        if current_length >= sensor_length_px * (color_index+1):
+                        if current_length >= sensor_length_px * (color_index + 1):
                             color_index += 1
 
-                    elif current_length >= measurement_length_px or i >= null_pos_index or color_index + 1 >= len(endoflip_colors):
+                    elif current_length >= measurement_length_px or i >= null_pos_index or color_index + 1 >= len(
+                            endoflip_colors):
                         # Out of the endoflip section, add high value to simulate None values
                         endoflip_surface_color.append(40)
 

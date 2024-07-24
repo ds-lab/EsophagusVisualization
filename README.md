@@ -37,6 +37,12 @@ Requirements installieren:
 
 - pip install -r requirements.txt
 
+Docker-compose: 
+
+- run "docker-compose up -d" inside /3drekonstruktionspeiseroehre where docker-compose.yml file is located
+- to access phpmyadmin open your browser and go to http://localhost:8080  username: admin password: 123+qwe server field can be empty
+
+
   
 
 Starten mit:

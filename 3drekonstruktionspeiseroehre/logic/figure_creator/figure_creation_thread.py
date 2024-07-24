@@ -5,7 +5,8 @@ from logic.figure_creator.figure_creator_with_endoscopy import \
 from logic.figure_creator.figure_creator_without_endoscopy import \
     FigureCreatorWithoutEndoscopy
 from logic.visit_data import VisitData
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt6.QtCore import QThread, pyqtSignal
+
 
 
 class FigureCreationThread(QThread):
@@ -27,6 +28,7 @@ class FigureCreationThread(QThread):
         to be run as thread
         starts figure creation
         """
+
         for visualization_data in self.visit.visualization_data_list:
             # a mask of the esophagus is created depending on user input on xray-images (xray_polygon) and appended to
             # visualization_data.xray_mask

@@ -9,7 +9,8 @@ from dash.exceptions import PreventUpdate
 from dash_extensions.enrich import (DashProxy, Input, MultiplexerTransform,
                                     Output, State, dcc, html, no_update)
 from kthread import KThread
-from PyQt5.QtWidgets import QMessageBox
+# from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox
 
 import config
 from logic.visit_data import VisitData
@@ -34,7 +35,7 @@ class DashServer:
         self.selected_figure_index = 0
         for visualization_data in self.visit.visualization_data_list:
             self.visit_figures.append(visualization_data.figure_creator.get_figure())
-            self.xray_names.append(visualization_data.xray_filename.split("/")[-1].split(".")[0])
+            self.xray_names.append(visualization_data.xray_minute)
         self.current_figure = self.visit_figures[0]
 
         if self.visit.visualization_data_list[0].endoflip_screenshot:

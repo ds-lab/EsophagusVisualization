@@ -8,10 +8,12 @@ from logic.visit_data import VisitData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
-from PyQt5 import uic
-from PyQt5.QtWidgets import QAction, QMainWindow, QMessageBox
+from PyQt6 import uic
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from shapely.geometry import Polygon
-from skimage import io
+from PIL import Image
+
 
 
 class XrayRegionSelectionWindow(QMainWindow):
@@ -55,7 +57,8 @@ class XrayRegionSelectionWindow(QMainWindow):
         self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color='red'))
 
         # Load the X-ray image
-        self.xray_image = io.imread(self.visualization_data.xray_filename)
+        image = Image.open(self.visualization_data.xray_file)
+        self.xray_image = np.array(image)
 
         # Display the X-ray image
         self.plot_ax.imshow(self.xray_image)
@@ -100,9 +103,9 @@ class XrayRegionSelectionWindow(QMainWindow):
                 self.master_window.switch_to(position_selection_window)
                 self.close()
             else:
-                QMessageBox.critical(self, "Fehler", "Die Auswahl darf keine Schnittpunkte besitzen")
+                QMessageBox.critical(self, "Error", "The selection must not have any intersections.")
         else:
-            QMessageBox.critical(self, "Fehler", "Bitte die Form des Ösophagus als Polygon einzeichnen")
+            QMessageBox.critical(self, "Error", "Please draw the shape of the esophagus as a polygon.")
 
     def __reset_selector(self):
         """

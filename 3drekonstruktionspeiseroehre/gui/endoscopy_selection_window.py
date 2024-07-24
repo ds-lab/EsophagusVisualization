@@ -8,10 +8,11 @@ from logic.visit_data import VisitData
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
-from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QAction, QMessageBox
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QMessageBox
 from shapely.geometry import Polygon
-from skimage import io
+from PIL import Image
 
 
 class EndoscopySelectionWindow(QtWidgets.QMainWindow):
@@ -33,6 +34,7 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         self.visit = visit
 
         self.current_image_index = 0
+        # list of points (not cm)
         self.current_polygon = []
         self.polygon_list = []
 
@@ -47,7 +49,8 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
 
         # Get endoscopy images (same for all visualisation data since only xray differ)
-        self.endoscopy_images = [io.imread(filename) for filename in visit.visualization_data_list[0].endoscopy_filenames]
+        self.endoscopy_images = [np.array(Image.open(file)) for file in
+                                 visit.visualization_data_list[0].endoscopy_files]
 
         self.__load_image(self.endoscopy_images[0])
         self.__update_button_text()
@@ -67,9 +70,9 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         Updates the text of the apply button based on the current image index.
         """
         if not self.__is_last_image():
-            self.ui.apply_button.setText('Auswahl anwenden und nächstes Bild laden')
+            self.ui.apply_button.setText("Apply selection and load next image")
         else:
-            self.ui.apply_button.setText('Auswahl anwenden und Visualisierung generieren')
+            self.ui.apply_button.setText("Apply selection and generate visualization")
 
     def __is_last_image(self) -> bool:
         """
@@ -145,9 +148,9 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
                     self.__load_image(self.endoscopy_images[self.current_image_index])
                     self.__update_button_text()
             else:
-                QMessageBox.critical(self, "Fehler", "Die Auswahl darf keine Schnittpunkte besitzen")
+                QMessageBox.critical(self, "Error", "The selection must not have any intersections.")
         else:
-            QMessageBox.critical(self, "Fehler", "Bitte den Querschnitt des Ösophagus als Polygon einzeichnen")
+            QMessageBox.critical(self, "Error", "Please draw the cross-section of the esophagus as a polygon.")
 
     def __reset_selector(self):
         """

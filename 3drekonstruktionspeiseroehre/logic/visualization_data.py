@@ -6,13 +6,15 @@ class VisualizationData:
         init VisualizationData
         """
         self._xray_filename = None
-        self._endoscopy_filenames = None
+        self._xray_minute = None
+        self._xray_file = None
 
         self._xray_polygon = None
         self._xray_image_height = None
         self._xray_image_width = None
         self._xray_mask = None
 
+        self._endoscopy_files = None
         self._endoscopy_polygons = None
         self._endoscopy_image_positions_cm = None
 
@@ -45,12 +47,28 @@ class VisualizationData:
         self.esophagus_len = None
 
     @property
+    def xray_file(self):
+        return self._xray_file
+
+    @xray_file.setter
+    def xray_file(self, value):
+        self._xray_file = value
+
+    @property
     def xray_filename(self):
         return self._xray_filename
 
     @xray_filename.setter
     def xray_filename(self, value):
         self._xray_filename = value
+
+    @property
+    def xray_minute(self):
+        return self._xray_minute
+
+    @xray_minute.setter
+    def xray_minute(self, value):
+        self._xray_minute = value
 
     @property
     def xray_polygon(self):
@@ -101,12 +119,12 @@ class VisualizationData:
         self._endoflip_screenshot = value
 
     @property
-    def endoscopy_filenames(self):
-        return self._endoscopy_filenames
+    def endoscopy_files(self):
+        return self._endoscopy_files
 
-    @endoscopy_filenames.setter
-    def endoscopy_filenames(self, value):
-        self._endoscopy_filenames = value
+    @endoscopy_files.setter
+    def endoscopy_files(self, value):
+        self._endoscopy_files = value
 
     @property
     def endoscopy_image_positions_cm(self):
