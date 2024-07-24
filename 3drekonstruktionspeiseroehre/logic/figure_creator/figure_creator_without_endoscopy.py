@@ -16,12 +16,14 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         # Frames of the pressure (Manometry) animation
         self.number_of_frames = visualization_data.pressure_matrix.shape[1]
 
-        # Calculate a path through the esophagus along the xray image
-        sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(visualization_data)
+        # Get calculated shortest path through the esophagus (with a given distance to the border)
+        sensor_path = visualization_data.sensor_path
 
         # Extract information necessary for reconstruction and metrics from input
-        widths, centers, slopes, offset_top = FigureCreator.calculate_widths_centers_slope_offset(
-            visualization_data, sensor_path)
+        widths = visualization_data.widths
+        centers = visualization_data.center_path
+        slopes = visualization_data.slopes
+        offset_top = visualization_data.offset_top
 
         esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(sensor_path, 0,
                                                                                visualization_data.esophagus_exit_pos)
@@ -29,6 +31,8 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(sensor_path,
                                                                                     esophagus_full_length_px,
                                                                                     visualization_data)
+        cm_to_px_ratio = esophagus_full_length_cm / esophagus_full_length_px
+
 
         # Calculate shape without endoscopy data by approximating profile as circles
         # Get array of 50 equi-spaced values between 0 and 2pi

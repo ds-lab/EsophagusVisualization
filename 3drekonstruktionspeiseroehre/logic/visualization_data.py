@@ -35,6 +35,15 @@ class VisualizationData:
         self._figure_y = None
         self._figure_z = None
 
+        self.center_path = None
+        self.sensor_path = None
+        self.widths = None
+        self.slopes = None
+        self.offset_top = None
+        self.tubular_length_cm = 0
+        self.sphincter_length_cm = 0
+        self.esophagus_len = None
+
     @property
     def xray_filename(self):
         return self._xray_filename

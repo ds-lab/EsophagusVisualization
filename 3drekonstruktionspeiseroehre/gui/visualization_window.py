@@ -279,17 +279,84 @@ class VisualizationWindow(QMainWindow):
         """
         Callback for the download button to store a csv-file of the metrics of all loaded visualizations
         """
+        self.__download_overall_csv_file()
+        self.__download_timeframe_csv_file()
 
+    def __download_overall_csv_file(self):
+        """
+        Callback for the download button to store a overall csv-file of the metrics of all loaded visualizations
+        """
         # Prompt the user to choose a destination path for the csv file
-        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "CSV Files (*.csv)")
+        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save CSV Overall-Metrics File", "", "CSV Files (*.csv)")
 
         if destination_file_path:
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
-                    ["Id", "Breischluckbild", "Tubular Index (Mean)", "Sphinkter Index (Mean)", "Volume Tubular",
-                     "Volume Sphinkter", "Pressure Tubular (Max)", "Pressure Sphinkter (Max)", "Index Tubular (Max)",
-                     "Index Sphinkter (Max)", "Index Tubular (Min)", "Index Sphinkter (Min)", "Esophagus Length (cm)"])
+                    ["Id", "Breischluckbild",
+                     "Volume Tubular", "Volume Sphincter", "Esophagus Length (cm)",
+                     "Mean over all (Volume * max(tubular pressure from frame))",
+                     "Mean over all (Volume * min(tubular pressure from frame))",
+                     "Mean over all (Volume * mean(tubular pressure from frame))",
+                     "Mean over all (Volume * max(sphincter pressure from frame))",
+                     "Mean over all (Volume * min(sphincter pressure from frame))",
+                     "Mean over all (Volume * mean(sphincter pressure from frame))",
+                     "Tubular Pressure Max", "Tubular Pressure Min", "Tubular Pressure Mean",
+                     "Sphincter Pressure Max", "Sphincter Pressure Min", "Sphincter Pressure Mean"
+                     ])
+
+                # loop through all visits.items (these are figures which are displayed in different threads)
+                for i, (name, visit_data) in enumerate(self.visits.items()):
+                    if "." in name:
+                        visit_name = name.split(".")[0]
+                    else:
+                        visit_name = name
+                    # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
+                    for j in range(len(visit_data.visualization_data_list)):
+                        metrics = visit_data.visualization_data_list[j].figure_creator.get_metrics()
+                        xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
+                        tubular_metric_mean = metrics[4][2]
+                        tubular_metric_min = metrics[4][1]
+                        tubular_metric_max = metrics[4][0]
+                        sphincter_metric_mean = metrics[5][2]
+                        sphincter_metric_min = metrics[5][1]
+                        sphincter_metric_max = metrics[5][0]
+                        tubular_pressure_mean = metrics[-4][2]
+                        tubular_pressure_min = metrics[-4][1]
+                        tubular_pressure_max = metrics[-4][0]
+                        sphincter_pressure_mean = metrics[-3][2]
+                        sphincter_pressure_min = metrics[-3][1]
+                        sphincter_pressure_max = metrics[-3][0]
+                        volume_tubular = metrics[2]
+                        volume_sphincter = metrics[3]
+                        esophagus_length = visit_data.visualization_data_list[
+                            j].figure_creator.get_esophagus_full_length_cm()
+
+                        # Write metrics data to CSV file
+                        writer.writerow([visit_name.encode("utf-8"), xray_name,
+                                         round(volume_tubular, 2), round(volume_sphincter, 2), round(esophagus_length, 2),
+                                         round(tubular_metric_max, 2), round(tubular_metric_min, 2), round(tubular_metric_mean, 2),
+                                         round(sphincter_metric_max, 2), round(sphincter_metric_min, 2), round(sphincter_metric_mean, 2),
+                                         round(tubular_pressure_max, 2), round(tubular_pressure_min, 2), round(tubular_pressure_mean, 2),
+                                         round(sphincter_pressure_max, 2), round(sphincter_pressure_min, 2), round(sphincter_pressure_mean, 2)])
+
+            # Inform the user that the export is complete
+            QMessageBox.information(self, "Export Complete",
+                                "csv Datei wurde erfolgreich exportiert.")
+
+    def __download_timeframe_csv_file(self):
+        """
+        Callback for the download button to store a timeframe dependent csv-file of the metrics of all loaded visualizations
+        """
+        destination_file_path_metriks, _ = QFileDialog.getSaveFileName(self, "Save CSV Timeframe-Metrics File", "", "CSV Files (*.csv)")
+        if destination_file_path_metriks:
+            with open(destination_file_path_metriks, "w", newline="") as csv_file:
+                writer = csv.writer(csv_file)
+                writer.writerow(
+                    ["Id", "Volume Tubular", "Volume Sphincter", "Frame", "Max tubular pressure in frame", "Min tubular pressure in frame", "Mean tubular pressure in frame",
+                     "Volume * max(tubular pressure from frame)", "Volume * min(tubular pressure from frame)", "Volume * mean(tubular pressure from frame)",
+                     "Max sphincter pressure in frame", "Min sphincter pressure in frame", "Mean sphincter pressure in frame",
+                     "Volume / max(sphincter pressure from frame)", "Volume / min(sphincter pressure from frame)", "Volume / mean(sphincter pressure from frame)"])
 
                 # loop through all visits.items (these are figures which are displayed in different threads)
                 for i, (name, visit_data) in enumerate(self.visits.items()):
@@ -301,32 +368,32 @@ class VisualizationWindow(QMainWindow):
 
                     # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
                     for j in range(len(visit_data.visualization_data_list)):
-                        xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
-                        tubular_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[0]
-                        sphinkter_metric = visit_data.visualization_data_list[j].figure_creator.get_metrics()[1]
-                        volume_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[2]
-                        volume_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[3]
-                        max_pressure_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[4]
-                        max_pressure_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[5]
-                        max_metric_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[6]
-                        max_metric_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[7]
-                        min_metric_tubular = visit_data.visualization_data_list[j].figure_creator.get_metrics()[8]
-                        min_metric_sphinkter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[9]
-                        esophagus_length = visit_data.visualization_data_list[
-                            j].figure_creator.get_esophagus_full_length_cm()
+                        metrics = visit_data.visualization_data_list[j].figure_creator.get_metrics()
+                        for frame in range(len(metrics[0][0])):
+                            max_pressure_tubular_per_frame = metrics[-2][0][frame]
+                            min_pressure_tubular_per_frame = metrics[-2][1][frame]
+                            mean_pressure_tubular_per_frame = metrics[-2][2][frame]
+                            max_pressure_sphincter_per_frame = metrics[-1][0][frame]
+                            min_pressure_sphincter_per_frame = metrics[-1][1][frame]
+                            mean_pressure_sphincter_per_frame = metrics[-1][2][frame]
+                            metric_max_tubular = metrics[0][0][frame]
+                            metric_min_tubular = metrics[0][1][frame]
+                            metric_mean_tubular = metrics[0][2][frame]
+                            metric_max_sphincter = metrics[1][0][frame]
+                            metric_min_sphincter = metrics[1][1][frame]
+                            metric_mean_sphincter = metrics[1][2][frame]
+                            volume_tubular = metrics[2]
+                            volume_sphincter = metrics[3]
 
-                        # Write metrics data to CSV file
-                        writer.writerow([visit_name, xray_name, round(np.mean(tubular_metric), 2),
-                                         round(np.mean(sphinkter_metric), 2), round(volume_tubular, 2),
-                                         round(volume_sphinkter, 2), round(max_pressure_tubular, 2),
-                                         round(max_pressure_sphinkter, 2), round(max_metric_tubular, 2),
-                                         round(max_metric_sphinkter, 2), round(min_metric_tubular, 2),
-                                         round(min_metric_sphinkter, 2),
-                                         round(esophagus_length, 2)])
-
-            # Inform the user that the export is complete
-            QMessageBox.information(self, "Export Complete",
-                                "csv Datei wurde erfolgreich exportiert.")
+                            # Write metrics data to CSV file
+                            writer.writerow([visit_name.encode("utf-8"), frame, volume_tubular, volume_sphincter,
+                                             round(max_pressure_tubular_per_frame, 2),round(min_pressure_tubular_per_frame, 2),round(mean_pressure_tubular_per_frame, 2),
+                                             round(metric_max_tubular, 2), round(metric_min_tubular, 2), round(metric_mean_tubular, 2),
+                                             round(max_pressure_sphincter_per_frame, 2),round(min_pressure_sphincter_per_frame, 2),round(mean_pressure_sphincter_per_frame, 2),
+                                             round(metric_max_sphincter, 2), round(metric_min_sphincter, 2), round(metric_mean_sphincter, 2)])
+                # Inform the user that the export is complete
+                QMessageBox.information(self, "Export Complete",
+                                        "csv Datei wurde erfolgreich exportiert.")
 
     def __extend_patient_data(self):
         """
