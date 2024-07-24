@@ -696,45 +696,6 @@ class FigureCreator(ABC):
 
         one_px_as_cm = esophagus_full_length_cm / esophagus_full_length_px
 
-        # SECTION =====
-        """# Calculate tubular metric between upper tubular boundary and upper lower sphincter boundary
-        # Length according to frames in surfacecolor_list
-        metric_tubular = np.zeros(len(surfacecolor_list))
-        volume_sum_tubular = 0
-        for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
-            shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
-            # one_px_as_cm factor is needed, because of the third dimension height
-            # (height of a single slice is one pixel)
-            volume_slice = shapely_poly.area * one_px_as_cm
-            volume_sum_tubular = volume_sum_tubular + volume_slice
-        max_pressure_tubular = 0
-        for j in range(len(surfacecolor_list)):
-            max_pressure_tubular_at_timepoint = max(
-                surfacecolor_list[j][tubular_part_upper_boundary:lower_sphincter_boundary[0] + 1])
-            metric_tubular[j] = volume_sum_tubular * max_pressure_tubular_at_timepoint
-            if max_pressure_tubular_at_timepoint > max_pressure_tubular:
-                max_pressure_tubular = max_pressure_tubular_at_timepoint
-
-        # Calculate sphincter metric between upper and lower sphincter boundary
-        metric_sphincter = np.zeros(len(surfacecolor_list))
-        volume_sum_sphincter = 0
-        for i in range(lower_sphincter_boundary[0], lower_sphincter_boundary[1] + 1):
-            shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
-            # one_px_as_cm factor is needed, because of the third dimension height
-            # (height of a single slice is one pixel)
-            volume_slice = shapely_poly.area * one_px_as_cm
-            volume_sum_sphincter = volume_sum_sphincter + volume_slice
-        max_pressure_sphincter = 0
-        for j in range(len(surfacecolor_list)):
-            # Calculate metric for frame
-            if surfacecolor_list[j][i] != 0:
-                max_pressure_sphincter_at_timepoint = max(
-                    surfacecolor_list[j][lower_sphincter_boundary[0]: lower_sphincter_boundary[1] + 1])
-                metric_sphincter[j] = volume_sum_sphincter / max_pressure_sphincter_at_timepoint
-                if max_pressure_sphincter_at_timepoint > max_pressure_sphincter:
-                    max_pressure_sphincter = max_pressure_sphincter_at_timepoint
-            else:
-                metric_sphincter[j] = 0"""
         # SZENARIO 1: ==========
         # Calculate volume tubular
         volume_sum_tubular = 0
@@ -790,13 +751,15 @@ class FigureCreator(ABC):
         mean_pressure_sphincter = np.mean(mean_pressure_sphincter_per_frame)
         # Metrics Sphincter
         # Avoid division by zero
-        mask = max_pressure_sphincter_per_frame != 0
+        mask_max = max_pressure_sphincter_per_frame != 0
+        mask_min = min_pressure_sphincter_per_frame != 0
+        mask_mean = mean_pressure_sphincter_per_frame != 0
         with np.errstate(divide='ignore'):
-            metric_max_sphincter = np.where(mask, volume_sum_sphincter / max_pressure_sphincter_per_frame, 0)
+            metric_max_sphincter = np.where(mask_max, volume_sum_sphincter / max_pressure_sphincter_per_frame, 0)
             metric_max_sphincter_all = np.max(metric_max_sphincter)
-            metric_min_sphincter = np.where(mask, volume_sum_sphincter / min_pressure_sphincter_per_frame, 0)
+            metric_min_sphincter = np.where(mask_min, volume_sum_sphincter / min_pressure_sphincter_per_frame, 0)
             metric_min_sphincter_all = np.min(metric_min_sphincter)
-            metric_mean_sphincter = np.where(mask, volume_sum_sphincter / max_pressure_sphincter_per_frame, 0)
+            metric_mean_sphincter = np.where(mask_mean, volume_sum_sphincter / mean_pressure_sphincter_per_frame, 0)
             metric_mean_sphincter_all = np.mean(metric_mean_sphincter)
 
         pressure_sphincter_per_frame = [max_pressure_sphincter_per_frame, min_pressure_sphincter_per_frame,
