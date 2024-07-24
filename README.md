@@ -46,10 +46,10 @@ The software can handle and store the following file types:
     ```sh
     docker-compose up -d
     ```
-    - Access phpMyAdmin at `http://localhost:8080`
-      - Username: `admin`
+    - Access pgAdmin at `http://localhost:8080`
+      - Username: `admin@admin.com`
       - Password: `123+qwe`
-      - Server field: leave empty
+      - Server field: can be left empty
 
 4. **Start the Application**:
     ```sh
