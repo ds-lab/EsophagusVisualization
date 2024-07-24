@@ -1,64 +1,77 @@
-# Esophagus Visualization
+# Esophagus Visualization and Data Management Software
 
-This software generates a 3D visualization of the esophagus, which aids in the diagnosis and treatment of achalasia. The software was developed for use at the University Hospital Augsburg.
+This software is designed to support the diagnosis and treatment of achalasia by storing patient data and generating 3D visualizations of the esophagus. Developed for the University Hospital Augsburg, the software integrates various diagnostic data to create comprehensive patient records and detailed visual aids.
 
-The software can handle the following data:
-- A manometry measurement (exported as .csv from the 'Laborie stationary measurement & analysis software' by Medical Measurement Systems B.V.)
-- A frontal barium swallow X-ray image
+## Key Features
+
+- **Patient and Visit Management**: Save and manage data about patients, their visits, and their therapies, including complications and outcomes.
+- **Imaging Data Storage**: Store imaging data such as barium swallow images, endoscopy images, EndoFLIP images, EUS videos, and EUS images, linked to patient records and visits.
+- **Diagnostic File Handling**: Handle and store manometry files (.csv) and EndoFLIP files (.xlsx) from diagnostic instruments.
+- **3D Esophagus Reconstruction**: Generate 3D reconstructions of the esophagus from barium swallow X-rays and optionally endoscopy images. These reconstructions are saved and linked to patient records.
+- **3D Visualization**:
+  - **Pressure Mapping**: Create animated color mappings of manometry measurements on the 3D reconstruction.
+  - **Distensibility Mapping**: Generate color mappings and tabular representations of EndoFLIP measurements on the 3D reconstruction.
+  - **Image Integration**: Easily integrate and display multiple barium swallow images with selection via radio buttons.
+  - **Metric Calculation**: Calculate metrics for the tubular region (volume x pressure) and the sphincter region (volume / pressure).
+  - **Side-by-Side Comparison**: Display multiple esophagi side-by-side for comparisons (e.g., pre/post-therapy, different patients).
+- **Data Export**:
+  - **3D Reconstructions**: Export metrics as .csv, the 3D reconstruction as .html for external display, and the reconstruction as .stl file for 3D printing.
+  - **Database Exports**: Download data about patients, their visits, and their therapies for statistical analysis.
+
+## Supported File Types
+
+The software can handle and store the following file types:
+- Manometry measurements (.csv from 'Laborie stationary measurement & analysis software' by Medical Measurement Systems B.V.)
+- Frontal barium swallow X-ray images
 - Endoscopy images of the esophagus (EGD)
-- EndoFLIP (exported as .xlsx)
+- EndoFLIP files (.xlsx)
+- Additionally, EndoFLIP images and EUS videos and images can be uploaded and saved into the database (these files are not yet used for 3D visualization).
 
-Features:
-- 3D reconstruction of the esophagus from a barium swallow X-ray and optionally endoscopy images
-- Pressure: color mapping of manometry measurements on the 3D reconstruction as an animation
-- Distensibility: color mapping and tabular representation of EndoFLIP measurements on the 3D reconstruction
-- Easy integration and display of multiple barium swallow images (selection via radio buttons)
-- Calculation of metrics for the tubular region (volume x pressure) and the sphincter region (volume / pressure)
-- Side-by-side display of multiple esophagi (pre/post-therapy, different patients)
-- Export of metrics as .csv
-- Export of the reconstruction as .html for display outside the software
-- Export of the reconstruction as .stl file for 3D printing
+## Getting Started
 
-![Example: Visualization of two esophagi](https://github.com/Alici96/myrepo/blob/main/Demo1.png?raw=true)
+### Setup Environment
 
-## Setup
+1. **Create Environment**:
+    ```sh
+    conda create -n "esophagus-visualization" python=3.9.7 ipython
+    conda activate esophagus-visualization
+    ```
 
-Create environment:
+2. **Install Requirements**:
+    ```sh
+    pip install -r requirements.txt
+    ```
 
-- conda create -n "esophagus-visualization" python=3.9.7 ipython
+3. **Docker Setup**:
+    ```sh
+    docker-compose up -d
+    ```
+    - Access phpMyAdmin at `http://localhost:8080`
+      - Username: `admin`
+      - Password: `123+qwe`
+      - Server field: leave empty
 
-- conda activate esophagus-visualization
+4. **Start the Application**:
+    ```sh
+    python ./3drekonstruktionspeiseroehre/main.py
+    ```
 
-Install requirements:
+## Creating an Executable
 
-- pip install -r requirements.txt
+1. Adjust the path to the 'dash_extensions' folder in the Conda environment in the 'main.spec' file.
+2. Run PyInstaller:
+    ```sh
+    pyinstaller --noconfirm --clean main.spec
+    ```
+    - Note: Adjust the path to main.spec if necessary.
 
-Docker-compose:
+The 'dist' folder will contain the executable 'ÖsophagusVisualisierung.exe' with Python and all necessary dependencies.
 
-- run "docker-compose up -d" inside /3drekonstruktionspeiseroehre where docker-compose.yml file is located
-- to access phpmyadmin open your browser and go to http://localhost:8080 username: admin@admin.com password: 123+qwe server field can be empty
+## Creating an Installer
 
-Start with:
-
-- python .\3drekonstruktionspeiseroehre\main.py
-
-## Create Exe File
-
-First, adjust the path to the 'dash_extensions' folder in the Conda environment in the 'main.spec' file.
-
-Then:
-
-- pyinstaller --noconfirm --clean main.spec  
-(Note: Adjust the path to main.spec if necessary)
-
-The new 'dist' folder now contains the executable 'ÖsophagusVisualisierung.exe' and Python with all necessary dependencies.
-
-## Create Installer
-
-After creating a package with PyInstaller, you can generate an installer from it using InnoSetup.
-
-First, install InnoSetup, then open and compile the 'inno_setup_script.iss' file with it.  
-(Note: To edit, open 'inno_setup_script.iss' with InnoSetup (not with PyCharm, for example), as the file encoding might change otherwise.)
+1. Install InnoSetup.
+2. Open and compile the 'inno_setup_script.iss' file with InnoSetup.
+    - Note: To edit, always open 'inno_setup_script.iss' with InnoSetup to prevent file encoding issues.
 
 ## Configuration
 
@@ -66,8 +79,6 @@ Configuration values can be adjusted in the 'config.py' file.
 
 ## Notes
 
-- created with Python version 3.9.7
-
-- for dependency cv2: use opencv-python-headless instead of opencv-python to avoid conflicts with PyQt
-
-- matplotlib minimum version 3.6.0rc2
+- Developed with Python version 3.9.7.
+- For dependency `cv2`, use `opencv-python-headless` instead of `opencv-python` to avoid conflicts with PyQt.
+- Minimum version for `matplotlib` is 3.6.0rc2.
