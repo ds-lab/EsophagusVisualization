@@ -15,6 +15,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import config
 from scipy import interpolate
 import numpy as np
+from scipy.ndimage import label
 
 class DCISelectionWindow(QMainWindow):
     """Window where the user selects the rectangle for the DCI calculation"""
@@ -86,20 +87,22 @@ class DCISelectionWindow(QMainWindow):
         # Create a polygon selector for user interaction
         self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=2, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
 
-        len_y, len_x = self.pressure_matrix_high_res.shape
         upper_les = self.find_upper_end_of_les()
         #print(f"upper les: {upper_les}")
         lower_ues = self.find_lower_end_of_ues()
         print(f"lower ues: {lower_ues}")
         lower_les = self.find_lower_end_of_les()
         print(f"lower les: {lower_les}")
+
+        left_end, right_end = self.find_biggest_connected_region(lower_ues, upper_les)
+        print(f"left end: {left_end}, right end: {right_end}")
         
-        self.selector.extents = (len_x * 0.25, len_x * 0.75, lower_ues, upper_les) # TODO: improve the initial rectangle
+        self.selector.extents = (left_end, right_end, lower_ues, upper_les)
 
         self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
         self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
         self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
-        self.__update_DCI_value(int(len_x * 0.25), int(len_x * 0.75), int(len_y * 0.25), int(len_y * 0.75))
+        self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
         # self.__simulate_click(1, 1)
 
     def __reset_button_clicked(self):
@@ -244,7 +247,7 @@ class DCISelectionWindow(QMainWindow):
 
             if diff > 0 and diff > max_diff:
                 max_diff = diff
-                lower_end_y = y
+                lower_end_y = y + stripe_size // 2
 
         return lower_end_y if lower_end_y is not None else int(0.05 * len(self.pressure_matrix_high_res))
     
@@ -304,6 +307,57 @@ class DCISelectionWindow(QMainWindow):
 
             if diff > 0 and diff > max_diff:
                 max_diff = diff
-                lower_end_y = y
+                lower_end_y = y + stripe_size // 2
 
         return lower_end_y if lower_end_y is not None else int(0.95 * len(self.pressure_matrix_high_res))
+
+    def find_biggest_connected_region(self, lower_ues, upper_les, threshold=30):
+        """
+        :param lower_ues: The y-coordinate of the lower end of the UES
+        :param upper_les: The y-coordinate of the upper end of the LES
+        :param threshold: The pressure threshold to count values above
+        :return: A tuple (left_end_x, right_end_x) representing the x-coordinates of the left and right ends of the biggest connected region
+        """
+        # Extract the region of interest
+        roi = np.array(self.pressure_matrix_high_res[lower_ues:upper_les])
+
+        # Create a binary mask where values above the threshold are 1, and others are 0
+        binary_mask = roi > threshold
+
+        # Label connected regions
+        labeled_array, num_features = label(binary_mask)
+
+        # Find the largest connected region
+        max_region_size = 0
+        max_region_label = 0
+        for region_label in range(1, num_features + 1):
+            region_size = np.sum(labeled_array == region_label)
+            if region_size > max_region_size:
+                max_region_size = region_size
+                max_region_label = region_label
+
+        # Find the left and right ends of the largest connected region
+        if max_region_label == 0:
+            return  0.25 * self.pressure_matrix_high_res.shape[1], 0.75 * self.pressure_matrix_high_res.shape[1]  # No region found
+
+        max_region_coords = np.column_stack(np.where(labeled_array == max_region_label))
+        left_end_x = np.min(max_region_coords[:, 1])
+        right_end_x = np.max(max_region_coords[:, 1])
+
+        # Check if at least 5% of the points in the left and right end columns are above the threshold
+        def check_threshold_percentage(column_index):
+            column_values = roi[:, column_index]
+            above_threshold_count = np.sum(column_values > threshold)
+            total_count = len(column_values)
+            return (above_threshold_count / total_count) >= 0.15
+
+        while left_end_x < right_end_x and not check_threshold_percentage(left_end_x):
+            left_end_x += 1
+
+        while right_end_x > left_end_x and not check_threshold_percentage(right_end_x):
+            right_end_x -= 1
+
+        if left_end_x >= right_end_x:
+            return  0.25 * self.pressure_matrix_high_res.shape[1], 0.75 * self.pressure_matrix_high_res.shape[1]  # No valid region found after applying the constraint
+
+        return left_end_x, right_end_x

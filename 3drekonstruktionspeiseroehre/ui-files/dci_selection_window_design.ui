@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>The selection of the region that is relevant for the DCI metric</string>
+   <string>The selection of the region that is relevant for the Esophageal Pressurization Index</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
