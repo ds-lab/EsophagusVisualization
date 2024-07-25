@@ -52,6 +52,7 @@ class DCISelectionWindow(QMainWindow):
         self.lower_ues = None
         self.lower_les = None
         self.upper_les = None
+        self.selector = None
         
         # Connect button click events to methods
         self.ui.reset_button.clicked.connect(self.__reset_button_clicked)
@@ -96,8 +97,20 @@ class DCISelectionWindow(QMainWindow):
 
     def __initialize_plot_analysis(self):
         # Create a polygon selector for user interaction
+        if self.selector is not None:
+            self.selector.set_active(False)
+            self.selector.extents = (0, 0, 0, 0)
         self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=2, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
 
+        if self.lower_ues is not None:
+            self.lower_ues.text.remove()
+            self.lower_ues.line.remove()
+        if self.upper_les is not None:
+            self.upper_les.text.remove()
+            self.upper_les.line.remove()
+        if self.lower_les is not None:
+            self.lower_les.text.remove()
+            self.lower_les.line.remove()
         upper_les = self.find_upper_end_of_les()
         lower_ues = self.find_lower_end_of_ues()
         lower_les = self.find_lower_end_of_les()
@@ -191,6 +204,13 @@ class DCISelectionWindow(QMainWindow):
 
         plt.contour(self.pressure_matrix_high_res > 30, levels=[0.5], colors='k', linestyles='solid', linewidths=0.3) # threshold for the contour plot is 30 mmHg
 
+        # Plot small dots at the coordinates of the sensors
+        for i, coord in enumerate(config.coords_sensors):
+            x = self.pressure_matrix_high_res.shape[1] -10
+            y = coord * int(np.ceil(10 * relation_x_y / goal_relation))
+            self.ax.plot(x, y, 'ro', markersize=4)  # 'ro' means red color, circle marker
+            self.ax.annotate(f'P{len(config.coords_sensors) - i}', (x, y), textcoords="offset points", xytext=(5,-4), ha='left')
+
         self.figure_canvas.draw()
         self.__initialize_plot_analysis()
         print(self.pressure_matrix_high_res.shape)
@@ -218,13 +238,6 @@ class DCISelectionWindow(QMainWindow):
         if len(pressure_matrix[mask]) != 0:
             # Calculate the mean of these values
             mean_pressure = np.mean(np.maximum(pressure_matrix - 20, 0)) # TODO: check if calculation is correct
-        """print(f"Height: {height} cm")
-        print(f"Time: {time} s")
-        print(f"Mean pressure with np.mean(np.maximum(pressure_matrix - 20, 0)): {mean_pressure} mmHg")
-        print(f"Mean pressure with np.mean(np.maximum(pressure_matrix[mask] - 20, 0)): {np.mean(np.maximum(pressure_matrix[mask] - 20, 0))} mmHg")
-        print(f"Mean pressure with np.mean(pressure_matrix) - 20: {np.mean(pressure_matrix) - 20} mmHg")
-        print(f"Mean pressure with np.mean(pressure_matrix[mask]) - 20: {np.mean(pressure_matrix[mask]) - 20} mmHg")
-        print(f"Mean pressure with np.divide(np.sum(pressure_matrix[mask]), pressure_matrix.size): {np.divide(np.sum(pressure_matrix[mask]), pressure_matrix.size)} mmHg")"""
         return np.round(mean_pressure * height * time, 2)
     
     def find_lower_end_of_ues(self):
