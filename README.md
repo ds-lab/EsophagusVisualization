@@ -1,17 +1,18 @@
 # Esophagus Visualization and Data Management Software
 
-This software is designed to support the diagnosis and treatment of achalasia by storing patient data and generating 3D visualizations of the esophagus. Developed for the University Hospital Augsburg, the software integrates various diagnostic data to create comprehensive patient records and a reliable 3d reconstructions.
+This software is designed to support the diagnosis and treatment of achalasia by storing patient data and generating 3D visualizations of the esophagus. 
+The software was developed for the University Hospital Augsburg, and integrates various diagnostic data to create comprehensive patient records and a reliable 3d reconstructions.
 
 ## Key Features
 
 - **Patient and Visit Management**: Save and manage data about patients, their visits, and their therapies, including complications and outcomes.
-- **Imaging Data Storage**: Store imaging data such as barium swallow images, endoscopy images, EndoFLIP images, endosonography videos, and endosonography images, linked to patient records and visits.
+- **Imaging Data Storage**: Store imaging data such as barium swallow images, endoscopy images, EndoFLIP images,  endosonography images, and endosonography videos, linked to patient records and visits.
 - **Diagnostic File Handling**: Handle and store manometry files (.csv) and EndoFLIP files (.xlsx) from diagnostic instruments.
-- **3D Esophagus Reconstruction**: Generate 3D reconstructions of the esophagus from barium swallow X-rays and optionally endoscopy images. These reconstructions can be saved and linked to patient records.
-- **3D Visualization**:
+- **3D Esophagus Visualization**: Generate 3D reconstructions of the esophagus from barium swallow X-rays and optionally endoscopy images. These reconstructions can be saved and linked to patient records.
+- **3D Visualization supports**:
   - **Pressure Mapping**: Create animated color mappings of manometry measurements on the 3D reconstruction.
   - **Distensibility Mapping**: Generate color mappings and tabular representations of EndoFLIP measurements on the 3D reconstruction.
-  - **Supports multiple barium swallow images**: Switch between visualizations of different barium swallow images with selection via radio button.
+  - **Multiple barium swallow images**: Switch between visualizations based on different barium swallow images with selection via radio button.
   - **Metrics**: Calculate metrics for the tubular region (volume x pressure) and the sphincter region (volume / pressure).
   - **Side-by-Side Comparison**: Display multiple 3d visualizations side-by-side for comparisons (e.g., pre/post-therapy, different patients).
 - **Data Export**:
@@ -25,7 +26,7 @@ The software can handle and store the following file types:
 - Frontal barium swallow X-ray images
 - Endoscopy images of the esophagus (EGD)
 - EndoFLIP files (.xlsx)
-- Additionally, EndoFLIP images and endosonography videos and images can be uploaded and saved into the database (these files are not yet used for 3D visualization).
+- Additionally, EndoFLIP images and endosonography images and videos can be uploaded and saved into the database (these files are not yet used for 3D visualization).
 
 ## Getting Started
 
