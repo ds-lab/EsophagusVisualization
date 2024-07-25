@@ -43,14 +43,15 @@ The software can handle and store the following file types:
     pip install -r requirements.txt
     ```
 
-3. **Docker Setup**:
+3. **Docker Setup**:  
+- where docker-compose.yml file is located run
     ```sh
     docker-compose up -d
     ```
-    - Access pgAdmin at `http://localhost:8080`
-      - Username: `admin@admin.com`
-      - Password: `123+qwe`
-      - Server field: can be left empty
+- Access pgAdmin at `http://localhost:8080`
+  - Username: `admin@admin.com`
+  - Password: `123+qwe`
+  - Server field: can be left empty
 
 4. **Start the Application**:
     ```sh
@@ -59,24 +60,24 @@ The software can handle and store the following file types:
 
 ## Creating an Executable
 
-1. Adjust the path to the 'dash_extensions' folder in the Conda environment in the 'main.spec' file.
+1. Adjust the path to the `dash_extensions` folder in the Conda environment in the `main.spec` file.
 2. Run PyInstaller:
     ```sh
     pyinstaller --noconfirm --clean main.spec
     ```
     - Note: Adjust the path to main.spec if necessary.
 
-The 'dist' folder will contain the executable 'ÖsophagusVisualisierung.exe' with Python and all necessary dependencies.
+The `dist` folder will contain the executable `ÖsophagusVisualisierung.exe` with Python and all necessary dependencies.
 
 ## Creating an Installer
 
 1. Install InnoSetup.
-2. Open and compile the 'inno_setup_script.iss' file with InnoSetup.
-    - Note: To edit, always open 'inno_setup_script.iss' with InnoSetup to prevent file encoding issues.
+2. Open and compile the `inno_setup_script.iss` file with InnoSetup.
+    - Note: To edit, always open `inno_setup_script.iss` with InnoSetup to prevent file encoding issues.
 
 ## Configuration
 
-Configuration values can be adjusted in the 'config.py' file.
+Configuration values can be adjusted in the `config.py` file.
 
 ## Notes
 
