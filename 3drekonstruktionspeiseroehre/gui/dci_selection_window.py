@@ -47,6 +47,7 @@ class DCISelectionWindow(QMainWindow):
         # Create a new figure and subplot
         self.fig, self.ax = plt.subplots()
         self.dci_text = self.ax.text(0.5, 1.05, r"Esophageal Pressurization Index: 0.0 mmHg$\cdot$s$\cdot$cm", transform=self.ax.transAxes, ha='center')
+        self.les_height = self.ax.text(0.5, 1.1, r"LES height: 0.0 cm", transform=self.ax.transAxes, ha='center')
 
         self.lower_ues = None
         self.lower_les = None
@@ -73,6 +74,10 @@ class DCISelectionWindow(QMainWindow):
         if self.dci_text is not None:
             self.dci_text.remove()
         self.dci_text = self.ax.text(0.5, 1.05, f"Esophageal Pressurization Index: {dci_value} mmHg$\cdot$s$\cdot$cm", transform=self.ax.transAxes, ha='center')
+        les_height = np.round((self.lower_les.get_y_position() - self.upper_les.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
+        if self.les_height is not None:
+            self.les_height.remove()
+        self.les_height = self.ax.text(0.5, 1.1, f"LES height: {les_height} cm", transform=self.ax.transAxes, ha='center')
         self.figure_canvas.draw()
 
 
@@ -83,27 +88,28 @@ class DCISelectionWindow(QMainWindow):
         self.__update_DCI_value(x1, x2, y1, y2)
         
 
+    def on_lines_dragged(self):
+        les_height = np.round((self.lower_les.get_y_position() - self.upper_les.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
+        if self.les_height is not None:
+            self.les_height.remove()
+        self.les_height = self.ax.text(0.5, 1.1, f"LES height: {les_height} cm", transform=self.ax.transAxes, ha='center')
+
     def __initialize_plot_analysis(self):
         # Create a polygon selector for user interaction
         self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=2, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
 
         upper_les = self.find_upper_end_of_les()
-        #print(f"upper les: {upper_les}")
         lower_ues = self.find_lower_end_of_ues()
-        print(f"lower ues: {lower_ues}")
         lower_les = self.find_lower_end_of_les()
-        print(f"lower les: {lower_les}")
 
         left_end, right_end = self.find_biggest_connected_region(lower_ues, upper_les)
-        print(f"left end: {left_end}, right end: {right_end}")
         
         self.selector.extents = (left_end, right_end, lower_ues, upper_les)
 
-        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
-        self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
-        self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
+        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=2, picker=5), label='LES (L)', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
+        self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=2, picker=5), label='UES') # 'picker=5' makes the line selectable
+        self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=2, picker=5), label='LES (U)', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
         self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
-        # self.__simulate_click(1, 1)
 
     def __reset_button_clicked(self):
         """
@@ -247,7 +253,7 @@ class DCISelectionWindow(QMainWindow):
 
             if diff > 0 and diff > max_diff:
                 max_diff = diff
-                lower_end_y = y + stripe_size // 2
+                lower_end_y = y + stripe_size
 
         return lower_end_y if lower_end_y is not None else int(0.05 * len(self.pressure_matrix_high_res))
     
@@ -307,7 +313,7 @@ class DCISelectionWindow(QMainWindow):
 
             if diff > 0 and diff > max_diff:
                 max_diff = diff
-                lower_end_y = y + stripe_size // 2
+                lower_end_y = y + stripe_size
 
         return lower_end_y if lower_end_y is not None else int(0.95 * len(self.pressure_matrix_high_res))
 
