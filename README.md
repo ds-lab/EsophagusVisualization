@@ -44,7 +44,7 @@ The software can handle and store the following file types:
     ```
 
 3. **Docker Setup**:  
-- where docker-compose.yml file is located run
+- In the folder, where docker-compose.yml file is located run
     ```sh
     docker-compose up -d
     ```
