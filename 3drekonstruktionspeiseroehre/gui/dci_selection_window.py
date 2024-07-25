@@ -15,8 +15,6 @@ from matplotlib.colors import LinearSegmentedColormap
 import config
 from scipy import interpolate
 import numpy as np
-from scipy.ndimage import gaussian_filter
-from itertools import groupby
 
 class DCISelectionWindow(QMainWindow):
     """Window where the user selects the rectangle for the DCI calculation"""
@@ -88,14 +86,17 @@ class DCISelectionWindow(QMainWindow):
         # Create a polygon selector for user interaction
         self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=2, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
 
-        upper_les = self.find_upper_les()
-        print(f"upper les: {upper_les}")
-        lower_ues = self.find_lower_ues(upper_les)
-        print(f"lower ues: {lower_ues}")
         len_y, len_x = self.pressure_matrix_high_res.shape
+        upper_les = self.find_upper_end_of_les()
+        #print(f"upper les: {upper_les}")
+        lower_ues = self.find_lower_end_of_ues()
+        print(f"lower ues: {lower_ues}")
+        lower_les = self.find_lower_end_of_les()
+        print(f"lower les: {lower_les}")
+        
         self.selector.extents = (len_x * 0.25, len_x * 0.75, lower_ues, upper_les) # TODO: improve the initial rectangle
 
-        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=self.find_les_lower_end(upper_les), color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
+        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
         self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
         self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=2, picker=5)) # 'picker=5' makes the line selectable
         self.__update_DCI_value(int(len_x * 0.25), int(len_x * 0.75), int(len_y * 0.25), int(len_y * 0.75))
@@ -183,8 +184,6 @@ class DCISelectionWindow(QMainWindow):
 
         self.figure_canvas.draw()
         self.__initialize_plot_analysis()
-        les_center = self.find_upper_les()
-        print(f"les center: {les_center}")
         print(self.pressure_matrix_high_res.shape)
 
 
@@ -219,65 +218,92 @@ class DCISelectionWindow(QMainWindow):
         print(f"Mean pressure with np.divide(np.sum(pressure_matrix[mask]), pressure_matrix.size): {np.divide(np.sum(pressure_matrix[mask]), pressure_matrix.size)} mmHg")"""
         return np.round(mean_pressure * height * time, 2)
     
-    def find_upper_les(self):
-        # Step 2: Preprocess
-        smoothed_matrix = gaussian_filter(self.pressure_matrix_high_res, sigma=1)  # Apply Gaussian blur
-
-        # Step 3: Detect High-Pressure Region
-        avg_pressure = np.mean(smoothed_matrix, axis=1)  # Average pressure along y-axis
-        threshold = np.mean(avg_pressure) + 1.5 * np.std(avg_pressure)  # Example threshold
-        high_pressure_regions = np.where(avg_pressure > threshold)[0]
-
-        # Assuming LES is the largest continuous high-pressure region
-        les_position = max((list(g) for _, g in groupby(high_pressure_regions)), key=len)
-        les_center = np.mean(les_position)
-
-        return les_center
-    
-    def find_les_lower_end(self, les_upper_limit, target_pressure=30, tolerance=2):
+    def find_lower_end_of_ues(self):
         """
-        Find the lower end of the LES based on a target pressure level.
+        Detect the lower end of the Upper Esophageal Sphincter (UES).
         
-        :param les_upper_limit: The y-coordinate of the upper limit of the LES
-        :param target_pressure: The target pressure value to find below the LES (default 30 mmHg)
-        :param tolerance: The tolerance level for the target pressure (default 2 mmHg)
-        :return: The y-coordinate of the lower end of the LES
-        """
-        lower_end = None
-        for y in range(int(les_upper_limit) + 1, len(self.pressure_matrix_high_res), 5):
-            row_pressure = np.mean(self.pressure_matrix_high_res[y])
-            if target_pressure - tolerance <= row_pressure <= target_pressure + tolerance:
-                lower_end = y
-                break  # Stop at the first row that meets the criteria
+        The UES is identified as a horizontal stripe in the upper part of the plot with higher pressure (>30 mmHg)
+        than the regions above and below it. The UES must be in the upper half of the plot.
         
-        return lower_end
-    
-    def find_lower_ues(self, upper_les, target_pressure_ues=30, gap_pressure_ues=25):
-        """
-        Find the lower end of the UES starting from the top of the diagram, ensuring it's not connected to the LES
-        by requiring that more than 20 rows have values below a certain threshold to confirm discontinuity.
-        
-        :param upper_les: The y-coordinate of the upper end of the LES
-        :param target_pressure_ues: The pressure value indicating significant portions
-        :param gap_pressure_ues: The pressure threshold for identifying gaps
+        :param target_pressure_ues: The pressure value indicating the UES
         :return: The y-coordinate of the lower end of the UES
         """
-        for y in range(len(self.pressure_matrix_high_res) - 1, -1, -10):  # Start from the top of the diagram
-            row = self.pressure_matrix_high_res[y]
-            high_pressure_count = sum(p > target_pressure_ues for p in row)
-            if high_pressure_count / len(row) > 0.2:  # Example criterion: >20% of points are above target pressure
-                # Check for discontinuity between this row and LES
-                discontinuity_found = False
-                low_pressure_row_count = 0  # Counter for consecutive rows meeting the low-pressure criteria
-                for check_y in range(y + 1, int(upper_les)):
-                    check_row = self.pressure_matrix_high_res[check_y]
-                    if sum(p <= gap_pressure_ues for p in check_row) / len(check_row) > 0.5:  # Majority of pressures are below target
-                        low_pressure_row_count += 1
-                        if low_pressure_row_count >= 20:  # Check if at least 20 rows meet the criteria
-                            discontinuity_found = True
-                            break
-                    else:
-                        low_pressure_row_count = 0  # Reset counter if a row does not meet the criteria
-                if discontinuity_found:
-                    return y  # This row is considered the lower end of the UES if discontinuity is confirmed
-        return 0  # Return None if no suitable region is found
+        upper_half_boundary = len(self.pressure_matrix_high_res) // 2
+        stripe_size = max(1, len(self.pressure_matrix_high_res) // 100)
+        max_diff = -float('inf')
+        lower_end_y = None
+
+        for y in range(stripe_size, upper_half_boundary, stripe_size // 2):
+            current_stripe = self.pressure_matrix_high_res[y:y + stripe_size]
+            previous_stripe = self.pressure_matrix_high_res[y - stripe_size:y]
+
+            current_average = sum(sum(row) for row in current_stripe) / (len(current_stripe) * len(current_stripe[0]))
+            previous_average = sum(sum(row) for row in previous_stripe) / (len(previous_stripe) * len(previous_stripe[0]))
+
+            diff = previous_average - current_average
+
+            if diff > 0 and diff > max_diff:
+                max_diff = diff
+                lower_end_y = y
+
+        return lower_end_y if lower_end_y is not None else int(0.05 * len(self.pressure_matrix_high_res))
+    
+    def find_upper_end_of_les(self, threshold=30):
+        """
+        Detect the upper end of the Lower Esophageal Sphincter (LES).
+        
+        The LES is identified as a horizontal stripe in the lower part of the plot with a high number of points (>30 mmHg)
+        than the regions above and below it. The LES must be in the lower half of the plot.
+        
+        :param threshold: The pressure threshold indicating the LES
+        :return: The y-coordinate of the upper end of the LES
+        """
+        lower_half_start = len(self.pressure_matrix_high_res) // 2
+        stripe_size = max(1, len(self.pressure_matrix_high_res) // 100)
+        upper_end_y = None
+        max_diff = -float('inf')
+
+        for y in range(lower_half_start + stripe_size, len(self.pressure_matrix_high_res), stripe_size // 2):
+            current_stripe = self.pressure_matrix_high_res[y:y + stripe_size]
+            previous_stripe = self.pressure_matrix_high_res[y - stripe_size:y]
+
+            current_count = sum(1 for row in current_stripe for value in row if value > threshold)
+            previous_count = sum(1 for row in previous_stripe for value in row if value > threshold)
+
+            diff = current_count - previous_count
+
+            if diff > 0 and diff > max_diff:
+                max_diff = diff
+                upper_end_y = y
+
+        return upper_end_y if upper_end_y is not None else int(0.75 * len(self.pressure_matrix_high_res))
+    
+    def find_lower_end_of_les(self, threshold=30):
+        """
+        Detect the lower end of the Lower Esophageal Sphincter (LES).
+        
+        The LES is identified as a horizontal stripe in the lower part of the plot with higher pressure (>30 mmHg)
+        than the regions above and below it. The LES must be in the lower half of the plot.
+        
+        :param target_pressure_les: The pressure value indicating the LES
+        :return: The y-coordinate of the lower end of the LES
+        """
+        lower_half_start = len(self.pressure_matrix_high_res) // 2
+        stripe_size = max(1, len(self.pressure_matrix_high_res) // 100)
+        lower_end_y = None
+        max_diff = -float('inf')
+
+        for y in range(lower_half_start + stripe_size, len(self.pressure_matrix_high_res), stripe_size // 2):
+            current_stripe = self.pressure_matrix_high_res[y:y + stripe_size]
+            previous_stripe = self.pressure_matrix_high_res[y - stripe_size:y]
+
+            current_count = sum(1 for row in current_stripe for value in row if value > threshold)
+            previous_count = sum(1 for row in previous_stripe for value in row if value > threshold)
+
+            diff = previous_count - current_count
+
+            if diff > 0 and diff > max_diff:
+                max_diff = diff
+                lower_end_y = y
+
+        return lower_end_y if lower_end_y is not None else int(0.95 * len(self.pressure_matrix_high_res))
