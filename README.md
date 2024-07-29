@@ -37,10 +37,20 @@ The software can handle and store the following file types:
     conda activate esophagus-visualization
     ```
 
-2. **Install Requirements**:
-    ```sh
-    pip install -r requirements.txt
-    ```
+Here's a clearer and more detailed explanation:
+
+2. **Install Requirements**
+
+```sh
+pip install -r requirements.txt
+```
+- Note: If you encounter issues with the debug mode in PyCharm:
+
+  1. Go to the **File** menu.
+  2. Select **Settings** (or **Preferences** on macOS).
+  3. In the left sidebar, navigate to **Build, Execution, Deployment** -> **Debugger**.
+  4. Under the **Python Debugger** section, check the option named **PyQt compatible**.
+  5. Ensure the **PyQt version** is set to **PyQt6**.
 
 3. **Docker Setup**:
     ```sh
@@ -49,7 +59,8 @@ The software can handle and store the following file types:
     - Access pgAdmin at `http://localhost:8080`
       - Username: `admin@admin.com`
       - Password: `123+qwe`
-      - Server field: can be left empty
+      - Server field: can be left empty  
+      
 
 4. **Start the Application**:
     ```sh
@@ -58,24 +69,24 @@ The software can handle and store the following file types:
 
 ## Creating an Executable
 
-1. Adjust the path to the 'dash_extensions' folder in the Conda environment in the 'main.spec' file.
+1. Adjust the path to the `dash_extensions` folder in the Conda environment in the `main.spec` file.
 2. Run PyInstaller:
     ```sh
     pyinstaller --noconfirm --clean main.spec
     ```
-    - Note: Adjust the path to main.spec if necessary.
+    - Note: Adjust the path to `main.spec` if necessary.
 
-The 'dist' folder will contain the executable 'ÖsophagusVisualisierung.exe' with Python and all necessary dependencies.
+The 'dist' folder will contain the executable `ÖsophagusVisualisierung.exe` with Python and all necessary dependencies.
 
 ## Creating an Installer
 
 1. Install InnoSetup.
-2. Open and compile the 'inno_setup_script.iss' file with InnoSetup.
-    - Note: To edit, always open 'inno_setup_script.iss' with InnoSetup to prevent file encoding issues.
+2. Open and compile the `inno_setup_script.iss` file with InnoSetup.
+    - Note: To edit, always open `inno_setup_script.iss` with InnoSetup to prevent file encoding issues.
 
 ## Configuration
 
-Configuration values can be adjusted in the 'config.py' file.
+Configuration values can be adjusted in the `config.py` file.
 
 ## Notes
 
