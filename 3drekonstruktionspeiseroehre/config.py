@@ -41,6 +41,10 @@ label_length = "Length"
 label_width = "Width"
 label_depth = "Depth"
 
+# Title of plots
+title_with_endoscopy = "3D view from X-ray, endoscopy, and manometry data"
+title_without_endoscopy = "3D view from X-ray and manometry data"
+
 
 # dash server:
 dash_port_range = (50000, 50100)  # the dash server tries to use a port inside this range

@@ -169,11 +169,11 @@ class DashServer:
                         new_figure.data[0].cmin=""" + str(config.cmin) + """;
                         new_figure.data[0].cmax=""" + str(config.cmax) + """;
                         return [new_figure, 
-                                f"{config.metrics_animation_part1} {(time/20).toFixed(2)} {config.metrics_animation_part2}"
-                                f"{str(config.length_tubular_part_cm)} {config.metrics_animation_part3} 
-                                f"{tubular_metric[time].toFixed(2)} {config.metrics_animation_part4}"
-                                f"{str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm)}"
-                                f"{config.metrics_animation_part5} {sphincter_metric[time].toFixed(5)}];
+                            `""" + config.metrics_animation_part1 + """ ${(time/20).toFixed(2)}`, 
+                            `""" + config.metrics_animation_part2 + """ ` +
+                            `""" + str(config.length_tubular_part_cm) + """ """ + config.metrics_animation_part3 + """ ${tubular_metric[time].toFixed(2)} ` +
+                            `""" + config.metrics_animation_part4 + """ """ + str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """ ` +
+                            `""" + config.metrics_animation_part5 + """ ${sphincter_metric[time].toFixed(5)}`];
                     }
                 }    
                 """,
