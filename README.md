@@ -1,11 +1,12 @@
 # Esophagus Visualization and Data Management Software
 
-This software is designed to support the diagnosis and treatment of achalasia by storing patient data and generating 3D visualizations of the esophagus. Developed for the University Hospital Augsburg, the software integrates various diagnostic data to create comprehensive patient records and a reliable 3d reconstructions.
+This software is designed to support the diagnosis and treatment of achalasia by storing patient data and generating 3D visualizations of the esophagus.  
+It is developed in the context of higher education at the chair for software methodologies and distributed systems at the University of Augsburg, and in close cooperation with the gastroenterology at the University Hospital Augsburg.
 
 ## Key Features
 
 - **Patient and Visit Management**: Save and manage data about patients, their visits, and their therapies, including complications and outcomes.
-- **Imaging Data Storage**: Store imaging data such as barium swallow images, endoscopy images, EndoFLIP images, endosonography videos, and endosonography images, linked to patient records and visits.
+- **Imaging Data Storage**: Store imaging data such as barium swallow images, endoscopy images, EndoFLIP images, endosonography images, and endosonography videos, linked to patient records and visits.
 - **Diagnostic File Handling**: Handle and store manometry files (.csv) and EndoFLIP files (.xlsx) from diagnostic instruments.
 - **3D Esophagus Reconstruction**: Generate 3D reconstructions of the esophagus from barium swallow X-rays and optionally endoscopy images. These reconstructions can be saved and linked to patient records.
 - **3D Visualization**:
@@ -25,7 +26,7 @@ The software can handle and store the following file types:
 - Frontal barium swallow X-ray images
 - Endoscopy images of the esophagus (EGD)
 - EndoFLIP files (.xlsx)
-- Additionally, EndoFLIP images and endosonography videos and images can be uploaded and saved into the database (these files are not yet used for 3D visualization).
+- Additionally, EndoFLIP images and endosonography images and videos can be uploaded and saved into the database (these files are not yet used for 3D visualization).
 
 ## Getting Started
 
@@ -36,8 +37,6 @@ The software can handle and store the following file types:
     conda create -n "esophagus-visualization" python=3.9.7 ipython
     conda activate esophagus-visualization
     ```
-
-Here's a clearer and more detailed explanation:
 
 2. **Install Requirements**
 
