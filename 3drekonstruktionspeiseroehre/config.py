@@ -39,7 +39,7 @@ metrics_animation_part5 = "cm) [Volume/Pressure]: "
 # Text in figure_creator.py for data visualization:
 label_length = "Length"
 label_width = "Width"
-label_depth = "depth"
+label_depth = "Depth"
 
 
 # dash server:
