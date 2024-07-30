@@ -1,18 +1,17 @@
 # Esophagus Visualization and Data Management Software
 
-This software is designed to support the diagnosis and treatment of achalasia by storing patient data and generating 3D visualizations of the esophagus. 
-The software was developed for the University Hospital Augsburg, and integrates various diagnostic data to create comprehensive patient records and a reliable 3d reconstructions.
+This software is designed to support the diagnosis and treatment of achalasia by storing patient data and generating 3D visualizations of the esophagus. Developed for the University Hospital Augsburg, the software integrates various diagnostic data to create comprehensive patient records and a reliable 3d reconstructions.
 
 ## Key Features
 
 - **Patient and Visit Management**: Save and manage data about patients, their visits, and their therapies, including complications and outcomes.
-- **Imaging Data Storage**: Store imaging data such as barium swallow images, endoscopy images, EndoFLIP images,  endosonography images, and endosonography videos, linked to patient records and visits.
+- **Imaging Data Storage**: Store imaging data such as barium swallow images, endoscopy images, EndoFLIP images, endosonography videos, and endosonography images, linked to patient records and visits.
 - **Diagnostic File Handling**: Handle and store manometry files (.csv) and EndoFLIP files (.xlsx) from diagnostic instruments.
-- **3D Esophagus Visualization**: Generate 3D reconstructions of the esophagus from barium swallow X-rays and optionally endoscopy images. These reconstructions can be saved and linked to patient records.
-- **3D Visualization supports**:
+- **3D Esophagus Reconstruction**: Generate 3D reconstructions of the esophagus from barium swallow X-rays and optionally endoscopy images. These reconstructions can be saved and linked to patient records.
+- **3D Visualization**:
   - **Pressure Mapping**: Create animated color mappings of manometry measurements on the 3D reconstruction.
   - **Distensibility Mapping**: Generate color mappings and tabular representations of EndoFLIP measurements on the 3D reconstruction.
-  - **Multiple barium swallow images**: Switch between visualizations based on different barium swallow images with selection via radio button.
+  - **Supports multiple barium swallow images**: Switch between visualizations of different barium swallow images with selection via radio button.
   - **Metrics**: Calculate metrics for the tubular region (volume x pressure) and the sphincter region (volume / pressure).
   - **Side-by-Side Comparison**: Display multiple 3d visualizations side-by-side for comparisons (e.g., pre/post-therapy, different patients).
 - **Data Export**:
@@ -26,7 +25,7 @@ The software can handle and store the following file types:
 - Frontal barium swallow X-ray images
 - Endoscopy images of the esophagus (EGD)
 - EndoFLIP files (.xlsx)
-- Additionally, EndoFLIP images and endosonography images and videos can be uploaded and saved into the database (these files are not yet used for 3D visualization).
+- Additionally, EndoFLIP images and endosonography videos and images can be uploaded and saved into the database (these files are not yet used for 3D visualization).
 
 ## Getting Started
 
@@ -38,20 +37,30 @@ The software can handle and store the following file types:
     conda activate esophagus-visualization
     ```
 
-2. **Install Requirements**:
-    ```sh
-    pip install -r requirements.txt
-    ```
+Here's a clearer and more detailed explanation:
 
-3. **Docker Setup**:  
-- In the folder, where docker-compose.yml file is located run
+2. **Install Requirements**
+
+```sh
+pip install -r requirements.txt
+```
+- Note: If you encounter issues with the debug mode in PyCharm:
+
+  1. Go to the **File** menu.
+  2. Select **Settings** (or **Preferences** on macOS).
+  3. In the left sidebar, navigate to **Build, Execution, Deployment** -> **Debugger**.
+  4. Under the **Python Debugger** section, check the option named **PyQt compatible**.
+  5. Ensure the **PyQt version** is set to **PyQt6**.
+
+3. **Docker Setup**:
     ```sh
     docker-compose up -d
     ```
-- Access pgAdmin at `http://localhost:8080`
-  - Username: `admin@admin.com`
-  - Password: `123+qwe`
-  - Server field: can be left empty
+    - Access pgAdmin at `http://localhost:8080`
+      - Username: `admin@admin.com`
+      - Password: `123+qwe`
+      - Server field: can be left empty  
+      
 
 4. **Start the Application**:
     ```sh
@@ -65,9 +74,9 @@ The software can handle and store the following file types:
     ```sh
     pyinstaller --noconfirm --clean main.spec
     ```
-    - Note: Adjust the path to main.spec if necessary.
+    - Note: Adjust the path to `main.spec` if necessary.
 
-The `dist` folder will contain the executable `ÖsophagusVisualisierung.exe` with Python and all necessary dependencies.
+The 'dist' folder will contain the executable `ÖsophagusVisualisierung.exe` with Python and all necessary dependencies.
 
 ## Creating an Installer
 
