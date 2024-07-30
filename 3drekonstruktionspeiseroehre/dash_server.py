@@ -19,8 +19,8 @@ from logic.visit_data import VisitData
 class DashServer:
     """Represents the dash server that is needed for the visualization"""
 
-    button_text_start = 'Animation starten'
-    button_text_stop = 'Animation anhalten'
+    button_text_start = config.animation_start
+    button_text_stop = config.animation_stop
 
     def __init__(self, visit: VisitData):
         """
@@ -46,19 +46,19 @@ class DashServer:
                         id='endoflip-table',
                         figure=self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()['median'],
                         config={'modeBarButtonsToRemove': ['toImage'], 'displaylogo': False},className='mt-4',),
-                    html.H6("Aggregationsform auswählen"),
+                    html.H6(config.select_aggregation_form),
                     dcc.Dropdown(
                         id='endoflip-table-dropdown',
                         options=[
-                            {'label': 'Median', 'value': 'median'},
-                            {'label': 'Mean', 'value': 'mean'},
-                            {'label': 'Minimum', 'value': 'min'},
-                            {'label': 'Maximum', 'value': 'max'},
-                            {'label': 'Ausblenden', 'value': 'off'}
+                            {'label': config.label_median, 'value': 'median'},
+                            {'label': config.label_mean, 'value': 'mean'},
+                            {'label': config.label_minimum, 'value': 'min'},
+                            {'label': config.label_max, 'value': 'max'},
+                            {'label': config.label_hide, 'value': 'off'}
                         ],
                         value='median'  # Default value
                     ),   
-                ],style={'height': 'calc(100vh - 160px)','width':endoflip_table_width, 'display': 'inline-block', 'verticalAlign': 'top', 'minWidth':endoflip_table_width})
+                ],style={'height': 'calc(100vh - 160px)','width':endoflip_table_width, 'display': 'inline-block', 'verticalAlign': 'top', 'minWidth': endoflip_table_width})
         else:
             endoflip_table_width = '0px'
             show_pressure_endoflip_toggle = 'none'
@@ -76,7 +76,7 @@ class DashServer:
                 pass
         if not socket_bound:
             self.server_socket.close()
-            QMessageBox.critical(None, "Fehler", "Keiner der in der Konfiguration angegebenen Ports ist verfügbar")
+            QMessageBox.critical(None, "Error", "None of the ports specified in the configuration are available")
             return
 
         self.dash_app = DashProxy(__name__, prevent_initial_callbacks=True, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP], transforms=[MultiplexerTransform()])
@@ -100,22 +100,22 @@ class DashServer:
 
             dbc.RadioItems(
                 id='figure-selector',
-                options=[{'label':  f'Breischluck {self.xray_names[i]}  ', 'value': i} for i in range(len(self.visit_figures))],
+                options=[{'label':  f'{config.label_barium_swallow} {self.xray_names[i]}  ', 'value': i} for i in range(len(self.visit_figures))],
                 value=0,
                 inline=True,
                 className="mb-1"
             ),
 
             html.Div([
-                html.Div('Manometrie-Daten', style={'float': 'left', 'padding-left': '10px'}),
+                html.Div(config.label_manometry_data, style={'float': 'left', 'padding-left': '10px'}),
                 daq.BooleanSwitch(id='pressure-or-endoflip', on=False), # False is Manometrie, True is Endoflip
-                html.Div('Endoflip-Daten', style={'float': 'right', 'padding-right': '10px'}),
+                html.Div(config.label_endoflip_data, style={'float': 'right', 'padding-right': '10px'}),
             ], style={'display': show_pressure_endoflip_toggle, 'align-items': 'center', 'padding-bottom': '5px'}),
 
             html.Div([
                 html.Div([
                     html.Div(
-                        dbc.Button('Animation starten', id='play-button', n_clicks=0),
+                        dbc.Button(config.animation_start, id='play-button', n_clicks=0),
                         style={'min-width': '130px', 'vertical-align': 'top', 'display': 'inline-block'}),
                     html.Div(
                         dcc.Slider(
@@ -131,7 +131,7 @@ class DashServer:
                         style={'vertical-aling':'middle','align-items':'center', 'flex': '1 0 auto', 'display': 'inline-block'}
                     ),
                     html.Div(
-                        id='time-field', children=' Zeitpunkt: 0.00s',
+                        id='time-field', children=config.label_time_0,
                         style={'min-width': '170px', 'display': 'inline-block'}
                     )
                 ], style={'min-height': '30px', 'display': 'flex', 'align-items': 'center', 'flex-direction': 'row'}, id='pressure-control'),
@@ -144,10 +144,12 @@ class DashServer:
 
                 html.Div(
                     id='metrics',
-                    children="Metriken: tubulärer Abschnitt (" + str(config.length_tubular_part_cm) +
-                             "cm) [Volumen*Druck]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[0][0], 2)) +
-                             "; unterer Sphinkter (" + str(self.visit.visualization_data_list[0].sphincter_length_cm) +
-                             "cm) [Volumen/Druck]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[1][0], 5))
+                    children=(
+                        f"{config.metrics_text_part1} {str(config.length_tubular_part_cm)} {config.metrics_text_part2}"
+                        f"{str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[0][0], 2))}"
+                        f"{config.metrics_text_part3} {str(self.visit.visualization_data_list[0].sphincter_length_cm)}"
+                        f"{config.metrics_text_part4} {str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[1][0], 5))}"
+                    )
                 ),
             ])
 
@@ -167,10 +169,11 @@ class DashServer:
                         new_figure.data[0].cmin=""" + str(config.cmin) + """;
                         new_figure.data[0].cmax=""" + str(config.cmax) + """;
                         return [new_figure, 
-                                "Zeitpunkt: " + (time/20).toFixed(2) + "s", 
-                                "Metriken: tubulärer Abschnitt (""" + str(config.length_tubular_part_cm) + """cm) [Volumen*Druck]: " 
-                                + tubular_metric[time].toFixed(2) + "; unterer Sphinkter (""" +
-                                str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """cm) [Volumen/Druck]: " + sphincter_metric[time].toFixed(5)];
+                                f"{config.metrics_animation_part1} {(time/20).toFixed(2)} {config.metrics_animation_part2}"
+                                f"{str(config.length_tubular_part_cm)} {config.metrics_animation_part3} 
+                                f"{tubular_metric[time].toFixed(2)} {config.metrics_animation_part4}"
+                                f"{str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm)}"
+                                f"{config.metrics_animation_part5} {sphincter_metric[time].toFixed(5)}];
                     }
                 }    
                 """,
@@ -292,15 +295,18 @@ class DashServer:
         self.selected_figure_index = selected_figure
         self.current_figure = self.visit_figures[selected_figure]
         if selected_figure is not None:
-            return [self.visit_figures[selected_figure], 
-                    self.visit.visualization_data_list[selected_figure].figure_creator.get_surfacecolor_list(),
-                    self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0],
-                    self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1],
-                    self.visit.visualization_data_list[selected_figure].figure_creator.get_number_of_frames() - 1,
-                    "Metriken: tubulärer Abschnitt (" + str(config.length_tubular_part_cm) +
-                             "cm) [Volumen*Druck]: " + str(round(self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0][0], 2)) +
-                             "; unterer Sphinkter (" + str(self.visit.visualization_data_list[selected_figure].sphincter_length_cm) +
-                             "cm) [Volumen/Druck]: " + str(round(self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1][0], 5))]
+            return [
+                self.visit_figures[selected_figure],
+                self.visit.visualization_data_list[selected_figure].figure_creator.get_surfacecolor_list(),
+                self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0],
+                self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1],
+                self.visit.visualization_data_list[selected_figure].figure_creator.get_number_of_frames() - 1,
+                f"{config.metrics_text_part1}  {str(config.length_tubular_part_cm)} {config.metrics_text_part2} "
+                f"{str(round(self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0][0], 2))}"
+                f"{config.metrics_text_part3} {str(self.visit.visualization_data_list[selected_figure].sphincter_length_cm)}"
+                f"{config.metrics_text_part4} "
+                f"{str(round(self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1][0], 5))}"
+            ]
         else:
             raise PreventUpdate
         
