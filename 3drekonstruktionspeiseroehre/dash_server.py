@@ -53,7 +53,7 @@ class DashServer:
                             {'label': config.label_median, 'value': 'median'},
                             {'label': config.label_mean, 'value': 'mean'},
                             {'label': config.label_minimum, 'value': 'min'},
-                            {'label': config.label_max, 'value': 'max'},
+                            {'label': config.label_maximum, 'value': 'max'},
                             {'label': config.label_hide, 'value': 'off'}
                         ],
                         value='median'  # Default value
