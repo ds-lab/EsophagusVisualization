@@ -145,9 +145,9 @@ class DashServer:
                 html.Div(
                     id='metrics',
                     children=(
-                        f"{config.metrics_text_part1} {str(config.length_tubular_part_cm)} {config.metrics_text_part2}"
+                        f"{config.metrics_text_part1}{str(config.length_tubular_part_cm)} {config.metrics_text_part2}"
                         f"{str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[0][0], 2))}"
-                        f"{config.metrics_text_part3} {str(self.visit.visualization_data_list[0].sphincter_length_cm)}"
+                        f"{config.metrics_text_part3}{str(self.visit.visualization_data_list[0].sphincter_length_cm)}"
                         f"{config.metrics_text_part4} {str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[1][0], 5))}"
                     )
                 ),
@@ -169,12 +169,12 @@ class DashServer:
                         new_figure.data[0].cmin=""" + str(config.cmin) + """;
                         new_figure.data[0].cmax=""" + str(config.cmax) + """;
                         
-                        var timeString = `""" + config.metrics_animation_part1 + """ ${(time/20).toFixed(2)} ` + 
+                        var timeString = `""" + config.metrics_animation_part1 + """${(time/20).toFixed(2)}`+ 
                               `""" + config.metrics_animation_part2 + """`;
-                        var metricsString = `""" + config.metrics_animation_part3 + """ ` +
-                               `""" + str(config.length_tubular_part_cm) + """ """ + config.metrics_animation_part4 + """ ${tubular_metric[time].toFixed(2)} ` +
-                               `""" + config.metrics_animation_part5 + """ """ + str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """ ` +
-                               `""" + config.metrics_animation_part6 + """ ${sphincter_metric[time].toFixed(5)}`;
+                        var metricsString = `""" + config.metrics_animation_part3 + """` +
+                               `""" + str(config.length_tubular_part_cm) + """ """ + config.metrics_animation_part4 + """${tubular_metric[time].toFixed(2)}` +
+                               `""" + config.metrics_animation_part5 + """""" + str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """` +
+                               `""" + config.metrics_animation_part6 + """${sphincter_metric[time].toFixed(5)}`;
                         
                         return [new_figure, timeString, metricsString]
                     }
@@ -304,10 +304,10 @@ class DashServer:
                 self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0],
                 self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1],
                 self.visit.visualization_data_list[selected_figure].figure_creator.get_number_of_frames() - 1,
-                f"{config.metrics_text_part1}  {str(config.length_tubular_part_cm)} {config.metrics_text_part2} "
+                f"{config.metrics_text_part1}{str(config.length_tubular_part_cm)} {config.metrics_text_part2}"
                 f"{str(round(self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0][0], 2))}"
-                f"{config.metrics_text_part3} {str(self.visit.visualization_data_list[selected_figure].sphincter_length_cm)}"
-                f"{config.metrics_text_part4} "
+                f"{config.metrics_text_part3}{str(self.visit.visualization_data_list[selected_figure].sphincter_length_cm)}"
+                f"{config.metrics_text_part4}"
                 f"{str(round(self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1][0], 5))}"
             ]
         else:
