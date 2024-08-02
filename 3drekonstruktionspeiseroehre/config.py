@@ -31,10 +31,11 @@ metrics_text_part3 = "; lower sphincter ("
 metrics_text_part4 = "cm) [Volume/Pressure]: "
 # These are the strings for the composition of the metrics for the animation
 metrics_animation_part1 = "Time: "
-metrics_animation_part2 = "s Metrics: tubular part ("
-metrics_animation_part3 = "cm) [Volume*Pressure]: "
-metrics_animation_part4 = "; lower sphincter ("
-metrics_animation_part5 = "cm) [Volume/Pressure]: "
+metrics_animation_part2 = "s"
+metrics_animation_part3 = "Metrics: tubular part ("
+metrics_animation_part4 = "cm) [Volume*Pressure]: "
+metrics_animation_part5 = "; lower sphincter ("
+metrics_animation_part6 = "cm) [Volume/Pressure]: "
 
 # Text in figure_creator.py for data visualization:
 label_length = "Length"

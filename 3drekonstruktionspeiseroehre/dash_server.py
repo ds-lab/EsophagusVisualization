@@ -168,12 +168,15 @@ class DashServer:
                         new_figure.data[0].colorscale = """ + str(config.colorscale) + """;
                         new_figure.data[0].cmin=""" + str(config.cmin) + """;
                         new_figure.data[0].cmax=""" + str(config.cmax) + """;
-                        return [new_figure, 
-                            `""" + config.metrics_animation_part1 + """ ${(time/20).toFixed(2)}`, 
-                            `""" + config.metrics_animation_part2 + """ ` +
-                            `""" + str(config.length_tubular_part_cm) + """ """ + config.metrics_animation_part3 + """ ${tubular_metric[time].toFixed(2)} ` +
-                            `""" + config.metrics_animation_part4 + """ """ + str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """ ` +
-                            `""" + config.metrics_animation_part5 + """ ${sphincter_metric[time].toFixed(5)}`];
+                        
+                        var timeString = `""" + config.metrics_animation_part1 + """ ${(time/20).toFixed(2)} ` + 
+                              `""" + config.metrics_animation_part2 + """`;
+                        var metricsString = `""" + config.metrics_animation_part3 + """ ` +
+                               `""" + str(config.length_tubular_part_cm) + """ """ + config.metrics_animation_part4 + """ ${tubular_metric[time].toFixed(2)} ` +
+                               `""" + config.metrics_animation_part5 + """ """ + str(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm) + """ ` +
+                               `""" + config.metrics_animation_part6 + """ ${sphincter_metric[time].toFixed(5)}`;
+                        
+                        return [new_figure, timeString, metricsString]
                     }
                 }    
                 """,
