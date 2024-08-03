@@ -1539,8 +1539,8 @@ class DataWindow(QMainWindow):
                 for file in barium_swallow_files:
                     visualization_data = VisualizationData()
                     visualization_data.xray_minute = file.minute_of_picture
+                    visualization_data.xray_filename = file.filename
                     visualization_data.xray_file = BytesIO(file.file)
-
                     pressure_matrix = pickle.loads(manometry_file.pressure_matrix)
                     visualization_data.pressure_matrix = pressure_matrix
 

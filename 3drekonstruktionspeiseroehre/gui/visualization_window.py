@@ -279,8 +279,8 @@ class VisualizationWindow(QMainWindow):
                 # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
                 for j in range(len(visit_data.visualization_data_list)):
                     # extract the name
-                    xray_name = visit_data.visualization_data_list[j].xray_minute
-
+                    xray_minute = visit_data.visualization_data_list[j].xray_minute
+                    xray_name = visit_data.visualization_data_list[j].xray_filename
                     # get the data to create the .stl-object
                     figure_x = visit_data.visualization_data_list[j].figure_x
                     figure_y = visit_data.visualization_data_list[j].figure_y

@@ -206,6 +206,7 @@ class BariumSwallowFile(Base):
     tbe_file_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     minute_of_picture = mapped_column(Integer)
+    filename = mapped_column(String)
     file = mapped_column(PickleType)
 
     def toDict(self):
