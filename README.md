@@ -28,6 +28,8 @@ The software can handle and store the following file types:
 - EndoFLIP files (.xlsx)
 - Additionally, EndoFLIP images and endosonography images and videos can be uploaded and saved into the database (these files are not yet used for 3D visualization).
 
+![Example Visualization](3drekonstruktionspeiseroehre/media/Readme-Picture.png)
+
 ## Getting Started
 
 ### Setup Environment
