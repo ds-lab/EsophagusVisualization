@@ -81,8 +81,7 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
                                                                            esophagus_full_length_cm)
 
         # create figure
-        self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
-                                                  '3D-Ansicht aus Röntgen- und Manometriedaten')
+        self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list, config.title_without_endoscopy)
 
         self.esophagus_length_cm = FigureCreator.calculate_esophagus_full_length_cm(
             sensor_path, esophagus_full_length_px, visualization_data)

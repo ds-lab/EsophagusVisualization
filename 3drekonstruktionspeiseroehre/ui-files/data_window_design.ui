@@ -77,7 +77,7 @@
         <item row="0" column="1">
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
-           <string>Patienten Daten</string>
+           <string>Patient Data</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
            <item row="0" column="0">
@@ -627,7 +627,7 @@ p, li { white-space: pre-wrap; }
         <item row="0" column="3">
          <widget class="QGroupBox" name="groupBox_7">
           <property name="title">
-           <string>Visit Daten</string>
+           <string>Visit Data</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_12">
            <item row="0" column="0">
@@ -3726,8 +3726,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1378</width>
-             <height>631</height>
+             <width>965</width>
+             <height>321</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4044,8 +4044,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1378</width>
-             <height>631</height>
+             <width>792</width>
+             <height>151</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4210,8 +4210,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1378</width>
-             <height>631</height>
+             <width>757</width>
+             <height>584</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4726,8 +4726,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1378</width>
-             <height>631</height>
+             <width>523</width>
+             <height>142</height>
             </rect>
            </property>
            <attribute name="label">
@@ -5078,7 +5078,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
