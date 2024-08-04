@@ -61,7 +61,7 @@ pip install -r requirements.txt
 
 2. **Run Docker Compose**:
     - Ensure you are in the directory containing the `docker-compose.yml` and `init.sql` files.
-    - Open a terminal (or command prompt) in this directory and execute the following command to start the containers:
+    - Open a terminal in this directory and execute the following command to start the containers:
       ```sh
       docker-compose up -d
       ```
