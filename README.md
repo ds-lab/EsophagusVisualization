@@ -53,44 +53,81 @@ pip install -r requirements.txt
   4. Under the **Python Debugger** section, check the option named **PyQt compatible**.
   5. Ensure the **PyQt version** is set to **PyQt6**.
 
-3. **Docker Setup**:
-    ```sh
-    docker-compose up -d
-    ```
-    - Access pgAdmin at `http://localhost:8080`
-      - Username: `admin@admin.com`
-      - Password: `123+qwe`
-      - Server field: can be left empty  
-      
 
-4. **Start the Application**:
-    ```sh
-    python ./3drekonstruktionspeiseroehre/main.py
-    ```
+### Setup Docker
+1. **Install Docker Desktop**: 
+    - If you don't already have Docker Desktop installed, download and install it from the [Docker website](https://www.docker.com/products/docker-desktop). 
+
+
+2. **Run Docker Compose**:
+    - Ensure you are in the directory containing the `docker-compose.yml` and `init.sql` files.
+    - Open a terminal (or command prompt) in this directory and execute the following command to start the containers:
+      ```sh
+      docker-compose up -d
+      ```
+    - This command will build and start the containers.
+
+
+3. **Access pgAdmin**:
+    - Once the containers are up and running, you can access pgAdmin to manage the PostgreSQL database of this app.
+    - Open your web browser and go to `http://localhost:8080`.
+    - Use the following credentials to log in:
+      - **Username**: `admin@admin.com`
+      - **Password**: `123+qwe`
+    - Register a new Server:
+      - Right-click on "Servers" and select "Register" -> "Server":
+        - Tab "General":
+          - **Name**: `3drekonstruktionspeiseroehre`
+        - Tab "Connection":
+          - **Host/name address**: `db`
+          - **Port**: `5432`
+          - **Maintainance db**: `postgres`
+      - Click "Save". You should now see `3drekonstruktionspeiseroehre` listed under "Servers".
+      - The database `3drekonstruktion` contains the data schema for this application (initially empty).
+
+
+### Start the Application
+
+```sh
+python ./3drekonstruktionspeiseroehre/main.py
+```
+- Note: Make sure the docker containers are up and running.
 
 ## Creating an Executable
 
-1. Adjust the path to the `dash_extensions` folder in the Conda environment in the `main.spec` file.
-2. Run PyInstaller:
-    ```sh
-    pyinstaller --noconfirm --clean main.spec
-    ```
+1. **Adjust UI File Paths in for the GUI**:
+    - Convert all relative paths to absolute paths for the UI files in your code. For example:
+      ```python
+      # Change this:
+      self.ui = uic.loadUi('./ui-files/data_window_design.ui', self)
+      
+      # To this:
+      self.ui = uic.loadUi(r'C:\Users\piasc\Documents\Studium\Projekt-Achalasie\3drekonstruktionspeiseroehre\3drekonstruktionspeiseroehre\ui-files\data_window_design.ui', self)
+      ```
+      
+2. **Update Paths in `main.spec` File**:
+    - Open the `main.spec` file and adjust any paths to match the absolute paths on your system.
+
+
+3. **Run PyInstaller**:
+    - Use PyInstaller to create an executable. Open a terminal and run the following command:
+      ```sh
+      pyinstaller --noconfirm --clean main.spec
+      ```
     - Note: Adjust the path to `main.spec` if necessary.
 
-The 'dist' folder will contain the executable `ÖsophagusVisualisierung.exe` with Python and all necessary dependencies.
+    - After the process completes, The `dist` folder will contain the executable `EsophagusVisualization.exe` with Python and all necessary dependencies.  
 
-## Creating an Installer
 
-1. Install InnoSetup.
-2. Open and compile the `inno_setup_script.iss` file with InnoSetup.
-    - Note: To edit, always open `inno_setup_script.iss` with InnoSetup to prevent file encoding issues.
+4. **Create an Installer**:
 
-## Configuration
-
-Configuration values can be adjusted in the `config.py` file.
+   1. Install [InnoSetup](https://jrsoftware.org/isdl.php).
+   2. Open and compile the `inno_setup_script.iss` file with InnoSetup.
+       - Note: To edit, always open `inno_setup_script.iss` with InnoSetup to prevent file encoding issues.
 
 ## Notes
 
 - Developed with Python version 3.9.7.
 - For dependency `cv2`, use `opencv-python-headless` instead of `opencv-python` to avoid conflicts with PyQt.
 - Minimum version for `matplotlib` is 3.6.0rc2.
+- Configuration values can be adjusted in the `config.py` file.
