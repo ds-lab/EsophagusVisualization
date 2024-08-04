@@ -54,9 +54,10 @@ class VisualizationWindow(QMainWindow):
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
-        menu_button_2 = QAction("Save Reconstruction as file", self)
-        menu_button_2.triggered.connect(self.__download_object_files)
-        self.ui.menubar.addAction(menu_button_2)
+        # Saving the Reconstruction as a file is not used, because it should be saved in the DB
+        #menu_button_2 = QAction("Save Reconstruction as file", self)
+        #menu_button_2.triggered.connect(self.__download_object_files)
+        #self.ui.menubar.addAction(menu_button_2)
         menu_button_3 = QAction("Download for Display", self)
         menu_button_3.triggered.connect(self.__download_html_file)
         self.ui.menubar.addAction(menu_button_3)

@@ -1,4 +1,5 @@
 Disclaimer:
-Diese Software ist ein Prototyp, der im Rahmen einer Masterarbeit sowie eines Praktikums entstanden ist.
-Die Korrektheit der generierten Daten kann nicht garantiert werden. 
-Treffen Sie keine medizinischen Entscheidungen auf Basis der Ausgaben dieser Software! 
+
+This software is a prototype developed within the higher education framework at the Chair for Software Methodologies and Distributed Systems at the University of Augsburg, in close cooperation with the Gastroenterology Department at the University Hospital Augsburg.
+
+The accuracy and validity of the generated data cannot be guaranteed. Do not use this software to make any medical decisions.
