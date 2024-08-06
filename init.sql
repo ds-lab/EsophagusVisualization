@@ -139,7 +139,6 @@ CREATE TABLE barium_swallow_files (
     tbe_file_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     minute_of_picture INT,
-    filename VARCHAR,
     file BYTEA NOT NULL
 );
 

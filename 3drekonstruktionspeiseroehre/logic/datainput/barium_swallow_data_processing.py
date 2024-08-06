@@ -27,8 +27,7 @@ def process_and_upload_barium_swallow_images(selected_visit, filenames):
         tbe_file_dict = {
             'visit_id': selected_visit,
             'minute_of_picture': time,
-            'file': file_bytes,
-            'filename': filename
+            'file': file_bytes
         }
 
         db = database.get_db()
