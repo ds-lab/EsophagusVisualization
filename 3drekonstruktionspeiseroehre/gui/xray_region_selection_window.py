@@ -73,7 +73,6 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         # Calculate the initial polygon from the X-ray image
         self.polygonOes = image_polygon_detection.calculate_xray_polygon(self.xray_image)
-
         self.init_first_polygon()
 
     def init_first_polygon(self):
@@ -98,7 +97,6 @@ class XrayRegionSelectionWindow(QMainWindow):
         checkbox = self.checkboxes[self.current_polygon_index]
         polygon_name = self.checkbox_names[checkbox]
         self.polygon_points[polygon_name] = verts
-        print(f"{polygon_name} points:", self.polygon_points[polygon_name])
 
     def __reset_button_clicked(self):
         """
@@ -130,6 +128,10 @@ class XrayRegionSelectionWindow(QMainWindow):
             self.figure_canvas.draw_idle()
 
     def __next_button_clicked(self):
+        '''
+        Starts the input for a new polygon if you want to save several masks
+        '''
+
         if not self.__validate_current_polygon():
             QMessageBox.critical(self, "Error", "The current polygon is invalid. Please correct it before proceeding.")
             return
@@ -141,11 +143,11 @@ class XrayRegionSelectionWindow(QMainWindow):
             if checkbox.isChecked():
                 self.init_polygon_selector()
                 polygon_name = self.checkbox_names[checkbox]
-                print(f"Drawing {polygon_name} with color {self.polygon_colors[self.current_polygon_index]}")
+
             else:
                 self.__next_button_clicked() # Skip to the next checkbox if this one is not checked
         else:
-            print("All polygons have been drawn.")
+
             self.selector.disconnect_events()
     def __validate_current_polygon(self):
         """
@@ -164,18 +166,13 @@ class XrayRegionSelectionWindow(QMainWindow):
         return False
 
     def __delete_button_clicked(self):
-        if self.current_polygon_index >= 0:
-            checkbox = self.checkboxes[self.current_polygson_index]
-            polygon_name = self.checkbox_names[checkbox]
-            if self.polygon_points.get(polygon_name):
-                self.polygon_points[polygon_name].pop()
-                print(f"Updated {polygon_name} points after undo:", self.polygon_points[polygon_name])
-                self.selector._xs, self.selector._ys = zip(*self.polygon_points[polygon_name]) if self.polygon_points[
-                    polygon_name] else ([], [])
-                self.selector._polygon.set_xy(
-                    self.polygon_points[polygon_name] + [self.polygon_points[polygon_name][0]] if self.polygon_points[
-                        polygon_name] else [])
-                self.figure_canvas.draw_idle()
+        '''
+            Deletes the last point of the current polygon
+        '''
+        points = self.selector.verts[:-1]
+        self.selector._xys = points
+        self.selector._xs, self.selector._ys = zip(*points) if points else ([], [])
+        self.figure_canvas.draw_idle()
 
     def __apply_button_clicked(self):
         """
@@ -217,14 +214,26 @@ class XrayRegionSelectionWindow(QMainWindow):
         """
         Process and save mask images based on the selected checkboxes.
         """
-        filename = os.path.basename(self.visualization_data.xray_filename)
-        base_path = os.path.dirname(self.visualization_data.xray_filename)
 
+        safe_visit_name = self.visit.name.replace(':', '_').replace('[', '_').replace(']', '_')
+
+        base_path = fr"C:\DataAchalasia\{safe_visit_name}\Breischluck"
+
+
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+        checked_count = sum(checkbox.isChecked() for checkbox in self.checkbox_names.keys())
+        if checked_count > 0:
+            img_filename = f"{self.visualization_data.xray_minute}.jpg"
+            path = os.path.join(base_path, img_filename)
+            path = os.path.normpath(path).replace("\\", "/")
+            xray_image = self.xray_image.astype(np.uint8)
+            cv2.imwrite(path, xray_image)
         for checkbox, polygon_name in self.checkbox_names.items():
             if checkbox.isChecked():
                 polygon = self.polygon_points.get(polygon_name)
                 if polygon:
-                    mask_filename = os.path.splitext(filename)[0] + f"_{polygon_name}_mask.jpg"
+                    mask_filename = f"{polygon_name}_{self.visualization_data.xray_minute}_mask.jpg"
                     self.__save_mask(polygon, base_path, mask_filename)
 
 
