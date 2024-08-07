@@ -309,8 +309,8 @@ class DataWindow(QMainWindow):
         self.ui.selected_patient_text_patientview.setText(output)
         self.ui.selected_patient_text_visitview.setText(output)
         self.ui.selected_patient_text_visitdataview.setText(output)
-        # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
-        self.ui.selected_visit_text_visitview.setText("please select a visit")
+        # Set the text of the select visit to "please select or add a visit" until a visit for the patient is selected
+        self.ui.selected_visit_text_visitview.setText("please select or add a visit")
         self.ui.selected_visit_text_visitdataview.setText("")
         # Set the text of the select previous therapy to "" until a previous therapy is selected
         self.ui.selected_therapy_text_patientview.setText("")
@@ -375,12 +375,12 @@ class DataWindow(QMainWindow):
             self.__init_visits_of_patient()
 
             self.selected_patient = None
-            self.ui.selected_patient_text_patientview.setText("please select a patient")
-            self.ui.selected_patient_text_visitview.setText("please select a patient")
-            self.ui.selected_patient_text_visitdataview.setText("please select a patient")
+            self.ui.selected_patient_text_patientview.setText("please select or add a patient")
+            self.ui.selected_patient_text_visitview.setText("please select or add a patient")
+            self.ui.selected_patient_text_visitdataview.setText("please select or add a patient")
             # Set the text of the selected visit to "please select a visit"
-            self.ui.selected_visit_text_visitview.setText("please select a visit")
-            self.ui.selected_visit_text_visitdataview.setText("please select a visit")
+            self.ui.selected_visit_text_visitview.setText("please select or add a visit")
+            self.ui.selected_visit_text_visitdataview.setText("please select or add a visit")
             # Set the text of the select previous therapy to ""
             self.ui.selected_therapy_text_patientview.setText("")
             # Set the text for the manometry data
@@ -487,9 +487,9 @@ class DataWindow(QMainWindow):
         self.__init_previous_therapies()
         self.__init_visits_of_patient()
 
-        # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
-        self.ui.selected_visit_text_visitview.setText("please select a visit")
-        self.ui.selected_visit_text_visitdataview.setText("please select a visit")
+        # Set the text of the select visit to "please select or add a visit" until a visit for the patient is selected
+        self.ui.selected_visit_text_visitview.setText("please select or add a visit")
+        self.ui.selected_visit_text_visitdataview.setText("please select or add a visit")
         # Set the text of the select previous therapy to "" until a previous therapy is selected
         self.ui.selected_therapy_text_patientview.setText("")
         # Set the text for the manometry data
