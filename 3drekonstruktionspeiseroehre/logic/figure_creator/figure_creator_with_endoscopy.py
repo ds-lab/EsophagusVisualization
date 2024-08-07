@@ -159,8 +159,7 @@ class FigureCreatorWithEndoscopy(FigureCreator):
                                                                            esophagus_full_length_cm)
 
         # create figure
-        self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list,
-                                                  '3D-Ansicht aus Röntgen-, Endoskopie- und Manometriedaten')
+        self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list, config.title_with_endoscopy)
         
         # Create endoflip table and colors if necessary
         if visualization_data.endoflip_screenshot:
