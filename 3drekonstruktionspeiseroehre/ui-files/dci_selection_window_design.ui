@@ -61,7 +61,7 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <item>
-            <widget class="QLabel" name="heightLabel">
+            <widget class="QLabel" name="heightLabelLES">
              <property name="styleSheet">
               <string notr="true">
                 background-color: #3c3c3c;
@@ -107,7 +107,7 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <item>
-            <widget class="QLabel" name="heightLabel">
+            <widget class="QLabel" name="DCI">
              <property name="styleSheet">
               <string notr="true">
                 border: 2px solid #3c3c3c;
@@ -176,7 +176,7 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <item>
-            <widget class="QLabel" name="heightLabel">
+            <widget class="QLabel" name="heightLabelEsophagus">
              <property name="styleSheet">
               <string notr="true">
                 background-color: #3c3c3c;

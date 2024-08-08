@@ -46,14 +46,13 @@ class DCISelectionWindow(QMainWindow):
 
         # Create a new figure and subplot
         self.fig, self.ax = plt.subplots()
-        self.dci_text = self.ax.text(0.5, 1.05, r"Esophageal Pressurization Index: 0.0 mmHg$\cdot$s$\cdot$cm", transform=self.ax.transAxes, ha='center')
-        self.les_height = self.ax.text(0.5, 1.1, r"LES height: 0.0 cm", transform=self.ax.transAxes, ha='center')
-        self.length_esophagus = self.ax.text(0.5, 1.15, r"Length of tubular esophagus: 0.0 cm", transform=self.ax.transAxes, ha='center')
+        self.ax.set_title('Select the region for Esophageal Pressure Index')
+        self.lower_ues, self.lower_les, self.upper_les, self.selector = None, None, None, None
+        self.relation_x_y, self.goal_relation = None, None 
 
-        self.lower_ues = None
-        self.lower_les = None
-        self.upper_les = None
-        self.selector = None
+        sensor_names = ["P" + str(len(config.coords_sensors) - i) for i in range(len(config.coords_sensors))]
+        self.ui.first_combobox.addItems(sensor_names)
+        self.ui.second_combobox.addItems(sensor_names)
         
         # Connect button click events to methods
         self.ui.reset_button.clicked.connect(self.__reset_button_clicked)
@@ -73,18 +72,12 @@ class DCISelectionWindow(QMainWindow):
         time_in_s = selected_data.shape[1] / self.pressure_matrix_high_res.shape[1] * (self.visualization_data.pressure_matrix.shape[1] / config.csv_values_per_second)
 
         dci_value = self.calculateDCI(selected_data, height_in_cm, time_in_s)
-        if self.dci_text is not None:
-            self.dci_text.remove()
-        self.dci_text = self.ax.text(0.5, 1.05, f"Esophageal Pressurization Index: {dci_value} mmHg$\cdot$s$\cdot$cm", transform=self.ax.transAxes, ha='center')
         les_height = np.round((self.lower_les.get_y_position() - self.upper_les.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
-        if self.les_height is not None:
-            self.les_height.remove()
-        self.les_height = self.ax.text(0.5, 1.1, f"LES height: {les_height} cm", transform=self.ax.transAxes, ha='center')
         esophagus_length = np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
-        if self.length_esophagus is not None:
-            self.length_esophagus.remove()
-        self.length_esophagus = self.ax.text(0.5, 1.15, f"Length of tubular esophagus: {esophagus_length} cm", transform=self.ax.transAxes, ha='center')
         self.figure_canvas.draw()
+        self.ui.DCI.setText(f"{dci_value} mmHg·s·cm")
+        self.ui.heightLabelLES.setText(f"{les_height} cm")
+        self.ui.heightLabelEsophagus.setText(f"{esophagus_length} cm")
 
 
     def __onselect(self, eclick, erelease):
@@ -97,12 +90,8 @@ class DCISelectionWindow(QMainWindow):
     def on_lines_dragged(self):
         les_height = np.round((self.lower_les.get_y_position() - self.upper_les.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
         esophagus_length = np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
-        if self.les_height is not None:
-            self.les_height.remove()
-        self.les_height = self.ax.text(0.5, 1.1, f"LES height: {les_height} cm", transform=self.ax.transAxes, ha='center')
-        if self.length_esophagus is not None:
-            self.length_esophagus.remove()
-        self.length_esophagus = self.ax.text(0.5, 1.15, f"Length of tubular esophagus: {esophagus_length} cm", transform=self.ax.transAxes, ha='center')
+        self.ui.heightLabelLES.setText(f"{les_height} cm")
+        self.ui.heightLabelEsophagus.setText(f"{esophagus_length} cm")
 
     def __initialize_plot_analysis(self):
         # Create a polygon selector for user interaction
@@ -132,6 +121,10 @@ class DCISelectionWindow(QMainWindow):
         self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=2, picker=5), label='UES', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
         self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=2, picker=5), label='LES (U)', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
         self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
+        print(f"sensor in middle of LES: {self.find_middle_sensor_in_les()}")
+        print(f"first sensor above UES: {self.find_first_sensor_above_ues()}")
+        self.ui.second_combobox.setCurrentIndex(self.find_middle_sensor_in_les())
+        self.ui.first_combobox.setCurrentIndex(self.find_first_sensor_above_ues())
 
     def __reset_button_clicked(self):
         """
@@ -182,12 +175,12 @@ class DCISelectionWindow(QMainWindow):
         y = np.arange(estimated_pressure_matrix.shape[0])
         f = interpolate.interp2d(x, y, estimated_pressure_matrix, kind='cubic')
 
-        relation_x_y = estimated_pressure_matrix.shape[1] / estimated_pressure_matrix.shape[0]
-        goal_relation = 16 / 9
+        self.relation_x_y = estimated_pressure_matrix.shape[1] / estimated_pressure_matrix.shape[0]
+        self.goal_relation = 16 / 9
 
         # Define the higher resolution grid
         xnew = np.linspace(0, estimated_pressure_matrix.shape[1], estimated_pressure_matrix.shape[1]*10)
-        ynew = np.linspace(0, estimated_pressure_matrix.shape[0], int(np.floor(estimated_pressure_matrix.shape[0]*10 * relation_x_y / goal_relation)))
+        ynew = np.linspace(0, estimated_pressure_matrix.shape[0], int(np.floor(estimated_pressure_matrix.shape[0]*10 * self.relation_x_y / self.goal_relation)))
         pressure_matrix_high_res = f(xnew, ynew)
         self.pressure_matrix_high_res = pressure_matrix_high_res
 
@@ -197,11 +190,11 @@ class DCISelectionWindow(QMainWindow):
         time = np.arange(0, estimated_pressure_matrix.shape[1]) / config.csv_values_per_second
 
         # Set the tick labels
-        x_ticks = np.linspace(0, pressure_matrix_high_res.shape[1], len(time)//int(np.ceil(10 * relation_x_y / goal_relation)) + 1)
+        x_ticks = np.linspace(0, pressure_matrix_high_res.shape[1], len(time)//int(np.ceil(10 * self.relation_x_y / self.goal_relation)) + 1)
         y_ticks = np.linspace(0, pressure_matrix_high_res.shape[0], estimated_pressure_matrix.shape[0]//10+1)
         self.ax.set_xticks(x_ticks)
         self.ax.set_yticks(y_ticks)
-        self.ax.set_xticklabels(np.round(time[::int(np.ceil(10 * relation_x_y / goal_relation))], 1))  # Display only every 10th time point, rounded to 1 decimal place
+        self.ax.set_xticklabels(np.round(time[::int(np.ceil(10 * self.relation_x_y / self.goal_relation))], 1))  # Display only every 10th time point, rounded to 1 decimal place
         self.ax.set_yticklabels(np.arange(0, estimated_pressure_matrix.shape[0]+1, 10))
 
         self.fig.colorbar(im, ax=self.ax, label='Pressure')
@@ -216,7 +209,7 @@ class DCISelectionWindow(QMainWindow):
         # Plot small dots at the coordinates of the sensors
         for i, coord in enumerate(config.coords_sensors):
             x = self.pressure_matrix_high_res.shape[1] -10
-            y = coord * int(np.ceil(10 * relation_x_y / goal_relation))
+            y = coord * int(np.ceil(10 * self.relation_x_y / self.goal_relation))
             self.ax.plot(x, y, 'ro', markersize=4)  # 'ro' means red color, circle marker
             self.ax.annotate(f'P{len(config.coords_sensors) - i}', (x, y), textcoords="offset points", xytext=(5,-4), ha='left')
 
@@ -390,3 +383,25 @@ class DCISelectionWindow(QMainWindow):
             return  0.25 * self.pressure_matrix_high_res.shape[1], 0.75 * self.pressure_matrix_high_res.shape[1]  # No valid region found after applying the constraint
 
         return left_end_x, right_end_x
+    
+    def find_middle_sensor_in_les(self):
+        """
+        Finds the sensor closest to the middle of the Lower Esophageal Sphincter (LES).
+        Returns the index of the closest sensor.
+        """
+        les_start = self.lower_les.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
+        les_end = self.upper_les.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
+        middle_position = (les_start + les_end) / 2
+
+        closest_sensor = min(config.coords_sensors, key=lambda sensor: abs(sensor - middle_position))
+        return config.coords_sensors.index(closest_sensor)
+    
+    def find_first_sensor_above_ues(self):
+        """
+        Finds the first sensor at or above the lower end of the Upper Esophageal Sphincter (UES).
+        Returns the sensor position.
+        """
+        lower_ues_position = self.lower_ues.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
+
+        first_sensor_above_ues = next(sensor for sensor in reversed(config.coords_sensors) if sensor <= lower_ues_position)
+        return config.coords_sensors.index(first_sensor_above_ues)
