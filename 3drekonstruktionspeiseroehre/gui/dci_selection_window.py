@@ -48,6 +48,7 @@ class DCISelectionWindow(QMainWindow):
         self.fig, self.ax = plt.subplots()
         self.dci_text = self.ax.text(0.5, 1.05, r"Esophageal Pressurization Index: 0.0 mmHg$\cdot$s$\cdot$cm", transform=self.ax.transAxes, ha='center')
         self.les_height = self.ax.text(0.5, 1.1, r"LES height: 0.0 cm", transform=self.ax.transAxes, ha='center')
+        self.length_esophagus = self.ax.text(0.5, 1.15, r"Length of tubular esophagus: 0.0 cm", transform=self.ax.transAxes, ha='center')
 
         self.lower_ues = None
         self.lower_les = None
@@ -79,6 +80,10 @@ class DCISelectionWindow(QMainWindow):
         if self.les_height is not None:
             self.les_height.remove()
         self.les_height = self.ax.text(0.5, 1.1, f"LES height: {les_height} cm", transform=self.ax.transAxes, ha='center')
+        esophagus_length = np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
+        if self.length_esophagus is not None:
+            self.length_esophagus.remove()
+        self.length_esophagus = self.ax.text(0.5, 1.15, f"Length of tubular esophagus: {esophagus_length} cm", transform=self.ax.transAxes, ha='center')
         self.figure_canvas.draw()
 
 
@@ -91,9 +96,13 @@ class DCISelectionWindow(QMainWindow):
 
     def on_lines_dragged(self):
         les_height = np.round((self.lower_les.get_y_position() - self.upper_les.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
+        esophagus_length = np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
         if self.les_height is not None:
             self.les_height.remove()
         self.les_height = self.ax.text(0.5, 1.1, f"LES height: {les_height} cm", transform=self.ax.transAxes, ha='center')
+        if self.length_esophagus is not None:
+            self.length_esophagus.remove()
+        self.length_esophagus = self.ax.text(0.5, 1.15, f"Length of tubular esophagus: {esophagus_length} cm", transform=self.ax.transAxes, ha='center')
 
     def __initialize_plot_analysis(self):
         # Create a polygon selector for user interaction
@@ -120,7 +129,7 @@ class DCISelectionWindow(QMainWindow):
         self.selector.extents = (left_end, right_end, lower_ues, upper_les)
 
         self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=2, picker=5), label='LES (L)', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
-        self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=2, picker=5), label='UES') # 'picker=5' makes the line selectable
+        self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=2, picker=5), label='UES', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
         self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=2, picker=5), label='LES (U)', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
         self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
 
@@ -220,6 +229,7 @@ class DCISelectionWindow(QMainWindow):
         """
         apply-button callback
         """
+        self.visit.visualization_data_list[0].sphincter_length_cm = np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
         ManageXrayWindows(self.master_window, self.visit, self.patient_data)
 
 
