@@ -233,7 +233,7 @@ class XrayRegionSelectionWindow(QMainWindow):
             if checkbox.isChecked():
                 polygon = self.polygon_points.get(polygon_name)
                 if polygon:
-                    mask_filename = f"{polygon_name}_{self.visualization_data.xray_minute}_mask.jpg"
+                    mask_filename = f"{self.visualization_data.xray_minute}_{polygon_name}_mask.jpg"
                     self.__save_mask(polygon, base_path, mask_filename)
 
 
