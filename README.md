@@ -81,7 +81,7 @@ pip install -r requirements.txt
         - Tab "Connection":
           - **Host/name address**: `db`
           - **Port**: `5432`
-          - **Maintainance db**: `postgres`
+          - **Maintenance db**: `postgres`
       - Click "Save". You should now see `3drekonstruktionspeiseroehre` listed under "Servers".
       - The database `3drekonstruktion` contains the data schema for this application (initially empty).
 
@@ -94,29 +94,25 @@ python ./3drekonstruktionspeiseroehre/main.py
 - Note: Make sure the docker containers are up and running.
 
 ## Creating an Executable
-
-1. **Adjust UI File Paths in for the GUI**:
-    - Convert all relative paths to absolute paths for the UI files in your code. For example:
-      ```python
-      # Change this:
-      self.ui = uic.loadUi('./ui-files/data_window_design.ui', self)
       
-      # To this:
-      self.ui = uic.loadUi(r'C:\Users\piasc\Documents\Studium\Projekt-Achalasie\3drekonstruktionspeiseroehre\3drekonstruktionspeiseroehre\ui-files\data_window_design.ui', self)
-      ```
-      
-2. **Update Paths in `main.spec` File**:
-    - Open the `main.spec` file and adjust any paths to match the absolute paths on your system.
+1. **Update Paths in `main.spec` File**:
+    - Open the `main.spec` file and adjust any absolute paths to match the paths on your system.
 
 
-3. **Run PyInstaller**:
+2. **Run PyInstaller**:
     - Use PyInstaller to create an executable. Open a terminal and run the following command:
       ```sh
       pyinstaller --noconfirm --clean main.spec
       ```
     - Note: Adjust the path to `main.spec` if necessary.
 
-    - After the process completes, The `dist` folder will contain the executable `EsophagusVisualization.exe` with Python and all necessary dependencies.  
+    - After the PyInstaller process completes, the `main`-folder inside the newly created `dist` folder contains 
+   the executable `EsophagusVisualization.exe`, along with Python and all necessary dependencies.
+
+
+3. **Copy the UI Files to the correct location**:
+    - Locate the `ui-files` folder within `dist/main/_internal`.
+    - Copy and paste the entire `ui-files` folder directly under the `main` folder (i.e., `dist/main/ui-files`). 
 
 
 4. **Create an Installer**:

@@ -10,6 +10,8 @@ a = Analysis(
         ('C:\\Users\\piasc\\anaconda3\\envs\\esophagus-requirements4\\Lib\\site-packages\\', '.'),
         ('ui-files', 'ui-files'),
         ('media', 'media'),
+        ('logic', 'logic'),
+        ('gui', 'gui'),
         ('config.py', '.'),
         ('disclaimer.txt', '.')
     ],

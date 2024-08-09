@@ -1,0 +1,115 @@
+{
+  "CreatedByVersion": "2.0.7.1",
+  "Schedule": {
+    "ID": 1,
+    "Tags": [
+      "ID=1"
+    ],
+    "Time": "2024-08-08T11:00:00Z",
+    "Repeat": "1h",
+    "LastRun": "2024-08-07T11:00:00Z",
+    "Rule": "AllowedWeekDays=Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday",
+    "AllowedDays": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri",
+      "sat",
+      "sun"
+    ]
+  },
+  "Backup": {
+    "ID": "1",
+    "Name": "Postgres_Backup",
+    "Description": "",
+    "Tags": [],
+    "TargetURL": "file://C:\\Users\\piasc\\Documents\\Studium\\Projekt-Achalasie\\duplicati-Backup\\",
+    "DBPath": "C:\\Users\\piasc\\AppData\\Local\\Duplicati\\GHGTEBIEZU.sqlite",
+    "Sources": [
+      "%MY_DOCUMENTS%\\Studium\\Projekt-Achalasie\\Postgres-Backup\\"
+    ],
+    "Settings": [
+      {
+        "Filter": "",
+        "Name": "encryption-module",
+        "Value": "aes",
+        "Argument": null
+      },
+      {
+        "Filter": "",
+        "Name": "compression-module",
+        "Value": "zip",
+        "Argument": null
+      },
+      {
+        "Filter": "",
+        "Name": "dblock-size",
+        "Value": "50mb",
+        "Argument": null
+      },
+      {
+        "Filter": "",
+        "Name": "passphrase",
+        "Value": "achalasie",
+        "Argument": null
+      },
+      {
+        "Filter": "",
+        "Name": "retention-policy",
+        "Value": "1W:1D,4W:1W,12M:1M",
+        "Argument": null
+      }
+    ],
+    "Filters": [
+      {
+        "Order": 0,
+        "Include": false,
+        "Expression": "*.*bat"
+      },
+      {
+        "Order": 1,
+        "Include": false,
+        "Expression": "*.*yml"
+      },
+      {
+        "Order": 2,
+        "Include": false,
+        "Expression": "*xml"
+      },
+      {
+        "Order": 3,
+        "Include": false,
+        "Expression": "*json"
+      }
+    ],
+    "Metadata": {
+      "LastErrorDate": "20240330T225541Z",
+      "LastErrorMessage": "No filesets found on remote target",
+      "LastBackupDate": "20240807T110000Z",
+      "BackupListCount": "4",
+      "TotalQuotaSpace": "1001269489664",
+      "FreeQuotaSpace": "692913905664",
+      "AssignedQuotaSpace": "-1",
+      "TargetFilesSize": "14809302",
+      "TargetFilesCount": "14",
+      "TargetSizeString": "14.12 MB",
+      "SourceFilesSize": "1944783",
+      "SourceFilesCount": "5",
+      "SourceSizeString": "1.85 MB",
+      "LastBackupStarted": "20240807T110000Z",
+      "LastBackupFinished": "20240807T110001Z",
+      "LastBackupDuration": "00:00:01.5716324",
+      "LastCompactDuration": "00:00:00.0312868",
+      "LastCompactStarted": "20240807T110001Z",
+      "LastCompactFinished": "20240807T110001Z",
+      "LastRestoreDuration": "00:00:00.0880033",
+      "LastRestoreStarted": "20240331T100850Z",
+      "LastRestoreFinished": "20240331T100851Z"
+    },
+    "IsTemporary": false
+  },
+  "DisplayNames": {
+    "C:\\Users\\piasc\\Documents\\Studium\\Projekt-Achalasie\\Postgres-Backup\\": "Postgres-Backup"
+  }
+}
