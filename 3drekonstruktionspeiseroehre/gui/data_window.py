@@ -401,16 +401,6 @@ class DataWindow(QMainWindow):
             else:
                 self.ui.birthyear_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
-            if patient.year_first_diagnosis is not None:
-                self.ui.firstdiagnosis_calendar.setDate(QDate(patient.year_first_diagnosis, 1, 1))
-            else:
-                self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
-
-            if patient.year_first_symptoms is not None:
-                self.ui.firstsymptoms_calendar.setDate(QDate(patient.year_first_symptoms, 1, 1))
-            else:
-                self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
-
             if patient.gender is not None:
                 if patient.gender == "male":
                     self.ui.gender_dropdown.setCurrentIndex(1)
@@ -438,12 +428,12 @@ class DataWindow(QMainWindow):
                 self.ui.ethnicity_dropdown.setCurrentIndex(0)
 
             if patient.year_first_diagnosis is not None:
-                self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
+                self.ui.firstdiagnosis_calendar.setDate(QDate(patient.year_first_diagnosis, 1, 1))
             else:
                 self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
             if patient.year_first_symptoms is not None:
-                self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
+                self.ui.firstsymptoms_calendar.setDate(QDate(patient.year_first_symptoms, 1, 1))
             else:
                 self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
