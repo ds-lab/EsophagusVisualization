@@ -1,4 +1,4 @@
-## Restore Database
+# Restore Database
 
 If you have created backups as described in the installation instructions, you can restore the database in case it becomes corrupted. However, keep in mind that backups are created periodically (e.g., every 15 minutes), so some data loss might occur. Follow these steps to restore the database:
 
