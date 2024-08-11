@@ -1,4 +1,3 @@
-
 # The Patients Tab
 
 The Patients Tab is your primary interface for managing patient data within the database. 
@@ -73,3 +72,7 @@ You can repeat this process to add as many therapies as necessary.
 
 If you mistakenly enter a therapy, you can remove it clicking the "Previous_Therapy_Id" to select the therapy and then clicking "Delete Previous Therapy."
 
+## Tip
+
+For easier data entry, use the Tab key on your keyboard to navigate through the data fields. 
+After entering information in one field, simply press the Tab key to move to the next field.
