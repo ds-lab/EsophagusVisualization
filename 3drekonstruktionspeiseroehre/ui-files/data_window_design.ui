@@ -1381,7 +1381,7 @@ p, li { white-space: pre-wrap; }
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="diagnostics_therapy">
+      <widget class="QWidget" name="visit_data">
        <property name="enabled">
         <bool>false</bool>
        </property>
