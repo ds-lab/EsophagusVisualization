@@ -1381,12 +1381,12 @@ p, li { white-space: pre-wrap; }
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="visit_data">
+      <widget class="QWidget" name="diagnostics_therapy">
        <property name="enabled">
         <bool>false</bool>
        </property>
        <attribute name="title">
-        <string>Visit-Data</string>
+        <string>Diagnostics and Therapy</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8" rowstretch="0,1,7,0,0" columnstretch="1,1,0">
         <item row="0" column="2" rowspan="2">
