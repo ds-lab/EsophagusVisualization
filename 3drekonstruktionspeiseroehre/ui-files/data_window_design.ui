@@ -1104,7 +1104,7 @@ p, li { white-space: pre-wrap; }
            <bool>false</bool>
           </property>
           <property name="title">
-           <string>Eckardt Score at visit</string>
+           <string>Eckardt Score at visit (optional)</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_65">
            <item row="2" column="0" colspan="2">
@@ -1392,7 +1392,7 @@ p, li { white-space: pre-wrap; }
         <item row="0" column="2" rowspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="empty">
            <layout class="QGridLayout" name="gridLayout_71"/>
@@ -5078,7 +5078,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
