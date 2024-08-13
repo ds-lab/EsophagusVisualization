@@ -1834,7 +1834,7 @@ p, li { white-space: pre-wrap; }
                 </layout>
                </item>
                <item row="0" column="1" rowspan="2">
-                <widget class="QGroupBox" name="botox_complications_2">
+                <widget class="QGroupBox" name="pd_complications">
                  <property name="title">
                   <string>Complications:</string>
                  </property>
@@ -2235,7 +2235,7 @@ p, li { white-space: pre-wrap; }
                 </layout>
                </item>
                <item row="0" column="1">
-                <widget class="QGroupBox" name="botox_complications_3">
+                <widget class="QGroupBox" name="lhm_complications">
                  <property name="title">
                   <string>Complications:</string>
                  </property>
@@ -2831,7 +2831,7 @@ p, li { white-space: pre-wrap; }
                 </layout>
                </item>
                <item row="1" column="1">
-                <widget class="QGroupBox" name="botox_complications_4">
+                <widget class="QGroupBox" name="poem_complications">
                  <property name="title">
                   <string>Complications:</string>
                  </property>
