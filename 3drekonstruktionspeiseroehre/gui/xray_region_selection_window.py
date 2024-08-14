@@ -226,7 +226,6 @@ class XrayRegionSelectionWindow(QMainWindow):
         if checked_count > 0:
             img_filename = f"{self.visualization_data.xray_minute}.jpg"
             path = os.path.join(base_path, img_filename)
-            path = os.path.normpath(path).replace("\\", "/")
             xray_image = self.xray_image.astype(np.uint8)
             cv2.imwrite(path, xray_image)
         for checkbox, polygon_name in self.checkbox_names.items():
