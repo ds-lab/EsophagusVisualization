@@ -243,7 +243,6 @@ class XrayRegionSelectionWindow(QMainWindow):
         colored_image = np.zeros((self.xray_image.shape[0], self.xray_image.shape[1]), dtype=np.uint8)
         cv2.fillPoly(colored_image, [np.array(polygon, dtype=int)], 255)
         mask_path = os.path.join(base_path, mask_filename)
-        mask_path = os.path.normpath(mask_path).replace("\\", "/")
         cv2.imwrite(mask_path, colored_image)
 
 
