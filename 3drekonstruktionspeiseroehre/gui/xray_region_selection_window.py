@@ -217,7 +217,7 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         safe_visit_name = self.visit.name.replace(':', '_').replace('[', '_').replace(']', '_')
 
-        base_path = fr"C:\DataAchalasia\{safe_visit_name}\Breischluck"
+        base_path = fr"C:\DataAchalasia\{safe_visit_name}"
 
 
         if not os.path.exists(base_path):
