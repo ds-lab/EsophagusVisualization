@@ -11,6 +11,42 @@ mandatory_values_prev_therapy = ["therapy"]
 mandatory_values_visit = ["year_of_visit", "visit_type"]
 mandatory_values_medication = ["medication_use"]
 
+# Text in Dash-Server / Data-Visualization:
+animation_start = "Start animation"
+animation_stop = "Stop animation"
+select_aggregation_form = "Select aggregation form"
+label_median = "Median"
+label_mean = "Mean"
+label_minimum = "Minimum"
+label_maximum = "Maximum"
+label_hide = "Hide"
+label_barium_swallow = "Barium Swallow"
+label_manometry_data = "Manometry Data"
+label_endoflip_data = "Endoflip Data"
+label_time_0 = " Time: 0.00s"
+# The string for the metrics display is composed from several parts
+# Display will be, f. e. Metrics: tubular part (15.00 cm) [Volume*Pressure]: 3.14; lower sphincter (2.00 cm) [Volume/Pressure]: 3.14
+metrics_text_part1 = "Metrics: tubular part ("
+metrics_text_part2 = "cm) [Volume*Pressure]: "
+metrics_text_part3 = "; lower sphincter ("
+metrics_text_part4 = "cm) [Volume/Pressure]: "
+# These are the strings for the composition of the metrics for the animation
+metrics_animation_part1 = "Time: "
+metrics_animation_part2 = "s"
+metrics_animation_part3 = "Metrics: tubular part ("
+metrics_animation_part4 = "cm) [Volume*Pressure]: "
+metrics_animation_part5 = "; lower sphincter ("
+metrics_animation_part6 = "cm) [Volume/Pressure]: "
+
+# Text in figure_creator.py for data visualization:
+label_length = "Length"
+label_width = "Width"
+label_depth = "Depth"
+
+# Title of plots
+title_with_endoscopy = "3D view from X-ray, endoscopy, and manometry data"
+title_without_endoscopy = "3D view from X-ray and manometry data"
+
 
 # dash server:
 dash_port_range = (50000, 50100)  # the dash server tries to use a port inside this range

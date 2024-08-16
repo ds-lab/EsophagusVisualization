@@ -1,27 +1,35 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-
 block_cipher = None
-
 
 a = Analysis(
     ['main.py'],
-    pathex=[],
+    pathex=['C:\\Users\\piasc\\Documents\\Studium\\Projekt-Achalasie\\3drekonstruktionspeiseroehre\\3drekonstruktionspeiseroehre'],
     binaries=[],
-    datas=[('C:\\Users\\piasc\\anaconda3\\envs\\esophagus-visualization\\Lib\\site-packages', '.'),
-    ('ui-files', 'ui-files'), ('config.py', '.'), ('disclaimer.txt', '.'),
-    ('C:\\Users\\piasc\\Documents\\Studium\\Projekt-Achalasie\\3drekonstruktionspeiseroehre', 'README.md')],
-    hiddenimports=['PyQt5.QtWebEngineWidgets'],
+    datas=[
+        ('C:\\Users\\piasc\\anaconda3\\envs\\esophagus-requirements4\\Lib\\site-packages\\', '.'),
+        ('ui-files', 'ui-files'),
+        ('media', 'media'),
+        ('logic', 'logic'),
+        ('gui', 'gui'),
+        ('config.py', '.'),
+        ('disclaimer.txt', '.')
+    ],
+    hiddenimports=[
+        'PyQt6.QtWebEngineWidgets'
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['config'],
+    excludes=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
     noarchive=False,
 )
+
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
 splash = Splash(
     'media\\splash_screen.jpg',
     binaries=a.binaries,
@@ -38,7 +46,7 @@ exe = EXE(
     splash,
     [],
     exclude_binaries=True,
-    name='ÖsophagusVisualisierung',
+    name='EsophagusVisualization',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -51,6 +59,7 @@ exe = EXE(
     entitlements_file=None,
     icon='media\\icon.ico',
 )
+
 coll = COLLECT(
     exe,
     a.binaries,

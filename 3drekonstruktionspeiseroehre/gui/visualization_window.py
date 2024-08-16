@@ -54,9 +54,10 @@ class VisualizationWindow(QMainWindow):
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
-        menu_button_2 = QAction("Save Reconstruction as file", self)
-        menu_button_2.triggered.connect(self.__download_object_files)
-        self.ui.menubar.addAction(menu_button_2)
+        # Saving the Reconstruction as a file is not used, because it should be saved in the DB
+        #menu_button_2 = QAction("Save Reconstruction as file", self)
+        #menu_button_2.triggered.connect(self.__download_object_files)
+        #self.ui.menubar.addAction(menu_button_2)
         menu_button_3 = QAction("Download for Display", self)
         menu_button_3.triggered.connect(self.__download_html_file)
         self.ui.menubar.addAction(menu_button_3)
@@ -216,7 +217,7 @@ class VisualizationWindow(QMainWindow):
     def __save_reconstruction_in_db(self):
         savings = False
         for name, visit_data in self.patient_data.visit_data_dict.items():
-            match = re.search(r'Visit_ID: (\d+)', name)
+            match = re.search(r'Visit_ID_(\d+)', name)
             visit = match.group(1)
             reconstruction_bytes = pickle.dumps(visit_data)
             reconstruction = self.reconstruction_service.get_reconstruction_for_visit(visit)
@@ -241,21 +242,46 @@ class VisualizationWindow(QMainWindow):
         """
          # Prompt the user to choose a destination directory
         destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
-        # Windows uses backslashes
-        destination_directory = destination_directory.replace('/', '\\')
 
-        if destination_directory:
+        try:
+            export_successful = False
             # Iterate over each visualization and export its HTML
             for i, dash_server in enumerate(self.dash_servers):
                 figure = dash_server.current_figure
                 # Generate a unique file name for each HTML file
                 html_file_name = f"figure_{dash_server.visit.name}.html"
+                # Construct the file path by joining the destination directory and the file name
+                file_path = os.path.join(str(destination_directory), html_file_name)
                 # Write the figure to an HTML file
-                figure.write_html(destination_directory + "\\" + html_file_name)
-        # Inform the user that the export is complete
-        QMessageBox.information(self, "Export Complete", "HTML files were successfully exported.")
+                figure.write_html(file_path)
+            # Check if the file was actually created
+            if os.path.exists(file_path):
+                export_successful = True
+            else:
+                print(f"Failed to create file: {file_path}")
 
+            # Inform the user that the export is complete
+            if export_successful:
+                QMessageBox.information(
+                    self,
+                    "Export Successful",
+                    f"The files have been successfully exported to {destination_directory}.",
+                )
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Export Failed",
+                    "No files were exported. There might be an issue with the data or permissions.",
+                )
 
+        # Inform user that the export failed
+        except Exception as e:
+            print(f"An error occurred during export: {str(e)}")
+            QMessageBox.critical(
+                self,
+                "Export Error",
+                f"An error occurred during the export process: {str(e)}",
+            )
 
     def __download_stl_file(self):
         """
@@ -263,32 +289,38 @@ class VisualizationWindow(QMainWindow):
         """
 
         # Prompt the user to choose a destination directory
-        destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
-        # Windows uses backslashes
-        destination_directory = destination_directory.replace('/', '\\')
+        destination_directory = QFileDialog.getExistingDirectory(
+            self, "Select Directory"
+        )
 
-        if destination_directory:
+        if not destination_directory:
+            print("User cancelled the directory selection")
+            return  # Exit the method if no directory was selected
 
+        # Use os.path.normpath to normalize the path for the current operating system
+        destination_directory = os.path.normpath(destination_directory)
+        # # Windows uses backslashes
+        # destination_directory = destination_directory.replace("/", "\\")
+
+        try:
+            export_successful = False
             # loop through all visits.items (these are figures which are displayed in different threads)
             for i, (name, visit_data) in enumerate(self.visits.items()):
-                if "." in name:
-                    visit_name = name.split(".")[0]
-                else:
-                    visit_name = name
+                visit_name = name.split(".")[0] if "." in name else name
 
                 # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
                 for j in range(len(visit_data.visualization_data_list)):
                     # extract the name
                     xray_name = visit_data.visualization_data_list[j].xray_minute
-
                     # get the data to create the .stl-object
                     figure_x = visit_data.visualization_data_list[j].figure_x
                     figure_y = visit_data.visualization_data_list[j].figure_y
                     figure_z = visit_data.visualization_data_list[j].figure_z
 
                     # create file_name and file_path for each object
-                    file_name = visit_name + "_" + xray_name + ".stl"
-                    file_path = destination_directory + "\\" + file_name
+                    file_name = visit_name + "_" + str(xray_name) + ".stl"
+                    # Construct the file path by joining the destination directory and the file name
+                    file_path = os.path.join(str(destination_directory), file_name)
 
                     # convert the data of the figure into the correct format
                     points = np.array([figure_x.flatten(), figure_y.flatten(), figure_z.flatten()])
@@ -309,12 +341,34 @@ class VisualizationWindow(QMainWindow):
                    #     "Dies dauert einen Moment.\n"
                    # )
 
-            # Inform the user that the export is complete
-            QMessageBox.information(
-                self, "Export Successful",
-                f"The files have been successfully exported to {destination_directory}."
-            )
+            # Check if the file was actually created
+            if os.path.exists(file_path):
+                export_successful = True
+            else:
+                print(f"Failed to create file: {file_path}")
 
+            # Inform the user that the export is complete
+            if export_successful:
+                QMessageBox.information(
+                    self,
+                    "Export Successful",
+                    f"The files have been successfully exported to {destination_directory}.",
+                )
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Export Failed",
+                    "No files were exported. There might be an issue with the data or permissions.",
+                )
+
+        # Inform user that the export failed
+        except Exception as e:
+            print(f"An error occurred during export: {str(e)}")
+            QMessageBox.critical(
+                self,
+                "Export Error",
+                f"An error occurred during the export process: {str(e)}",
+            )
 
     def __download_csv_file(self):
         """
@@ -331,7 +385,12 @@ class VisualizationWindow(QMainWindow):
         title = f"overall_metrics_"
         destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save CSV Overall-Metrics File", title, "CSV Files (*.csv)")
 
-        if destination_file_path:
+        if not destination_file_path:
+            print("User cancelled the directory selection")
+            return  # Exit the method if no directory was selected
+
+        try:
+            export_successful = False
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
@@ -381,9 +440,33 @@ class VisualizationWindow(QMainWindow):
                                          round(tubular_pressure_max, 2), round(tubular_pressure_min, 2), round(tubular_pressure_mean, 2),
                                          round(sphincter_pressure_max, 2), round(sphincter_pressure_min, 2), round(sphincter_pressure_mean, 2)])
 
-            # Inform the user that the export is complete
-            QMessageBox.information(self, "Export Complete",
-                                "csv Datei wurde erfolgreich exportiert.")
+            # Check if the file was actually created
+            if os.path.exists(destination_file_path):
+                export_successful = True
+            else:
+                print(f"Failed to create file: {destination_file_path}")
+
+            if export_successful:
+                # Inform the user that the export is complete
+                QMessageBox.information(
+                    self,
+                    "Export Successful",
+                    f"The files have been successfully exported to {destination_file_path}.",
+                )
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Export Failed",
+                    "No files were exported. There might be an issue with the data or permissions.",
+                )
+        except Exception as e:
+            # Inform user that the export failed
+            print(f"An error occurred during export: {str(e)}")
+            QMessageBox.critical(
+                self,
+                "Export Error",
+                f"An error occurred during the export process: {str(e)}",
+            )
 
     def __download_timeframe_csv_file(self):
         """
@@ -393,7 +476,13 @@ class VisualizationWindow(QMainWindow):
         file_name = "filler"
         title = f"timeframe_metrics_{file_name}"
         destination_file_path_metriks, _ = QFileDialog.getSaveFileName(self, "Save CSV Timeframe-Metrics File", title, "CSV Files (*.csv)")
-        if destination_file_path_metriks:
+
+        if not destination_file_path:
+            print("User cancelled the directory selection")
+            return  # Exit the method if no directory was selected
+
+        try:
+            export_successful = False
             with open(destination_file_path_metriks, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
@@ -435,9 +524,36 @@ class VisualizationWindow(QMainWindow):
                                              round(metric_max_tubular, 2), round(metric_min_tubular, 2), round(metric_mean_tubular, 2),
                                              round(max_pressure_sphincter_per_frame, 2),round(min_pressure_sphincter_per_frame, 2),round(mean_pressure_sphincter_per_frame, 2),
                                              round(metric_max_sphincter, 2), round(metric_min_sphincter, 2), round(metric_mean_sphincter, 2)])
+            # Check if the file was actually created
+            if os.path.exists(destination_file_path):
+                export_successful = True
+            else:
+                print(f"Failed to create file: {destination_file_path}")
+
+
+            if export_successful:
                 # Inform the user that the export is complete
-                QMessageBox.information(self, "Export Complete",
-                                        "csv Datei wurde erfolgreich exportiert.")
+                QMessageBox.information(
+                    self,
+                    "Export Successful",
+                    f"The files have been successfully exported to {destination_file_path}.",
+                )
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Export Failed",
+                    "No files were exported. There might be an issue with the data or permissions.",
+                )
+
+        except Exception as e:
+            # Inform user that the export failed
+            print(f"An error occurred during export: {str(e)}")
+            QMessageBox.critical(
+                self,
+                "Export Error",
+                f"An error occurred during the export process: {str(e)}",
+            )
+
 
     def __extend_patient_data(self):
         """

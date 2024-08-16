@@ -417,8 +417,8 @@ class FigureCreator(ABC):
         figure.update_layout(scene=dict(aspectmode='data'), uirevision='constant',
                              title=dict(text=title, font=dict(size=24)), title_x=0, title_y=1,
                              margin=dict(l=20, r=20, t=30, b=20), hovermode=False)
-        figure.update_scenes(zaxis_autorange="reversed", xaxis_autorange="reversed", xaxis_title_text='Breite',
-                             yaxis_title_text='Tiefe', zaxis_title_text='Länge')
+        figure.update_scenes(zaxis_autorange="reversed", xaxis_autorange="reversed", xaxis_title_text=config.label_width,
+                             yaxis_title_text=config.label_depth, zaxis_title_text=config.label_length)
         return figure
 
     @staticmethod

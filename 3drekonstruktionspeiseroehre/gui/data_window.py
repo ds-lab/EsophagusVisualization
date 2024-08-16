@@ -309,8 +309,8 @@ class DataWindow(QMainWindow):
         self.ui.selected_patient_text_patientview.setText(output)
         self.ui.selected_patient_text_visitview.setText(output)
         self.ui.selected_patient_text_visitdataview.setText(output)
-        # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
-        self.ui.selected_visit_text_visitview.setText("please select a visit")
+        # Set the text of the select visit to "please select or add a visit" until a visit for the patient is selected
+        self.ui.selected_visit_text_visitview.setText("please select or add a visit")
         self.ui.selected_visit_text_visitdataview.setText("")
         # Set the text of the select previous therapy to "" until a previous therapy is selected
         self.ui.selected_therapy_text_patientview.setText("")
@@ -375,12 +375,12 @@ class DataWindow(QMainWindow):
             self.__init_visits_of_patient()
 
             self.selected_patient = None
-            self.ui.selected_patient_text_patientview.setText("please select a patient")
-            self.ui.selected_patient_text_visitview.setText("please select a patient")
-            self.ui.selected_patient_text_visitdataview.setText("please select a patient")
+            self.ui.selected_patient_text_patientview.setText("please select or add a patient")
+            self.ui.selected_patient_text_visitview.setText("please select or add a patient")
+            self.ui.selected_patient_text_visitdataview.setText("please select or add a patient")
             # Set the text of the selected visit to "please select a visit"
-            self.ui.selected_visit_text_visitview.setText("please select a visit")
-            self.ui.selected_visit_text_visitdataview.setText("please select a visit")
+            self.ui.selected_visit_text_visitview.setText("please select or add a visit")
+            self.ui.selected_visit_text_visitdataview.setText("please select or add a visit")
             # Set the text of the select previous therapy to ""
             self.ui.selected_therapy_text_patientview.setText("")
             # Set the text for the manometry data
@@ -400,16 +400,6 @@ class DataWindow(QMainWindow):
                 self.ui.birthyear_calendar.setDate(QDate(patient.birth_year, 1, 1))
             else:
                 self.ui.birthyear_calendar.setDate(QDate(config.min_value_year, 1, 1))
-
-            if patient.year_first_diagnosis is not None:
-                self.ui.firstdiagnosis_calendar.setDate(QDate(patient.year_first_diagnosis, 1, 1))
-            else:
-                self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
-
-            if patient.year_first_symptoms is not None:
-                self.ui.firstsymptoms_calendar.setDate(QDate(patient.year_first_symptoms, 1, 1))
-            else:
-                self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
             if patient.gender is not None:
                 if patient.gender == "male":
@@ -438,12 +428,12 @@ class DataWindow(QMainWindow):
                 self.ui.ethnicity_dropdown.setCurrentIndex(0)
 
             if patient.year_first_diagnosis is not None:
-                self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
+                self.ui.firstdiagnosis_calendar.setDate(QDate(patient.year_first_diagnosis, 1, 1))
             else:
                 self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
             if patient.year_first_symptoms is not None:
-                self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
+                self.ui.firstsymptoms_calendar.setDate(QDate(patient.year_first_symptoms, 1, 1))
             else:
                 self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
@@ -487,9 +477,9 @@ class DataWindow(QMainWindow):
         self.__init_previous_therapies()
         self.__init_visits_of_patient()
 
-        # Set the text of the select visit to "please select a visit" until a visit for the patient is selected
-        self.ui.selected_visit_text_visitview.setText("please select a visit")
-        self.ui.selected_visit_text_visitdataview.setText("please select a visit")
+        # Set the text of the select visit to "please select or add a visit" until a visit for the patient is selected
+        self.ui.selected_visit_text_visitview.setText("please select or add a visit")
+        self.ui.selected_visit_text_visitdataview.setText("please select or add a visit")
         # Set the text of the select previous therapy to "" until a previous therapy is selected
         self.ui.selected_therapy_text_patientview.setText("")
         # Set the text for the manometry data
@@ -1524,8 +1514,8 @@ class DataWindow(QMainWindow):
 
         patient = self.patient_service.get_patient(self.selected_patient)
         visit = self.visit_service.get_visit(self.selected_visit)
-        visit_name = "[Visit_ID: " + str(
-            self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
+        visit_name = "[Visit_ID_" + str(
+            self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type.replace(" ", "") + "_" + str(visit.year_of_visit)
 
         if not reconstruction or reconstruction and not ShowMessage.load_saved_reconstruction():
 
@@ -1540,7 +1530,6 @@ class DataWindow(QMainWindow):
                     visualization_data = VisualizationData()
                     visualization_data.xray_minute = file.minute_of_picture
                     visualization_data.xray_file = BytesIO(file.file)
-
                     pressure_matrix = pickle.loads(manometry_file.pressure_matrix)
                     visualization_data.pressure_matrix = pressure_matrix
 
