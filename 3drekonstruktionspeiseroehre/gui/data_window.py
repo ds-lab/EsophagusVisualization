@@ -1514,8 +1514,8 @@ class DataWindow(QMainWindow):
 
         patient = self.patient_service.get_patient(self.selected_patient)
         visit = self.visit_service.get_visit(self.selected_visit)
-        visit_name = "[Visit_ID: " + str(
-            self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
+        visit_name = "[Visit_ID_" + str(
+            self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type.replace(" ", "") + "_" + str(visit.year_of_visit)
 
         if not reconstruction or reconstruction and not ShowMessage.load_saved_reconstruction():
 

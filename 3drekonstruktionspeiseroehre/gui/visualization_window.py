@@ -438,6 +438,13 @@ class VisualizationWindow(QMainWindow):
                                          round(min_metric_sphincter, 2),
                                          round(esophagus_length, 2)])
 
+            # Check if the file was actually created
+            if os.path.exists(destination_file_path):
+                export_successful = True
+            else:
+                print(f"Failed to create file: {destination_file_path}")
+
+
             if export_successful:
                 # Inform the user that the export is complete
                 QMessageBox.information(
