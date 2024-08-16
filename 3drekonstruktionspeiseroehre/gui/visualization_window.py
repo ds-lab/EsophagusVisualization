@@ -328,13 +328,14 @@ class VisualizationWindow(QMainWindow):
         Callback for the download button to store a overall csv-file of the metrics of all loaded visualizations
         """
         # Prompt the user to choose a destination path for the csv file
-        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save CSV Overall-Metrics File", "", "CSV Files (*.csv)")
+        title = f"overall_metrics_"
+        destination_file_path, _ = QFileDialog.getSaveFileName(self, "Save CSV Overall-Metrics File", title, "CSV Files (*.csv)")
 
         if destination_file_path:
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
-                    ["Id", "Breischluckbild",
+                    ["Id",
                      "Volume Tubular", "Volume Sphincter", "Esophagus Length (cm)",
                      "Mean over all (Volume * max(tubular pressure from frame))",
                      "Mean over all (Volume * min(tubular pressure from frame))",
@@ -355,7 +356,6 @@ class VisualizationWindow(QMainWindow):
                     # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
                     for j in range(len(visit_data.visualization_data_list)):
                         metrics = visit_data.visualization_data_list[j].figure_creator.get_metrics()
-                        xray_name = visit_data.visualization_data_list[j].xray_filename.split("/")[-1].split(".")[0]
                         tubular_metric_mean = metrics[4][2]
                         tubular_metric_min = metrics[4][1]
                         tubular_metric_max = metrics[4][0]
@@ -374,7 +374,7 @@ class VisualizationWindow(QMainWindow):
                             j].figure_creator.get_esophagus_full_length_cm()
 
                         # Write metrics data to CSV file
-                        writer.writerow([visit_name.encode("utf-8"), xray_name,
+                        writer.writerow([visit_name.encode("utf-8"),
                                          round(volume_tubular, 2), round(volume_sphincter, 2), round(esophagus_length, 2),
                                          round(tubular_metric_max, 2), round(tubular_metric_min, 2), round(tubular_metric_mean, 2),
                                          round(sphincter_metric_max, 2), round(sphincter_metric_min, 2), round(sphincter_metric_mean, 2),
@@ -389,12 +389,15 @@ class VisualizationWindow(QMainWindow):
         """
         Callback for the download button to store a timeframe dependent csv-file of the metrics of all loaded visualizations
         """
-        destination_file_path_metriks, _ = QFileDialog.getSaveFileName(self, "Save CSV Timeframe-Metrics File", "", "CSV Files (*.csv)")
+
+        file_name = "filler"
+        title = f"timeframe_metrics_{file_name}"
+        destination_file_path_metriks, _ = QFileDialog.getSaveFileName(self, "Save CSV Timeframe-Metrics File", title, "CSV Files (*.csv)")
         if destination_file_path_metriks:
             with open(destination_file_path_metriks, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
-                    ["Id", "Volume Tubular", "Volume Sphincter", "Frame", "Max tubular pressure in frame", "Min tubular pressure in frame", "Mean tubular pressure in frame",
+                    ["Id", "Frame", "Volume Tubular", "Volume Sphincter", "Max tubular pressure in frame", "Min tubular pressure in frame", "Mean tubular pressure in frame",
                      "Volume * max(tubular pressure from frame)", "Volume * min(tubular pressure from frame)", "Volume * mean(tubular pressure from frame)",
                      "Max sphincter pressure in frame", "Min sphincter pressure in frame", "Mean sphincter pressure in frame",
                      "Volume / max(sphincter pressure from frame)", "Volume / min(sphincter pressure from frame)", "Volume / mean(sphincter pressure from frame)"])
