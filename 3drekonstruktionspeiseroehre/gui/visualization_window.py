@@ -215,25 +215,38 @@ class VisualizationWindow(QMainWindow):
             )
 
     def __save_reconstruction_in_db(self):
-        savings = False
-        for name, visit_data in self.patient_data.visit_data_dict.items():
-            match = re.search(r'Visit_ID_(\d+)', name)
-            visit = match.group(1)
-            reconstruction_bytes = pickle.dumps(visit_data)
-            reconstruction = self.reconstruction_service.get_reconstruction_for_visit(visit)
-            if not reconstruction or reconstruction and ShowMessage.to_update_for_visit("3d reconstruction"):
-                reconstruction_dict = {'visit_id': visit,
-                                       'reconstruction_file': reconstruction_bytes}
-                if reconstruction:
-                    self.reconstruction_service.update_reconstruction(reconstruction.reconstruction_id, reconstruction_dict)
+        try:
+            savings = False
+            for name, visit_data in self.patient_data.visit_data_dict.items():
+                match = re.search(r'Visit_ID_(\d+)', name)
+                visit = match.group(1)
+                reconstruction_bytes = pickle.dumps(visit_data)
+                reconstruction = self.reconstruction_service.get_reconstruction_for_visit(visit)
+                if not reconstruction or reconstruction and ShowMessage.to_update_for_visit("3d reconstruction(s)", name):
+                    reconstruction_dict = {'visit_id': visit,
+                                           'reconstruction_file': reconstruction_bytes}
+                    if reconstruction:
+                        self.reconstruction_service.update_reconstruction(reconstruction.reconstruction_id, reconstruction_dict)
+                    else:
+                        self.reconstruction_service.create_reconstruction(reconstruction_dict)
+                if self.reconstruction_service.get_reconstruction_for_visit(visit):
+                    savings = True
+
+                # Inform the user about the saving
+                if savings:
+                    QMessageBox.information(
+                        self, "Saving done",
+                        f"Reconstruction(s) for the visit {name} has/have been saved in the database."
+                    )
                 else:
-                    self.reconstruction_service.create_reconstruction(reconstruction_dict)
-                savings = True
-        # Inform the user that the export is complete
-        if savings:
+                    QMessageBox.information(
+                        self, "Saving failed",
+                        f"The saving of the reconstruction(s) for the visit {name} to the database failed."
+                    )
+        except Exception as e:
             QMessageBox.information(
-                self, "Saving done",
-                f"Reconstruction(s) has/have been saved in the database."
+                self, "Saving failed",
+                f"The saving of the reconstruction(s) for the visit {name}  to the database failed."
             )
 
     def __download_html_file(self):
@@ -332,14 +345,6 @@ class VisualizationWindow(QMainWindow):
 
                     # Save Object for 3d printing
                     pv.save_meshio(file_path, surface)
-
-                    # Inform the user that the export can take a while
-                    # Not possible like this, because if user does not click on "ok" next message is not shown
-                   # QMessageBox.information(
-                   #     self, "Bitte warten",
-                   #     f"Export von {file_name}\n"
-                   #     "Dies dauert einen Moment.\n"
-                   # )
 
             # Check if the file was actually created
             if os.path.exists(file_path):
