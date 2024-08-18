@@ -33,10 +33,6 @@ class PositionSelectionWindow(QMainWindow):
         self.n = n
         self.xray_polygon = xray_polygon
         self.next_window = next_window
-        sensor_names = ["P" + str(22 - i) for i in range(22)]
-        self.ui.first_combobox.addItems(sensor_names)
-        self.ui.second_combobox.addItems(sensor_names)
-        self.ui.second_combobox.setCurrentIndex(21)
         self.ui.apply_button.clicked.connect(self.__apply_button_clicked)
         self.ui.first_sensor_button.clicked.connect(self.__first_sensor_button_clicked)
         self.ui.second_sensor_button.clicked.connect(self.__second_sensor_button_clicked)
@@ -138,56 +134,44 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         if self.__are_necessary_positions_set():
-            if self.ui.first_combobox.currentIndex() != self.ui.second_combobox.currentIndex():
-                if self.__is_sensor_order_correct():
-                    if not self.__is_any_position_outside_polygon():
-                        self.ui.apply_button.setDisabled(True)
-                        if self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex():
-                            self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
-                            self.visualization_data.first_sensor_index = self.ui.first_combobox.currentIndex()
-                            self.visualization_data.second_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1]))
-                            self.visualization_data.second_sensor_index = self.ui.second_combobox.currentIndex()
-                        else:
-                            self.visualization_data.first_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1]))
-                            self.visualization_data.first_sensor_index = self.ui.second_combobox.currentIndex()
-                            self.visualization_data.second_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
-                            self.visualization_data.second_sensor_index = self.ui.first_combobox.currentIndex()
-                        self.visualization_data.sphincter_upper_pos = (
-                            int(self.sphincter_upper_pos[0]), int(self.sphincter_upper_pos[1]))
-                        self.visualization_data.esophagus_exit_pos = (
-                            int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1]))
-                        self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
-                        if self.visualization_data.endoflip_screenshot:
-                            self.visualization_data.endoflip_pos = (
-                            int(self.endoflip_pos[0]), int(self.endoflip_pos[1]))
+            if self.__is_sensor_order_correct():
+                if not self.__is_any_position_outside_polygon():
+                    self.ui.apply_button.setDisabled(True)
+                    self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
+                    self.visualization_data.second_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1]))
+                    self.visualization_data.sphincter_upper_pos = (
+                        int(self.sphincter_upper_pos[0]), int(self.sphincter_upper_pos[1]))
+                    self.visualization_data.esophagus_exit_pos = (
+                        int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1]))
+                    if self.visualization_data.endoflip_screenshot:
+                        self.visualization_data.endoflip_pos = (
+                        int(self.endoflip_pos[0]), int(self.endoflip_pos[1]))
 
-                        if len(self.visualization_data.endoscopy_files) > 0:
-                            self.visualization_data.endoscopy_start_pos = \
-                                (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1]))
+                    if len(self.visualization_data.endoscopy_files) > 0:
+                        self.visualization_data.endoscopy_start_pos = \
+                            (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1]))
 
-                        # If there are more visualizations in this visit continue with the next xray selection
-                        if self.next_window:
-                            self.master_window.switch_to(self.next_window)
-                        # Handle Endoscopy annotation
-                        elif len(self.visualization_data.endoscopy_files) > 0:
-                            endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
-                                                                                  self.patient_data, self.visit)
-                            self.master_window.switch_to(endoscopy_selection_window)
-                            self.close()
-                        # Else show the visualization
-                        else:
-                            # Add new visit to patient data
-                            self.patient_data.add_visit(self.visit.name, self.visit)
-                            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
-                            self.master_window.switch_to(visualization_window)
-                            self.close()
-
+                    # If there are more visualizations in this visit continue with the next xray selection
+                    if self.next_window:
+                        self.master_window.switch_to(self.next_window)
+                    # Handle Endoscopy annotation
+                    elif len(self.visualization_data.endoscopy_files) > 0:
+                        endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
+                                                                                self.patient_data, self.visit)
+                        self.master_window.switch_to(endoscopy_selection_window)
+                        self.close()
+                    # Else show the visualization
                     else:
-                        QMessageBox.critical(self, "Error", "The positions must be within the previously marked outline of the esophagus.")
+                        # Add new visit to patient data
+                        self.patient_data.add_visit(self.visit.name, self.visit)
+                        visualization_window = VisualizationWindow(self.master_window, self.patient_data)
+                        self.master_window.switch_to(visualization_window)
+                        self.close()
+
                 else:
-                    QMessageBox.critical(self, "Error", "The positions of the sensors seem to be swapped.")
+                    QMessageBox.critical(self, "Error", "The positions must be within the previously marked outline of the esophagus.")
             else:
-                QMessageBox.critical(self, "Error", "Please select two different sensors.")
+                QMessageBox.critical(self, "Error", "The positions of the sensors seem to be swapped.")
         else:
             QMessageBox.critical(self, "Error", "Please enter all required items into the graph.")
 
@@ -231,10 +215,7 @@ class PositionSelectionWindow(QMainWindow):
         checks for correct sensor order
         :return: True or False
         """
-        return (self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex()
-                and self.first_sensor_pos[1] > self.second_sensor_pos[1]) \
-            or (self.ui.first_combobox.currentIndex() < self.ui.second_combobox.currentIndex()
-                and self.first_sensor_pos[1] < self.second_sensor_pos[1])
+        return self.first_sensor_pos[1] > self.second_sensor_pos[1]
 
     def __is_any_position_outside_polygon(self):
         """

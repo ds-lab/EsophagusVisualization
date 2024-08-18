@@ -1,5 +1,5 @@
 from gui.master_window import MasterWindow
-from PyQt6.QtWidgets import QMainWindow
+from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from gui.rectangle_selector import CustomRectangleSelector
@@ -72,24 +72,30 @@ class DCISelectionWindow(QMainWindow):
         time_in_s = selected_data.shape[1] / self.pressure_matrix_high_res.shape[1] * (self.visualization_data.pressure_matrix.shape[1] / config.csv_values_per_second)
 
         dci_value = self.calculateDCI(selected_data, height_in_cm, time_in_s)
-        les_height = np.round((self.lower_les.get_y_position() - self.upper_les.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
-        esophagus_length = np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
+        les_height = self.get_les_height()
+        esophagus_length = self.get_esophagus_length()
         self.figure_canvas.draw()
         self.ui.DCI.setText(f"{dci_value} mmHg·s·cm")
         self.ui.heightLabelLES.setText(f"{les_height} cm")
         self.ui.heightLabelEsophagus.setText(f"{esophagus_length} cm")
-
+      
 
     def __onselect(self, eclick, erelease):
         # eclick and erelease are the press and release events
         x1, y1 = int(eclick.xdata), int(eclick.ydata)
         x2, y2 = int(erelease.xdata), int(erelease.ydata)
         self.__update_DCI_value(x1, x2, y1, y2)
+
+    def get_les_height(self):
+        return np.round((self.lower_les.get_y_position() - self.upper_les.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
+    
+    def get_esophagus_length(self):
+        return np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
         
 
     def on_lines_dragged(self):
-        les_height = np.round((self.lower_les.get_y_position() - self.upper_les.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
-        esophagus_length = np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
+        les_height = self.get_les_height()
+        esophagus_length = self.get_esophagus_length()
         self.ui.heightLabelLES.setText(f"{les_height} cm")
         self.ui.heightLabelEsophagus.setText(f"{esophagus_length} cm")
 
@@ -121,10 +127,12 @@ class DCISelectionWindow(QMainWindow):
         self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=2, picker=5), label='UES', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
         self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=2, picker=5), label='LES (U)', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
         self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
-        print(f"sensor in middle of LES: {self.find_middle_sensor_in_les()}")
-        print(f"first sensor above UES: {self.find_first_sensor_above_ues()}")
-        self.ui.second_combobox.setCurrentIndex(self.find_middle_sensor_in_les())
-        self.ui.first_combobox.setCurrentIndex(self.find_first_sensor_above_ues())
+        first_sensor_pos = self.find_first_sensor_above_ues()
+        second_sensor_pos = self.find_middle_sensor_in_les()
+        self.ui.second_combobox.setCurrentIndex(second_sensor_pos)
+        self.ui.first_combobox.setCurrentIndex(first_sensor_pos)
+        self.visualization_data.first_sensor_index = first_sensor_pos
+        self.visualization_data.second_sensor_index = second_sensor_pos
 
     def __reset_button_clicked(self):
         """
@@ -215,14 +223,23 @@ class DCISelectionWindow(QMainWindow):
 
         self.figure_canvas.draw()
         self.__initialize_plot_analysis()
-        print(self.pressure_matrix_high_res.shape)
 
 
     def __apply_button_clicked(self):
         """
         apply-button callback
         """
-        self.visit.visualization_data_list[0].sphincter_length_cm = np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
+        self.visit.visualization_data_list[0].sphincter_length_cm = self.get_les_height()
+        if self.ui.first_combobox.currentIndex() != self.ui.second_combobox.currentIndex():
+            if self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex():
+                self.visit.visualization_data_list[0].first_sensor_index = self.ui.first_combobox.currentIndex()
+                self.visit.visualization_data_list[0].second_sensor_index = self.ui.second_combobox.currentIndex()
+            else:
+                self.visit.visualization_data_list[0].first_sensor_index = self.ui.second_combobox.currentIndex()
+                self.visit.visualization_data_list[0].second_sensor_index = self.ui.first_combobox.currentIndex()
+        else:
+            QMessageBox.critical(self, "Error", "Please select two different sensors.")
+        print(f"spincter length: {self.visit.visualization_data_list[0].sphincter_length_cm}, first sensor: {self.visit.visualization_data_list[0].first_sensor_index}, second sensor: {self.visit.visualization_data_list[0].second_sensor_index}")
         ManageXrayWindows(self.master_window, self.visit, self.patient_data)
 
 
