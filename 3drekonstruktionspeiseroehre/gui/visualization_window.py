@@ -329,7 +329,7 @@ class VisualizationWindow(QMainWindow):
                 writer.writerow(
                     ["Id", "Barium Swallow Image", "Tubular Index (Mean)", "Sphincter Index (Mean)", "Volume Tubular",
                      "Volume Sphincter", "Pressure Tubular (Max)", "Pressure Sphincter (Max)", "Index Tubular (Max)",
-                     "Index Sphincter (Max)", "Index Tubular (Min)", "Index Sphincter (Min)", "Esophagus Length (cm)"])
+                     "Index Sphincter (Max)", "Index Tubular (Min)", "Index Sphincter (Min)", "Esophagus Length (cm)", "Esophageal Pressurization Index"])
 
                 # loop through all visits.items (these are figures which are displayed in different threads)
                 for i, (name, visit_data) in enumerate(self.visits.items()):
@@ -354,6 +354,7 @@ class VisualizationWindow(QMainWindow):
                         min_metric_sphincter = visit_data.visualization_data_list[j].figure_creator.get_metrics()[9]
                         esophagus_length = visit_data.visualization_data_list[
                             j].figure_creator.get_esophagus_full_length_cm()
+                        esophageal_pressurization_index = visit_data.visualization_data_list[j].figure_creator.get_metrics()[10]
 
                         # Write metrics data to CSV file
                         writer.writerow([visit_name, xray_name, round(np.mean(tubular_metric), 2),
@@ -362,7 +363,7 @@ class VisualizationWindow(QMainWindow):
                                          round(max_pressure_sphincter, 2), round(max_metric_tubular, 2),
                                          round(max_metric_sphincter, 2), round(min_metric_tubular, 2),
                                          round(min_metric_sphincter, 2),
-                                         round(esophagus_length, 2)])
+                                         round(esophagus_length, 2), round(esophageal_pressurization_index, 2)])
 
             # Inform the user that the export is complete
             QMessageBox.information(self, "Export Complete", "CSV file has been successfully exported.")

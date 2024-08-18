@@ -153,7 +153,7 @@ class DCISelectionWindow(QMainWindow):
 
         # Define the colors and positions for the color map
         colors = [(16/255, 1/255, 255/255), (5/255, 252/255, 252/255), (19/255, 254/255, 3/255), 
-                (252/255, 237/255, 3/255), (255/255, 0/255, 0/255), (91/255, 5/255, 132/255)] # replace with values from config.py
+                (252/255, 237/255, 3/255), (255/255, 0/255, 0/255), (91/255, 5/255, 132/255)]
         positions = [0, 0.123552143573761, 0.274131298065186, 0.5, 0.702702701091766, 1]
 
         # Create the color map
@@ -239,7 +239,8 @@ class DCISelectionWindow(QMainWindow):
                 self.visit.visualization_data_list[0].second_sensor_index = self.ui.first_combobox.currentIndex()
         else:
             QMessageBox.critical(self, "Error", "Please select two different sensors.")
-        print(f"spincter length: {self.visit.visualization_data_list[0].sphincter_length_cm}, first sensor: {self.visit.visualization_data_list[0].first_sensor_index}, second sensor: {self.visit.visualization_data_list[0].second_sensor_index}")
+        self.visit.visualization_data_list[0].esophageal_pressurization_index = float(self.ui.DCI.text().split()[0])
+        print(f"DCI: {self.visit.visualization_data_list[0].esophageal_pressurization_index}")
         ManageXrayWindows(self.master_window, self.visit, self.patient_data)
 
 

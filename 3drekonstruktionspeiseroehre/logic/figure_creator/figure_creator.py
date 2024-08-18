@@ -751,7 +751,7 @@ class FigureCreator(ABC):
 
         return metric_tubular, metric_sphincter, volume_sum_tubular, volume_sum_sphincter, \
             max_pressure_tubular, max_pressure_sphincter, max(metric_tubular), max(metric_sphincter), min(
-            metric_tubular), min(metric_sphincter)
+            metric_tubular), min(metric_sphincter), visualization_data.esophageal_pressurization_index
 
     @staticmethod
     def colored_vertical_endoflip_tables_and_colors(data):
