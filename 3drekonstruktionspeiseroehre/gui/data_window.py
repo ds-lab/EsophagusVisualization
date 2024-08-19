@@ -401,16 +401,6 @@ class DataWindow(QMainWindow):
             else:
                 self.ui.birthyear_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
-            if patient.year_first_diagnosis is not None:
-                self.ui.firstdiagnosis_calendar.setDate(QDate(patient.year_first_diagnosis, 1, 1))
-            else:
-                self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
-
-            if patient.year_first_symptoms is not None:
-                self.ui.firstsymptoms_calendar.setDate(QDate(patient.year_first_symptoms, 1, 1))
-            else:
-                self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
-
             if patient.gender is not None:
                 if patient.gender == "male":
                     self.ui.gender_dropdown.setCurrentIndex(1)
@@ -438,12 +428,12 @@ class DataWindow(QMainWindow):
                 self.ui.ethnicity_dropdown.setCurrentIndex(0)
 
             if patient.year_first_diagnosis is not None:
-                self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
+                self.ui.firstdiagnosis_calendar.setDate(QDate(patient.year_first_diagnosis, 1, 1))
             else:
                 self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
             if patient.year_first_symptoms is not None:
-                self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
+                self.ui.firstsymptoms_calendar.setDate(QDate(patient.year_first_symptoms, 1, 1))
             else:
                 self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
@@ -1524,8 +1514,8 @@ class DataWindow(QMainWindow):
 
         patient = self.patient_service.get_patient(self.selected_patient)
         visit = self.visit_service.get_visit(self.selected_visit)
-        visit_name = "[Visit_ID: " + str(
-            self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type + "_" + str(visit.year_of_visit)
+        visit_name = "[Visit_ID_" + str(
+            self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type.replace(" ", "") + "_" + str(visit.year_of_visit)
 
         if not reconstruction or reconstruction and not ShowMessage.load_saved_reconstruction():
 
