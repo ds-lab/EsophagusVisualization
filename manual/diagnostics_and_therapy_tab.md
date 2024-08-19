@@ -4,7 +4,7 @@ After selecting a patient and a visit, this tab allows you to input diagnostic d
 
 ![Diagnostics_and_Therapy_Tab](/manual_images/diagnostics_and_therapy_tab.jpg)
 
-In the upper right corner, you can enter therapy data if the visit type is set to "Therapy." Otherwise, this field will remain empty.
+In the upper right corner, you can enter therapy data if the visit type is set to "Therapy". Otherwise, this field will remain empty.
 
 In the lower half of the window, you can input diagnostic data related to manometry, timed barium esophagogram (TBE or barium swallow), esophagogastroduodenoscopy (EGD), impedance planimetry (EndoFLIP), endosonography, and upload any related files.
 
@@ -84,4 +84,42 @@ The image viewer on the right will show previews of the images you uploaded. To 
 
 If you upload incorrect images or videos, simply repeat the upload process to correct it.
 
+## Therapy Data
+
+If "Therapy" is selected as the visit type, you can enter data for the chosen therapy (Botox, Pneumatic Dilation, LHM, or POEM) in the field located in the upper right corner of the Diagnostics & Therapy Tab. If "Initial Diagnostics" or "Follow-Up Diagnostics" is selected as the visit type, this field will remain empty.
+
+**General Instructions**: Fill out all the therapy data you are able or wish to provide, along with any complications associated with the therapy. Once complete, click the "Add Therapy" button.
+
+## Botox
+
+![Botox](/manual_images/botox.jpg)
+
+A patient can receive multiple Botox injections at different heights during a single visit. Therefore, it is possible to add multiple Botox injections, including their Botox units and injection heights, to a single "Botox Therapy."
+
+**Note**: After adding all the Botox injections, click the "Add Botox Therapy" button to save the selected complications (if any) along with the therapy.
+
+To delete all Botox injections and the associated complications in case of erroneous data entry, use the "Delete Botox Therapy" button.
+
+## Pneumatic Dilation
+
+![Pneumatic Dilation](/manual_images/pneumatic_dilation.jpg)
+
+Provide all the relevant attributes for Pneumatic Dilation and any complications associated with this therapy.   
+When finished, click the "Add / Update Pneumatic Dilation" button. This button can also be used to update any incorrect data.
+
+## LHM
+
+![LHM](/manual_images/lhm.jpg)
+
+Provide all the relevant attributes for LHM and any complications associated with this therapy.  
+The operation duration is entered in hh:mm format but is converted to minutes in the database.  
+When finished, click the "Add / Update LHM" button. This button can also be used to update any incorrect data.
+
+## POEM
+
+![POEM](/manual_images/poem.jpg)
+
+Enter all relevant attributes for POEM and any complications associated with this therapy.  
+The procedure duration is entered in hh:mm format but is converted to minutes in the database.  
+When finished, click the "Add / Update POEM" button. This button can also be used to update any incorrect data.
 
