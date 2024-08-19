@@ -71,24 +71,30 @@ class SensorCenterPathWindow(QMainWindow):
         # remove duplication from creation_thread
         #
 
-        # Calculate a path through the esophagus along the xray image
-        self.cal_sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(self.visualization_data)
-        # Extract information necessary for reconstruction and metrics from input
+        if self.visualization_data.sensor_path is not None:
+            # If sensor path was created and/or adapted use that one
+            self.cal_sensor_path = self.visualization_data.sensor_path
+            print("TEST WHEN ACTIVATED")
+        else:
+            # Calculate a path through the esophagus along the xray image (sensor path)
+            self.cal_sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(self.visualization_data)
+
+        # Calculate center path
         self.cal_widths, self.cal_centers, self.cal_slopes, self.cal_offset_top = FigureCreator.calculate_widths_centers_slope_offset(self.visualization_data, self.cal_sensor_path)
         self.cal_centers = np.array(self.cal_centers)
-        # Visualize center path as colored Line
+
+        # Visualize sensor/center path as colored Line
         self.sens_drawn = Line2D(self.cal_sensor_path[:,1], self.cal_sensor_path[:,0], color='orange')
-        """
         self.center_drawn = Line2D(self.cal_centers[:, 1], self.cal_centers[:, 0], color='blue')
         self.plot_ax.add_line(self.center_drawn)
-        """
         self.plot_ax.add_line(self.sens_drawn)
+
         # self.sensor_path = [(yx[1], yx[0]) for yx in self.cal_sensor_path] # In format [(x,y)]
         self.center_path = [(yx[1], yx[0]) for yx in self.cal_centers]  # In format [(x,y)]
 
         # Make visualized center path adaptable for user
         self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color='red'))
-        self.selector.verts = self.center_path[::20]
+        self.selector.verts = self.center_path[::15]
 
     def __onselect(self, verts):
         """
@@ -123,7 +129,7 @@ class SensorCenterPathWindow(QMainWindow):
         # Save the new center path in the visualization_data
         if len(self.center_path) > 2:
             if len(self.center_path) < len(self.cal_centers):
-                self.visualization_data.center_path = FigureCreator.interpolate_center_path(path=self.center_path, number=len(self.cal_centers))
+                self.visualization_data.center_path = FigureCreator.interpolate_path(path=self.center_path, number=len(self.cal_centers))
             elif len(self.center_path) > len(self.cal_centers):
                 factor = len(self.center_path) / len(self.cal_centers)
                 indices = np.arange(0, len(self.center_path), factor, dtype=int)
@@ -137,22 +143,8 @@ class SensorCenterPathWindow(QMainWindow):
         self.visualization_data.widths = self.cal_widths
         self.visualization_data.slopes = self.cal_slopes
         self.visualization_data.offset = self.cal_offset_top
-        #self.visualization_data.center_path = np.array(self.cal_centers, dtype=np.int32)
         self.visualization_data.sensor_path = np.array(self.cal_sensor_path, dtype=np.int32)
-        """
-        if len(self.sensor_path) > 2:
-            if len(self.sensor_path) < len(self.cal_sensor_path):
-                self.visualization_data.sensor_path = FigureCreator.interpolate_center_path(path=self.sensor_path,
-                                                                                            number=len(self.cal_sensor_path))
-            elif len(self.sensor_path) > len(self.cal_sensor_path):
-                factor = len(self.sensor_path) / len(self.cal_sensor_path)
-                indices = np.arange(0, len(self.sensor_path), factor, dtype=int)
-                self.visualization_data.sensor_path = self.sensor_path[indices]
-            else:
-                self.visualization_data.sensor_path = self.sensor_path
-        self.visualization_data.sensor_path = np.array([(yx[1], yx[0]) for yx in self.visualization_data.sensor_path],
-                                                       dtype=np.int32)
-        """
+
         esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(self.visualization_data.sensor_path, 0,
                                                                                self.visualization_data.esophagus_exit_pos)
         esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(self.visualization_data.sensor_path,
@@ -180,18 +172,6 @@ class SensorCenterPathWindow(QMainWindow):
                                         QMessageBox.StandardButton.No)
             if reply == QMessageBox.StandardButton.No:
                 return  # Exit the method if the user chooses not to proceed
-
-        # Plot new calculated center path (Just for debugging)
-        """
-        plt.figure()
-        plt.plot(self.visualization_data.center_path[:, 1], self.visualization_data.center_path[:, 0], marker='o')
-        plt.xlabel('X')
-        plt.xlim(0, 1000)
-        plt.ylim(0, 1000)
-        plt.ylabel('Y')
-        plt.title('Path Visualization')
-        plt.savefig('path_visualization.png')
-        """
 
         # If there are more visualizations in this visit continue with the next xray selection
         if self.next_window:

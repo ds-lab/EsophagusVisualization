@@ -898,7 +898,7 @@ class FigureCreator(ABC):
         return surface_color_collect
 
     @staticmethod
-    def interpolate_center_path(path, number):
+    def interpolate_path(path, number):
         # This function makes the center path one connective line.
         # This is needed because it might happen that the center path
         # is not fully connected and has space between coordinates.
