@@ -201,7 +201,7 @@ class DataWindow(QMainWindow):
 
         self.widget_names = {
             "Botox injection": 1,
-            "Pneumatic Dilatation": 2,
+            "Pneumatic Dilation": 2,
             "LHM": 3,
             "POEM": 4
         }
@@ -718,46 +718,48 @@ class DataWindow(QMainWindow):
                 # No widget for therapy data input is shown
                 self.ui.stackedWidget.setCurrentIndex(0)
 
-        # Show images
+
+        # Show Images
         # Barium Swallow
         barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
             self.selected_visit)
         if barium_swallow_images:
             self.barium_swallow_pixmaps = barium_swallow_images
             self.barium_swallow_image_index = 0
-        barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(
-            self.selected_visit)
-        if barium_swallow_minutes:
-            self.barium_swallow_minutes = barium_swallow_minutes
             self.__load_barium_swallow_image()
+        else:
+            self.barium_swallow_pixmaps = None
+            self.ui.tbe_imageview.clear()
+
         # Endoscopy
         endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
         if endoscopy_images:
             self.endoscopy_pixmaps = endoscopy_images
             self.endoscopy_image_index = 0
-        endoscopy_positions = self.endoscopy_file_service.get_endoscopy_positions_for_visit(self.selected_visit)
-        if endoscopy_positions:
-            self.endoscopy_positions = endoscopy_positions
             self.__load_endoscopy_image()
+        else:
+            self.endoscopy_pixmaps = None
+            self.ui.endoscopy_imageview.clear()
+
         # EndoFlip
         endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
         if endoflip_images:
             self.endoflip_pixmaps = endoflip_images
             self.endoflip_image_index = 0
-        endoflip_timepoints = self.endoflip_image_service.get_endoflip_timepoints_for_visit(self.selected_visit)
-        if endoflip_timepoints:
-            self.endoflip_timepoints = endoflip_timepoints
             self.__load_endoflip_image()
+        else:
+            self.endoflip_pixmaps = None
+            self.ui.endoflip_imageview.clear()
+
         # Endosonography
         endosono_images = self.endosonography_image_service.get_endosonography_images_for_visit(self.selected_visit)
         if endosono_images:
             self.endosono_pixmaps = endosono_images
             self.endosono_image_index = 0
-        endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(
-            self.selected_visit)
-        if endosono_positions:
-            self.endosono_positions = endosono_positions
             self.__load_endosonography_image()
+        else:
+            self.endosono_pixmaps = None
+            self.ui.endosono_imageview.clear()
 
     def __add_eckardt_score(self):
         eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
@@ -1356,7 +1358,7 @@ class DataWindow(QMainWindow):
                 self.pneumatic_dilatation_service.create_pneumatic_dilatation(dilatation_dict)
         pd_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
         if not pd_complications or pd_complications and ShowMessage.to_update_for_visit(
-                "complications for the pneumatic dilatation therapy"):
+                "complications for the pneumatic dilation therapy"):
             pd_complications_dict = {'visit_id': self.selected_visit,
                                      'bleeding': self.ui.bleeding_pd.currentText(),
                                      'perforation': self.ui.perforation_pd.currentText(),
