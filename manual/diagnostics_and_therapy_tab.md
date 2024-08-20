@@ -2,7 +2,7 @@
 
 After selecting a patient and a visit, this tab allows you to input diagnostic data and therapy details.
 
-![Diagnostics_and_Therapy_Tab](/manual_images/diagnostics_and_therapy_tab.jpg)
+![Diagnostics_and_Therapy_Tab](./manual_images/diagnostics_and_therapy_tab.jpg)
 
 In the upper right corner, you can enter therapy data if the visit type is set to "Therapy". Otherwise, this field will remain empty.
 
@@ -19,7 +19,7 @@ If you notice an error, you can update the data by making corrections and clicki
 
 ## Manometry
 
-![Manometry](/manual_images/manometry.jpg)
+![Manometry](./manual_images/manometry.jpg)
 
 In addition to entering attributes related to the manometry measurement, you can upload a manometry file to the database. 
 
@@ -29,7 +29,7 @@ If you upload an incorrect .csv file, simply repeat the upload process to upload
 
 ## Timed Barium Esophagogram (TBE)
 
-![TBE](/manual_images/TBE.jpg)
+![TBE](./manual_images/TBE.jpg)
 
 Along with attributes related to the barium swallow, you can upload multiple TBE (Barium Swallow) images. 
 
@@ -44,7 +44,7 @@ The image viewer on the right will display a preview of the images you uploaded.
 
 ## Esophagogastroduodenoscopy (EGD)
 
-![EGD](/manual_images/EGD.jpg)
+![EGD](./manual_images/EGD.jpg)
 
 Similarly, you can upload EGD images. 
 
@@ -57,7 +57,7 @@ If you upload the wrong images, simply repeat the upload process.
 
 ## Impedance Planimetry (EndoFLIP)
 
-![EndoFlip](/manual_images/Endoflip.jpg)
+![EndoFlip](./manual_images/Endoflip.jpg)
 
 For impedance planimetry (EndoFLIP), you can enter specific attributes and upload related files. These files can include impedance planimetry data in .xlsx format (Excel) and images (screenshots from the diagnostic instrument).
 
@@ -70,7 +70,7 @@ If you mistakenly upload incorrect images or files, simply repeat the upload pro
 
 ## Endosonography
 
-![Endosonography](/manual_images/Endosonography.jpg)
+![Endosonography](./manual_images/Endosonography.jpg)
 
 For endosonography, you can upload both videos and images:
 
@@ -92,7 +92,7 @@ If "Therapy" is selected as the visit type, you can enter data for the chosen th
 
 ## Botox
 
-![Botox](/manual_images/botox.jpg)
+![Botox](./manual_images/botox.jpg)
 
 A patient can receive multiple Botox injections at different heights during a single visit. Therefore, it is possible to add multiple Botox injections, including their Botox units and injection heights, to a single "Botox Therapy."
 
@@ -102,14 +102,14 @@ To delete all Botox injections and the associated complications in case of erron
 
 ## Pneumatic Dilation
 
-![Pneumatic Dilation](/manual_images/pneumatic_dilation.jpg)
+![Pneumatic Dilation](./manual_images/pneumatic_dilation.jpg)
 
 Provide all the relevant attributes for Pneumatic Dilation and any complications associated with this therapy.   
 When finished, click the "Add / Update Pneumatic Dilation" button. This button can also be used to update any incorrect data.
 
 ## LHM
 
-![LHM](/manual_images/lhm.jpg)
+![LHM](./manual_images/lhm.jpg)
 
 Provide all the relevant attributes for LHM and any complications associated with this therapy.  
 The operation duration is entered in hh:mm format but is converted to minutes in the database.  
@@ -117,7 +117,7 @@ When finished, click the "Add / Update LHM" button. This button can also be used
 
 ## POEM
 
-![POEM](/manual_images/poem.jpg)
+![POEM](./manual_images/poem.jpg)
 
 Enter all relevant attributes for POEM and any complications associated with this therapy.  
 The procedure duration is entered in hh:mm format but is converted to minutes in the database.  
