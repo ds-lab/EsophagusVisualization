@@ -4,7 +4,17 @@ from PyQt6.QtWidgets import QMessageBox
 class ShowMessage:
 
     @staticmethod
-    def to_update_for_visit(type_to_update: str, visit_name: str):
+    def to_update_for_visit(type_to_update: str):
+        reply = QMessageBox.question(None, f'{type_to_update} already exist/s in the database.',
+                                     f"Should the {type_to_update} be updated?",
+                                     QMessageBox.StandardButton.Yes |
+                                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            return True
+        return False
+
+    @staticmethod
+    def to_update_for_visit_named(type_to_update: str, visit_name: str):
         reply = QMessageBox.question(None, f'{type_to_update} already exist/s in the database.',
                                      f"Should the {type_to_update} for the visit {visit_name} be updated?",
                                      QMessageBox.StandardButton.Yes |
