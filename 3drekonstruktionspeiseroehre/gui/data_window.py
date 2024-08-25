@@ -726,6 +726,10 @@ class DataWindow(QMainWindow):
         if barium_swallow_images:
             self.barium_swallow_pixmaps = barium_swallow_images
             self.barium_swallow_image_index = 0
+        barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(
+            self.selected_visit)
+        if barium_swallow_minutes:
+            self.barium_swallow_minutes = barium_swallow_minutes
             self.__load_barium_swallow_image()
         else:
             self.barium_swallow_pixmaps = None
@@ -736,6 +740,9 @@ class DataWindow(QMainWindow):
         if endoscopy_images:
             self.endoscopy_pixmaps = endoscopy_images
             self.endoscopy_image_index = 0
+        endoscopy_positions = self.endoscopy_file_service.get_endoscopy_positions_for_visit(self.selected_visit)
+        if endoscopy_positions:
+            self.endoscopy_positions = endoscopy_positions
             self.__load_endoscopy_image()
         else:
             self.endoscopy_pixmaps = None
@@ -746,6 +753,9 @@ class DataWindow(QMainWindow):
         if endoflip_images:
             self.endoflip_pixmaps = endoflip_images
             self.endoflip_image_index = 0
+        endoflip_timepoints = self.endoflip_image_service.get_endoflip_timepoints_for_visit(self.selected_visit)
+        if endoflip_timepoints:
+            self.endoflip_timepoints = endoflip_timepoints
             self.__load_endoflip_image()
         else:
             self.endoflip_pixmaps = None
@@ -756,6 +766,10 @@ class DataWindow(QMainWindow):
         if endosono_images:
             self.endosono_pixmaps = endosono_images
             self.endosono_image_index = 0
+        endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(
+            self.selected_visit)
+        if endosono_positions:
+            self.endosono_positions = endosono_positions
             self.__load_endosonography_image()
         else:
             self.endosono_pixmaps = None
