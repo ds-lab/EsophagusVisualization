@@ -705,7 +705,7 @@ p, li { white-space: pre-wrap; }
                </item>
                <item>
                 <property name="text">
-                 <string>Pneumatic Dilatation</string>
+                 <string>Pneumatic Dilation</string>
                 </property>
                </item>
                <item>
@@ -4882,7 +4882,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
