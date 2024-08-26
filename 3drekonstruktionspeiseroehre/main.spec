@@ -16,7 +16,9 @@ a = Analysis(
         ('disclaimer.txt', '.')
     ],
     hiddenimports=[
-        'PyQt6.QtWebEngineWidgets'
+        'PyQt6.QtWebEngineWidgets',
+        'PyQt6.QtGui',
+        'PyQt6.QtCore'
     ],
     hookspath=[],
     hooksconfig={},
