@@ -477,12 +477,10 @@ class VisualizationWindow(QMainWindow):
         """
         Callback for the download button to store a timeframe dependent csv-file of the metrics of all loaded visualizations
         """
-
-        file_name = "filler"
-        title = f"timeframe_metrics_{file_name}"
+        title = f"timeframe_metrics_"
         destination_file_path_metriks, _ = QFileDialog.getSaveFileName(self, "Save CSV Timeframe-Metrics File", title, "CSV Files (*.csv)")
 
-        if not destination_file_path:
+        if not destination_file_path_metriks:
             print("User cancelled the directory selection")
             return  # Exit the method if no directory was selected
 
@@ -530,10 +528,10 @@ class VisualizationWindow(QMainWindow):
                                              round(max_pressure_sphincter_per_frame, 2),round(min_pressure_sphincter_per_frame, 2),round(mean_pressure_sphincter_per_frame, 2),
                                              round(metric_max_sphincter, 2), round(metric_min_sphincter, 2), round(metric_mean_sphincter, 2)])
             # Check if the file was actually created
-            if os.path.exists(destination_file_path):
+            if os.path.exists(destination_file_path_metriks):
                 export_successful = True
             else:
-                print(f"Failed to create file: {destination_file_path}")
+                print(f"Failed to create file: {destination_file_path_metriks}")
 
 
             if export_successful:
@@ -541,7 +539,7 @@ class VisualizationWindow(QMainWindow):
                 QMessageBox.information(
                     self,
                     "Export Successful",
-                    f"The files have been successfully exported to {destination_file_path}.",
+                    f"The files have been successfully exported to {destination_file_path_metriks}.",
                 )
             else:
                 QMessageBox.warning(

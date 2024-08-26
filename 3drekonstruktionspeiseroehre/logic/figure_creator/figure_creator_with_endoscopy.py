@@ -38,30 +38,6 @@ class FigureCreatorWithEndoscopy(FigureCreator):
                                                                                     visualization_data)
         cm_to_px_ratio = esophagus_full_length_cm / esophagus_full_length_px
 
-        print(visualization_data.xray_mask)
-        heights, widths = visualization_data.xray_mask.shape
-        diameters = []
-        volumen = 0
-        for h in range(heights):
-            # Erhalten der Kontur für die aktuelle Höhe
-            diam = 0
-            b = 1
-            for j in range(widths):
-                # print(mask[h][j])
-                if visualization_data.xray_mask[h][j]:
-                    diam += 1
-                    b = 0
-                if b == 0 and mask[h][j] == 0:
-                    break
-            print(diam)
-            diam = diam * cm_to_px_ratio
-            volumen += np.pi * ((diam/2)**2) * cm_to_px_ratio
-            diameters.append(diam)
-        print(volumen)
-
-
-
-
         # Calculate shape with endoscopy data
         # Get array of n equi-spaced values between 0 and 2pi
         angles = np.linspace(0, 2 * np.pi, config.figure_number_of_angles)
