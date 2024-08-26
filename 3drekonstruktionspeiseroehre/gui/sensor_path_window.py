@@ -140,6 +140,6 @@ class SensorPathWindow(QMainWindow):
         info-button callback
         """
         info_window = InfoWindow()
-        info_window.show_position_selection_info()
+        info_window.show_sensor_path_info()
         info_window.show()
 

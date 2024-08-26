@@ -74,7 +74,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Weiter</string>
+         <string>Continue</string>
         </property>
         <property name="autoDefault">
          <bool>false</bool>

@@ -157,12 +157,15 @@ class SensorCenterPathWindow(QMainWindow):
         # maximaler Ausschlag
 
         self.cm_to_px_ratio = esophagus_full_length_cm / esophagus_full_length_px
+
+        """
         volume = self.volume_checker()
         if volume:
             reply = QMessageBox.warning(self, 'Warning', f"The estimated volume is outside the check boundary: {volume} ({config.volumen_lower_boundary}, {config.volumen_upper_boundary}).\nThis might be caused by a mapping/calculation error.\nDo you really want to proceed?",
                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
             if reply == QMessageBox.StandardButton.No:
                 return  # Exit the method if the user chooses not to proceed
+        """
 
         length = self.length_checker()
         if length:
@@ -195,7 +198,7 @@ class SensorCenterPathWindow(QMainWindow):
         info-button callback
         """
         info_window = InfoWindow()
-        info_window.show_position_selection_info()
+        info_window.show_sensor_center_path_info()
         info_window.show()
 
     def volume_checker(self):
