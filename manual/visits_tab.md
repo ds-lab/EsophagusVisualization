@@ -2,11 +2,11 @@
 
 After selecting a patient in the Patients Tab, the Visits Tab allows you to manage and document patient visits, including adding visit details, recording scores, and tracking medications.
 
-![Visits_tab](manual_images/visits_tab.jpg)
+![Visits_tab](./manual_images/visits_tab.jpg)
 
 ## Adding Visits
 
-![Visit_data](manual_images/visit_data.jpg)
+![Visit_data](./manual_images/visit_data.jpg)
 
 In the Visits Tab, you'll see an overview of all visits for the selected patient, if any are already saved in the database. You can either select an existing visit or add a new one.
 
@@ -19,19 +19,19 @@ After adding or selecting a visit, you can optionally add additional data for th
 
 ## Eckardt Score
 
-![Eckardt_Score](manual_images/eckardt_score.jpg)
+![Eckardt_Score](./manual_images/eckardt_score.jpg)
 
 To add an Eckardt Score for the visit, fill out the relevant fields. All fields, except for the "Total Score," are optional. Validity checks will be performed to ensure accuracy.
 
 ## GERD Score
 
-![GERD_Score](manual_images/gerd_score.jpg)
+![GERD_Score](./manual_images/gerd_score.jpg)
 
 For the GERD Score, all fields are optional. If you cannot or do not wish to enter specific data, leave the fields at their default values.
 
 ## Medication
 
-![Medication](manual_images/medication.jpg)
+![Medication](./manual_images/medication.jpg)
 
 For medication, the "Medication Use" field is mandatory. The "Medication Name" and "Medication Dose" fields are optional. You can enter multiple medications for a single visit.
 

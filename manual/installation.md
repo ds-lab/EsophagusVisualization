@@ -9,7 +9,7 @@ By following these instructions, you will have a complete setup of the Esophagus
 2. **Run Docker Compose**:
     - Ensure you are in the directory containing the `docker-compose.yml` and `init.sql` files.
     - Open a terminal (or command prompt) in this directory and execute the following command to start the containers:
-      ```sh
+      ```
       docker-compose up -d
       ```
     - This command will build and start the containers.
@@ -28,7 +28,7 @@ By following these instructions, you will have a complete setup of the Esophagus
         - Tab "Connection":
           - **Host/name address**: `db`
           - **Port**: `5432`
-          - **Maintainance db**: `postgres`
+          - **Maintenance db**: `postgres`
       - Click "Save". You should now see `3drekonstruktionspeiseroehre` listed under "Servers".
       - The database `3drekonstruktion` contains the data schema for this application (initially empty).
 
@@ -37,7 +37,7 @@ By following these instructions, you will have a complete setup of the Esophagus
 Run `EsophagusVisualizationSetup.exe` and follow the installation instructions.  
 
 **Note**: You might need to temporarily disable your antivirus software during the installation process.  
-Afterwards, add EsophagusVisualization to your antivirus whitelist.
+Afterward, add EsophagusVisualization to your antivirus whitelist.
 
 ## Create Backups of the Database
 
