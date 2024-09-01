@@ -726,54 +726,58 @@ class DataWindow(QMainWindow):
         if barium_swallow_images:
             self.barium_swallow_pixmaps = barium_swallow_images
             self.barium_swallow_image_index = 0
+        else:
+            self.barium_swallow_pixmaps = None
+            self.ui.tbe_imageview.clear()
+            self.ui.tbe_imagedescription_text.setText("")
         barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(
             self.selected_visit)
         if barium_swallow_minutes:
             self.barium_swallow_minutes = barium_swallow_minutes
             self.__load_barium_swallow_image()
-        else:
-            self.barium_swallow_pixmaps = None
-            self.ui.tbe_imageview.clear()
 
         # Endoscopy
         endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
         if endoscopy_images:
             self.endoscopy_pixmaps = endoscopy_images
             self.endoscopy_image_index = 0
+        else:
+            self.endoscopy_pixmaps = None
+            self.ui.endoscopy_imageview.clear()
+            self.ui.endoscopy_imagedescription_text.setText("")
         endoscopy_positions = self.endoscopy_file_service.get_endoscopy_positions_for_visit(self.selected_visit)
         if endoscopy_positions:
             self.endoscopy_positions = endoscopy_positions
             self.__load_endoscopy_image()
-        else:
-            self.endoscopy_pixmaps = None
-            self.ui.endoscopy_imageview.clear()
 
         # EndoFlip
         endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
         if endoflip_images:
             self.endoflip_pixmaps = endoflip_images
             self.endoflip_image_index = 0
+        else:
+            self.endoflip_pixmaps = None
+            self.ui.endoflip_imageview.clear()
+            self.ui.endoflip_imagedescription_text.setText("")
         endoflip_timepoints = self.endoflip_image_service.get_endoflip_timepoints_for_visit(self.selected_visit)
         if endoflip_timepoints:
             self.endoflip_timepoints = endoflip_timepoints
             self.__load_endoflip_image()
-        else:
-            self.endoflip_pixmaps = None
-            self.ui.endoflip_imageview.clear()
 
         # Endosonography
         endosono_images = self.endosonography_image_service.get_endosonography_images_for_visit(self.selected_visit)
         if endosono_images:
             self.endosono_pixmaps = endosono_images
             self.endosono_image_index = 0
+        else:
+            self.endosono_pixmaps = None
+            self.ui.endosono_imageview.clear()
+            self.ui.endosono_imagedescription_text.setText("")
         endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(
             self.selected_visit)
         if endosono_positions:
             self.endosono_positions = endosono_positions
             self.__load_endosonography_image()
-        else:
-            self.endosono_pixmaps = None
-            self.ui.endosono_imageview.clear()
 
     def __add_eckardt_score(self):
         eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
