@@ -37,11 +37,16 @@ class InfoWindow(QDialog):
     def show_xray_region_selection_info(self):
         text = """In this window, the shape of the esophagus is traced on the X-ray image as a polygon. <br><br> 
         The software initially attempts an automatic preselection. This must then be reviewed and corrected by the user. <br> 
-        For small deviations, individual points can be moved to the correct position with the mouse. A right-click can remove a point. <br> 
+        For small deviations, individual points can be moved to the correct position with the mouse. A right-click can remove a point. The last point can be deleted with the 'Delete last point' button. <br> 
         If the automatic selection deviates significantly, the shape should be manually traced after clicking 'Start New Selection'. 
         Clicking in the graphic will create a new point each time. <br>
         When manually tracing, it should be noted that the upper cross-section of the esophagus must be traced straight. <br>
-        The selection is completed by clicking on the first point."""
+        The selection is completed by clicking on the first point.
+        If you want to save the shape of the oesophagus, spine and barium as masks, you have to click the corresponding checkboxes. <br>
+        Draw each polygon, you want to save,  in the order of the checked boxes. The shapes can overlap. <br>
+        If you are finished with one shape, you can draw the next with clicking the 'Next selection' button. <br>
+        Continuing with 'Apply selection and proceed' will save all masks and original image to a directory named DataAchalasia in C:\ <br> 
+        """
         self.ui.textEdit.setHtml(text)
 
     def show_position_selection_info(self):
@@ -70,7 +75,8 @@ class InfoWindow(QDialog):
         This preselection must then be reviewed and corrected by the user. <br>
         In case of minor deviations, individual points can be moved to the correct position using the mouse. A right-click removes a point. <br>
         If the automatic selection deviates significantly, the shape should be manually traced after clicking 'Start New Selection'. <br>
-        Clicking on the graphic creates a new point each time. <br>The selection is completed by clicking on the first point."""
+        Clicking on the graphic creates a new point each time. <br>The selection is completed by clicking on the first point.<br>
+        To safe the cross-section mask and the original image in C:\DataAchalasia check the checkbox"""
         self.ui.textEdit.setHtml(text)
 
     def show_sensor_center_path_info(self):
