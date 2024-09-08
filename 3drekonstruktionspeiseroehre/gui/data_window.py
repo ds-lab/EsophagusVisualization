@@ -1208,7 +1208,7 @@ class DataWindow(QMainWindow):
     def __load_endoflip_image(self):
         # Load and display the current image
         if 0 <= self.endoflip_image_index < len(self.endoflip_pixmaps):
-            scaled_pixmap = self.endoflip_pixmaps[self.endoflip_image_index].scaledToHeight(200)
+            scaled_pixmap = self.endoflip_pixmaps[self.endoflip_image_index].scaledToHeight(400)
             scaled_size = scaled_pixmap.size()
             self.ui.endoflip_imageview.setPixmap(scaled_pixmap)
             self.ui.endoflip_imageview.setFixedSize(scaled_size)
