@@ -38,7 +38,6 @@ class FigureCreationThread(QThread):
             cv2.drawContours(mask, [np.array(visualization_data.xray_polygon)], -1, 1, -1)
             visualization_data.xray_mask = mask
             self.progress_value.emit(50)
-
             if visualization_data.endoscopy_polygons is not None:
                 figure_creator = FigureCreatorWithEndoscopy(visualization_data)
             else:

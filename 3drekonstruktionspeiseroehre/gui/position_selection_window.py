@@ -14,6 +14,8 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from skimage import io
 from PIL import Image
+from gui.sensor_center_path_window import SensorCenterPathWindow
+from gui.sensor_path_window import SensorPathWindow
 
 class PositionSelectionWindow(QMainWindow):
     """Window where the user selects needed positions for the calculation"""
@@ -43,7 +45,8 @@ class PositionSelectionWindow(QMainWindow):
         self.ui.second_sensor_button.clicked.connect(self.__second_sensor_button_clicked)
         self.ui.sphinkter_button.clicked.connect(self.__sphincter_button_clicked)
         self.ui.eso_exit_button.clicked.connect(self.__eso_exit_button_clicked)
-        
+        self.checkbox_sens = self.ui.sensor_checker
+
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
@@ -159,7 +162,6 @@ class PositionSelectionWindow(QMainWindow):
                             int(self.sphincter_upper_pos[0]), int(self.sphincter_upper_pos[1]))
                         self.visualization_data.esophagus_exit_pos = (
                             int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1]))
-                        self.visualization_data.sphincter_length_cm = self.ui.sphinkter_spinbox.value()
                         if self.visualization_data.endoflip_screenshot:
                             self.visualization_data.endoflip_pos = (
                             int(self.endoflip_pos[0]), int(self.endoflip_pos[1]))
@@ -168,22 +170,18 @@ class PositionSelectionWindow(QMainWindow):
                             self.visualization_data.endoscopy_start_pos = \
                                 (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1]))
 
-                        # If there are more visualizations in this visit continue with the next xray selection
-                        if self.next_window:
-                            self.master_window.switch_to(self.next_window)
-                        # Handle Endoscopy annotation
-                        elif len(self.visualization_data.endoscopy_files) > 0:
-                            endoscopy_selection_window = EndoscopySelectionWindow(self.master_window,
-                                                                                  self.patient_data, self.visit)
-                            self.master_window.switch_to(endoscopy_selection_window)
-                            self.close()
-                        # Else show the visualization
+                        if self.checkbox_sens.isChecked():
+                            # Go to sensor_path visualization first
+                            next_window = SensorPathWindow(self.master_window, self.next_window,
+                                                                               self.patient_data, self.visit, self.n,
+                                                                               self.xray_polygon)
                         else:
-                            # Add new visit to patient data
-                            self.patient_data.add_visit(self.visit.name, self.visit)
-                            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
-                            self.master_window.switch_to(visualization_window)
-                            self.close()
+                            # Go to center_path visualization
+                            next_window = SensorCenterPathWindow(self.master_window, self.next_window,
+                                                                               self.patient_data, self.visit, self.n,
+                                                                               self.xray_polygon)
+                        self.master_window.switch_to(next_window)
+                        self.close()
                     else:
                         QMessageBox.critical(self, "Error", "The positions must be within the previously marked outline of the esophagus.")
                 else:

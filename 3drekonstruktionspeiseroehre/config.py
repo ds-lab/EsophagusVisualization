@@ -1,3 +1,4 @@
+import sys
 # Config file
 
 # data validation for database:
@@ -92,3 +93,11 @@ diagonal_cost = 3  # costs for shortest path calculation
 # This defines the number of pixels the esophagus is expanded BEYOND just building a straight line.
 # Necessary for better shortest paths / centers at the top of the esophagus
 expansion_delta = 5
+
+
+# CHECKERS
+
+volumen_upper_boundary = 1
+volumen_lower_boundary = 2 # sys.maxint
+max_eso_length = 40
+min_eso_length = 10

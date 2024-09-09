@@ -37,11 +37,16 @@ class InfoWindow(QDialog):
     def show_xray_region_selection_info(self):
         text = """In this window, the shape of the esophagus is traced on the X-ray image as a polygon. <br><br> 
         The software initially attempts an automatic preselection. This must then be reviewed and corrected by the user. <br> 
-        For small deviations, individual points can be moved to the correct position with the mouse. A right-click can remove a point. <br> 
+        For small deviations, individual points can be moved to the correct position with the mouse. A right-click can remove a point. The last point can be deleted with the 'Delete last point' button. <br> 
         If the automatic selection deviates significantly, the shape should be manually traced after clicking 'Start New Selection'. 
         Clicking in the graphic will create a new point each time. <br>
         When manually tracing, it should be noted that the upper cross-section of the esophagus must be traced straight. <br>
-        The selection is completed by clicking on the first point."""
+        The selection is completed by clicking on the first point.
+        If you want to save the shape of the oesophagus, spine and barium as masks, you have to click the corresponding checkboxes. <br>
+        Draw each polygon, you want to save,  in the order of the checked boxes. The shapes can overlap. <br>
+        If you are finished with one shape, you can draw the next with clicking the 'Next selection' button. <br>
+        Continuing with 'Apply selection and proceed' will save all masks and original image to a directory named DataAchalasia in C:\ <br> 
+        """
         self.ui.textEdit.setHtml(text)
 
     def show_position_selection_info(self):
@@ -70,7 +75,33 @@ class InfoWindow(QDialog):
         This preselection must then be reviewed and corrected by the user. <br>
         In case of minor deviations, individual points can be moved to the correct position using the mouse. A right-click removes a point. <br>
         If the automatic selection deviates significantly, the shape should be manually traced after clicking 'Start New Selection'. <br>
-        Clicking on the graphic creates a new point each time. <br>The selection is completed by clicking on the first point."""
+        Clicking on the graphic creates a new point each time. <br>The selection is completed by clicking on the first point.<br>
+        To safe the cross-section mask and the original image in C:\DataAchalasia check the checkbox"""
+        self.ui.textEdit.setHtml(text)
+
+    def show_sensor_center_path_info(self):
+        text = """This Window shows the calculated/assumed path way of the katheter (sensor_path). <br><br>
+        The red path shows the assumed katheter (shortest path) through the esophagus. <br>
+        It's movable points can be adapted an will be taken as the new katheter path. <br>
+        With a RIGHT click a point on the line can be deleted if necessary. <br>
+        Underneath the red path there is a blue line that shows the original calculated path to compare the new and the old path. <br><br>
+        !!! ATTENTION !!! <br>
+        The red path has the problem that the highest and lowest point have a connection line between them in the visualisation. <br>
+        This line obviously doesn't exist in reality and won't be included in the calculation."""
+        self.ui.textEdit.setHtml(text)
+
+    def show_sensor_path_info(self):
+        text = """This Window shows the calculated central path way trough the esophagus. <br><br>
+        The RED path shows the calculated central path through the esophagus. <br>
+        Underneath the red path there is a BLUE line that shows the original calculated center path to compare the new and the old path. <br>
+        The ORANGE path shows the used katheter path (sensor_path) on wich the calculation of the center path is based. <br>
+        It's movable points can be adapted an will be taken as the new central path. <br>
+        With a RIGHT click a point on the line can be deleted if necessary. <br>
+        !!! ATTENTION !!! <br>
+        Should the path require mayor changes to be corrected, be aware of possible form errors in the final visualisation. <br><br>
+        !!! ATTENTION !!! <br>
+        The red path has the problem that the highest and lowest point have a connection line between them in the visualisation. <br>
+        This line obviously doesn't exist in reality and won't be included in the calculation."""
         self.ui.textEdit.setHtml(text)
 
     def show_visualization_info(self):

@@ -217,7 +217,7 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         safe_visit_name = self.visit.name.replace(':', '_').replace('[', '_').replace(']', '_')
 
-        base_path = fr"C:\DataAchalasia\{safe_visit_name}\Breischluck"
+        base_path = fr"C:\DataAchalasia\{safe_visit_name}"
 
 
         if not os.path.exists(base_path):
@@ -226,14 +226,13 @@ class XrayRegionSelectionWindow(QMainWindow):
         if checked_count > 0:
             img_filename = f"{self.visualization_data.xray_minute}.jpg"
             path = os.path.join(base_path, img_filename)
-            path = os.path.normpath(path).replace("\\", "/")
             xray_image = self.xray_image.astype(np.uint8)
             cv2.imwrite(path, xray_image)
         for checkbox, polygon_name in self.checkbox_names.items():
             if checkbox.isChecked():
                 polygon = self.polygon_points.get(polygon_name)
                 if polygon:
-                    mask_filename = f"{polygon_name}_{self.visualization_data.xray_minute}_mask.jpg"
+                    mask_filename = f"{self.visualization_data.xray_minute}_{polygon_name}_mask.jpg"
                     self.__save_mask(polygon, base_path, mask_filename)
 
 
@@ -244,7 +243,6 @@ class XrayRegionSelectionWindow(QMainWindow):
         colored_image = np.zeros((self.xray_image.shape[0], self.xray_image.shape[1]), dtype=np.uint8)
         cv2.fillPoly(colored_image, [np.array(polygon, dtype=int)], 255)
         mask_path = os.path.join(base_path, mask_filename)
-        mask_path = os.path.normpath(mask_path).replace("\\", "/")
         cv2.imwrite(mask_path, colored_image)
 
 
