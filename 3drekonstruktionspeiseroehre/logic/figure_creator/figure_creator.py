@@ -213,6 +213,9 @@ class FigureCreator(ABC):
                                 sensor_path_lengths_px[current_sensor_index]))
                         surfacecolor.append(pressure)
             surfacecolor_list.append(surfacecolor)
+        surfacecolor_list = np.array(surfacecolor_list)
+        surfacecolor_list = np.abs(surfacecolor_list)  #All values positive
+        surfacecolor_list[surfacecolor_list == 0] = 1  #Convert 0 values to 1
         return surfacecolor_list
 
     @staticmethod
@@ -716,7 +719,7 @@ class FigureCreator(ABC):
         volume_sum_sphincter = volume_sum_sphincter * one_px_as_cm
 
         # Calculate max, min, mean pressure over time and space for tubular part of esophagus
-        np_surfacecolor_list = np.array(surfacecolor_list)
+        np_surfacecolor_list = surfacecolor_list
         tubular_section_surfacecolor_list = np_surfacecolor_list[:,
                                             tubular_part_upper_boundary:lower_sphincter_boundary[0] + 1]
         max_pressure_tubular_per_frame = np.max(tubular_section_surfacecolor_list, axis=1)
