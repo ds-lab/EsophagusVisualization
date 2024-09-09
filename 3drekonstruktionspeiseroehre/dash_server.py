@@ -142,26 +142,6 @@ class DashServer:
                     html.Div('40ml',  style={'float': 'right', 'padding-right': '10px'}),
                 ], style={'min-height': '30px', 'display': 'none', 'align-items': 'center', 'padding-bottom':'5px'}, id='endoflip-control'),
 
-                html.Div(
-                    id='metrics',
-                    children="Metrics:   "
-                             "Length: (" + str(round(self.visit.visualization_data_list[0].esophagus_len, 2)) + "cm)" + "   ////   "
-                             "Tubular Section (" + str(round(self.visit.visualization_data_list[0].tubular_length_cm, 2)) + "cm)  ::"
-                             "  max(tubular pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-2][0][0], 2)) + "  //"
-                             "  [Volume * max(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[0][0][0], 2)) + "  //"
-                             "  min(tubular pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-2][1][0], 2)) + "  //"
-                             "  [Volume * min(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[0][1][0], 2)) + "  //"
-                             "  mean(tubular pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-2][2][0], 2)) + "  //"
-                             "  [Volume * mean(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[0][2][0], 2)) + ""
-                             "    ////    Sphincter Section (" + str(round(self.visit.visualization_data_list[0].sphincter_length_cm, 2)) + "cm)  ::"
-                             "  max(sphincter pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-1][0][0], 2)) + "  //"
-                             "  [Volumen / max(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[1][0][0], 5)) + "  //"
-                             "  min(sphincter pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-1][1][0], 2)) + "  //"
-                             "  [Volumen / min(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[1][1][0], 5)) + "  //"
-                             "  mean(sphincter pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-1][2][0], 2)) + "  //"
-                             "  [Volumen / mean(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[1][2][0], 5))
-                ),
-
                 html.Div([
                     html.H3("Tubular Data:"),
 
@@ -287,7 +267,6 @@ class DashServer:
                         data_table_sphincter_metrics= [{'vol_max_sph_press_frame': metric[1][0][time].toFixed(2), 'vol_min_sph_press_frame': metric[1][1][time].toFixed(2), 'vol_mean_sph_press_frame': metric[1][2][time].toFixed(2)}];   
                         return [new_figure, 
                                 "Zeitpunkt: " + (time/20).toFixed(2) + "s", 
-                                "Metrics:    " + "Length: (""" + str(round(self.visit.visualization_data_list[self.selected_figure_index].esophagus_len, 2)) + """cm)" + "   ////   Tubular Section (""" + str(round(self.visit.visualization_data_list[self.selected_figure_index].tubular_length_cm, 2)) + """cm)  ::  " + " max(tubular pressure from Timeframe): " + pressure[0][0][time].toFixed(2) + "  //  " + "[Volume * max(Pressure from Timeframe)]: " + metric[0][0][time].toFixed(2) + "  //  " + " min(tubular pressure from Timeframe): " + pressure[0][1][time].toFixed(2) + "  //  " + " [Volume * min(Pressure from Timeframe)]: " + metric[0][1][time].toFixed(2) + "  //  " + " mean(tubular pressure from Timeframe): " + pressure[0][2][time].toFixed(2) + "  //  " + " [Volume * mean(Pressure from Timeframe)]: " + metric[0][2][time].toFixed(2) +  "     ////     Lower Sphincter (""" + str(round(self.visit.visualization_data_list[self.selected_figure_index].sphincter_length_cm, 2)) + """cm)" + "  ::  " + "max(sphincter pressure from Timeframe): " + pressure[1][0][time].toFixed(2) + "  //  " + "[Volumen / max(Pressure from Timeframe)]: " + metric[1][0][time].toFixed(5) + "  //  " + "min(sphincter pressure from Timeframe): " + pressure[1][1][time].toFixed(2) + "  //  " + "[Volumen / min(Pressure from Timeframe)]: " + metric[1][1][time].toFixed(5) + "  //  " + " mean(sphincter pressure from Timeframe): " + pressure[1][2][time].toFixed(2) + "  //  " + "[Volumen / mean(Pressure from Timeframe)]: " + metric[1][2][time].toFixed(5) + ";",
                                 static_values_tubular,
                                 data_table_tubular_pres,
                                 data_table_tubular_metrics,
@@ -299,7 +278,6 @@ class DashServer:
                 """,
             [Output('3d-figure', 'figure'),
              Output('time-field', 'children'),
-             Output('metrics', 'children'),
              Output('static_values_tubular', 'children'),
              Output('data_table_tubular_pres', 'data'),
              Output('data_table_tubular_metric', 'data'),
@@ -344,7 +322,6 @@ class DashServer:
                                 Output('metric-store','data'),
                                 Output('pressure-store','data'),
                                 Output('time-slider', 'max'),
-                                Output('metrics', 'children'),
                                 Output('static_values_tubular', 'children'),
                                 Output('data_table_tubular_pres', 'data'),
                                 Output('data_table_tubular_metric', 'data'),
@@ -447,22 +424,6 @@ class DashServer:
                     [self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[0], self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[1]],
                     [self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[-2],self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()[-1]],
                     self.visit.visualization_data_list[selected_figure].figure_creator.get_number_of_frames() - 1,
-                    "Metrics:   "
-                     "Length: (" + str(round(self.visit.visualization_data_list[0].esophagus_len, 2)) + "cm)" + "   ////   "
-                     "Tubular Section (" + str(round(self.visit.visualization_data_list[0].tubular_length_cm, 2)) + "cm)  ::"
-                     "  max(tubular pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-2][0][0], 2)) + "  //"
-                     "  [Volume * max(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[0][0][0], 2)) + "  //"
-                     "  min(tubular pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-2][1][0], 2)) + "  //"
-                     "  [Volume * min(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[0][1][0], 2)) + "  //"
-                     "  mean(tubular pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-2][2][0], 2)) + "  //"
-                     "  [Volume * mean(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[0][2][0], 2)) + ""
-                     "    ////    Sphincter Section (" + str(round(self.visit.visualization_data_list[0].sphincter_length_cm, 2)) + "cm)  ::"
-                     "  max(sphincter pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-1][0][0], 2)) + "  //"
-                     "  [Volumen / max(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[1][0][0], 5)) + "  //"
-                     "  min(sphincter pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-1][1][0], 2)) + "  //"
-                     "  [Volumen / min(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[1][1][0], 5)) + "  //"
-                     "  mean(sphincter pressure from Timeframe): " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[-1][2][0], 2)) + "  //"
-                     "  [Volumen / mean(Pressure from Timeframe)]: " + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()[1][2][0], 5)),
                     static_values_tubular,
                     data_table_tubular_pres,
                     data_table_tubular_metrics,
