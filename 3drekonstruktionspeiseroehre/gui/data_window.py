@@ -388,6 +388,8 @@ class DataWindow(QMainWindow):
 
             self.ui.visits.setEnabled(False)
             self.ui.eckardt_score.setEnabled(False)
+            self.ui.gerd.setEnabled(False)
+            self.ui.medication.setEnabled(False)
             self.ui.visit_data.setEnabled(False)
             self.ui.previous_therapies.setEnabled(False)
 
@@ -488,6 +490,8 @@ class DataWindow(QMainWindow):
         self.ui.visits.setEnabled(True)
         self.ui.previous_therapies.setEnabled(True)
         self.ui.eckardt_score.setEnabled(False)
+        self.ui.gerd.setEnabled(False)
+        self.ui.medication.setEnabled(False)
         self.ui.visit_data.setEnabled(False)
 
     def __patients_apply_filter(self):
@@ -658,9 +662,10 @@ class DataWindow(QMainWindow):
 
         # Disable Buttons until visit is selected
         self.ui.eckardt_score.setEnabled(False)
-        self.ui.visit_data.setEnabled(False)
         self.ui.gerd.setEnabled(False)
         self.ui.medication.setEnabled(False)
+        self.ui.visit_data.setEnabled(False)
+
 
     def __select_visit(self):
         selected_indexes = self.visits_tableView.selectedIndexes()  # Get the indexes of all selected cells
