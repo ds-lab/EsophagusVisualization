@@ -6,11 +6,11 @@ The tab also provides tools to sort and filter patient information to retrieve s
 
 The functions of the Patients Tab are explained in detail below.
 
-![Patients_tab](manual_images/patients_tab.jpg)
+![Patients_tab](./manual_images/patients_tab.jpg)
 
 ## Registering a New Patient
 
-![patient_data](manual_images/patient_data.jpg)
+![patient_data](./manual_images/patient_data.jpg)
 
 The first step in using the database is typically to register a new patient. To do this:
 
@@ -34,7 +34,7 @@ If you need to correct any patient information, you can easily update the data. 
 You have the option to delete a patient from the database:
 
 1. Select the patient from the list. 
-2. Click "Delete Patient."
+2. Click "Delete Patient".
 
 **Important**: Deleting a patient will also remove all associated data, including their visits and related medical information. 
 Please exercise caution when using this feature. If possible, consider updating the patient's information instead of deleting it.
@@ -46,7 +46,7 @@ When the database contains a large number of patients, finding a specific patien
 **Sorting**:
 You can sort the list of patients by any attribute by clicking the corresponding column header in the patient list. For example, clicking on the "birth_year" column header will sort the patients by their birth year, either in ascending or descending order.
 
-![sorting](manual_images/sorting.jpg)
+![sorting](./manual_images/sorting.jpg)
 
 **Filtering**:
 You can also filter patients by any attribute. If you’re looking for a specific patient, filtering by Patient ID is the most effective method:
@@ -54,11 +54,11 @@ You can also filter patients by any attribute. If you’re looking for a specifi
 1. Begin by entering the Patient ID. Autocomplete will assist in finding the correct ID.
 2. Then, select the "Filter by Patient ID" radio button to apply the filter.
 
-![autocomplete](manual_images/autocomplete.jpg)
+![autocomplete](./manual_images/autocomplete.jpg)
 
 ## Adding Previous Therapies
 
-![previous_therapies](manual_images/previous_therapies.jpg)
+![previous_therapies](./manual_images/previous_therapies.jpg)
 
 Patients may have undergone previous therapies that don't require a visit record. You can add multiple previous therapies for each patient as needed.
 
@@ -66,7 +66,7 @@ To do this:
 
 1. Select the patient from the list by clicking on their ID. The patient's information will appear in the "Selected Patient" field. 
 2. Enter the details of the previous therapy.
-3. Click "Add Previous Therapy."
+3. Click "Add Previous Therapy".
 
 You can repeat this process to add as many therapies as necessary. 
 

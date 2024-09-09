@@ -6,7 +6,7 @@ After selecting a patient and a visit, this tab allows you to input diagnostic d
 
 In the upper right corner, you can enter therapy data if the visit type is set to "Therapy". Otherwise, this field will remain empty.
 
-In the lower half of the window, you can input diagnostic data related to manometry, timed barium esophagogram (TBE or barium swallow), esophagogastroduodenoscopy (EGD), impedance planimetry (EndoFLIP), endosonography, and upload any related files.
+In the lower half of the window, you can input diagnostic data related to manometry, timed barium esophagogram (TBE or barium swallow), esophagogastroduodenoscopy (EGD), impedance planimetry (EndoFlip), endosonography, and upload any related files.
 
 
 ## Diagnostic Data
@@ -55,7 +55,7 @@ All images must be uploaded simultaneously (just select all the images you wish 
 
 If you upload the wrong images, simply repeat the upload process.
 
-## Impedance Planimetry (EndoFLIP)
+## Impedance Planimetry (EndoFlip)
 
 ![EndoFlip](./manual_images/Endoflip.jpg)
 
