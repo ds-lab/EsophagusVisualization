@@ -227,22 +227,36 @@ class VisualizationWindow(QMainWindow):
                                            'reconstruction_file': reconstruction_bytes}
                     if reconstruction:
                         self.reconstruction_service.update_reconstruction(reconstruction.reconstruction_id, reconstruction_dict)
+                        if self.reconstruction_service.get_reconstruction_for_visit(visit):
+                            savings = True
+
+                        # Inform the user about the saving
+                        if savings:
+                            QMessageBox.information(
+                                self, "Saving done",
+                                f"Reconstruction(s) for the visit {name} has/have been saved in the database."
+                            )
+                        else:
+                            QMessageBox.information(
+                                self, "Saving failed",
+                                f"The saving of the reconstruction(s) for the visit {name} to the database failed."
+                            )
                     else:
                         self.reconstruction_service.create_reconstruction(reconstruction_dict)
-                if self.reconstruction_service.get_reconstruction_for_visit(visit):
-                    savings = True
+                        if self.reconstruction_service.get_reconstruction_for_visit(visit):
+                            savings = True
 
-                # Inform the user about the saving
-                if savings:
-                    QMessageBox.information(
-                        self, "Saving done",
-                        f"Reconstruction(s) for the visit {name} has/have been saved in the database."
-                    )
-                else:
-                    QMessageBox.information(
-                        self, "Saving failed",
-                        f"The saving of the reconstruction(s) for the visit {name} to the database failed."
-                    )
+                        # Inform the user about the saving
+                        if savings:
+                            QMessageBox.information(
+                                self, "Saving done",
+                                f"Reconstruction(s) for the visit {name} has/have been saved in the database."
+                            )
+                        else:
+                            QMessageBox.information(
+                                self, "Saving failed",
+                                f"The saving of the reconstruction(s) for the visit {name} to the database failed."
+                            )
         except Exception as e:
             QMessageBox.information(
                 self, "Saving failed",

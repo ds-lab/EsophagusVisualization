@@ -105,31 +105,52 @@ class InfoWindow(QDialog):
         self.ui.textEdit.setHtml(text)
 
     def show_visualization_info(self):
-        text = """The generated 3D representation is displayed here. <br><br>The display can be done with the mouse 
-        be moved. <br>By default, it is rotated by dragging with the mouse. <br>
-        It can be moved by holding the Ctrl key at the same time.<br>
-        Using the mouse wheel, the size can be changed. <br><br>
-        The calculated size of the esophagus in centimeters can be read from the legend. 
-        If this deviates significantly from the expected size, it indicates incorrectly or inaccurately entered sensor positions. <br><br>
-        By clicking on 'Start Animation', the temporal evolution of pressure values can be animated. <br>
-        The timeline also allows manual selection of the time point. <br><br>
-        Below, the calculated metrics for the tubular section (Volume*Pressure) and the lower sphincter (Volume/Pressure) are displayed over time. <br><br>
-        If EndoFLIP data is entered, the EndoFLIP screenshot appears to the left of the 3D reconstruction. 
-        From top to bottom, P16 to P1 are displayed. Under 'Select Aggregation Form', the aggregation function of the screenshot can be chosen. <br>
-        Furthermore, below the reconstruction, a switch can be used to select which colors are projected onto the reconstruction. 
-        When projecting the EndoFLIP colors, it can be chosen whether a balloon volume of 30 or 40ml should be displayed. 
-        'Select Aggregation Form' allows the aggregation function to be chosen. NOTE: EndoFLIP data processing has not been extensively tested. 
-        Always cross-check with the manufacturer's visualization. <br><br>
-        If multiple reconstructions (import of multiple .achalasia files or via 'Insert More Reconstructions') are displayed, 
-        they can be rearranged by holding down the left mouse button and dragging them to the desired position. <br><br>
-        Download: The 3D visualizations can be exported as HTML files via 'Download for Display'. 
-        This allows the reconstructions to be viewed in the browser and makes them embeddable in PowerPoint. 
-        In addition, 'Save reconstruction as file' allows the export of '.achalasia' files. 
-        'Save reconstruction in DB' allows to save the reconstruction in the database.
-        This export enables the reconstructions to be opened again conveniently and unchanged in this program. 
-        Additionally, 'CSV Metrics Download' allows exporting the metrics. <br><br>
-        Furthermore, '.stl' files can be downloaded for 3D printing. The download of these files may take a few minutes. 
-        <br><br>After successful download, you will receive confirmation from the program for all download formats. 
-        'Reset' can be used to reset the input and load new files.
+        text = """    <h2>This window shows the 3D reconstructions you created.</h2>
+
+    <h3>View and Adjust the Visualization</h3>
+    <ul>
+        <li><strong>Rotate</strong>: Click and drag the visualization with the mouse to rotate it.</li>
+        <li><strong>Move</strong>: Hold the <strong>Ctrl</strong> key while dragging to move the visualization.</li>
+        <li><strong>Resize</strong>: Use the mouse wheel to zoom in or out.</li>
+    </ul>
+
+    <h3>Animation</h3>
+    <ul>
+        <li><strong>Start Animation</strong>: Clicking this button animates the temporal evolution of the pressure values over time.</li>
+        <li><strong>Timeline</strong>: You can manually select a specific time point using the timeline.</li>
+    </ul>
+
+    <h3>View Indices</h3>
+    <ul>
+        <li>The size of the esophagus (in centimeters) is displayed in the legend. If this deviates significantly from the expected size, it may indicate that sensor positions were entered incorrectly or inaccurately.</li>
+        <li>The calculated metrics for the tubular esophagus section (Volume * Pressure) and the lower esophageal sphincter (Volume / Pressure) are shown over time.</li>
+    </ul>
+
+    <h3>EndoFLIP Data</h3>
+    <ul>
+        <li>If EndoFLIP data has been entered, an <strong>EndoFLIP screenshot</strong> will appear to the left of the 3D reconstruction, showing values from <strong>P16 to P1</strong>.</li>
+        <li><strong>Select Aggregation Form</strong>: You can choose how the data is aggregated in the screenshot.</li>
+        <li>A switch below the reconstruction allows you to choose which <strong>colors</strong> are projected onto the reconstruction.</li>
+        <li>You can also select whether to display <strong>30ml or 40ml balloon volumes</strong> from EndoFLIP.</li>
+    </ul>
+    <p class="note">Note: EndoFLIP data processing has not been extensively tested. Always verify the results with the manufacturer’s visualization.</p>
+
+    <h3>Compare Multiple 3D Reconstructions</h3>
+    <ul>
+        <li>You can visualize multiple reconstructions by clicking Insert "Add Reconstruction(s)".</li>
+        <li>If you have multiple reconstructions you can <strong>rearrange them</strong> by holding down the left mouse button and dragging them to the desired position.</li>
+    </ul>
+
+    <h3>Download Options</h3>
+    <ol>
+        <li><strong>Download for Display</strong>: Export <em>currently displayed</em> 3D visualizations as <strong>HTML files</strong>, which can be viewed in a web browser or embedded in PowerPoint presentations.</li>
+        <li><strong>CSV Metrics Download</strong>: Exports the metrics as a CSV file.</li>
+        <li><strong>Download for 3D Printing</strong>: Downloads <code>.stl</code> files <em>of all 3D reconstructions in the viewer</em> for <strong>3D printing</strong>. Note that downloading may take a few minutes.</li>
+        <li><strong>Save Reconstruction in DB</strong>: Saves the reconstruction(s) to the database, allowing you to load and view it again later, unchanged. If a reconstruction already exists for that visit, the program will prompt you to confirm if you want to update the existing reconstruction.</li>
+    </ol>
+    <p>Once the download is complete, the program will provide confirmation for each download format.</p>
+
+    <h3>Reset the Visualization Window</h3>
+    <p>Use the <strong>Reset</strong> button to clear the input fields and load new files, allowing you to create a new visualization.</p>
         """
         self.ui.textEdit.setHtml(text)
