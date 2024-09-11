@@ -388,6 +388,8 @@ class DataWindow(QMainWindow):
 
             self.ui.visits.setEnabled(False)
             self.ui.eckardt_score.setEnabled(False)
+            self.ui.gerd.setEnabled(False)
+            self.ui.medication.setEnabled(False)
             self.ui.visit_data.setEnabled(False)
             self.ui.previous_therapies.setEnabled(False)
 
@@ -488,6 +490,8 @@ class DataWindow(QMainWindow):
         self.ui.visits.setEnabled(True)
         self.ui.previous_therapies.setEnabled(True)
         self.ui.eckardt_score.setEnabled(False)
+        self.ui.gerd.setEnabled(False)
+        self.ui.medication.setEnabled(False)
         self.ui.visit_data.setEnabled(False)
 
     def __patients_apply_filter(self):
@@ -658,9 +662,10 @@ class DataWindow(QMainWindow):
 
         # Disable Buttons until visit is selected
         self.ui.eckardt_score.setEnabled(False)
-        self.ui.visit_data.setEnabled(False)
         self.ui.gerd.setEnabled(False)
         self.ui.medication.setEnabled(False)
+        self.ui.visit_data.setEnabled(False)
+
 
     def __select_visit(self):
         selected_indexes = self.visits_tableView.selectedIndexes()  # Get the indexes of all selected cells
@@ -723,57 +728,58 @@ class DataWindow(QMainWindow):
         # Barium Swallow
         barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
             self.selected_visit)
-        if barium_swallow_images:
-            self.barium_swallow_pixmaps = barium_swallow_images
-            self.barium_swallow_image_index = 0
         barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(
             self.selected_visit)
-        if barium_swallow_minutes:
+        if barium_swallow_images and barium_swallow_minutes:
+            self.barium_swallow_pixmaps = barium_swallow_images
+            self.barium_swallow_image_index = 0
             self.barium_swallow_minutes = barium_swallow_minutes
             self.__load_barium_swallow_image()
         else:
             self.barium_swallow_pixmaps = None
             self.ui.tbe_imageview.clear()
+            self.ui.tbe_imagedescription_text.setText("")
+
 
         # Endoscopy
         endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
-        if endoscopy_images:
+        endoscopy_positions = self.endoscopy_file_service.get_endoscopy_positions_for_visit(self.selected_visit)
+        if endoscopy_images and endoscopy_positions:
             self.endoscopy_pixmaps = endoscopy_images
             self.endoscopy_image_index = 0
-        endoscopy_positions = self.endoscopy_file_service.get_endoscopy_positions_for_visit(self.selected_visit)
-        if endoscopy_positions:
             self.endoscopy_positions = endoscopy_positions
             self.__load_endoscopy_image()
         else:
             self.endoscopy_pixmaps = None
             self.ui.endoscopy_imageview.clear()
+            self.ui.endoscopy_imagedescription_text.setText("")
 
         # EndoFlip
         endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
-        if endoflip_images:
+        endoflip_timepoints = self.endoflip_image_service.get_endoflip_timepoints_for_visit(self.selected_visit)
+        if endoflip_images and endoflip_timepoints:
             self.endoflip_pixmaps = endoflip_images
             self.endoflip_image_index = 0
-        endoflip_timepoints = self.endoflip_image_service.get_endoflip_timepoints_for_visit(self.selected_visit)
-        if endoflip_timepoints:
             self.endoflip_timepoints = endoflip_timepoints
             self.__load_endoflip_image()
         else:
             self.endoflip_pixmaps = None
             self.ui.endoflip_imageview.clear()
+            self.ui.endoflip_imagedescription_text.setText("")
 
         # Endosonography
         endosono_images = self.endosonography_image_service.get_endosonography_images_for_visit(self.selected_visit)
-        if endosono_images:
-            self.endosono_pixmaps = endosono_images
-            self.endosono_image_index = 0
         endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(
             self.selected_visit)
-        if endosono_positions:
+        if endosono_images and endosono_positions:
+            self.endosono_pixmaps = endosono_images
+            self.endosono_image_index = 0
             self.endosono_positions = endosono_positions
             self.__load_endosonography_image()
         else:
             self.endosono_pixmaps = None
             self.ui.endosono_imageview.clear()
+            self.ui.endosono_imagedescription_text.setText("")
 
     def __add_eckardt_score(self):
         eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
@@ -997,12 +1003,13 @@ class DataWindow(QMainWindow):
     def __load_barium_swallow_image(self):
         # Load and display the current image
         if 0 <= self.barium_swallow_image_index < len(self.barium_swallow_pixmaps):
-            scaled_pixmap = self.barium_swallow_pixmaps[self.barium_swallow_image_index].scaledToWidth(200)
+            scaled_pixmap = self.barium_swallow_pixmaps[self.barium_swallow_image_index].scaledToHeight(200)
             scaled_size = scaled_pixmap.size()
             self.ui.tbe_imageview.setPixmap(scaled_pixmap)
             self.ui.tbe_imageview.setFixedSize(scaled_size)
             text = "Minute of image: " + str(self.barium_swallow_minutes[self.barium_swallow_image_index])
             self.ui.tbe_imagedescription_text.setText(text)
+            self.ui.tbe_imageview.update()
 
     def __barium_swallow_previous_button_clicked(self):
         # Show the previous image
@@ -1081,12 +1088,13 @@ class DataWindow(QMainWindow):
     def __load_endoscopy_image(self):
         # Load and display the current image
         if 0 <= self.endoscopy_image_index < len(self.endoscopy_pixmaps):
-            scaled_pixmap = self.endoscopy_pixmaps[self.endoscopy_image_index].scaledToWidth(200)
+            scaled_pixmap = self.endoscopy_pixmaps[self.endoscopy_image_index].scaledToHeight(200)
             scaled_size = scaled_pixmap.size()
             self.ui.endoscopy_imageview.setPixmap(scaled_pixmap)
             self.ui.endoscopy_imageview.setFixedSize(scaled_size)
             text = "Image position: " + str(self.endoscopy_positions[self.endoscopy_image_index])
             self.ui.endoscopy_imagedescription_text.setText(text)
+            self.ui.endoscopy_imageview.update()
 
     def __endoscopy_previous_button_clicked(self):
         # Show the previous image
@@ -1205,12 +1213,13 @@ class DataWindow(QMainWindow):
     def __load_endoflip_image(self):
         # Load and display the current image
         if 0 <= self.endoflip_image_index < len(self.endoflip_pixmaps):
-            scaled_pixmap = self.endoflip_pixmaps[self.endoflip_image_index].scaledToWidth(200)
+            scaled_pixmap = self.endoflip_pixmaps[self.endoflip_image_index].scaledToHeight(400)
             scaled_size = scaled_pixmap.size()
             self.ui.endoflip_imageview.setPixmap(scaled_pixmap)
             self.ui.endoflip_imageview.setFixedSize(scaled_size)
             text = "Image timepoint: " + str(self.endoflip_timepoints[self.endoflip_image_index])
             self.ui.endoflip_imagedescription_text.setText(text)
+            self.ui.endoflip_imageview.update()
 
     def __endoflip_previous_button_clicked(self):
         # Show the previous image
@@ -1264,12 +1273,13 @@ class DataWindow(QMainWindow):
     def __load_endosonography_image(self):
         # Load and display the current image
         if 0 <= self.endosono_image_index < len(self.endosono_pixmaps):
-            scaled_pixmap = self.endosono_pixmaps[self.endosono_image_index].scaledToWidth(200)
+            scaled_pixmap = self.endosono_pixmaps[self.endosono_image_index].scaledToHeight(200)
             scaled_size = scaled_pixmap.size()
             self.ui.endosono_imageview.setPixmap(scaled_pixmap)
             self.ui.endosono_imageview.setFixedSize(scaled_size)
             text = "Position of image: " + str(self.endosono_positions[self.endosono_image_index])
             self.ui.endosono_imagedescription_text.setText(text)
+            self.ui.endosono_imageview.update()
 
     def __endosonography_previous_button_clicked(self):
         # Show the previous image
