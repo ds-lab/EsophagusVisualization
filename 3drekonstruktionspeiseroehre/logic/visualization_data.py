@@ -30,7 +30,6 @@ class VisualizationData:
         self._endoscopy_start_pos = None
         self._sphincter_upper_pos = None
         self._esophagus_exit_pos = None
-        self._sphincter_length_cm = None
         self._endoflip_pos = None
 
         self._figure_x = None

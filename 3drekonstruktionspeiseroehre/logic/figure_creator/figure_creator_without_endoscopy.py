@@ -87,8 +87,8 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         # create figure
         self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list, config.title_without_endoscopy)
 
-        self.esophagus_length_cm = FigureCreator.calculate_esophagus_full_length_cm(
-            sensor_path, esophagus_full_length_px, visualization_data)
+        self.esophagus_length_cm = FigureCreator.calculate_esophagus_exact_length(
+            centers, cm_to_px_ratio)
 
         # Create endoflip table and colors if necessary
         if visualization_data.endoflip_screenshot:
@@ -99,7 +99,7 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
             self.endoflip_surface_color = None
 
         # Calculate metrics
-        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
+        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, centers,
                                                        len(centers) - 1, esophagus_full_length_cm,
                                                        esophagus_full_length_px)
 

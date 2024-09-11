@@ -73,24 +73,47 @@ class InfoWindow(QDialog):
         Clicking on the graphic creates a new point each time. <br>The selection is completed by clicking on the first point."""
         self.ui.textEdit.setHtml(text)
 
-    def show_sensor_center_path_info(self):
+    def show_sensor_path_info(self):
         text = """This Window shows the calculated/assumed path way of the katheter (sensor_path). <br><br>
-        The red path shows the assumed katheter (shortest path) through the esophagus. <br>
-        It's movable points can be adapted an will be taken as the new katheter path. <br>
-        With a RIGHT click a point on the line can be deleted if necessary. <br>
-        Underneath the red path there is a blue line that shows the original calculated path to compare the new and the old path. <br><br>
+        LEGEND:<br>
+        The RED path shows the assumed katheter (shortest path) through the esophagus. <br>
+        Underneath the red path there is a BLUE path that shows the original calculated sensor path to compare the eventually adapted (red) path and the old (blue) path.<br><br>
+        EMPLOYMENT:<br>
+        It's MOVABLE points can be adapted an will be taken as the new katheter path. <br>
+        With a RIGHT CLICK a point on the line can be deleted if necessary. <br><br>
+        EXPLANATION:<br>
+        The sensor path is used for three tasks: 1) Determine the centimeter to pixel ratio, 2) calculate the center path and 3) map the pressure as surface color. <br>
+        1) <br>
+        First the user given (blue and green point in the window before) sensor points are mapped on this calculated katheter path
+        and calculating the distance between them in pixel.<br>
+        Since the distance between these sensor points is also known in cm from the katheter now this distance in pixel 
+        is also available in cm.<br>
+        => CM to PX ratio
+        2) and 3)<br>
+        The exact process is described in related papers.<br>
+        The calculated center path is shown and adaptable in the next window.<br><br>
         !!! ATTENTION !!! <br>
         The red path has the problem that the highest and lowest point have a connection line between them in the visualisation. <br>
         This line obviously doesn't exist in reality and won't be included in the calculation."""
         self.ui.textEdit.setHtml(text)
 
-    def show_sensor_path_info(self):
+    def show_sensor_center_path_info(self):
         text = """This Window shows the calculated central path way trough the esophagus. <br><br>
+        LEGEND: <br>
         The RED path shows the calculated central path through the esophagus. <br>
-        Underneath the red path there is a BLUE line that shows the original calculated center path to compare the new and the old path. <br>
-        The ORANGE path shows the used katheter path (sensor_path) on wich the calculation of the center path is based. <br>
-        It's movable points can be adapted an will be taken as the new central path. <br>
-        With a RIGHT click a point on the line can be deleted if necessary. <br>
+        Underneath the red path there is a BLUE path that shows the original calculated center path to compare the eventually adapted (red) path and the old (blue) path. <br>
+        The ORANGE path shows the used katheter path (sensor_path) on wich the calculation of the center path is based. <br><br>
+        EMPLOYMENT:<br>
+        It's MOVABLE points can be adapted an will be taken as the new central path. <br>
+        With a RIGHT CLICK a point on the line can be deleted if necessary. <br>
+        Use the adaptability if the path is not central. <br><br>
+        USAGE:<br>
+        The center path is used to 1) construct the final reconstruction shape and 2) calculate the exact length of the esophagus. <br>
+        1) <br>
+        Since the center path displays the central path through the esophagus this is used to base the reconstruction around it.<br>
+        2) <br>
+        Since the sensor path is the shortest path it doesn't estimate the length of the esophagus best. <br>
+        But the center path gives a better estimation of the length.<br><br>
         !!! ATTENTION !!! <br>
         Should the path require mayor changes to be corrected, be aware of possible form errors in the final visualisation. <br><br>
         !!! ATTENTION !!! <br>

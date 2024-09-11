@@ -202,8 +202,7 @@ class SensorCenterPathWindow(QMainWindow):
         info_window.show()
 
     def volume_checker(self):
-        # ANALYSE
-        # ============= Volume Analyse ============= #
+        # NOT USED RIGHT NOW
         widths = np.array(self.visualization_data.widths)
         volumen_ready = (((widths * self.cm_to_px_ratio) / 2) ** 2) * np.pi
         volumen = np.sum(volumen_ready)
@@ -212,7 +211,7 @@ class SensorCenterPathWindow(QMainWindow):
         return None
 
     def length_checker(self):
-        exact_length = FigureCreator.calculate_esophagus_length_cm_center(self.visualization_data.center_path, self.cm_to_px_ratio)
+        exact_length = FigureCreator.calculate_esophagus_exact_length(self.visualization_data.center_path, self.cm_to_px_ratio)
         if exact_length > config.max_eso_length or exact_length < config.min_eso_length:
             return exact_length
         return None

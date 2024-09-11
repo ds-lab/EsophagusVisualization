@@ -176,11 +176,11 @@ class FigureCreatorWithEndoscopy(FigureCreator):
             self.endoflip_surface_color = None
 
         # calculate metrics
-        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, sensor_path,
+        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, centers,
                                                        len(centers) - 1, esophagus_full_length_cm,
                                                        esophagus_full_length_px)
 
-        self.esophagus_length_cm = FigureCreator.calculate_esophagus_length_cm_center(centers, cm_to_px_ratio)
+        self.esophagus_length_cm = FigureCreator.calculate_esophagus_exact_length(centers, cm_to_px_ratio)
 
     def get_figure(self):
         return self.figure
