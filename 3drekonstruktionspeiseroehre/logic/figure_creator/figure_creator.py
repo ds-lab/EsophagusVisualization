@@ -122,11 +122,11 @@ class FigureCreator(ABC):
         return length_cm * (esophagus_full_length_px / path_length_px)
 
     @staticmethod
-    def calculate_esophagus_length_cm_center(center_path, cm_to_pixel_ratio):
+    def calculate_esophagus_exact_length(center_path, cm_to_pixel_ratio):
         """
-        calculates the exact length of the esophagus.
-        (The above calculates the length of the sensor_path wich might lead to
-        deviations if the path isn't located in the middle
+        Calculates the exact length of the esophagus.
+        (This calculation uses the center path (exactly in the middle) for a
+        mor accurate result)
         :param center_path: calculated center_path of the esophagus in (y,x) tuples
         :param cm_to_pixel_ratio: the calculated cm_to_pixel_ratio in the xray image
         """
@@ -213,6 +213,9 @@ class FigureCreator(ABC):
                                 sensor_path_lengths_px[current_sensor_index]))
                         surfacecolor.append(pressure)
             surfacecolor_list.append(surfacecolor)
+        surfacecolor_list = np.array(surfacecolor_list)
+        surfacecolor_list = np.abs(surfacecolor_list)  #All values positive
+        surfacecolor_list[surfacecolor_list == 0] = 1  #Convert 0 values to 1
         return surfacecolor_list
 
     @staticmethod
@@ -592,6 +595,9 @@ class FigureCreator(ABC):
 
     @staticmethod
     def calculate_lower_sphincter_center(visualization_data, surfacecolor_list, sensor_path):
+
+        # OUT OF USE SINCE LOWER SPHINCTER BOUNDARY IS USER GIVEN NOW
+
         """
         calculates the center position of the lower sphincter by searching for the maximum pressure
         :param visualization_data: VisualizationData
@@ -621,6 +627,9 @@ class FigureCreator(ABC):
     @staticmethod
     def calculate_lower_sphincter_boundary(visualization_data, lower_sphincter_center, sensor_path, max_index,
                                            esophagus_full_length_cm, esophagus_full_length_px):
+
+        #OUT OF USE SINCE LOWER SPHINCTER BOUNDARY IS USER GIVEN NOW
+
         """
         calculates the upper and lower boundary of the sphincter by its center and the length
         @param visualization_data: VisualizationData
@@ -665,7 +674,7 @@ class FigureCreator(ABC):
         return upper_border_index, lower_border_index
 
     @staticmethod
-    def calculate_metrics(visualization_data, figure_x, figure_y, surfacecolor_list, sensor_path, max_index,
+    def calculate_metrics(visualization_data, figure_x, figure_y, surfacecolor_list, center_path, max_index,
                           esophagus_full_length_cm, esophagus_full_length_px):
         """
         calculates the metrics for tubular part (volume*pressure) and sphincter (volume/pressure)
@@ -673,7 +682,7 @@ class FigureCreator(ABC):
         @param figure_x: x-values of the figure
         @param figure_y: y-values of the figure
         @param surfacecolor_list: list of surfacecolors for every frame
-        @param sensor_path: estimated path of the sensor catheter as list of coordinates
+        @param center_path: central path trough esophagus
         @param max_index: maximum index value at the bottom (len(centers)-1))
         @param esophagus_full_length_cm: length in cm
         @param esophagus_full_length_px: length in pixels
@@ -681,42 +690,46 @@ class FigureCreator(ABC):
         """
         # Find index of lower sphincter boundary
         ls_upper_pos = visualization_data.sphincter_upper_pos
-        ls_upper_pos = [ls_upper_pos[1], ls_upper_pos[0]]  # Because sensor_path is of shape (y,x)
+        ls_upper_pos = [ls_upper_pos[1], ls_upper_pos[0]]  # Because center_path is of shape (y,x)
         ls_lower_pos = visualization_data.esophagus_exit_pos
-        ls_lower_pos = [ls_lower_pos[1], ls_lower_pos[0]]  # Because sensor_path is of shape (y,x)
+        ls_lower_pos = [ls_lower_pos[1], ls_lower_pos[0]]  # Because center_path is of shape (y,x)
 
-        # Calculate the closest points on the sensor_path for the user given upper and lower boundary of the lower esophagus
-        _, ls_index_upper = spatial.KDTree(np.array(sensor_path)).query(np.array(ls_upper_pos))
-        _, ls_index_lower = spatial.KDTree(np.array(sensor_path)).query(np.array(ls_lower_pos))
+        # Calculate the closest points on the center path for the user given upper and lower boundary of the lower esophagus
+        _, ls_index_upper = spatial.KDTree(np.array(center_path)).query(np.array(ls_upper_pos))
+        _, ls_index_lower = spatial.KDTree(np.array(center_path)).query(np.array(ls_lower_pos))
         lower_sphincter_boundary = [ls_index_upper, ls_index_lower]
 
         # Tubular upper boundary
-        tubular_part_upper_pos = sensor_path[0]
-        tubular_part_upper_boundary = 0
+        tubular_part_upper_boundary = 1
 
         one_px_as_cm = esophagus_full_length_cm / esophagus_full_length_px
-
         # SZENARIO 1: ==========
-        # Calculate volume tubular
+        # Calculate volume/length tubular
         volume_sum_tubular = 0
-        for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0]):
-            shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
+        len_tubular = 0
+        for i in range(tubular_part_upper_boundary, lower_sphincter_boundary[0] + 1):
+            len_tubular += np.sqrt((center_path[i][0] - center_path[i - 1][0]) ** 2 + (center_path[i][1] - center_path[i - 1][1]) ** 2)
+            shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i - 1], figure_y[i - 1])))
             # (height of a single slice is one pixel)
             volume_sum_tubular = volume_sum_tubular + shapely_poly.area
         # one_px_as_cm factor is needed, because of the third dimension height
         volume_sum_tubular = volume_sum_tubular * one_px_as_cm
+        len_tubular = len_tubular * one_px_as_cm
 
-        # Calculate volume sphincter
+        # Calculate volume/length sphincter
         volume_sum_sphincter = 0
-        for i in range(lower_sphincter_boundary[0], lower_sphincter_boundary[1] + 1):
-            # (height of a single slice is one pixel)
+        len_sphincter = 0
+        for i in range(lower_sphincter_boundary[0] + 1, lower_sphincter_boundary[1] + 1):
+            len_sphincter += np.sqrt((center_path[i][0] - center_path[i - 1][0]) ** 2 + (center_path[i][1] - center_path[i - 1][1]) ** 2)
             shapely_poly = shapely.geometry.Polygon(tuple(zip(figure_x[i], figure_y[i])))
+            # (height of a single slice is one pixel)
             volume_sum_sphincter = volume_sum_sphincter + shapely_poly.area
         # one_px_as_cm factor is needed, because of the third dimension height
         volume_sum_sphincter = volume_sum_sphincter * one_px_as_cm
+        len_sphincter = len_sphincter * one_px_as_cm
 
         # Calculate max, min, mean pressure over time and space for tubular part of esophagus
-        np_surfacecolor_list = np.array(surfacecolor_list)
+        np_surfacecolor_list = surfacecolor_list
         tubular_section_surfacecolor_list = np_surfacecolor_list[:,
                                             tubular_part_upper_boundary:lower_sphincter_boundary[0] + 1]
         max_pressure_tubular_per_frame = np.max(tubular_section_surfacecolor_list, axis=1)
@@ -733,11 +746,11 @@ class FigureCreator(ABC):
         metric_mean_tubular = volume_sum_tubular * mean_pressure_tubular_per_frame
         metric_mean_tubular_all = np.mean(metric_mean_tubular)
 
-        pressure_tubular_overall = [max_pressure_tubular, min_pressure_tubular, mean_pressure_tubular]
-        pressure_tubular_per_frame = [max_pressure_tubular_per_frame, min_pressure_tubular_per_frame,
-                                      mean_pressure_tubular_per_frame]
-        metric_tubular = [metric_max_tubular, metric_min_tubular, metric_mean_tubular]
-        metric_tubular_overall = [metric_max_tubular_all, metric_min_tubular_all, metric_mean_tubular_all]
+        pressure_tubular_overall = {'max':max_pressure_tubular, 'min':min_pressure_tubular, 'mean':mean_pressure_tubular}
+        pressure_tubular_per_frame = {'max':max_pressure_tubular_per_frame, 'min':min_pressure_tubular_per_frame,
+                                      'mean':mean_pressure_tubular_per_frame}
+        metric_tubular = {'max':metric_max_tubular, 'min':metric_min_tubular, 'mean':metric_mean_tubular}
+        metric_tubular_overall = {'max':metric_max_tubular_all, 'min':metric_min_tubular_all, 'mean':metric_mean_tubular_all}
 
         # Calculate max pressure over timeline for lower_sphincter_center
         # (lower_sphincter_center is the region with the max pressure in space)
@@ -762,19 +775,26 @@ class FigureCreator(ABC):
             metric_mean_sphincter = np.where(mask_mean, volume_sum_sphincter / mean_pressure_sphincter_per_frame, 0)
             metric_mean_sphincter_all = np.mean(metric_mean_sphincter)
 
-        pressure_sphincter_per_frame = [max_pressure_sphincter_per_frame, min_pressure_sphincter_per_frame,
-                                        mean_pressure_sphincter_per_frame]
-        pressure_sphincter_overall = [max_pressure_sphincter, min_pressure_sphincter, mean_pressure_sphincter]
-        metric_sphincter = [metric_max_sphincter, metric_min_sphincter, metric_mean_sphincter]
-        metric_sphincter_overall = [metric_max_sphincter_all, metric_min_sphincter_all, metric_mean_sphincter_all]
+        pressure_sphincter_per_frame = {'max':max_pressure_sphincter_per_frame, 'min':min_pressure_sphincter_per_frame,
+                                        'mean':mean_pressure_sphincter_per_frame}
+        pressure_sphincter_overall = {'max':max_pressure_sphincter, 'min':min_pressure_sphincter, 'mean':mean_pressure_sphincter}
+        metric_sphincter = {'max':metric_max_sphincter, 'min':metric_min_sphincter, 'mean':metric_mean_sphincter}
+        metric_sphincter_overall = {'max':metric_max_sphincter_all, 'min':metric_min_sphincter_all, 'mean':metric_mean_sphincter_all}
 
-        return_val = [
-            metric_tubular, metric_sphincter,
-            volume_sum_tubular, volume_sum_sphincter,
-            metric_tubular_overall, metric_sphincter_overall,
-            pressure_tubular_overall, pressure_sphincter_overall,
-            pressure_tubular_per_frame, pressure_sphincter_per_frame
-        ]
+        return_val ={
+            'metric_tubular': metric_tubular,
+            'metric_sphincter':metric_sphincter,
+            'len_tubular':len_tubular,
+            'len_sphincter':len_sphincter,
+            'volume_sum_tubular':volume_sum_tubular,
+            'volume_sum_sphincter':volume_sum_sphincter,
+            'metric_tubular_overall':metric_tubular_overall,
+            'metric_sphincter_overall':metric_sphincter_overall,
+            'pressure_tubular_overall':pressure_tubular_overall,
+            'pressure_sphincter_overall':pressure_sphincter_overall,
+            'pressure_tubular_per_frame':pressure_tubular_per_frame,
+            'pressure_sphincter_per_frame':pressure_sphincter_per_frame
+        }
         return return_val
 
     @staticmethod

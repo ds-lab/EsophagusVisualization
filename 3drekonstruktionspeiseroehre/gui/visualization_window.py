@@ -413,7 +413,7 @@ class VisualizationWindow(QMainWindow):
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
-                    ["Id",
+                    ["Id-Visit","Id-Picture"
                      "Volume Tubular", "Volume Sphincter", "Esophagus Length (cm)",
                      "Mean over all (Volume * max(tubular pressure from frame))",
                      "Mean over all (Volume * min(tubular pressure from frame))",
@@ -433,26 +433,26 @@ class VisualizationWindow(QMainWindow):
                         visit_name = name
                     # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
                     for j in range(len(visit_data.visualization_data_list)):
+                        id_minute = visit_data.visualization_data_list[j].xray_minute
                         metrics = visit_data.visualization_data_list[j].figure_creator.get_metrics()
-                        tubular_metric_mean = metrics[4][2]
-                        tubular_metric_min = metrics[4][1]
-                        tubular_metric_max = metrics[4][0]
-                        sphincter_metric_mean = metrics[5][2]
-                        sphincter_metric_min = metrics[5][1]
-                        sphincter_metric_max = metrics[5][0]
-                        tubular_pressure_mean = metrics[-4][2]
-                        tubular_pressure_min = metrics[-4][1]
-                        tubular_pressure_max = metrics[-4][0]
-                        sphincter_pressure_mean = metrics[-3][2]
-                        sphincter_pressure_min = metrics[-3][1]
-                        sphincter_pressure_max = metrics[-3][0]
-                        volume_tubular = metrics[2]
-                        volume_sphincter = metrics[3]
-                        esophagus_length = visit_data.visualization_data_list[
-                            j].figure_creator.get_esophagus_full_length_cm()
+                        tubular_metric_mean = metrics['metric_tubular_overall']['mean']
+                        tubular_metric_min = metrics['metric_tubular_overall']['min']
+                        tubular_metric_max = metrics['metric_tubular_overall']['max']
+                        sphincter_metric_mean = metrics['metric_sphincter_overall']['mean']
+                        sphincter_metric_min = metrics['metric_sphincter_overall']['min']
+                        sphincter_metric_max = metrics['metric_sphincter_overall']['max']
+                        tubular_pressure_mean = metrics['pressure_tubular_overall']['mean']
+                        tubular_pressure_min = metrics['pressure_tubular_overall']['min']
+                        tubular_pressure_max = metrics['pressure_tubular_overall']['max']
+                        sphincter_pressure_mean = metrics['pressure_sphincter_overall']['mean']
+                        sphincter_pressure_min = metrics['pressure_sphincter_overall']['min']
+                        sphincter_pressure_max = metrics['pressure_sphincter_overall']['max']
+                        volume_tubular = metrics['volume_sum_tubular']
+                        volume_sphincter = metrics['volume_sum_sphincter']
+                        esophagus_length = visit_data.visualization_data_list[j].figure_creator.get_esophagus_full_length_cm()
 
                         # Write metrics data to CSV file
-                        writer.writerow([visit_name.encode("utf-8"),
+                        writer.writerow([visit_name.encode("utf-8"), id_minute,
                                          round(volume_tubular, 2), round(volume_sphincter, 2), round(esophagus_length, 2),
                                          round(tubular_metric_max, 2), round(tubular_metric_min, 2), round(tubular_metric_mean, 2),
                                          round(sphincter_metric_max, 2), round(sphincter_metric_min, 2), round(sphincter_metric_mean, 2),
@@ -503,7 +503,7 @@ class VisualizationWindow(QMainWindow):
             with open(destination_file_path_metriks, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
-                    ["Id", "Frame", "Volume Tubular", "Volume Sphincter", "Max tubular pressure in frame", "Min tubular pressure in frame", "Mean tubular pressure in frame",
+                    ["Id-Visit", "Id-Picture", "Frame", "Length Tubular", "Length Sphincter", "Volume Tubular", "Volume Sphincter", "Max tubular pressure in frame", "Min tubular pressure in frame", "Mean tubular pressure in frame",
                      "Volume * max(tubular pressure from frame)", "Volume * min(tubular pressure from frame)", "Volume * mean(tubular pressure from frame)",
                      "Max sphincter pressure in frame", "Min sphincter pressure in frame", "Mean sphincter pressure in frame",
                      "Volume / max(sphincter pressure from frame)", "Volume / min(sphincter pressure from frame)", "Volume / mean(sphincter pressure from frame)"])
@@ -519,24 +519,27 @@ class VisualizationWindow(QMainWindow):
                     # loop though all X_ray pictures/"Breischluckbilder" of a particular visit_data
                     for j in range(len(visit_data.visualization_data_list)):
                         metrics = visit_data.visualization_data_list[j].figure_creator.get_metrics()
-                        for frame in range(len(metrics[0][0])):
-                            max_pressure_tubular_per_frame = metrics[-2][0][frame]
-                            min_pressure_tubular_per_frame = metrics[-2][1][frame]
-                            mean_pressure_tubular_per_frame = metrics[-2][2][frame]
-                            max_pressure_sphincter_per_frame = metrics[-1][0][frame]
-                            min_pressure_sphincter_per_frame = metrics[-1][1][frame]
-                            mean_pressure_sphincter_per_frame = metrics[-1][2][frame]
-                            metric_max_tubular = metrics[0][0][frame]
-                            metric_min_tubular = metrics[0][1][frame]
-                            metric_mean_tubular = metrics[0][2][frame]
-                            metric_max_sphincter = metrics[1][0][frame]
-                            metric_min_sphincter = metrics[1][1][frame]
-                            metric_mean_sphincter = metrics[1][2][frame]
-                            volume_tubular = metrics[2]
-                            volume_sphincter = metrics[3]
+                        id_minute = visit_data.visualization_data_list[j].xray_minute
+                        for frame in range(len(metrics['metric_tubular']['max'])):
+                            max_pressure_tubular_per_frame = metrics['pressure_tubular_per_frame']['max'][frame]
+                            min_pressure_tubular_per_frame = metrics['pressure_tubular_per_frame']['min'][frame]
+                            mean_pressure_tubular_per_frame = metrics['pressure_tubular_per_frame']['mean'][frame]
+                            max_pressure_sphincter_per_frame = metrics['pressure_sphincter_per_frame']['max'][frame]
+                            min_pressure_sphincter_per_frame = metrics['pressure_sphincter_per_frame']['min'][frame]
+                            mean_pressure_sphincter_per_frame = metrics['pressure_sphincter_per_frame']['mean'][frame]
+                            metric_max_tubular = metrics['metric_tubular']['max'][frame]
+                            metric_min_tubular = metrics['metric_tubular']['min'][frame]
+                            metric_mean_tubular = metrics['metric_tubular']['mean'][frame]
+                            metric_max_sphincter = metrics['metric_sphincter']['max'][frame]
+                            metric_min_sphincter = metrics['metric_sphincter']['min'][frame]
+                            metric_mean_sphincter = metrics['metric_sphincter']['mean'][frame]
+                            volume_tubular = metrics['volume_sum_tubular']
+                            volume_sphincter = metrics['volume_sum_sphincter']
+                            len_tubular = metrics['len_tubular']
+                            len_sphincter = metrics['len_sphincter']
 
                             # Write metrics data to CSV file
-                            writer.writerow([visit_name.encode("utf-8"), frame, volume_tubular, volume_sphincter,
+                            writer.writerow([visit_name.encode("utf-8"), id_minute, frame, len_tubular, len_sphincter, volume_tubular, volume_sphincter,
                                              round(max_pressure_tubular_per_frame, 2),round(min_pressure_tubular_per_frame, 2),round(mean_pressure_tubular_per_frame, 2),
                                              round(metric_max_tubular, 2), round(metric_min_tubular, 2), round(metric_mean_tubular, 2),
                                              round(max_pressure_sphincter_per_frame, 2),round(min_pressure_sphincter_per_frame, 2),round(mean_pressure_sphincter_per_frame, 2),
