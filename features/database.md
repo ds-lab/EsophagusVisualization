@@ -3,172 +3,196 @@
 ## Patients Tab
 
 ### Managing Patients
-- Patients can be stored in the database via the input form.
-- Basic validation checks are performed when storing patient data in the database.
-- If optional data fields are not filled in, the user will be notified.
-- If mandatory data fields are not filled in, the user will be notified and must correct them.
-- Patients can be selected from the patient list by clicking on their ID.
-- Patients in the list can be sorted in ascending or descending order by all attributes.
-- Patients can be filtered by all attributes.
-- In the input form, patients can be searched using the autocomplete function by ID.
-- Patient data can be updated when new data is entered for the same ID.
-- Patients can be deleted from the database. When a patient is deleted, all associated data (i.e., their visits and all related data) will also be deleted.
-- Warnings appear when deleting or updating a patient to prevent accidental deletion/updates.
+- **Adding Patients**:
+  - Patients are added via an input form with basic validation checks.
+  - Missing optional fields trigger a notification.
+  - Missing mandatory fields must be corrected before saving.
+- **Patient List**:
+  - Patients can be selected by clicking on their ID.
+  - Patients can be sorted and filtered by any attribute.
+  - A search function with autocomplete (by ID) is available.
+- **Updating Patients**:
+  - Patient data can be updated by entering new data for the same ID.
+- **Deleting Patients**:
+  - Patients can be deleted, along with all associated data (e.g., visits, therapies).
+  - A warning appears before deletion or updates to prevent accidental changes.
 
 ### Managing Previous Therapies
-- When a patient is selected in the Patients tab, previous therapies can be added for that patient. If no patient is selected, this is not possible. A message will appear prompting the user to select a patient, and the field for adding previous therapies will be inactive.
-- If optional data fields (for previous therapies) are not filled in, the user will be notified.
-- If mandatory data fields are not filled in, the user will be notified and must correct them.
-- Previously added therapies can be selected from the list of previous therapies.
-- Selected therapies can be deleted.
-- Warnings appear when deleting a previous therapy to prevent accidental deletion.
+- **Adding Previous Therapies**:
+  - Only available when a patient is selected; otherwise, the field remains inactive.
+  - Missing optional or mandatory fields trigger notifications to ensure proper data entry.
+- **Managing Existing Therapies**:
+  - Previously added therapies can be selected, viewed, or deleted.
+  - Warnings appear when deleting a previous therapy to prevent accidental deletion.
+
+---
 
 ## Visits Tab
 
 ### Managing Visits
-- Visits can only be created when a patient is selected.
-- If no patient is selected, a message will appear prompting the user to select a patient. Additionally, the fields for creating a visit (and related data) will be inactive.
-- Basic validation checks are performed when storing visit data.
-- If mandatory data fields are not filled in, the user will be notified and must correct them.
-- Visits can be selected from the visit list by clicking on their ID.
-- Selected visits can be deleted. When a visit is deleted, all associated data is also deleted. However, the patient to whom the visit belongs remains in the database.
-- Warnings appear when deleting a visit to prevent accidental deletion.
-- When a visit is selected, the following fields in the Visits tab are unlocked to store additional data related to the visit: Eckardt Score, Gerd Score, Medication. All of these additional data fields are optional and do not need to be filled in.
+- **Adding Visits**:
+  - Visits can only be created when a patient is selected. Without a patient, the field remains inactive.
+  - Missing mandatory fields must be corrected before saving.
+- **Visit List**:
+  - Visits can be selected by clicking on their ID.
+  - Selected visits can be deleted, along with all associated data, though the patient remains.
+  - Warnings appear before deleting a visit to prevent accidental loss.
+
+### Selecting a Visit
+  - When a visit is selected for the visits list, the fields **Eckardt Score**, **Gerd Score**, and **Medication** are unlocked for data entry.
 
 ### Eckardt Score
-- An Eckardt Score can only be created when a visit is selected.
-- Basic validation checks are performed when storing Eckardt Score data: the individual scores must add up to the total score if all individual scores are filled in. If not all individual scores are filled, the individual scores cannot be greater than the total score.
-- Either the total score or all individual scores are mandatory fields that must be filled in.
-- If optional data fields are not filled in, the user will be notified.
-- If mandatory data fields are not filled in, the user will be notified and must correct them.
-- The Eckardt Score of a visit can be deleted or updated.
-- Warnings appear when deleting or updating the Eckardt Score to prevent accidental deletion or updates.
-- The currently stored Eckardt Score attributes for the selected visit is displayed in a text field below the input box.
+- **Data Entry**:
+  - Can only be created when a visit is selected.
+  - Validation ensures individual scores must match the total score.
+  - Either the total score or individual scores must be filled in.
+- **Updating and Deleting**:
+  - The Eckardt Score can be updated or deleted.
+  - A warning appears before any change to prevent accidental data loss.
+- **Reviewing Data**:
+  - The stored Eckardt Score for the selected visit is displayed for reference.
 
 ### Gerd Score
-- A Gerd Score can only be created when a visit is selected.
-- All data fields of the Gerd Score are optional.
-- If optional data fields are not filled in, the user will be notified.
-- The Gerd Score of a visit can be deleted or updated.
-- Warnings appear when deleting or updating the Gerd Score to prevent accidental deletion or updates.
-- The currently stored Gerd Score for the selected visit is displayed in a text field below the input box.
+- **Data Entry**:
+  - Can only be created when a visit is selected.
+  - All Gerd Score fields are optional, with notifications for unfilled optional fields.
+- **Updating and Deleting**:
+  - The Gerd Score can be updated or deleted.
+  - A warning appears before any change to prevent accidental data loss.
+- **Reviewing Data**:
+  - The stored Gerd Score for the selected visit is displayed for reference.
 
 ### Medication
-- Medication can only be added to a visit when a visit is selected.
-- If optional data fields are not filled in, the user will be notified.
-- If mandatory data fields are not filled in, the user will be notified and must correct them.
-- An unlimited number of medications can be stored for a visit.
-- The medications saved for a visit in the database are displayed in a text field below the input form for review.
-- It is not possible to delete individual medications via the GUI. However, all medications associated with a visit can be deleted and re-entered.
-- The GUI is extendable, for example, to add features for deleting individual medications from the history.
+- **Adding Medication**:
+  - Medications can only be added when a visit is selected.
+  - An unlimited number of medications can be stored for each visit.
+- **Reviewing Medication**:
+  - All saved medications for the selected visit are displayed for review.
+- **Deleting Medication**:
+  - The GUI does not currently allow individual medication deletions; all medications for a visit must be deleted and re-entered.
+  - The interface can be extended to support individual medication deletions in the future.
+
+---
 
 ## Diagnostics & Therapy Tab
 
-- The Diagnostics & Therapy tab can only be populated with data if a visit is selected. If no visit (or patient) is selected, a message will prompt the user to select one, and the tab will remain inactive.
-- Therapy data is requested in the Diagnostics & Therapy tab only if the visit type is set to "Therapy". For other visit types, only diagnostic data is collected.
-- If the visit type is "Therapy", the specific therapy data requested will depend on the therapy type selected, which can include:
-  - Botox Injection
-  - Pneumatic Dilation
-  - POEM 
-  - LHM
-- Diagnostic data is always collected, regardless of the visit type. This includes:
-  - Manometry
-  - Timed Barium Esophagogram (TBE)
-  - Esophagogastroduodenoscopy (EGD)
-  - Impedance Planimetry (EndoFlip)
-  - Endosonography
-- Both therapy and diagnostic data entry are optional. However, for the 3D reconstruction of the esophagus, at least one or more TBE images and a manometry .csv file must be uploaded, as these are essential for the 3D reconstruction. Additionally, the algorithm can optionally process endoscopy images and EndoFlip data (.xlsx file).
+- **Activation**: The tab becomes active only when a visit is selected. Without a selection, it remains inactive.
+- **Therapy Data**:
+  - Therapy data is collected if the visit type is set to "Therapy."
+  - Therapy types include:
+    - Botox Injection
+    - Pneumatic Dilation
+    - POEM
+    - LHM
+- **Diagnostic Data**:
+  - Diagnostic data is always collected, regardless of the visit type.
+  - Diagnostic procedures include:
+    - Manometry
+    - Timed Barium Esophagogram (TBE)
+    - Esophagogastroduodenoscopy (EGD)
+    - Impedance Planimetry (EndoFlip)
+    - Endosonography
+- **3D Reconstruction**:
+  - For 3D esophagus reconstruction, **TBE images** and a **Manometry .csv file** are mandatory.
+  - Additional optional files (e.g., endoscopy images, EndoFlip data) can also be uploaded.
+
+---
 
 
-### Manometry Data Management
+## Manometry Data Management
+- **Data Input Requirements**: Only possible if a visit is selected. Without a selected visit, data upload is deactivated.
+- **Data Handling**:
+  - **Manometry Data**:
+    - If incomplete, users are notified of missing fields.
+    - Saved data is displayed for reference and can be updated by overwriting existing data.
+    - Update and deletion warnings for data loss prevention.
+  - **Manometry Pressure File**:
+    - A .csv file (from 'Laborie stationary measurement & analysis software') can be uploaded and updated.
+    - Update prompts a warning to prevent accidental file replacement.
 
-- Manometry data:
-  - Manometry data can only be uploaded if a visit is selected. If no visit is selected, the option to input and upload data will be deactivated.
-  - Uploading manometry data is optional.
-  - If optional data fields are not filled in, the user will be notified.
-  - Manometry data saved for the currently selected visit are displayed next to the input form for easy reference.
-  - Manometry data can be updated by overwriting the currently saved data.
-  - When updating manometry data, the user will receive a warning to prevent accidental data loss.
-  - When deleting manometry data, the user will be warned to avoid accidental data loss.
-- Manometry pressure file:
-  - Additionally, a .csv file of the Manometry measurements (from 'Laborie stationary measurement & analysis software' by Medical Measurement Systems B.V.) can be uploaded in the database.
-  - This file can be updated by uploading a new file. In this case, the user will be warned, to prevent accidental data loss.
+---
 
-### Timed Barium Esophagogram (TBE) Data Management
+## Timed Barium Esophagogram (TBE) Data Management
+- **Data Input Requirements**: Only possible if a visit is selected. Without a selected visit, data upload is deactivated.
+- **Data Handling**:
+  - **TBE Data**:
+    - Incomplete uploads prompt a notification.
+    - Saved data is displayed and can be updated by overwriting existing data.
+    - Update and deletion warnings for data loss prevention.
+  - **TBE Images**:
+    - Images (.jpg, .png) are uploaded, with .png converted to .jpg for consistency.
+    - Preview display with associated timepoints.
+    - Image navigation using "previous" and "next" buttons.
+    - Update and deletion warnings to prevent accidental data loss when replacing images.
 
-- TBE data:
-  - TBE data can only be uploaded if a visit is selected. If no visit is selected, the option to input and upload data will be deactivated.
-  - Uploading TBE data is optional.
-  - If optional data fields are not filled in, the user will be notified.
-  - TBE data saved for the currently selected visit are displayed next to the input form for easy reference.
-  - TBE data can be updated by overwriting the currently saved data.
-  - When updating TBE data, the user will receive a warning to prevent accidental data loss.
-  - When deleting TBE data, the user will be warned to avoid accidental data loss.
-- TBE images:
-  - TBE images (.jpg or .png) can be uploaded to the database. .png images are internally converted to .jpg for consistent file handling.
-  - A preview of the uploaded TBE images is displayed in the TBE section.
-  - The timepoint of each TBE image is shown above the image for reference.
-  - The user can scroll through the TBE images using the "previous" and "next" buttons.
-  - The user can update TBE images by uploading new versions.
-  - When updating TBE images, the user will receive a warning to prevent accidental data loss.
-  - When updating, the old images will be deleted (after user confirmation) and replaced with the newly uploaded files.
+---
 
-### Esophagogastroduodenoscopy (EGD) Data Management
+## Esophagogastroduodenoscopy (EGD) Data Management
+- **Data Input Requirements**: Only possible if a visit is selected. Without a selected visit, data upload is deactivated.
+- **Data Handling**:
+  - **EGD Data**:
+    - Incomplete uploads trigger a notification.
+    - Saved data is displayed and can be updated by overwriting existing data.
+    - Update and deletion warnings to prevent accidental data loss.
+  - **EGD Images**:
+    - Images (.jpg, .png) are uploaded, with .png converted to .jpg for consistency.
+    - Preview display with image height for reference.
+    - Image navigation with "previous" and "next" buttons.
+    - Update and deletion warnings to prevent accidental data loss.
 
-- EGD data:
-  - EGD data can only be uploaded if a visit is selected. If no visit is selected, the option to input and upload data will be deactivated.
-  - Uploading EGD data is optional.
-  - If optional data fields are not filled in, the user will be notified.
-  - EGD data saved for the currently selected visit are displayed next to the input form for easy reference.
-  - EGD data can be updated by overwriting the currently saved data.
-  - When updating EGD data, the user will receive a warning to prevent accidental data loss.
-  - When deleting EGD data, the user will be warned to avoid accidental data loss.
-- EGD images:
-  - EGD images (.jpg or .png) can be uploaded to the database. .png images are internally converted to .jpg for consistent file handling.
-  - A preview of the uploaded EGD images is displayed in the EGD section.
-  - The height of each EGD image is shown above the image for reference.
-  - The user can scroll through the EGD images using the "previous" and "next" buttons.
-  - The user can update EGD images by uploading new versions.
-  - When updating EGD images, the user will receive a warning to prevent accidental data loss.
-  - When updating, the old images will be deleted (after user confirmation) and replaced with the newly uploaded files.
+---
 
-### Impedance Planimetry (EndoFlip) Data Management
+## Impedance Planimetry (EndoFlip) Data Management
+- **Data Input Requirements**: Only possible if a visit is selected. Without a selected visit, data upload is deactivated.
+- **Data Handling**:
+  - **EndoFlip Data**:
+    - Incomplete uploads trigger a notification.
+    - Saved data is displayed and can be updated by overwriting existing data.
+    - Update and deletion warnings for accidental data loss prevention.
+  - **EndoFlip Images**:
+    - Images (.jpg, .png) can be uploaded, with .png converted to .jpg for consistency.
+    - Preview display with image timepoints ("before", "during", "after") for reference.
+    - Image navigation with "previous" and "next" buttons.
+    - Update and deletion warnings to prevent accidental data loss.
+  - **EndoFlip Files**:
+    - .xlsx files with measurement data (before, during, after) can be uploaded.
+    - Update and deletion warnings to prevent accidental data loss when replacing files.
 
-- EndoFlip data:
-  - EndoFlip data can only be uploaded if a visit is selected. If no visit is selected, the option to input and upload data will be deactivated.
-  - Uploading EndoFlip data is optional.
-  - If optional data fields are not filled in, the user will be notified.
-  - EndoFlip data saved for the currently selected visit are displayed next to the input form for easy reference.
-  - EndoFlip data can be updated by overwriting the currently saved data.
-  - When updating EndoFlip data, the user will receive a warning to prevent accidental data loss.
-  - When deleting EndoFlip data, the user will be warned to avoid accidental data loss.
-- EndoFlip images:
-  - EndoFlip images (.jpg or .png) can be uploaded to the database. .png images are internally converted to .jpg for consistent file handling.
-  - A preview of the uploaded EndoFlip images is displayed in the EGD section.
-  - The timepoint ("before", "during" or "after") of each EndoFlip image is shown above the image for reference.
-  - The user can scroll through the EGD images using the "previous" and "next" buttons.
-  - The user can update EGD images by uploading new versions.
-  - When updating TBE images, the user will receive a warning to prevent accidental data loss.
-  - When updating, the old images will be deleted (after user confirmation) and replaced with the newly uploaded files.
-- EndoFlip Files:
-  - .xlsx files containing EndoFlip measurements (before, during, and after the procedure) can be uploaded to the database.
-  - These files can be updated by uploading new versions. The user will receive a warning to prevent accidental data loss.
-  - When updating, the old files will be deleted (after user confirmation) and replaced with the newly uploaded files.
+---
 
-### Endosonography Data Management
+## Endosonography Data Management
+- **Data Input Requirements**: Only possible if a visit is selected. Without a selected visit, data upload is deactivated.
+- **Data Handling**:
+  - **Endosonography Images**:
+    - Images (.jpg, .png) can be uploaded, with .png converted to .jpg for consistency.
+    - Preview display with image height for reference.
+    - Image navigation using "previous" and "next" buttons.
+    - Update and deletion warnings to prevent accidental data loss.
+  - **Endosonography Videos**:
+    - Videos can be uploaded and later downloaded via the user interface.
+    - Update and deletion warnings to prevent accidental data loss.
 
-- Endosonography images:
-  - Endosonography images (.jpg or .png) can be uploaded to the database. .png images are internally converted to .jpg for consistent file handling.
-  - A preview of the uploaded Endosonography images is displayed in the Endosonography section.
-  - The height of each Endosonography image is shown above the image for reference.
-  - The user can scroll through the Endosonography images using the "previous" and "next" buttons.
-  - The user can update Endosonography images by uploading new versions.
-  - When updating Endosonography images, the user will receive a warning to prevent accidental data loss.
-  - When updating, the old images will be deleted (after user confirmation) and replaced with the newly uploaded files.
-- Endosonography videos:
-  - Endosonography videos can be uploaded to the database.
-  - Endosonography videos currently saved in the database can be downloaded to the computer of the user via the user-interface.
-  - The user can update Endosonography videos by uploading new versions.
-  - When updating Endosonography videos, the user will receive a warning to prevent accidental data loss.
-  - When updating, the old videos will be deleted (after user confirmation) and replaced with the newly uploaded files.
+---
+
+## Botox Injection Data Management
+- **Data Input Requirements**:
+  - Only possible if a visit is selected.
+  - Botox injection data can only be input if the visit type is "Therapy" and therapy type is "Botox Injection".
+- **Data Handling**:
+  - **Botox Injection Data**:
+    - Multiple injections can be associated with a single visit to form a "Botox Therapy".
+    - Saved Botox therapy data is displayed for easy reference.
+    - Botox Therapy data can be deleted but not updated.
+    - Deletion warnings to prevent accidental data loss.
+  - **Complications**:
+    - Complications associated with Botox therapy can be uploaded and displayed next to the input box.
+    - Complications associated with a Botox therapy can be deleted but not updated (without previous deletion).
+    - Deletion warnings when complications are removed.
+
+---
+
+## Pneumatic Dilation Data Management
+- **Data Input Requirements**:
+  - Only possible if a visit is selected.
+  - Botox injection data can only be input if the visit type is "Therapy" and therapy type is "Botox Injection".
 
