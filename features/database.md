@@ -267,5 +267,28 @@
 
 ---
 
-## Creating a 3D reconstruction
+## Creating a 3D Reconstruction
 
+### Required Files
+- To create the first 3D esophagus reconstruction (of a visit), the following files are mandatory:
+  - TBE image(s) (.jpg or .png)
+  - Manometry pressure file (.csv)
+- Optional files:
+  - Endoscopy images (.jpg or .png)
+  - EndoFlip files (.xlsx)
+  - These optional files enhance the reconstruction but are not required.
+
+### Reconstruction Process
+1. The "Create visualization for selected Patient and selected Visit" button becomes active when both a patient and a visit are selected. If no patient or visit is selected, the button remains inactive.
+   
+2. Upon clicking the button, the system checks whether a 3D reconstruction for the selected visit is already saved in the database:
+   - If a reconstruction exists, the user can choose to:
+     - Load the saved reconstruction, switching the program directly to the visualization window.
+     - Create a new reconstruction, proceeding as though no previous version was saved.
+   
+3. If the user opts to create a new reconstruction:
+   - The system checks if the mandatory files (TBE images and Manometry .csv) are present in the database:
+     - If any mandatory files are missing, a warning will prompt the user to upload them.
+     - If the files are available, they are loaded from the database and converted to the correct format for the reconstruction application.
+
+4. The user is then guided through the 3D reconstruction process.
