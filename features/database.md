@@ -30,6 +30,7 @@
 ### Managing Previous Therapies
 - **Adding Previous Therapies**:
   - Only available when a patient is selected; otherwise, the field remains inactive.
+  - Previous Therapies are added via an input form with basic validation checks.
   - Missing optional fields trigger a notification.
   - Missing mandatory fields must be corrected before upload in the database.
 - **Managing Existing Previous Therapies**:
@@ -126,9 +127,6 @@
   - However, for 3D esophagus reconstruction, **TBE images** and a **Manometry .csv file** are mandatory.
   - Additional optional files (e.g., endoscopy images, EndoFlip data) can also be uploaded to support 3D reconstruction.
 
----
-
-
 ### Manometry Data Management
 - **Data Input Requirements**: Only possible if a visit is selected. Without a selected visit, data upload is deactivated.
 - **Data Handling**:
@@ -139,8 +137,6 @@
   - **Manometry Pressure File**:
     - A .csv file (from 'Laborie stationary measurement & analysis software') can be uploaded and updated.
     - Update prompts a warning to prevent accidental file replacement.
-
----
 
 ### Timed Barium Esophagogram (TBE) Data Management
 - **Data Input Requirements**: Only possible if a visit is selected. Without a selected visit, data upload is deactivated.
@@ -155,8 +151,6 @@
     - Image navigation using "previous" and "next" buttons.
     - Update and deletion warnings to prevent accidental data loss when replacing images.
 
----
-
 ### Esophagogastroduodenoscopy (EGD) Data Management
 - **Data Input Requirements**: Only possible if a visit is selected. Without a selected visit, data upload is deactivated.
 - **Data Handling**:
@@ -169,8 +163,6 @@
     - Preview display with image height for reference.
     - Image navigation with "previous" and "next" buttons.
     - Update and deletion warnings to prevent accidental data loss.
-
----
 
 ### Impedance Planimetry (EndoFlip) Data Management
 - **Data Input Requirements**: Only possible if a visit is selected. Without a selected visit, data upload is deactivated.
@@ -188,8 +180,6 @@
     - .xlsx files with measurement data (before, during, after) can be uploaded.
     - Update and deletion warnings to prevent accidental data loss when replacing files.
 
----
-
 ### Endosonography Data Management
 - **Data Input Requirements**: Only possible if a visit is selected. Without a selected visit, data upload is deactivated.
 - **Data Handling**:
@@ -202,27 +192,67 @@
     - Videos can be uploaded and later downloaded via the user interface.
     - Update and deletion warnings to prevent accidental data loss.
 
----
-
 ### Botox Injection Data Management
 - **Data Input Requirements**:
-  - Only possible if a visit is selected.
-  - Botox injection data can only be input if the visit type is "Therapy" and therapy type is "Botox Injection".
+  - Data entry is only possible if a visit is selected.
+  - Botox injection data can only be input if the visit type is set to "Therapy" and the therapy type is "Botox Injection".
 - **Data Handling**:
-  - **Botox Injection Data**:
-    - Multiple injections can be associated with a single visit to form a "Botox Therapy".
-    - Saved Botox therapy data is displayed for easy reference.
-    - Botox Therapy data can be deleted but not updated.
-    - Deletion warnings to prevent accidental data loss.
-  - **Complications**:
-    - Complications associated with Botox therapy can be uploaded and displayed next to the input box.
-    - Complications associated with a Botox therapy can be deleted but not updated (without previous deletion).
-    - Deletion warnings when complications are removed.
-
----
+  - Multiple injections can be associated with a single visit to form a "Botox Therapy".
+  - Saved Botox therapy data is displayed for easy reference.
+  - Complications related to the Botox Therapy can be uploaded and displayed next to the input box.
+- **Updating and Deleting**:
+  - Both, Botox therapy data and complication data can be deleted not be updated (without prior deletion) over the GUI. (It is possible to extend the GUI to support updates. The database supports updates.)
+  - Warnings appear when deleting Botox Therapy data or Complication data to prevent accidental data loss.
 
 ### Pneumatic Dilation Data Management
-- **Data Input Requirements**:
-  - Only possible if a visit is selected.
-  - Botox injection data can only be input if the visit type is "Therapy" and therapy type is "Botox Injection".
+- **Data Input Requirements**
+  - Data entry is only possible if a visit is selected.
+  - Pneumatic Dilation data can only be entered when the visit type is set to "Therapy" and the therapy type is "Pneumatic Dilation".
+- **Data Handling**
+  - Only one Pneumatic Dilation Therapy can be associated with each selected visit.
+  - The saved Pneumatic Dilation Therapy data is displayed for easy reference in the interface.
+  - Complications related to the Pneumatic Dilation Therapy are automatically saved along with the therapy.
+  - Complications are also displayed in the interface for easy reference.
+- **Updating and Deleting**:
+  - Both the Pneumatic Dilation Therapy and associated complications can be updated or deleted.
+  - Warnings appear when updating or deleting data to prevent accidental loss.
+
+### Pneumatic Dilation Data Management
+- **Data Input Requirements**
+  - Data entry is only possible if a visit is selected.
+  - Pneumatic Dilation data can only be entered when the visit type is set to "Therapy" and the therapy type is "Pneumatic Dilation".
+- **Data Handling**
+  - Only one Pneumatic Dilation Therapy can be associated with each selected visit.
+  - The saved Pneumatic Dilation Therapy data is displayed for easy reference in the interface.
+  - Complications related to the Pneumatic Dilation Therapy are automatically saved along with the therapy.
+  - Complications are also displayed in the interface for easy reference.
+- **Updating and Deleting**:
+  - Both the Pneumatic Dilation Therapy and associated complications can be updated or deleted.
+  - Warnings appear when updating or deleting data to prevent accidental loss.
+
+### LHM Data Management
+- **Data Input Requirements**
+  - Data entry is only possible if a visit is selected.
+  - LHM data can only be entered when the visit type is set to "Therapy" and the therapy type is "LHM".
+- **Data Handling**
+  - Only one LHM Therapy can be associated with each selected visit.
+  - The saved LHM Therapy data is displayed for easy reference in the interface.
+  - Complications related to the LHM Therapy are automatically saved along with the therapy.
+  - Complications are also displayed in the interface for easy reference.
+- **Updating and Deleting**:
+  - Both the LHM Therapy and associated complications can be updated or deleted.
+  - Warnings appear when updating or deleting data to prevent accidental loss.
+
+### POEM Data Management
+- **Data Input Requirements**
+  - Data entry is only possible if a visit is selected.
+  - POEM data can only be entered when the visit type is set to "Therapy" and the therapy type is "POEM".
+- **Data Handling**
+  - Only one POEM Therapy can be associated with each selected visit.
+  - The saved POEM Therapy data is displayed for easy reference in the interface.
+  - Complications related to the POEM Therapy are automatically saved along with the therapy.
+  - Complications are also displayed in the interface for easy reference.
+- **Updating and Deleting**:
+  - Both the POEM Therapy and associated complications can be updated or deleted.
+  - Warnings appear when updating or deleting data to prevent accidental loss.
 
