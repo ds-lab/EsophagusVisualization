@@ -114,6 +114,17 @@ class DCISelectionWindow(QMainWindow):
         
 
     def on_lines_dragged(self):
+        # Get the current positions of the upper_les and lower_ues lines
+        upper_les_y = self.upper_les.get_y_position()
+        lower_ues_y = self.lower_ues.get_y_position()
+
+        # Update the extents of the rectangle selector
+        self.selector.extents = (self.selector.extents[0], self.selector.extents[1], lower_ues_y, upper_les_y)
+
+        # Redraw the rectangle selector
+        self.selector.update()
+
+        # Update the labels
         les_height = self.get_les_height()
         esophagus_length = self.get_esophagus_length()
         self.ui.heightLabelLES.setText(f"{les_height} cm")
