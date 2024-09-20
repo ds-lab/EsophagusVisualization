@@ -11,8 +11,15 @@ class DraggableHorizontalLine:
         self.cidrelease = line.figure.canvas.mpl_connect('button_release_event', self.on_release)
         self.cidmotion = line.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
 
-        # Create the label
-        self.text = self.line.axes.text(self.line.get_xdata()[-1], max(self.line.get_ydata()[0] - 10, 0), self.label, color=self.line.get_color(), ha='left')
+        # Create the label with a semi-transparent white background and smaller padding
+        self.text = self.line.axes.text(
+            self.line.get_xdata()[-1] + 20, 
+            max(self.line.get_ydata()[0] -15, 0), 
+            self.label, 
+            color=self.line.get_color(), 
+            ha='left',
+            bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.1', alpha=0.5)
+        )
 
         # Blitting setup
         self.background = None
@@ -21,8 +28,13 @@ class DraggableHorizontalLine:
 
     def on_press(self, event):
         if event.inaxes != self.line.axes: return
-        contains, attr = self.line.contains(event)
-        if not contains: return
+
+        # Check if the click is on the line or the text
+        contains_line, _ = self.line.contains(event)
+        contains_text = self.text.contains(event)[0]
+
+        if not contains_line and not contains_text: return
+
         self.press = self.line.get_ydata(), event.ydata
         self.is_dragging = True  # Start dragging
 
@@ -37,25 +49,25 @@ class DraggableHorizontalLine:
         dy = event.ydata - ypress
         new_ydata = ydata + dy
 
-        # Update the line and label
+        # Update the line position
         self.line.set_ydata(new_ydata)
-        self.text.set_y(max(new_ydata[0] - 10, 0))
 
         # Restore the background
         self.canvas.restore_region(self.background)
 
-        # Redraw only the line and label
+        # Redraw only the line
         self.ax.draw_artist(self.line)
-        self.ax.draw_artist(self.text)
 
         # Blit the updated region
         self.canvas.blit(self.ax.bbox)
-        # if self.callback:  # Call the callback function if it exists
-        #     self.callback()
 
     def on_release(self, event):
         self.is_dragging = False  # Stop dragging
         self.press = None
+
+        # Update the text position
+        new_ydata = self.line.get_ydata()
+        self.text.set_y(max(new_ydata[0] -15, 0))
 
         # Redraw the full figure
         self.canvas.draw()
@@ -64,10 +76,10 @@ class DraggableHorizontalLine:
         if self.callback:
             self.callback()
 
-    def disconnect(self):
-        self.line.figure.canvas.mpl_disconnect(self.cidpress)
-        self.line.figure.canvas.mpl_disconnect(self.cidrelease)
-        self.line.figure.canvas.mpl_disconnect(self.cidmotion)
-
     def get_y_position(self):
         return self.line.get_ydata()[0]
+
+    def set_y_position(self, y):
+        self.line.set_ydata([y, y])
+        self.text.set_y(max(y -15, 0))
+        self.canvas.draw_idle()

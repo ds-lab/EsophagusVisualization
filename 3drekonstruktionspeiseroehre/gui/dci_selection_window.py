@@ -117,6 +117,20 @@ class DCISelectionWindow(QMainWindow):
         # Get the current positions of the upper_les and lower_ues lines
         upper_les_y = self.upper_les.get_y_position()
         lower_ues_y = self.lower_ues.get_y_position()
+        lower_les_y = self.lower_les.get_y_position()
+
+        if upper_les_y <= lower_ues_y + 1 * self.pressure_matrix_high_res.shape[0] / np.sort(config.coords_sensors)[-1]: # length of tubular esophagus must be at least 1 cm
+            self.upper_les.set_y_position(self.upper_les_backup)
+            self.lower_ues.set_y_position(self.lower_ues_backup)
+            return
+        elif upper_les_y >= lower_les_y - 0.5 * self.pressure_matrix_high_res.shape[0] / np.sort(config.coords_sensors)[-1]: # les must have a minimum height of 0.5 cm
+            self.upper_les.set_y_position(self.upper_les_backup)
+            self.lower_les.set_y_position(self.lower_les_backup)
+            return
+        elif lower_ues_y >= lower_les_y - 0.5 * self.pressure_matrix_high_res.shape[0] / np.sort(config.coords_sensors)[-1]: # should never happen since upper_les is always above lower_les
+            self.lower_ues.set_y_position(self.lower_ues_backup)
+            self.lower_les.set_y_position(self.lower_les_backup) 
+            return
 
         # Update the extents of the rectangle selector
         self.selector.extents = (self.selector.extents[0], self.selector.extents[1], lower_ues_y, upper_les_y)
@@ -129,13 +143,16 @@ class DCISelectionWindow(QMainWindow):
         esophagus_length = self.get_esophagus_length()
         self.ui.heightLabelLES.setText(f"{les_height} cm")
         self.ui.heightLabelEsophagus.setText(f"{esophagus_length} cm")
+        self.lower_les_backup = lower_les_y
+        self.upper_les_backup = upper_les_y
+        self.lower_ues_backup = lower_ues_y
 
     def __initialize_plot_analysis(self):
         # Create a polygon selector for user interaction
         if self.selector is not None:
             self.selector.set_active(False)
             self.selector.extents = (0, 0, 0, 0)
-        self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=2, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
+        self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=1.5, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
 
         if self.lower_ues is not None:
             self.lower_ues.text.remove()
@@ -154,9 +171,9 @@ class DCISelectionWindow(QMainWindow):
         
         self.selector.extents = (left_end, right_end, lower_ues, upper_les)
 
-        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=2, picker=5), label='LES (L)', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
-        self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=2, picker=5), label='UES', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
-        self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=2, picker=5), label='LES (U)', callback=self.on_lines_dragged) # 'picker=5' makes the line selectable
+        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=1.5, picker=2), label='LES (L)', callback=self.on_lines_dragged)
+        self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=1.5, picker=2), label='UES', callback=self.on_lines_dragged)
+        self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=1.5, picker=2), label='LES (U)', callback=self.on_lines_dragged)
         self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
         first_sensor_pos = self.find_first_sensor_above_ues()
         second_sensor_pos = self.find_middle_sensor_in_les()
@@ -164,6 +181,9 @@ class DCISelectionWindow(QMainWindow):
         self.ui.first_combobox.setCurrentIndex(first_sensor_pos)
         self.visualization_data.first_sensor_index = first_sensor_pos
         self.visualization_data.second_sensor_index = second_sensor_pos
+        self.lower_les_backup = lower_les
+        self.upper_les_backup = upper_les
+        self.lower_ues_backup = lower_ues
 
     def __reset_button_clicked(self):
         """
