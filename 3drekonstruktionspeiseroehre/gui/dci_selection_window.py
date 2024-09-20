@@ -132,11 +132,12 @@ class DCISelectionWindow(QMainWindow):
             self.lower_les.set_y_position(self.lower_les_backup) 
             return
 
-        # Update the extents of the rectangle selector
-        self.selector.extents = (self.selector.extents[0], self.selector.extents[1], lower_ues_y, upper_les_y)
-
-        # Redraw the rectangle selector
-        self.selector.update()
+        if self.lower_ues != self.lower_ues_backup or self.upper_les != self.upper_les_backup: # update the DCI value if rectangle selector is changed
+            # Update the extents of the rectangle selector
+            self.selector.extents = (self.selector.extents[0], self.selector.extents[1], lower_ues_y, upper_les_y)
+            # Redraw the rectangle selector
+            self.selector.update()
+            self.__update_DCI_value(int(self.selector.extents[0]), int(self.selector.extents[1]), int(self.selector.extents[2]), int(self.selector.extents[3]))
 
         # Update the labels
         les_height = self.get_les_height()
@@ -149,9 +150,6 @@ class DCISelectionWindow(QMainWindow):
 
     def __initialize_plot_analysis(self):
         # Create a polygon selector for user interaction
-        if self.selector is not None:
-            self.selector.set_active(False)
-            self.selector.extents = (0, 0, 0, 0)
         self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=1.5, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
 
         if self.lower_ues is not None:
@@ -193,10 +191,21 @@ class DCISelectionWindow(QMainWindow):
         self.upper_les_backup = upper_les
         self.lower_ues_backup = lower_ues
 
+    def remove_rectangle_selector(self):
+        if self.selector:
+            self.selector.set_active(False)  # Deactivate the selector
+            self.selector.disconnect_events()  # Disconnect event handlers
+            if hasattr(self.selector, 'artists'):
+                for artist in self.selector.artists:
+                    artist.remove()  # Remove all artists (rectangle, handles, etc.)
+            self.selector = None  # Remove the reference to the selector
+            self.fig.canvas.draw_idle()  # Redraw the canvas to reflect the changes
+
     def __reset_button_clicked(self):
         """
         reset-button callback
         """
+        self.remove_rectangle_selector()  # Remove the rectangle selector
         self.__initialize_plot_analysis()
 
     def __menu_button_clicked(self):
