@@ -6,7 +6,7 @@ from gui.rectangle_selector import CustomRectangleSelector
 from PyQt6 import uic
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from PyQt6.QtGui import QAction
-from gui.draggable_horizontal_line import DraggableHorizontalLine
+from gui.draggable_horizontal_line import DraggableHorizontalLine, DraggableLineManager
 from gui.info_window import InfoWindow
 from gui.xray_window_managment import ManageXrayWindows
 import numpy as np
@@ -170,10 +170,18 @@ class DCISelectionWindow(QMainWindow):
         left_end, right_end = self.find_biggest_connected_region(lower_ues, upper_les)
         
         self.selector.extents = (left_end, right_end, lower_ues, upper_les)
-
+        self.line_manager = DraggableLineManager(self.fig.canvas)
+        self.line_manager.set_selector(self.selector)
         self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=1.5, picker=2), label='LES (L)', callback=self.on_lines_dragged)
         self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=1.5, picker=2), label='UES', callback=self.on_lines_dragged)
         self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=1.5, picker=2), label='LES (U)', callback=self.on_lines_dragged)
+        self.line_manager.add_line(self.lower_les)
+        self.line_manager.add_line(self.lower_ues)
+        self.line_manager.add_line(self.upper_les)
+        self.fig.canvas.mpl_connect('motion_notify_event', self.line_manager.on_hover)
+        self.fig.canvas.mpl_connect('button_press_event', self.line_manager.on_press)
+        self.fig.canvas.mpl_connect('button_release_event', self.line_manager.on_release)
+        self.fig.canvas.mpl_connect('motion_notify_event', self.line_manager.on_motion)
         self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
         first_sensor_pos = self.find_first_sensor_above_ues()
         second_sensor_pos = self.find_middle_sensor_in_les()

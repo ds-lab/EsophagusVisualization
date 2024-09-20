@@ -1,3 +1,42 @@
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QCursor
+
+class DraggableLineManager:
+    def __init__(self, canvas):
+        self.lines = []
+        self.selector = None
+        self.canvas = canvas
+
+    def add_line(self, draggable_line):
+        self.lines.append(draggable_line)
+        draggable_line.manager = self
+
+    def set_selector(self, selector):
+        self.selector = selector
+
+    def on_hover(self, event):
+        cursor_set = False
+        for line in self.lines:
+            if line.on_hover(event):
+                cursor_set = True
+        if self.selector and self.selector.contains(event):
+            self.canvas.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+            cursor_set = True
+        if not cursor_set:
+            self.canvas.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
+
+    def on_press(self, event):
+        for line in self.lines:
+            line.on_press(event)
+
+    def on_release(self, event):
+        for line in self.lines:
+            line.on_release(event)
+
+    def on_motion(self, event):
+        for line in self.lines:
+            line.on_motion(event)
+
 class DraggableHorizontalLine:
     def __init__(self, line, label, callback=None):
         self.line = line
@@ -5,16 +44,12 @@ class DraggableHorizontalLine:
         self.label = label
         self.is_dragging = False  # Flag to indicate dragging state
         self.callback = callback
-
-        # Connect events
-        self.cidpress = line.figure.canvas.mpl_connect('button_press_event', self.on_press)
-        self.cidrelease = line.figure.canvas.mpl_connect('button_release_event', self.on_release)
-        self.cidmotion = line.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
+        self.manager = None
 
         # Create the label with a semi-transparent white background and smaller padding
         self.text = self.line.axes.text(
             self.line.get_xdata()[-1] + 20, 
-            max(self.line.get_ydata()[0] -15, 0), 
+            max(self.line.get_ydata()[0] - 15, 0), 
             self.label, 
             color=self.line.get_color(), 
             ha='left',
@@ -38,6 +73,9 @@ class DraggableHorizontalLine:
         self.press = self.line.get_ydata(), event.ydata
         self.is_dragging = True  # Start dragging
 
+        # Change cursor to grabbing hand
+        self.manager.canvas.setCursor(QCursor(Qt.CursorShape.ClosedHandCursor))
+
         # Cache the background
         self.background = self.canvas.copy_from_bbox(self.ax.bbox)
 
@@ -55,6 +93,8 @@ class DraggableHorizontalLine:
         # Restore the background
         self.canvas.restore_region(self.background)
 
+        self.manager.canvas.setCursor(QCursor(Qt.CursorShape.ClosedHandCursor))
+
         # Redraw only the line
         self.ax.draw_artist(self.line)
 
@@ -65,9 +105,12 @@ class DraggableHorizontalLine:
         self.is_dragging = False  # Stop dragging
         self.press = None
 
+        # Change cursor back to default
+        self.manager.canvas.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
+
         # Update the text position
         new_ydata = self.line.get_ydata()
-        self.text.set_y(max(new_ydata[0] -15, 0))
+        self.text.set_y(max(new_ydata[0] - 15, 0))
 
         # Redraw the full figure
         self.canvas.draw()
@@ -76,10 +119,23 @@ class DraggableHorizontalLine:
         if self.callback:
             self.callback()
 
+    def on_hover(self, event):
+        if event.inaxes != self.line.axes: return False
+
+        # Check if the mouse is over the line or the text
+        contains_line, _ = self.line.contains(event)
+        contains_text = self.text.contains(event)[0]
+
+        if contains_line or contains_text:
+            # Change cursor to hand
+            self.manager.canvas.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+            return True
+        return False
+
     def get_y_position(self):
         return self.line.get_ydata()[0]
 
     def set_y_position(self, y):
         self.line.set_ydata([y, y])
-        self.text.set_y(max(y -15, 0))
+        self.text.set_y(max(y - 15, 0))
         self.canvas.draw_idle()
