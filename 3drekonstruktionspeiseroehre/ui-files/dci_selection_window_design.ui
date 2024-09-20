@@ -194,6 +194,29 @@
         </layout>
        </widget>
       </item>
+     <item row="5" column="1">
+      <widget class="QGroupBox" name="pressureThresholdGroupBox">
+        <property name="title">
+          <string>Pressure threshold for EPI</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+            <widget class="QRadioButton" name="radioButton20mmHg">
+              <property name="text">
+                <string>20 mmHg (standard)</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QRadioButton" name="radioButton0mmHg">
+              <property name="text">
+                <string>0 mmHg (e.g. after POEM)</string>
+              </property>
+            </widget>
+          </item>
+        </layout>
+      </widget>
+    </item>
   
      </layout>
     </item>

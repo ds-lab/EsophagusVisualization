@@ -33,7 +33,7 @@ class VisualizationData:
         self._esophagus_exit_pos = None
         self._sphincter_length_cm = None
         self._endoflip_pos = None
-        self._esophageal_pressurization_index = None
+        self._esophageal_pressurization_index = 0.0 # default value for backwards compatibility
 
         self._figure_x = None
         self._figure_y = None

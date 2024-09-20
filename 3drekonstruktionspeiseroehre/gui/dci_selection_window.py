@@ -1,5 +1,5 @@
 from gui.master_window import MasterWindow
-from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QRadioButton
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from gui.rectangle_selector import CustomRectangleSelector
@@ -53,7 +53,20 @@ class DCISelectionWindow(QMainWindow):
         sensor_names = ["P" + str(len(config.coords_sensors) - i) for i in range(len(config.coords_sensors))]
         self.ui.first_combobox.addItems(sensor_names)
         self.ui.second_combobox.addItems(sensor_names)
+
+        # Access the radio buttons
+        self.radioButton20mmHg = self.findChild(QRadioButton, 'radioButton20mmHg')
+        self.radioButton0mmHg = self.findChild(QRadioButton, 'radioButton0mmHg')
+
+        # Preselect the 20 mmHg radio button
+        self.radioButton20mmHg.setChecked(True)
+        self.radioButton0mmHg.setChecked(False)
+        self.is_20mmHg_selected = True
         
+        # Connect signals to slots if needed
+        self.radioButton20mmHg.toggled.connect(self.__on_radio_button_toggled)
+        self.radioButton0mmHg.toggled.connect(self.__on_radio_button_toggled)
+
         # Connect button click events to methods
         self.ui.reset_button.clicked.connect(self.__reset_button_clicked)
         self.ui.apply_button.clicked.connect(self.__apply_button_clicked)
@@ -63,6 +76,13 @@ class DCISelectionWindow(QMainWindow):
         self.ui.menubar.addAction(menu_button)
 
         self.__plot_data()
+
+    def __on_radio_button_toggled(self):
+        if self.radioButton20mmHg.isChecked():
+            self.is_20mmHg_selected = True
+        elif self.radioButton0mmHg.isChecked():
+            self.is_20mmHg_selected = False
+        self.__update_DCI_value(int(self.selector.extents[0]), int(self.selector.extents[1]), int(self.selector.extents[2]), int(self.selector.extents[3]))
 
     def __update_DCI_value(self, x1, x2, y1, y2):
         # Extract the selected data
@@ -256,9 +276,14 @@ class DCISelectionWindow(QMainWindow):
         mask = pressure_matrix > 20
 
         mean_pressure = 0
-        if len(pressure_matrix[mask]) != 0:
-            # Calculate the mean of these values
-            mean_pressure = np.mean(np.maximum(pressure_matrix - 20, 0)) # TODO: check if calculation is correct
+        if self.is_20mmHg_selected:
+            if len(pressure_matrix[mask]) != 0:
+                # Calculate the mean of these values
+                mean_pressure = np.mean(np.maximum(pressure_matrix - 20, 0))
+        else:
+            if len(pressure_matrix) != 0:
+                # Calculate the mean of these values
+                mean_pressure = np.mean(pressure_matrix)
         return np.round(mean_pressure * height * time, 2)
     
     def find_lower_end_of_ues(self):
