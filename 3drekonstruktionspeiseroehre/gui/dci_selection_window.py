@@ -18,7 +18,7 @@ import numpy as np
 from scipy.ndimage import label
 
 class DCISelectionWindow(QMainWindow):
-    """Window where the user selects the rectangle for the DCI calculation"""
+    """Window where the user selects the rectangle for the DCI (EPI) calculation and the LES and UES positions"""
 
     next_window = None
 
@@ -26,8 +26,8 @@ class DCISelectionWindow(QMainWindow):
         """
         init DciSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
-        :param visualization_data: VisualizationData
-        :param n: n-th visualization of that visit
+        :param patient_data: the patient data
+        :param visit: the visit data
         """
 
         super().__init__()
@@ -78,6 +78,9 @@ class DCISelectionWindow(QMainWindow):
         self.__plot_data()
 
     def __on_radio_button_toggled(self):
+        """
+        Callback function that is called when the user toggles the radio buttons
+        """
         if self.radioButton20mmHg.isChecked():
             self.is_20mmHg_selected = True
         elif self.radioButton0mmHg.isChecked():
@@ -85,6 +88,13 @@ class DCISelectionWindow(QMainWindow):
         self.__update_DCI_value(int(self.selector.extents[0]), int(self.selector.extents[1]), int(self.selector.extents[2]), int(self.selector.extents[3]))
 
     def __update_DCI_value(self, x1, x2, y1, y2):
+        """
+        Update the DCI value based on the selected rectangle
+        :param x1: the x-coordinate of the lower left corner of the rectangle
+        :param x2: the x-coordinate of the upper right corner of the rectangle
+        :param y1: the y-coordinate of the lower left corner of the rectangle
+        :param y2: the y-coordinate of the upper right corner of the rectangle
+        """
         # Extract the selected data
         selected_data = self.pressure_matrix_high_res[y1:y2, x1:x2]
 
@@ -101,19 +111,35 @@ class DCISelectionWindow(QMainWindow):
       
 
     def __onselect(self, eclick, erelease):
+        """
+        Callback function that is called when the user selects a rectangle in the plot
+        :param eclick: the press event
+        :param erelease: the release event
+        """
         # eclick and erelease are the press and release events
         x1, y1 = int(eclick.xdata), int(eclick.ydata)
         x2, y2 = int(erelease.xdata), int(erelease.ydata)
         self.__update_DCI_value(x1, x2, y1, y2)
 
     def get_les_height(self):
+        """
+        Calculate the height of the Lower Esophageal Sphincter (LES) based on the upper and lower LES.
+        :return: the height of the LES in cm
+        """
         return np.round((self.lower_les.get_y_position() - self.upper_les.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
     
     def get_esophagus_length(self):
+        """
+        Calculate the length of the tubular esophagus based on the upper les and lower ues.
+        :return: the length of the tubular esophagus in cm
+        """
         return np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
         
 
     def on_lines_dragged(self):
+        """
+        Callback function that is called when the user drags the lines of the LES and UES (updates the DCI value, les height, and length of tubular esophagus)
+        """
         # Get the current positions of the upper_les and lower_ues lines
         upper_les_y = self.upper_les.get_y_position()
         lower_ues_y = self.lower_ues.get_y_position()
@@ -149,6 +175,9 @@ class DCISelectionWindow(QMainWindow):
         self.lower_ues_backup = lower_ues_y
 
     def __initialize_plot_analysis(self):
+        """
+        Initialize the plot analysis by creating the rectangle selector, the upper LES, lower LES, and lower UES lines, and the DCI value label
+        """
         # Create a polygon selector for user interaction
         self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=1.5, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
 
@@ -216,6 +245,9 @@ class DCISelectionWindow(QMainWindow):
         info_window.show()
 
     def __plot_data(self):
+        """
+        Create the visualization plot of the pressure matrix and initialize the plot analysis (rectangle selector, upper LES, lower LES, lower UES, etc.)
+        """
         number_of_measurements = len(self.visualization_data.pressure_matrix[1])
 
         # Define the colors and positions for the color map
@@ -307,7 +339,6 @@ class DCISelectionWindow(QMainWindow):
         else:
             QMessageBox.critical(self, "Error", "Please select two different sensors.")
         self.visit.visualization_data_list[0].esophageal_pressurization_index = float(self.ui.DCI.text().split()[0])
-        print(f"DCI: {self.visit.visualization_data_list[0].esophageal_pressurization_index}")
         ManageXrayWindows(self.master_window, self.visit, self.patient_data)
 
 
@@ -337,10 +368,8 @@ class DCISelectionWindow(QMainWindow):
         """
         Detect the lower end of the Upper Esophageal Sphincter (UES).
         
-        The UES is identified as a horizontal stripe in the upper part of the plot with higher pressure (>30 mmHg)
-        than the regions above and below it. The UES must be in the upper half of the plot.
+        The UES is identified as a horizontal stripe in the upper part of the plot with higher pressure (>30 mmHg) than the regions above and below it. The UES must be in the upper half of the plot.
         
-        :param target_pressure_ues: The pressure value indicating the UES
         :return: The y-coordinate of the lower end of the UES
         """
         upper_half_boundary = len(self.pressure_matrix_high_res) // 2
@@ -367,8 +396,7 @@ class DCISelectionWindow(QMainWindow):
         """
         Detect the upper end of the Lower Esophageal Sphincter (LES).
         
-        The LES is identified as a horizontal stripe in the lower part of the plot with a high number of points (>30 mmHg)
-        than the regions above and below it. The LES must be in the lower half of the plot.
+        The LES is identified as a horizontal stripe in the lower part of the plot with a high number of points (>30 mmHg) than the regions above and below it. The LES must be in the lower half of the plot.
         
         :param threshold: The pressure threshold indicating the LES
         :return: The y-coordinate of the upper end of the LES
@@ -397,10 +425,9 @@ class DCISelectionWindow(QMainWindow):
         """
         Detect the lower end of the Lower Esophageal Sphincter (LES).
         
-        The LES is identified as a horizontal stripe in the lower part of the plot with higher pressure (>30 mmHg)
-        than the regions above and below it. The LES must be in the lower half of the plot.
+        The LES is identified as a horizontal stripe in the lower part of the plot with higher pressure (>30 mmHg) than the regions above and below it. The LES must be in the lower half of the plot.
         
-        :param target_pressure_les: The pressure value indicating the LES
+        :param threshold: The pressure threshold indicating the LES
         :return: The y-coordinate of the lower end of the LES
         """
         lower_half_start = len(self.pressure_matrix_high_res) // 2
@@ -428,7 +455,7 @@ class DCISelectionWindow(QMainWindow):
         :param lower_ues: The y-coordinate of the lower end of the UES
         :param upper_les: The y-coordinate of the upper end of the LES
         :param threshold: The pressure threshold to count values above
-        :return: A tuple (left_end_x, right_end_x) representing the x-coordinates of the left and right ends of the biggest connected region
+        :return: A tuple (left_end_x, right_end_x) representing the x-coordinates of the left and right ends of the biggest connected region above a certain threshold
         """
         # Extract the region of interest
         roi = np.array(self.pressure_matrix_high_res[lower_ues:upper_les])
@@ -451,7 +478,6 @@ class DCISelectionWindow(QMainWindow):
         # Find the left and right ends of the largest connected region
         if max_region_label == 0:
             if threshold - 1 >= 0:
-                # print(f"No region found. Trying with a lower threshold. trying with threshold {threshold - 1}")
                 return self.find_biggest_connected_region(lower_ues, upper_les, threshold - 1)
             else:
                 return  int(0.25 * self.pressure_matrix_high_res.shape[1]), int(0.75 * self.pressure_matrix_high_res.shape[1])  # No valid region found after applying the constraint
@@ -475,7 +501,6 @@ class DCISelectionWindow(QMainWindow):
 
         if left_end_x >= right_end_x:
             if threshold - 1 >= 0:
-                # print(f"No region found. Trying with a lower threshold. trying with threshold {threshold - 1}")
                 return self.find_biggest_connected_region(lower_ues, upper_les, threshold - 1)
             else:
                 return  int(0.25 * self.pressure_matrix_high_res.shape[1]), int(0.75 * self.pressure_matrix_high_res.shape[1])  # No valid region found after applying the constraint
@@ -485,7 +510,7 @@ class DCISelectionWindow(QMainWindow):
     def find_middle_sensor_in_les(self):
         """
         Finds the sensor closest to the middle of the Lower Esophageal Sphincter (LES).
-        Returns the index of the closest sensor.
+        :return: the index of the closest sensor to the middle of the LES.
         """
         les_start = self.lower_les.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
         les_end = self.upper_les.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
@@ -497,7 +522,7 @@ class DCISelectionWindow(QMainWindow):
     def find_first_sensor_above_ues(self):
         """
         Finds the first sensor at or above the lower end of the Upper Esophageal Sphincter (UES).
-        Returns the sensor position.
+        :return: the sensor position of the first sensor at or above the lower end of the UES.
         """
         lower_ues_position = self.lower_ues.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
 
