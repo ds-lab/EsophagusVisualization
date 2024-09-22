@@ -169,7 +169,6 @@ class DCISelectionWindow(QMainWindow):
         
         self.selector.extents = (left_end, right_end, lower_ues, upper_les)
         self.line_manager = DraggableLineManager(self.fig.canvas)
-        self.line_manager.set_selector(self.selector)
         self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=1.5, picker=2), label='LES (L)', callback=self.on_lines_dragged)
         self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=1.5, picker=2), label='UES', callback=self.on_lines_dragged)
         self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=1.5, picker=2), label='LES (U)', callback=self.on_lines_dragged)
@@ -451,7 +450,11 @@ class DCISelectionWindow(QMainWindow):
 
         # Find the left and right ends of the largest connected region
         if max_region_label == 0:
-            return  0.25 * self.pressure_matrix_high_res.shape[1], 0.75 * self.pressure_matrix_high_res.shape[1]  # No region found
+            if threshold - 1 >= 0:
+                # print(f"No region found. Trying with a lower threshold. trying with threshold {threshold - 1}")
+                return self.find_biggest_connected_region(lower_ues, upper_les, threshold - 1)
+            else:
+                return  int(0.25 * self.pressure_matrix_high_res.shape[1]), int(0.75 * self.pressure_matrix_high_res.shape[1])  # No valid region found after applying the constraint
 
         max_region_coords = np.column_stack(np.where(labeled_array == max_region_label))
         left_end_x = np.min(max_region_coords[:, 1])
@@ -471,9 +474,13 @@ class DCISelectionWindow(QMainWindow):
             right_end_x -= 1
 
         if left_end_x >= right_end_x:
-            return  0.25 * self.pressure_matrix_high_res.shape[1], 0.75 * self.pressure_matrix_high_res.shape[1]  # No valid region found after applying the constraint
+            if threshold - 1 >= 0:
+                # print(f"No region found. Trying with a lower threshold. trying with threshold {threshold - 1}")
+                return self.find_biggest_connected_region(lower_ues, upper_les, threshold - 1)
+            else:
+                return  int(0.25 * self.pressure_matrix_high_res.shape[1]), int(0.75 * self.pressure_matrix_high_res.shape[1])  # No valid region found after applying the constraint
 
-        return left_end_x, right_end_x
+        return int(left_end_x), int(right_end_x)
     
     def find_middle_sensor_in_les(self):
         """
