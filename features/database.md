@@ -292,3 +292,15 @@
      - If the files are available, they are loaded from the database and converted to the correct format for the reconstruction application.
 
 4. The user is then guided through the 3D reconstruction process.
+
+---
+
+## Downloading Data
+
+- Users can download **all descriptive data** (excluding images and files) in a **single .csv file** through the "Data Download" option in the database interface.
+- Download Options:
+  - Patient and Visit Data are always included in the download.
+  - Data from additional tables (e.g., Previous Therapies, Eckardt Score, Gerd Score, Medication, Manometry, TBE, Botox Injection, Complications, etc.) can be selected for download.
+  - A **Select All/Deselect All** option allows users to easily choose or remove all additional tables at once.
+- File Export:
+  - Once the selection is made, the chosen data (including patient and visit data) is compiled into a **.csv file** and saved to the specified path.
