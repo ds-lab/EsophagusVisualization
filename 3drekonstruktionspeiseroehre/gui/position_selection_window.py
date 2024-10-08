@@ -157,24 +157,22 @@ class PositionSelectionWindow(QMainWindow):
                         self.visualization_data.endoscopy_start_pos = \
                             (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1]))
 
-                        if self.checkbox_sens.isChecked():
-                            # Go to sensor_path visualization first
-                            next_window = SensorPathWindow(self.master_window, self.next_window,
-                                                                               self.patient_data, self.visit, self.n,
-                                                                               self.xray_polygon)
-                        else:
-                            # Go to center_path visualization
-                            next_window = SensorCenterPathWindow(self.master_window, self.next_window,
-                                                                               self.patient_data, self.visit, self.n,
-                                                                               self.xray_polygon)
-                        self.master_window.switch_to(next_window)
-                        self.close()
+                    if self.checkbox_sens.isChecked():
+                        # Go to sensor_path visualization first
+                        next_window = SensorPathWindow(self.master_window, self.next_window,
+                                                                            self.patient_data, self.visit, self.n,
+                                                                            self.xray_polygon)
                     else:
-                        QMessageBox.critical(self, "Error", "The positions must be within the previously marked outline of the esophagus.")
+                        # Go to center_path visualization
+                        next_window = SensorCenterPathWindow(self.master_window, self.next_window,
+                                                                            self.patient_data, self.visit, self.n,
+                                                                            self.xray_polygon)
+                    self.master_window.switch_to(next_window)
+                    self.close()
                 else:
-                    QMessageBox.critical(self, "Error", "The positions of the sensors seem to be swapped.")
+                    QMessageBox.critical(self, "Error", "The positions must be within the previously marked outline of the esophagus.")
             else:
-                QMessageBox.critical(self, "Error", "Please select two different sensors.")
+                QMessageBox.critical(self, "Error", "The positions of the sensors seem to be swapped.")
         else:
             QMessageBox.critical(self, "Error", "Please enter all required items into the graph.")
 
@@ -218,6 +216,7 @@ class PositionSelectionWindow(QMainWindow):
         checks for correct sensor order
         :return: True or False
         """
+        print(f"First sensor: {self.first_sensor_pos}, Second sensor: {self.second_sensor_pos}")
         return self.first_sensor_pos[1] > self.second_sensor_pos[1]
 
     def __is_any_position_outside_polygon(self):
