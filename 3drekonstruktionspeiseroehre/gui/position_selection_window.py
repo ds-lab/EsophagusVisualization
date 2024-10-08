@@ -140,39 +140,38 @@ class PositionSelectionWindow(QMainWindow):
         """
 
         if self.__are_necessary_positions_set():
-            if self.__is_sensor_order_correct():
-                if not self.__is_any_position_outside_polygon():
-                    self.ui.apply_button.setDisabled(True)
-                    self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
-                    self.visualization_data.second_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1]))
-                    self.visualization_data.sphincter_upper_pos = (
-                        int(self.sphincter_upper_pos[0]), int(self.sphincter_upper_pos[1]))
-                    self.visualization_data.esophagus_exit_pos = (
-                        int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1]))
-                    if self.visualization_data.endoflip_screenshot:
-                        self.visualization_data.endoflip_pos = (
-                        int(self.endoflip_pos[0]), int(self.endoflip_pos[1]))
+            if not self.__is_sensor_order_correct():
+                self.first_sensor_pos, self.second_sensor_pos = self.second_sensor_pos, self.first_sensor_pos
+            if not self.__is_any_position_outside_polygon():
+                self.ui.apply_button.setDisabled(True)
+                self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
+                self.visualization_data.second_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1]))
+                self.visualization_data.sphincter_upper_pos = (
+                    int(self.sphincter_upper_pos[0]), int(self.sphincter_upper_pos[1]))
+                self.visualization_data.esophagus_exit_pos = (
+                    int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1]))
+                if self.visualization_data.endoflip_screenshot:
+                    self.visualization_data.endoflip_pos = (
+                    int(self.endoflip_pos[0]), int(self.endoflip_pos[1]))
 
-                    if len(self.visualization_data.endoscopy_files) > 0:
-                        self.visualization_data.endoscopy_start_pos = \
-                            (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1]))
+                if len(self.visualization_data.endoscopy_files) > 0:
+                    self.visualization_data.endoscopy_start_pos = \
+                        (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1]))
 
-                    if self.checkbox_sens.isChecked():
-                        # Go to sensor_path visualization first
-                        next_window = SensorPathWindow(self.master_window, self.next_window,
-                                                                            self.patient_data, self.visit, self.n,
-                                                                            self.xray_polygon)
-                    else:
-                        # Go to center_path visualization
-                        next_window = SensorCenterPathWindow(self.master_window, self.next_window,
-                                                                            self.patient_data, self.visit, self.n,
-                                                                            self.xray_polygon)
-                    self.master_window.switch_to(next_window)
-                    self.close()
+                if self.checkbox_sens.isChecked():
+                    # Go to sensor_path visualization first
+                    next_window = SensorPathWindow(self.master_window, self.next_window,
+                                                                        self.patient_data, self.visit, self.n,
+                                                                        self.xray_polygon)
                 else:
-                    QMessageBox.critical(self, "Error", "The positions must be within the previously marked outline of the esophagus.")
+                    # Go to center_path visualization
+                    next_window = SensorCenterPathWindow(self.master_window, self.next_window,
+                                                                        self.patient_data, self.visit, self.n,
+                                                                        self.xray_polygon)
+                self.master_window.switch_to(next_window)
+                self.close()
             else:
-                QMessageBox.critical(self, "Error", "The positions of the sensors seem to be swapped.")
+                QMessageBox.critical(self, "Error", "The positions must be within the previously marked outline of the esophagus.")
         else:
             QMessageBox.critical(self, "Error", "Please enter all required items into the graph.")
 
@@ -216,7 +215,6 @@ class PositionSelectionWindow(QMainWindow):
         checks for correct sensor order
         :return: True or False
         """
-        print(f"First sensor: {self.first_sensor_pos}, Second sensor: {self.second_sensor_pos}")
         return self.first_sensor_pos[1] > self.second_sensor_pos[1]
 
     def __is_any_position_outside_polygon(self):
