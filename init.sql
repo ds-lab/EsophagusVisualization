@@ -139,7 +139,6 @@ CREATE TABLE barium_swallow_files (
     tbe_file_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     minute_of_picture INT,
-    filename VARCHAR,
     file BYTEA NOT NULL
 );
 
@@ -153,7 +152,6 @@ CREATE TABLE endoscopy_files (
     endoscopy_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     image_position INT NOT NULL,
-    filename VARCHAR NOT NULL,
     file BYTEA NOT NULL
 );
 
@@ -192,6 +190,7 @@ CREATE TABLE endoflip_images (
 CREATE TABLE endosonography_images (
     endosonography_image_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
+    image_position INT NOT NULL,
     file BYTEA NOT NULL
 );
 
@@ -206,4 +205,18 @@ CREATE TABLE reconstructions (
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     reconstruction_file BYTEA NOT NULL
 );
+
+-- Trigger-Function for deleting Large Objects
+CREATE OR REPLACE FUNCTION delete_large_object() RETURNS TRIGGER AS $$
+BEGIN
+    PERFORM lo_unlink(OLD.video_oid);
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger for deleting Large Objects
+CREATE TRIGGER trg_delete_large_object
+AFTER DELETE ON endosonography_videos
+FOR EACH ROW
+EXECUTE FUNCTION delete_large_object();
 

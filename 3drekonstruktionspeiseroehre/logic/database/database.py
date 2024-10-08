@@ -6,8 +6,7 @@ from logic.database.data_declarative_models import Base
 
 DATABASE_URL = 'postgresql+psycopg2://admin:123+qwe@127.0.0.1:5432/3drekonstruktion'
 
-# ToDo echo in Produktion auf false setzen
-engine_local = create_engine(DATABASE_URL, pool_pre_ping=True, echo=True)
+engine_local = create_engine(DATABASE_URL, pool_pre_ping=True, echo=False)
 Session = sessionmaker(bind=engine_local)
 
 

@@ -1,0 +1,30 @@
+version: '3'
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: 3drekonstruktion
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123+qwe
+    ports:
+      - 5432:5432
+    volumes:
+      - vol-db:/var/lib/postgres/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: 123+qwe
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  vol-db:
+  pgadmin-data:

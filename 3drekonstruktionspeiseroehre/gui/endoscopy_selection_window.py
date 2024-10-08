@@ -1,5 +1,7 @@
 import logic.image_polygon_detection as image_polygon_detection
 import numpy as np
+import os
+import cv2
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.visualization_window import VisualizationWindow
@@ -13,6 +15,7 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMessageBox
 from shapely.geometry import Polygon
 from PIL import Image
+
 
 
 class EndoscopySelectionWindow(QtWidgets.QMainWindow):
@@ -37,7 +40,6 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
         # list of points (not cm)
         self.current_polygon = []
         self.polygon_list = []
-
         self.figure_canvas = FigureCanvasQTAgg(Figure())
         self.ui.gridLayout.addWidget(self.figure_canvas)
         self.ui.reset_button.clicked.connect(self.__reset_button_clicked)
@@ -131,6 +133,8 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
             shapely_poly = Polygon(self.current_polygon)
             if shapely_poly.is_valid:
                 self.polygon_list.append(np.array(self.current_polygon, dtype=int))
+                if self.ui.checkBox.isChecked():
+                    self.__save_current_polygon()
                 if self.__is_last_image():
                     self.ui.apply_button.setDisabled(True)
                     
@@ -151,6 +155,32 @@ class EndoscopySelectionWindow(QtWidgets.QMainWindow):
                 QMessageBox.critical(self, "Error", "The selection must not have any intersections.")
         else:
             QMessageBox.critical(self, "Error", "Please draw the cross-section of the esophagus as a polygon.")
+
+    def __save_current_polygon(self):
+        """
+        Saves the current polygon as a mask image in the specified folder.
+        """
+        safe_visit_name = self.visit.name.replace(':', '_').replace('[', '_').replace(']', '_')
+        base_path = fr"C:\DataAchalasia\{safe_visit_name}"
+
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+        img_filename = f"{self.current_image_index}_endoscopy.jpg"
+        img_path = os.path.join(base_path, img_filename)
+
+        image = self.endoscopy_images[self.current_image_index].astype(np.uint8)
+        rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        cv2.imwrite(img_path, rgb_image)
+
+        # Save the mask as PNG
+        mask_filename = f"{self.current_image_index}_endoscopy_mask.jpg"
+        mask_path = os.path.join(base_path, mask_filename)
+
+        mask_image = np.zeros(self.endoscopy_images[self.current_image_index].shape[:2], dtype=np.uint8)
+        cv2.fillPoly(mask_image, [np.array(self.current_polygon, dtype=int)], 255)
+        cv2.imwrite(mask_path, mask_image)
+
 
     def __reset_selector(self):
         """

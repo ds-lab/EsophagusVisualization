@@ -10,10 +10,9 @@ class InfoWindow(QDialog):
         init InfoWindow
         """
         super().__init__()
-        self.ui = uic.loadUi("./ui-files/info_window_design.ui", self)
+        self.ui = uic.loadUi('./ui-files/info_window_design.ui', self)
 
     def show_data_window_info(self):
-        # ToDo Text noch schreiben
         text = """In this window, patients and visits can be created.<br>
     Most data are not mandatory.<br>
     Patients and visits can be selected by clicking on them in the patient or visit list to add further data.<br><br>
@@ -38,11 +37,16 @@ class InfoWindow(QDialog):
     def show_xray_region_selection_info(self):
         text = """In this window, the shape of the esophagus is traced on the X-ray image as a polygon. <br><br> 
         The software initially attempts an automatic preselection. This must then be reviewed and corrected by the user. <br> 
-        For small deviations, individual points can be moved to the correct position with the mouse. A right-click can remove a point. <br> 
+        For small deviations, individual points can be moved to the correct position with the mouse. A right-click can remove a point. The last point can be deleted with the 'Delete last point' button. <br> 
         If the automatic selection deviates significantly, the shape should be manually traced after clicking 'Start New Selection'. 
         Clicking in the graphic will create a new point each time. <br>
         When manually tracing, it should be noted that the upper cross-section of the esophagus must be traced straight. <br>
-        The selection is completed by clicking on the first point."""
+        The selection is completed by clicking on the first point.
+        If you want to save the shape of the oesophagus, spine and barium as masks, you have to click the corresponding checkboxes. <br>
+        Draw each polygon, you want to save,  in the order of the checked boxes. The shapes can overlap. <br>
+        If you are finished with one shape, you can draw the next with clicking the 'Next selection' button. <br>
+        Continuing with 'Apply selection and proceed' will save all masks and original image to a directory named DataAchalasia in C:\ <br> 
+        """
         self.ui.textEdit.setHtml(text)
 
     def show_position_selection_info(self):
@@ -71,36 +75,106 @@ class InfoWindow(QDialog):
         This preselection must then be reviewed and corrected by the user. <br>
         In case of minor deviations, individual points can be moved to the correct position using the mouse. A right-click removes a point. <br>
         If the automatic selection deviates significantly, the shape should be manually traced after clicking 'Start New Selection'. <br>
-        Clicking on the graphic creates a new point each time. <br>The selection is completed by clicking on the first point."""
+        Clicking on the graphic creates a new point each time. <br>The selection is completed by clicking on the first point.<br>
+        To safe the cross-section mask and the original image in C:\DataAchalasia check the checkbox"""
+        self.ui.textEdit.setHtml(text)
+
+    def show_sensor_path_info(self):
+        text = """This Window shows the calculated/assumed path way of the katheter (sensor_path). <br><br>
+        LEGEND:<br>
+        The RED path shows the assumed katheter (shortest path) through the esophagus. <br>
+        Underneath the red path there is a BLUE path that shows the original calculated sensor path to compare the eventually adapted (red) path and the old (blue) path.<br><br>
+        EMPLOYMENT:<br>
+        It's MOVABLE points can be adapted an will be taken as the new katheter path. <br>
+        With a RIGHT CLICK a point on the line can be deleted if necessary. <br><br>
+        EXPLANATION:<br>
+        The sensor path is used for three tasks: 1) Determine the centimeter to pixel ratio, 2) calculate the center path and 3) map the pressure as surface color. <br>
+        1) <br>
+        First the user given (blue and green point in the window before) sensor points are mapped on this calculated katheter path
+        and calculating the distance between them in pixel.<br>
+        Since the distance between these sensor points is also known in cm from the katheter now this distance in pixel 
+        is also available in cm.<br>
+        => CM to PX ratio
+        2) and 3)<br>
+        The exact process is described in related papers.<br>
+        The calculated center path is shown and adaptable in the next window.<br><br>
+        !!! ATTENTION !!! <br>
+        The red path has the problem that the highest and lowest point have a connection line between them in the visualisation. <br>
+        This line obviously doesn't exist in reality and won't be included in the calculation."""
+        self.ui.textEdit.setHtml(text)
+
+    def show_sensor_center_path_info(self):
+        text = """This Window shows the calculated central path way trough the esophagus. <br><br>
+        LEGEND: <br>
+        The RED path shows the calculated central path through the esophagus. <br>
+        Underneath the red path there is a BLUE path that shows the original calculated center path to compare the eventually adapted (red) path and the old (blue) path. <br>
+        The ORANGE path shows the used katheter path (sensor_path) on wich the calculation of the center path is based. <br><br>
+        EMPLOYMENT:<br>
+        It's MOVABLE points can be adapted an will be taken as the new central path. <br>
+        With a RIGHT CLICK a point on the line can be deleted if necessary. <br>
+        Use the adaptability if the path is not central. <br><br>
+        USAGE:<br>
+        The center path is used to 1) construct the final reconstruction shape and 2) calculate the exact length of the esophagus. <br>
+        1) <br>
+        Since the center path displays the central path through the esophagus this is used to base the reconstruction around it.<br>
+        2) <br>
+        Since the sensor path is the shortest path it doesn't estimate the length of the esophagus best. <br>
+        But the center path gives a better estimation of the length.<br><br>
+        !!! ATTENTION !!! <br>
+        Should the path require mayor changes to be corrected, be aware of possible form errors in the final visualisation. <br><br>
+        !!! ATTENTION !!! <br>
+        The red path has the problem that the highest and lowest point have a connection line between them in the visualisation. <br>
+        This line obviously doesn't exist in reality and won't be included in the calculation."""
         self.ui.textEdit.setHtml(text)
 
     def show_visualization_info(self):
-        text = """The generated 3D representation is displayed here. <br><br>The display can be done with the mouse 
-        be moved. <br>By default, it is rotated by dragging with the mouse. <br>
-        It can be moved by holding the Ctrl key at the same time.<br>
-        Using the mouse wheel, the size can be changed. <br><br>
-        The calculated size of the esophagus in centimeters can be read from the legend. 
-        If this deviates significantly from the expected size, it indicates incorrectly or inaccurately entered sensor positions. <br><br>
-        By clicking on 'Start Animation', the temporal evolution of pressure values can be animated. <br>
-        The timeline also allows manual selection of the time point. <br><br>
-        Below, the calculated metrics for the tubular section (Volume*Pressure) and the lower sphincter (Volume/Pressure) are displayed over time. <br><br>
-        If EndoFLIP data is entered, the EndoFLIP screenshot appears to the left of the 3D reconstruction. 
-        From top to bottom, P16 to P1 are displayed. Under 'Select Aggregation Form', the aggregation function of the screenshot can be chosen. <br>
-        Furthermore, below the reconstruction, a switch can be used to select which colors are projected onto the reconstruction. 
-        When projecting the EndoFLIP colors, it can be chosen whether a balloon volume of 30 or 40ml should be displayed. 
-        'Select Aggregation Form' allows the aggregation function to be chosen. NOTE: EndoFLIP data processing has not been extensively tested. 
-        Always cross-check with the manufacturer's visualization. <br><br>
-        If multiple reconstructions (import of multiple .achalasia files or via 'Insert More Reconstructions') are displayed, 
-        they can be rearranged by holding down the left mouse button and dragging them to the desired position. <br><br>
-        Download: The 3D visualizations can be exported as HTML files via 'Download for Display'. 
-        This allows the reconstructions to be viewed in the browser and makes them embeddable in PowerPoint. 
-        In addition, 'Save reconstruction as file' allows the export of '.achalasia' files. 
-        'Save reconstruction in DB' allows to save the reconstruction in the database.
-        This export enables the reconstructions to be opened again conveniently and unchanged in this program. 
-        Additionally, 'CSV Metrics Download' allows exporting the metrics. <br><br>
-        Furthermore, '.stl' files can be downloaded for 3D printing. The download of these files may take a few minutes. 
-        <br><br>After successful download, you will receive confirmation from the program for all download formats. 
-        'Reset' can be used to reset the input and load new files.
+        text = """    <h2>This window shows the 3D reconstructions you created.</h2>
+
+    <h3>View and Adjust the Visualization</h3>
+    <ul>
+        <li><strong>Rotate</strong>: Click and drag the visualization with the mouse to rotate it.</li>
+        <li><strong>Move</strong>: Hold the <strong>Ctrl</strong> key while dragging to move the visualization.</li>
+        <li><strong>Resize</strong>: Use the mouse wheel to zoom in or out.</li>
+    </ul>
+
+    <h3>Animation</h3>
+    <ul>
+        <li><strong>Start Animation</strong>: Clicking this button animates the temporal evolution of the pressure values over time.</li>
+        <li><strong>Timeline</strong>: You can manually select a specific time point using the timeline.</li>
+    </ul>
+
+    <h3>View Indices</h3>
+    <ul>
+        <li>The size of the esophagus (in centimeters) is displayed in the legend. If this deviates significantly from the expected size, it may indicate that sensor positions were entered incorrectly or inaccurately.</li>
+        <li>The calculated metrics for the tubular esophagus section (Volume * Pressure) and the lower esophageal sphincter (Volume / Pressure) are shown over time.</li>
+    </ul>
+
+    <h3>EndoFLIP Data</h3>
+    <ul>
+        <li>If EndoFLIP data has been entered, an <strong>EndoFLIP screenshot</strong> will appear to the left of the 3D reconstruction, showing values from <strong>P16 to P1</strong>.</li>
+        <li><strong>Select Aggregation Form</strong>: You can choose how the data is aggregated in the screenshot.</li>
+        <li>A switch below the reconstruction allows you to choose which <strong>colors</strong> are projected onto the reconstruction.</li>
+        <li>You can also select whether to display <strong>30ml or 40ml balloon volumes</strong> from EndoFLIP.</li>
+    </ul>
+    <p class="note">Note: EndoFLIP data processing has not been extensively tested. Always verify the results with the manufacturer’s visualization.</p>
+
+    <h3>Compare Multiple 3D Reconstructions</h3>
+    <ul>
+        <li>You can visualize multiple reconstructions by clicking Insert "Add Reconstruction(s)".</li>
+        <li>If you have multiple reconstructions you can <strong>rearrange them</strong> by holding down the left mouse button and dragging them to the desired position.</li>
+    </ul>
+
+    <h3>Download Options</h3>
+    <ol>
+        <li><strong>Download for Display</strong>: Export <em>currently displayed</em> 3D visualizations as <strong>HTML files</strong>, which can be viewed in a web browser or embedded in PowerPoint presentations.</li>
+        <li><strong>CSV Metrics Download</strong>: Exports the metrics as a CSV file.</li>
+        <li><strong>Download for 3D Printing</strong>: Downloads <code>.stl</code> files <em>of all 3D reconstructions in the viewer</em> for <strong>3D printing</strong>. Note that downloading may take a few minutes.</li>
+        <li><strong>Save Reconstruction in DB</strong>: Saves the reconstruction(s) to the database, allowing you to load and view it again later, unchanged. If a reconstruction already exists for that visit, the program will prompt you to confirm if you want to update the existing reconstruction.</li>
+    </ol>
+    <p>Once the download is complete, the program will provide confirmation for each download format.</p>
+
+    <h3>Reset the Visualization Window</h3>
+    <p>Use the <strong>Reset</strong> button to clear the input fields and load new files, allowing you to create a new visualization.</p>
         """
         self.ui.textEdit.setHtml(text)
 

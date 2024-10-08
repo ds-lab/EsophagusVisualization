@@ -1,24 +1,29 @@
 from PIL import Image
-import re
 from io import BytesIO
 import os
 from logic.services.barium_swallow_service import BariumSwallowFileService
 from logic.database import database
+from gui.show_message import ShowMessage
+
 
 def process_and_upload_barium_swallow_images(selected_visit, filenames):
     for i, filename in enumerate(filenames):
         time = filename.split("/")[-1].split(".")[0]
         fileextension = os.path.splitext(filename)[1][1:]
-        print(fileextension)
+
         if fileextension.lower() in ['jpg', 'jpeg']:
             extension = 'JPEG'
         elif fileextension.lower() in ['png']:
-            extension = 'PNG'
+            extension = 'JPEG'
         else:
-            # Handle unsupported file extensions
-            continue
+            ShowMessage.wrong_format(fileextension, ['JPEG', 'PNG'])
+            break
 
         file = Image.open(filename)
+
+        if fileextension.lower() == 'png':
+            file = file.convert('RGB')
+
         file_bytes = BytesIO()
         file.save(file_bytes, format=extension)
         file_bytes = file_bytes.getvalue()
@@ -26,7 +31,6 @@ def process_and_upload_barium_swallow_images(selected_visit, filenames):
         tbe_file_dict = {
             'visit_id': selected_visit,
             'minute_of_picture': time,
-            'filename': filename,  # ToDo Filename langfristig besser nicht abspeichern
             'file': file_bytes
         }
 

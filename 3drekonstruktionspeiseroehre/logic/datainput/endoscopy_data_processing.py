@@ -4,6 +4,7 @@ from io import BytesIO
 import os
 from logic.services.endoscopy_service import EndoscopyFileService
 from logic.database import database
+from gui.show_message import ShowMessage
 
 
 def process_and_upload_endoscopy_images(selected_visit, filenames):
@@ -12,16 +13,20 @@ def process_and_upload_endoscopy_images(selected_visit, filenames):
         if match:
             position = int(match.group('pos'))
             fileextension = os.path.splitext(filename)[1][1:]
-            print(fileextension)
+
             if fileextension.lower() in ['jpg', 'jpeg']:
                 extension = 'JPEG'
             elif fileextension.lower() in ['png']:
-                extension = 'PNG'
+                extension = 'JPEG'
             else:
-                # Handle unsupported file extensions
-                continue
+                ShowMessage.wrong_format(fileextension, ['JPEG', 'PNG'])
+                break
 
             file = Image.open(filename)
+
+            if fileextension.lower() == 'png':
+                file = file.convert('RGB')
+
             file_bytes = BytesIO()
             file.save(file_bytes, format=extension)
             file_bytes = file_bytes.getvalue()
@@ -29,7 +34,6 @@ def process_and_upload_endoscopy_images(selected_visit, filenames):
             endoscopy_file_dict = {
                 'visit_id': selected_visit,
                 'image_position': position,
-                'filename': filename,  # ToDo Filename langfristig besser nicht abspeichern
                 'file': file_bytes
             }
 

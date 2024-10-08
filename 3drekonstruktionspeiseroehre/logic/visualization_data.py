@@ -6,16 +6,15 @@ class VisualizationData:
         init VisualizationData
         """
         self._xray_filename = None
+        self._xray_minute = None
         self._xray_file = None
-
-        self._endoscopy_files = None
-        self._endoscopy_filenames = None
 
         self._xray_polygon = None
         self._xray_image_height = None
         self._xray_image_width = None
         self._xray_mask = None
 
+        self._endoscopy_files = None
         self._endoscopy_polygons = None
         self._endoscopy_image_positions_cm = None
 
@@ -31,13 +30,21 @@ class VisualizationData:
         self._endoscopy_start_pos = None
         self._sphincter_upper_pos = None
         self._esophagus_exit_pos = None
-        self._sphincter_length_cm = None
         self._endoflip_pos = None
         self._esophageal_pressurization_index = 0.0 # default value for backwards compatibility
 
         self._figure_x = None
         self._figure_y = None
         self._figure_z = None
+
+        self.center_path = None
+        self.sensor_path = None
+        self.widths = None
+        self.slopes = None
+        self.offset_top = None
+        self.tubular_length_cm = 0
+        self.sphincter_length_cm = 0
+        self.esophagus_len = None
 
     @property
     def xray_file(self):
@@ -54,6 +61,14 @@ class VisualizationData:
     @xray_filename.setter
     def xray_filename(self, value):
         self._xray_filename = value
+
+    @property
+    def xray_minute(self):
+        return self._xray_minute
+
+    @xray_minute.setter
+    def xray_minute(self, value):
+        self._xray_minute = value
 
     @property
     def xray_polygon(self):
@@ -110,14 +125,6 @@ class VisualizationData:
     @endoscopy_files.setter
     def endoscopy_files(self, value):
         self._endoscopy_files = value
-
-    @property
-    def endoscopy_filenames(self):
-        return self._endoscopy_filenames
-
-    @endoscopy_filenames.setter
-    def endoscopy_filenames(self, value):
-        self._endoscopy_filenames = value
 
     @property
     def endoscopy_image_positions_cm(self):
