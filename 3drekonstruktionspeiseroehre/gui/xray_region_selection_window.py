@@ -1,7 +1,10 @@
 import logic.image_polygon_detection as image_polygon_detection
-import numpy as np
 import cv2
 import os
+import subprocess
+import nibabel as nib
+import numpy as np
+import shutil
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.position_selection_window import PositionSelectionWindow
@@ -72,9 +75,88 @@ class XrayRegionSelectionWindow(QMainWindow):
         self.plot_ax.axis('off')
 
         # Calculate the initial polygon from the X-ray image
-        self.polygonOes = image_polygon_detection.calculate_xray_polygon(self.xray_image)
+        self.mask = self.predict_mask_with_nnunet_v2(self.xray_image)
+        self.polygonOes = self.polygon_from_mask(self.mask)
         self.init_first_polygon()
 
+    def polygon_from_mask(mask):
+        # Convert the mask to binary by multiplying with 255
+        binary_mask = (mask * 255).astype(np.uint8)
+
+        # Find contours in the binary mask
+        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        largest_area = 0
+        largest_polygon = None
+
+        # Loop over contours to find the largest one by area
+        for contour in contours:
+            if len(contour) >= 3:  # A polygon must have at least 3 points
+                area = cv2.contourArea(contour)
+                if area > largest_area:
+                    largest_area = area
+                    # Remove single-dimensional entries from the contour array
+                    contour = contour.squeeze(1)
+
+                    # Ensure the contour is closed
+                    if not np.array_equal(contour[0], contour[-1]):
+                        contour = np.vstack([contour, contour[0]])
+
+                    # Convert the contour to a Shapely polygon
+                    largest_polygon = Polygon(contour)
+
+        return largest_polygon
+    def predict_mask_with_nnunet_v2(self, image):
+        os.environ['nnUNet_raw'] = "C:/ModelAchalasia/nnUNet_raw"
+        os.environ['nnUNet_preprocessed'] = "C:/ModelAchalasia/nnUNet_preprocessed"
+        os.environ['nnUNet_results'] = "C:/ModelAchalasia/nnUNet_results"
+        temp_input_dir = 'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs'
+        temp_output_dir = './temp_output_dir'
+        os.makedirs(temp_output_dir, exist_ok=True)
+
+        input_image_path = os.path.join(temp_input_dir, '001_000.png')
+        Image.fromarray(image).save(input_image_path)
+
+        command = [
+            'nnUNetv2_predict',
+            '-i', temp_input_dir,
+            '-o', temp_output_dir,
+            '-d', 1,
+            '-c', '2d',
+            '-tr', 'nnUNetTrainer_100epochs',
+            '-p', 'nnUNetResEncUNetMPlans'
+        ]
+
+        subprocess.run(command, check=True)
+
+        output_mask_path = os.path.join(temp_output_dir, '001.png')
+        mask = nib.load(output_mask_path).get_fdata()
+
+        os.remove(input_image_path)
+        shutil.rmtree(temp_output_dir)
+
+        return mask
+    def mask_to_largest_polygon(mask):
+        # Findet die Konturen in der Maske
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        largest_area = 0
+        largest_polygon = None
+
+        for contour in contours:
+            if len(contour) >= 3:  # Ein Polygon muss mindestens 3 Punkte haben
+                area = cv2.contourArea(contour)
+                if area > largest_area:  # Wenn die Fläche größer als die bisher größte Fläche ist
+                    largest_area = area
+                    contour = contour.squeeze(1)
+
+                    # Überprüft, ob die Kontur geschlossen ist und schließt sie ggf.
+                    if not (contour[0] == contour[-1]).all():
+                        contour = np.vstack([contour, contour[0]])
+
+                    largest_polygon = Polygon(contour)
+
+        return largest_polygon
     def init_first_polygon(self):
         # Always create the initial polygon
         color = self.polygon_colors[0]
