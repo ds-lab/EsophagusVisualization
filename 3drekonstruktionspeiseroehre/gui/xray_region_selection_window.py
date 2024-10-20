@@ -110,27 +110,20 @@ class XrayRegionSelectionWindow(QMainWindow):
         os.environ['nnUNet_raw'] = "C:/ModelAchalasia/nnUNet_raw"
         os.environ['nnUNet_preprocessed'] = "C:/ModelAchalasia/nnUNet_preprocessed"
         os.environ['nnUNet_results'] = "C:/ModelAchalasia/nnUNet_results"
-        temp_input_dir = 'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs'
+        temp_input_dir = 'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs '
         temp_output_dir = './temp_output_dir'
         os.makedirs(temp_output_dir, exist_ok=True)
-
-        input_image_path = os.path.join(temp_input_dir, '001_000.png')
+        os.makedirs(temp_input_dir, exist_ok=True)
+        input_image_path = os.path.join(temp_input_dir, '001_0000.png')
         Image.fromarray(image).save(input_image_path)
 
-        command = [
-            'nnUNetv2_predict',
-            '-i', temp_input_dir,
-            '-o', temp_output_dir,
-            '-d', 1,
-            '-c', '2d',
-            '-tr', 'nnUNetTrainer_100epochs',
-            '-p', 'nnUNetResEncUNetMPlans'
-        ]
-
-        subprocess.run(command, check=True)
-
+        command = '''$Env:nnUNet_raw = "C:/ModelAchalasia/nnUNet_raw"; 
+                     $Env:nnUNet_preprocessed = "C:/ModelAchalasia/nnUNet_preprocessed"; 
+                      nnUNetv2_predict -i C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs -o ./temp_output_dir -d 1 -c 2d -tr nnUNetTrainer_100epochs -p nnUNetResEncUNetMPlans
+                     '''
+        subprocess.run(['powershell', '-Command', command], check=True, text=True)
         output_mask_path = os.path.join(temp_output_dir, '001.png')
-        mask = nib.load(output_mask_path).get_fdata()
+        mask = np.array(Image.open(output_mask_path))
 
         os.remove(input_image_path)
         shutil.rmtree(temp_output_dir)
