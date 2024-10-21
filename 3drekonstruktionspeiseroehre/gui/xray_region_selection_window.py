@@ -119,6 +119,7 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         command = '''$Env:nnUNet_raw = "C:/ModelAchalasia/nnUNet_raw"; 
                      $Env:nnUNet_preprocessed = "C:/ModelAchalasia/nnUNet_preprocessed"; 
+                     $Env:nnUNet_results = "C:/ModelAchalasia/nnUNet_results";
                       nnUNetv2_predict -i C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs -o ./temp_output_dir -d 1 -c 2d -tr nnUNetTrainer_100epochs -p nnUNetResEncUNetMPlans
                      '''
         subprocess.run(['powershell', '-Command', command], check=True, text=True)
