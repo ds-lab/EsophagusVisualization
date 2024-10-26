@@ -69,21 +69,21 @@ class XrayRegionSelectionWindow(QMainWindow):
         # Load the X-ray image
         image = Image.open(self.visualization_data.xray_file)
         self.xray_image = np.array(image)
-        if torch.cuda.is_available():
-            print("Eine GPU ist verfügbar.")
-        else:
-            print("Keine GPU verfügbar.")
+
         # Display the X-ray image
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis('off')
 
-        # Calculate the initial polygon from the X-ray image
+        # Calculate the initial polygon from the X-ray image with the nnUnet
         mask = self.predict_mask_with_nnunet_v2()
         self.mask = (mask > 0.5).astype(np.uint8) * 255
         self.polygonOes = self.mask_to_largest_polygon()
         self.init_first_polygon()
 
     def predict_mask_with_nnunet_v2(self):
+        '''
+            Uses the nnUnet for prediction of the oesophagus mask with values between 0 and 1
+        '''
         os.environ['nnUNet_raw'] = "C:/ModelAchalasia/nnUNet_raw"
         os.environ['nnUNet_preprocessed'] = "C:/ModelAchalasia/nnUNet_preprocessed"
         os.environ['nnUNet_results'] = "C:/ModelAchalasia/nnUNet_results"
@@ -93,20 +93,25 @@ class XrayRegionSelectionWindow(QMainWindow):
         os.makedirs(temp_output_dir, exist_ok=True)
         os.makedirs(temp_input_dir, exist_ok=True)
 
-        # Speichern des Bildes im gleichen Format wie in convert_image
         input_image_path = os.path.join(temp_input_dir, '001_0000.png')
-        img = Image.fromarray(self.xray_image).convert("L")  # Konvertieren zu Graustufen (L-Modus)
+        img = Image.fromarray(self.xray_image).convert("L")
         img_array = np.array(img)
-        img_array = img_array.astype(np.uint8)  # In uint8 konvertieren
+        img_array = img_array.astype(np.uint8)
         img = Image.fromarray(img_array)
-        img.save(input_image_path, "PNG", compress_level=0)  # Speichern ohne Komprimierung
+        img.save(input_image_path, "PNG", compress_level=0)
 
-        # PowerShell-Befehl für die Vorhersage
-        command = '''$Env:nnUNet_raw = "C:/ModelAchalasia/nnUNet_raw"; 
-                     $Env:nnUNet_preprocessed = "C:/ModelAchalasia/nnUNet_preprocessed"; 
-                     $Env:nnUNet_results = "C:/ModelAchalasia/nnUNet_results";
-                     nnUNetv2_predict -i C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs -o ./temp_output_dir -d 1 -c 2d -tr nnUNetTrainer_100epochs -p nnUNetResEncUNetMPlans -device cpu 
-                  '''
+        if torch.cuda.is_available():
+            command = '''$Env:nnUNet_raw = "C:/ModelAchalasia/nnUNet_raw"; 
+                                 $Env:nnUNet_preprocessed = "C:/ModelAchalasia/nnUNet_preprocessed"; 
+                                 $Env:nnUNet_results = "C:/ModelAchalasia/nnUNet_results";
+                                 nnUNetv2_predict -i C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs -o ./temp_output_dir -d 1 -c 2d -tr nnUNetTrainer_100epochs -p nnUNetResEncUNetMPlans 
+                              '''
+        else:
+            command = '''$Env:nnUNet_raw = "C:/ModelAchalasia/nnUNet_raw"; 
+                                 $Env:nnUNet_preprocessed = "C:/ModelAchalasia/nnUNet_preprocessed"; 
+                                 $Env:nnUNet_results = "C:/ModelAchalasia/nnUNet_results";
+                                 nnUNetv2_predict -i C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs -o ./temp_output_dir -d 1 -c 2d -tr nnUNetTrainer_100epochs -p nnUNetResEncUNetMPlans -device cpu 
+                              '''
 
         subprocess.run(['powershell', '-Command', command], check=True, text=True)
         output_mask_path = os.path.join(temp_output_dir, '001.png')
@@ -118,16 +123,18 @@ class XrayRegionSelectionWindow(QMainWindow):
         return mask
 
     def mask_to_largest_polygon(self):
-
+        '''
+            If more than one contour is predicted, the largest is selected.
+        '''
         contours, _ = cv2.findContours(self.mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         largest_area = 0
         largest_polygon = None
 
         for contour in contours:
-            if len(contour) >= 3:  # Ein Polygon muss mindestens 3 Punkte haben
+            if len(contour) >= 3:
                 area = cv2.contourArea(contour)
-                if area > largest_area:  # Wenn die Fläche größer als die bisher größte Fläche ist
+                if area > largest_area:
                     largest_area = area
                     contour = contour.squeeze(1)
 
@@ -146,9 +153,9 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         # Check if self.polygonOes is a Polygon object or a list of points
         if isinstance(self.polygonOes, Polygon):
-            points = np.array(self.polygonOes.exterior.coords)  # Extrahiere die Punkte
+            points = np.array(self.polygonOes.exterior.coords)  #extracting points
         else:
-            points = self.polygonOes  # Angenommen, dies ist eine Liste von Punkten
+            points = self.polygonOes
 
         # Set the initial selection based on the number of points
         if len(points) > 2:
