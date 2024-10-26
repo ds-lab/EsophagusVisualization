@@ -1,4 +1,3 @@
-import logic.image_polygon_detection as image_polygon_detection
 import cv2
 import os
 import subprocess
@@ -18,6 +17,7 @@ from PyQt6.QtGui import QAction, QImage, QPainter, QPixmap, QColor
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from shapely.geometry import Polygon, Point
 from PIL import Image
+import torch
 
 
 
@@ -69,59 +69,45 @@ class XrayRegionSelectionWindow(QMainWindow):
         # Load the X-ray image
         image = Image.open(self.visualization_data.xray_file)
         self.xray_image = np.array(image)
-
+        if torch.cuda.is_available():
+            print("Eine GPU ist verfügbar.")
+        else:
+            print("Keine GPU verfügbar.")
         # Display the X-ray image
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis('off')
 
         # Calculate the initial polygon from the X-ray image
-        self.mask = self.predict_mask_with_nnunet_v2(self.xray_image)
-        self.polygonOes = self.polygon_from_mask(self.mask)
+        mask = self.predict_mask_with_nnunet_v2()
+        self.mask = (mask > 0.5).astype(np.uint8) * 255
+        self.polygonOes = self.mask_to_largest_polygon()
         self.init_first_polygon()
 
-    def polygon_from_mask(mask):
-        # Convert the mask to binary by multiplying with 255
-        binary_mask = (mask * 255).astype(np.uint8)
-
-        # Find contours in the binary mask
-        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        largest_area = 0
-        largest_polygon = None
-
-        # Loop over contours to find the largest one by area
-        for contour in contours:
-            if len(contour) >= 3:  # A polygon must have at least 3 points
-                area = cv2.contourArea(contour)
-                if area > largest_area:
-                    largest_area = area
-                    # Remove single-dimensional entries from the contour array
-                    contour = contour.squeeze(1)
-
-                    # Ensure the contour is closed
-                    if not np.array_equal(contour[0], contour[-1]):
-                        contour = np.vstack([contour, contour[0]])
-
-                    # Convert the contour to a Shapely polygon
-                    largest_polygon = Polygon(contour)
-
-        return largest_polygon
-    def predict_mask_with_nnunet_v2(self, image):
+    def predict_mask_with_nnunet_v2(self):
         os.environ['nnUNet_raw'] = "C:/ModelAchalasia/nnUNet_raw"
         os.environ['nnUNet_preprocessed'] = "C:/ModelAchalasia/nnUNet_preprocessed"
         os.environ['nnUNet_results'] = "C:/ModelAchalasia/nnUNet_results"
-        temp_input_dir = 'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs '
+
+        temp_input_dir = 'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs'
         temp_output_dir = './temp_output_dir'
         os.makedirs(temp_output_dir, exist_ok=True)
         os.makedirs(temp_input_dir, exist_ok=True)
-        input_image_path = os.path.join(temp_input_dir, '001_0000.png')
-        Image.fromarray(image).save(input_image_path)
 
+        # Speichern des Bildes im gleichen Format wie in convert_image
+        input_image_path = os.path.join(temp_input_dir, '001_0000.png')
+        img = Image.fromarray(self.xray_image).convert("L")  # Konvertieren zu Graustufen (L-Modus)
+        img_array = np.array(img)
+        img_array = img_array.astype(np.uint8)  # In uint8 konvertieren
+        img = Image.fromarray(img_array)
+        img.save(input_image_path, "PNG", compress_level=0)  # Speichern ohne Komprimierung
+
+        # PowerShell-Befehl für die Vorhersage
         command = '''$Env:nnUNet_raw = "C:/ModelAchalasia/nnUNet_raw"; 
                      $Env:nnUNet_preprocessed = "C:/ModelAchalasia/nnUNet_preprocessed"; 
                      $Env:nnUNet_results = "C:/ModelAchalasia/nnUNet_results";
-                      nnUNetv2_predict -i C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs -o ./temp_output_dir -d 1 -c 2d -tr nnUNetTrainer_100epochs -p nnUNetResEncUNetMPlans
-                     '''
+                     nnUNetv2_predict -i C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs -o ./temp_output_dir -d 1 -c 2d -tr nnUNetTrainer_100epochs -p nnUNetResEncUNetMPlans -device cpu 
+                  '''
+
         subprocess.run(['powershell', '-Command', command], check=True, text=True)
         output_mask_path = os.path.join(temp_output_dir, '001.png')
         mask = np.array(Image.open(output_mask_path))
@@ -130,9 +116,10 @@ class XrayRegionSelectionWindow(QMainWindow):
         shutil.rmtree(temp_output_dir)
 
         return mask
-    def mask_to_largest_polygon(mask):
-        # Findet die Konturen in der Maske
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    def mask_to_largest_polygon(self):
+
+        contours, _ = cv2.findContours(self.mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         largest_area = 0
         largest_polygon = None
@@ -144,27 +131,35 @@ class XrayRegionSelectionWindow(QMainWindow):
                     largest_area = area
                     contour = contour.squeeze(1)
 
-                    # Überprüft, ob die Kontur geschlossen ist und schließt sie ggf.
                     if not (contour[0] == contour[-1]).all():
                         contour = np.vstack([contour, contour[0]])
 
                     largest_polygon = Polygon(contour)
 
         return largest_polygon
+
     def init_first_polygon(self):
         # Always create the initial polygon
         color = self.polygon_colors[0]
         self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
         self.polygon_selectors.append(self.selector)
 
-        # If the polygon has more than 2 points, set it as the initial selection
-        if len(self.polygonOes) > 2:
-            self.selector.verts = self.polygonOes
+        # Check if self.polygonOes is a Polygon object or a list of points
+        if isinstance(self.polygonOes, Polygon):
+            points = np.array(self.polygonOes.exterior.coords)  # Extrahiere die Punkte
+        else:
+            points = self.polygonOes  # Angenommen, dies ist eine Liste von Punkten
+
+        # Set the initial selection based on the number of points
+        if len(points) > 2:
+            self.selector.verts = points
             self.polygon_points["oesophagus"] = self.selector.verts
         else:
             self.selector.verts = [(0, 0)]
             self.__reset_selector()
+
         self.figure_canvas.draw_idle()
+
     def init_polygon_selector(self):
         color = self.polygon_colors[self.current_polygon_index]
         self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
