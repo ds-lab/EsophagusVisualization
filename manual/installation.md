@@ -35,10 +35,10 @@ By following these instructions, you will have a complete setup of the Esophagus
 ## Install the Software
 
 Run `EsophagusVisualizationSetup.exe` and follow the installation instructions.  
-
+Additionally the model for the xray segmentation 'ModelAchalasia' has to be downloaded and be saved in the C: folder. 
 **Note**: You might need to temporarily disable your antivirus software during the installation process.  
 Afterward, add EsophagusVisualization to your antivirus whitelist.
-
+ 
 ## Create Backups of the Database
 
 1. **Update Paths in the Backup Script**:
