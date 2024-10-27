@@ -1,7 +1,6 @@
 import cv2
 import os
 import subprocess
-import nibabel as nib
 import numpy as np
 import shutil
 from gui.info_window import InfoWindow
