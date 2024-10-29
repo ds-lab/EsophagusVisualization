@@ -15,6 +15,7 @@ from matplotlib.widgets import PolygonSelector
 from PyQt6 import uic
 from PyQt6.QtGui import QAction, QImage, QPainter, QPixmap, QColor
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
 from shapely.geometry import Polygon, Point
 from PIL import Image
 import torch
@@ -89,7 +90,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         os.environ['nnUNet_results'] = "C:/ModelAchalasia/nnUNet_results"
 
         temp_input_dir = 'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs'
-        temp_output_dir = './temp_output_dir'
+        temp_output_dir = 'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs_pred'
         os.makedirs(temp_output_dir, exist_ok=True)
         os.makedirs(temp_input_dir, exist_ok=True)
 
@@ -100,20 +101,30 @@ class XrayRegionSelectionWindow(QMainWindow):
         img = Image.fromarray(img_array)
         img.save(input_image_path, "PNG", compress_level=0)
 
-        if torch.cuda.is_available():
-            command = '''$Env:nnUNet_raw = "C:/ModelAchalasia/nnUNet_raw"; 
-                                 $Env:nnUNet_preprocessed = "C:/ModelAchalasia/nnUNet_preprocessed"; 
-                                 $Env:nnUNet_results = "C:/ModelAchalasia/nnUNet_results";
-                                 nnUNetv2_predict -i C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs -o ./temp_output_dir -d 1 -c 2d -tr nnUNetTrainer_100epochs -p nnUNetResEncUNetMPlans 
-                              '''
-        else:
-            command = '''$Env:nnUNet_raw = "C:/ModelAchalasia/nnUNet_raw"; 
-                                 $Env:nnUNet_preprocessed = "C:/ModelAchalasia/nnUNet_preprocessed"; 
-                                 $Env:nnUNet_results = "C:/ModelAchalasia/nnUNet_results";
-                                 nnUNetv2_predict -i C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs -o ./temp_output_dir -d 1 -c 2d -tr nnUNetTrainer_100epochs -p nnUNetResEncUNetMPlans -device cpu 
-                              '''
+        predictor = nnUNetPredictor(
+            tile_step_size=0.5,
+            use_gaussian=True,
+            use_mirroring=True,
+            perform_everything_on_device=True,
+            device=torch.device('cpu'),
+            verbose=False,
+            verbose_preprocessing=False,
+            allow_tqdm=True
+        )
+        nnUNet_results = 'C:/ModelAchalasia/nnUNet_results/Dataset001_Breischluck/nnUNetTrainer_100epochs__nnUNetResEncUNetMPlans__2d'
+        # initializes the network architecture, loads the checkpoint
+        predictor.initialize_from_trained_model_folder(
+            nnUNet_results,
+            use_folds=(0,),
+            checkpoint_name='checkpoint_final.pth',
+        )
+        # variant 1: give input and output folders
+        predictor.predict_from_files('C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs',
+                                     'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs_pred',
+                                     save_probabilities=False, overwrite=False,
+                                     num_processes_preprocessing=2, num_processes_segmentation_export=2,
+                                     folder_with_segs_from_prev_stage=None, num_parts=1, part_id=0)
 
-        subprocess.run(['powershell', '-Command', command], check=True, text=True)
         output_mask_path = os.path.join(temp_output_dir, '001.png')
         mask = np.array(Image.open(output_mask_path))
 
