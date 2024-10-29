@@ -54,7 +54,7 @@ pip install -r requirements.txt
   5. Ensure the **PyQt version** is set to **PyQt6**.
 
 3. **Download ML Model
-[Zenodo website](https://zenodo.org/records/13980656?preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjA3MGI0MjI0LWEyN2ItNDlkNC05YjgxLTBkZThlNzgzNTljYSIsImRhdGEiOnt9LCJyYW5kb20iOiI4N2U4MmUxOTc3YTk2NTYxMDFmMjdiNzMyMjQzYWRiMCJ9.ISNr53t3UU1rBfBdi6Iyo8qznD_iIQSOMYUj6afUhyQqGPQlrKrNkVhttZcLL-Vc1brNMbboOo1KlUMVxBc4bg)
+Additionally the model for the xray segmentation 'ModelAchalasia' [Zenodo website](https://zenodo.org/records/13980656?preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjA3MGI0MjI0LWEyN2ItNDlkNC05YjgxLTBkZThlNzgzNTljYSIsImRhdGEiOnt9LCJyYW5kb20iOiI4N2U4MmUxOTc3YTk2NTYxMDFmMjdiNzMyMjQzYWRiMCJ9.ISNr53t3UU1rBfBdi6Iyo8qznD_iIQSOMYUj6afUhyQqGPQlrKrNkVhttZcLL-Vc1brNMbboOo1KlUMVxBc4bg) has to be downloaded and be saved in the C: folder. 
 
 ### Setup Docker
 1. **Install Docker Desktop**: 

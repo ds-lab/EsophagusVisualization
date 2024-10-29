@@ -21,8 +21,11 @@ Once initiated, a new window will appear displaying the first barium swallow ima
 
 - Adjust individual points of the outline by dragging them with your mouse.
 - Create a completely new selection by clicking "Start new selection."
-
-If you create a new outline, ensure that you close it by clicking on the starting point at the end. When you're done, select "Apply selection and proceed."
+- The last point set can be deleted by clicking on 'Delete last point'. 
+If you create a new outline, ensure that you close it by clicking on the starting point at the end.
+If you want to save the outline as a mask to create a dataset for maschine learning, check the respective checkbox. If you want to label the next structure, like the spine, 
+click 'Next selection'. The masks will be automatically saved in the C: drive in the folder 'DataAchalasia'. 
+When you're done, select "Apply selection and proceed."
 
 ![Barium Swallow Outline](./manual_images/outline_esophagus.jpg)
 
@@ -39,7 +42,8 @@ When finished, click "Continue".
 
 This process will repeat for each barium swallow image.
 
-Afterward, endoscopy images will be displayed, allowing you to adjust or draw the esophagus's cross-section.
+Afterward, endoscopy images will be displayed, allowing you to adjust or draw the esophagus's cross-section. Those outline could be saved by checking the checkbox. click 'Next selection'. The masks will be automatically saved in the C: drive in the folder 'DataAchalasia'. 
+
 
 ![Cross Section](./manual_images/cross_section.jpg)
 
