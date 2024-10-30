@@ -105,7 +105,7 @@ class XrayRegionSelectionWindow(QMainWindow):
             use_gaussian=True,
             use_mirroring=True,
             perform_everything_on_device=True,
-            device=torch.device('cpu'),
+            device=torch.device('cuda' if torch.cuda.is_available() else 'cpu'),
             verbose=False,
             verbose_preprocessing=False,
             allow_tqdm=True
