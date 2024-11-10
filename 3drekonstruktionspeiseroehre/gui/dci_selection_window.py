@@ -499,10 +499,9 @@ class DCISelectionWindow(QMainWindow):
 
         # Find the left and right ends of the largest connected region
         if max_region_label == 0:
-            if threshold - 1 >= 0:
-                return self.find_biggest_connected_region(lower_ues, upper_les, threshold - 1)
-            else:
-                return  int(0.25 * self.pressure_matrix_high_res.shape[1]), int(0.75 * self.pressure_matrix_high_res.shape[1])  # No valid region found after applying the constraint
+            left_end_x = self.find_leftmost_x_coordinate_above_threshold(self.pressure_matrix_high_res, lower_ues, threshold)
+            right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second)
+            return int(left_end_x), int(right_end_x)
 
         max_region_coords = np.column_stack(np.where(labeled_array == max_region_label))
         left_end_x = np.min(max_region_coords[:, 1])
@@ -522,10 +521,9 @@ class DCISelectionWindow(QMainWindow):
             right_end_x -= 1
 
         if left_end_x >= right_end_x:
-            if threshold - 1 >= 0:
-                return self.find_biggest_connected_region(lower_ues, upper_les, threshold - 1)
-            else:
-                return  int(0.25 * self.pressure_matrix_high_res.shape[1]), int(0.75 * self.pressure_matrix_high_res.shape[1])  # No valid region found after applying the constraint
+            left_end_x = self.find_leftmost_x_coordinate_above_threshold(self.pressure_matrix_high_res, lower_ues, threshold)
+            right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second)
+            return int(left_end_x), int(right_end_x)
 
         return int(left_end_x), int(right_end_x)
     
@@ -549,3 +547,38 @@ class DCISelectionWindow(QMainWindow):
         lower_ues_position = self.lower_ues.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
         first_sensor_above_ues = next(sensor for sensor in config.coords_sensors if sensor > lower_ues_position)
         return config.coords_sensors.index(first_sensor_above_ues)
+    
+    def find_leftmost_x_coordinate_above_threshold(self, pressure_matrix, lower_ues_y, threshold=30):
+        """
+        Finds the x-coordinate of the connected region above the lower UES that is above the threshold and has the most values in the upper parts of the plot.
+        :param pressure_matrix: The pressure matrix.
+        :param lower_ues_y: The y-coordinate of the lower UES.
+        :param threshold: The pressure threshold (default is 30 mmHg).
+        :return: The x-coordinate of the leftmost point in the connected region above the threshold with the most values in the upper parts.
+        """
+        # Create a binary matrix where values above the threshold are 1 and others are 0
+        binary_matrix = pressure_matrix > threshold
+
+        # Label connected regions in the binary matrix
+        labeled_matrix, num_features = label(binary_matrix)
+
+        # Initialize variables to keep track of the best region
+        best_region_coords = None
+        max_upper_values = 0
+
+        # Iterate through the labeled regions to find the best region above the lower UES
+        for region_label in range(1, num_features + 1):
+            region_coords = np.argwhere(labeled_matrix == region_label)
+            if np.any(region_coords[:, 0] < lower_ues_y):
+                # Count the number of values in the upper parts of the plot
+                upper_values_count = np.sum(region_coords[:, 0] < lower_ues_y / 2)
+                if upper_values_count > max_upper_values:
+                    max_upper_values = upper_values_count
+                    best_region_coords = region_coords
+
+        if best_region_coords is not None:
+            # Find the leftmost x-coordinate in the best region
+            leftmost_x = np.min(best_region_coords[:, 1])
+            return leftmost_x
+
+        return 0  # Return 0 if no region is found
