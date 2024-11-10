@@ -1,5 +1,5 @@
 from gui.master_window import MasterWindow
-from PyQt6.QtWidgets import QMainWindow, QMessageBox, QRadioButton
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QRadioButton, QCheckBox
 from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from gui.rectangle_selector import CustomRectangleSelector
@@ -58,6 +58,13 @@ class DCISelectionWindow(QMainWindow):
         self.radioButton20mmHg = self.findChild(QRadioButton, 'radioButton20mmHg')
         self.radioButton0mmHg = self.findChild(QRadioButton, 'radioButton0mmHg')
 
+        # Access checkbox for selector
+        self.selector_checkbox = self.findChild(QCheckBox, 'checkBoxDecouple')
+
+        # set checkbox to checked
+        self.selector_checkbox.setChecked(True)
+        self.selectorIsCoupled = True
+
         # Preselect the 20 mmHg radio button
         self.radioButton20mmHg.setChecked(True)
         self.radioButton0mmHg.setChecked(False)
@@ -66,6 +73,7 @@ class DCISelectionWindow(QMainWindow):
         # Connect signals to slots if needed
         self.radioButton20mmHg.toggled.connect(self.__on_radio_button_toggled)
         self.radioButton0mmHg.toggled.connect(self.__on_radio_button_toggled)
+        self.selector_checkbox.toggled.connect(self.__on_checkbox_toggled)
 
         # Connect button click events to methods
         self.ui.reset_button.clicked.connect(self.__reset_button_clicked)
@@ -76,6 +84,16 @@ class DCISelectionWindow(QMainWindow):
         self.ui.menubar.addAction(menu_button)
 
         self.__plot_data()
+
+    def __on_checkbox_toggled(self):
+        """
+        Callback function that is called when the user toggles the checkbox
+        """
+        if self.selector_checkbox.isChecked():
+            self.selectorIsCoupled = True
+            self.__couple_selector()
+        else:
+            self.selectorIsCoupled = False
 
     def __on_radio_button_toggled(self):
         """
@@ -135,6 +153,14 @@ class DCISelectionWindow(QMainWindow):
         """
         return np.round((self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2)
         
+    def __couple_selector(self):
+        """
+        Couple the rectangle selector with the LES and UES lines
+        """
+        self.selectorIsCoupled = True
+        self.selector.extents = (self.selector.extents[0], self.selector.extents[1], self.lower_ues.get_y_position(), self.upper_les.get_y_position())
+        self.selector.update()
+        self.__update_DCI_value(int(self.selector.extents[0]), int(self.selector.extents[1]), int(self.selector.extents[2]), int(self.selector.extents[3]))
 
     def on_lines_dragged(self):
         """
@@ -158,12 +184,8 @@ class DCISelectionWindow(QMainWindow):
             self.lower_les.set_y_position(self.lower_les_backup) 
             return
 
-        if self.lower_ues != self.lower_ues_backup or self.upper_les != self.upper_les_backup: # update the DCI value if rectangle selector is changed
-            # Update the extents of the rectangle selector
-            self.selector.extents = (self.selector.extents[0], self.selector.extents[1], lower_ues_y, upper_les_y)
-            # Redraw the rectangle selector
-            self.selector.update()
-            self.__update_DCI_value(int(self.selector.extents[0]), int(self.selector.extents[1]), int(self.selector.extents[2]), int(self.selector.extents[3]))
+        if (self.lower_ues != self.lower_ues_backup or self.upper_les != self.upper_les_backup) and self.selectorIsCoupled: # update the DCI value if rectangle selector is changed
+            self.__couple_selector()
 
         # Update the labels
         les_height = self.get_les_height()
@@ -209,7 +231,7 @@ class DCISelectionWindow(QMainWindow):
         self.fig.canvas.mpl_connect('button_release_event', self.line_manager.on_release)
         self.fig.canvas.mpl_connect('motion_notify_event', self.line_manager.on_motion)
         self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
-        first_sensor_pos = self.find_first_sensor_above_ues()
+        first_sensor_pos = self.find_first_sensor_below_ues()
         second_sensor_pos = self.find_middle_sensor_in_les()
         self.ui.second_combobox.setCurrentIndex(second_sensor_pos)
         self.ui.first_combobox.setCurrentIndex(first_sensor_pos)
@@ -519,12 +541,11 @@ class DCISelectionWindow(QMainWindow):
         closest_sensor = min(config.coords_sensors, key=lambda sensor: abs(sensor - middle_position))
         return config.coords_sensors.index(closest_sensor)
     
-    def find_first_sensor_above_ues(self):
+    def find_first_sensor_below_ues(self):
         """
-        Finds the first sensor at or above the lower end of the Upper Esophageal Sphincter (UES).
-        :return: the sensor position of the first sensor at or above the lower end of the UES.
+        Finds the first sensor below the lower end of the Upper Esophageal Sphincter (UES).
+        :return: the sensor position of the first sensor below the lower end of the UES.
         """
         lower_ues_position = self.lower_ues.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
-
-        first_sensor_above_ues = next(sensor for sensor in reversed(config.coords_sensors) if sensor <= lower_ues_position)
+        first_sensor_above_ues = next(sensor for sensor in config.coords_sensors if sensor > lower_ues_position)
         return config.coords_sensors.index(first_sensor_above_ues)
