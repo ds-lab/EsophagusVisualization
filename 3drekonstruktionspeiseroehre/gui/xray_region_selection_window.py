@@ -1,7 +1,8 @@
-import logic.image_polygon_detection as image_polygon_detection
-import numpy as np
 import cv2
 import os
+import subprocess
+import numpy as np
+import shutil
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.position_selection_window import PositionSelectionWindow
@@ -13,8 +14,10 @@ from matplotlib.widgets import PolygonSelector
 from PyQt6 import uic
 from PyQt6.QtGui import QAction, QImage, QPainter, QPixmap, QColor
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
 from shapely.geometry import Polygon, Point
 from PIL import Image
+import torch
 
 
 
@@ -71,9 +74,86 @@ class XrayRegionSelectionWindow(QMainWindow):
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis('off')
 
-        # Calculate the initial polygon from the X-ray image
-        self.polygonOes = image_polygon_detection.calculate_xray_polygon(self.xray_image)
+        # Calculate the initial polygon from the X-ray image with the nnUnet
+        mask = self.predict_mask_with_nnunet_v2()
+        self.mask = (mask > 0.5).astype(np.uint8) * 255
+        self.polygonOes = self.mask_to_largest_polygon()
         self.init_first_polygon()
+
+    def predict_mask_with_nnunet_v2(self):
+        '''
+            Uses the nnUnet for prediction of the oesophagus mask with values between 0 and 1
+        '''
+        os.environ['nnUNet_raw'] = "C:/ModelAchalasia/nnUNet_raw"
+        os.environ['nnUNet_preprocessed'] = "C:/ModelAchalasia/nnUNet_preprocessed"
+        os.environ['nnUNet_results'] = "C:/ModelAchalasia/nnUNet_results"
+
+        temp_input_dir = 'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs'
+        temp_output_dir = 'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs_pred'
+        os.makedirs(temp_output_dir, exist_ok=True)
+        os.makedirs(temp_input_dir, exist_ok=True)
+
+        input_image_path = os.path.join(temp_input_dir, '001_0000.png')
+        img = Image.fromarray(self.xray_image).convert("L")
+        img_array = np.array(img)
+        img_array = img_array.astype(np.uint8)
+        img = Image.fromarray(img_array)
+        img.save(input_image_path, "PNG", compress_level=0)
+
+        predictor = nnUNetPredictor(
+            tile_step_size=0.5,
+            use_gaussian=True,
+            use_mirroring=True,
+            perform_everything_on_device=True,
+            device=torch.device('cuda' if torch.cuda.is_available() else 'cpu'),
+            verbose=False,
+            verbose_preprocessing=False,
+            allow_tqdm=True
+        )
+        nnUNet_results = 'C:/ModelAchalasia/nnUNet_results/Dataset001_Breischluck/nnUNetTrainer_100epochs__nnUNetResEncUNetMPlans__2d'
+        # initializes the network architecture, loads the checkpoint
+        predictor.initialize_from_trained_model_folder(
+            nnUNet_results,
+            use_folds=(0,),
+            checkpoint_name='checkpoint_final.pth',
+        )
+        # variant 1: give input and output folders
+        predictor.predict_from_files('C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs',
+                                     'C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs_pred',
+                                     save_probabilities=False, overwrite=False,
+                                     num_processes_preprocessing=2, num_processes_segmentation_export=2,
+                                     folder_with_segs_from_prev_stage=None, num_parts=1, part_id=0)
+
+        output_mask_path = os.path.join(temp_output_dir, '001.png')
+        mask = np.array(Image.open(output_mask_path))
+
+        os.remove(input_image_path)
+        shutil.rmtree(temp_output_dir)
+
+        return mask
+
+    def mask_to_largest_polygon(self):
+        '''
+            If more than one contour is predicted, the largest is selected.
+        '''
+        contours, _ = cv2.findContours(self.mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        largest_area = 0
+        largest_polygon = None
+
+        for contour in contours:
+            if len(contour) >= 3:
+                area = cv2.contourArea(contour)
+                if area > largest_area:
+                    largest_area = area
+                    contour = contour.squeeze(1)
+
+                    if not (contour[0] == contour[-1]).all():
+                        contour = np.vstack([contour, contour[0]])
+
+                    largest_polygon = Polygon(contour)
+
+        return largest_polygon
 
     def init_first_polygon(self):
         # Always create the initial polygon
@@ -81,14 +161,22 @@ class XrayRegionSelectionWindow(QMainWindow):
         self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
         self.polygon_selectors.append(self.selector)
 
-        # If the polygon has more than 2 points, set it as the initial selection
-        if len(self.polygonOes) > 2:
-            self.selector.verts = self.polygonOes
+        # Check if self.polygonOes is a Polygon object or a list of points
+        if isinstance(self.polygonOes, Polygon):
+            points = np.array(self.polygonOes.exterior.coords)  #extracting points
+        else:
+            points = self.polygonOes
+
+        # Set the initial selection based on the number of points
+        if len(points) > 2:
+            self.selector.verts = points
             self.polygon_points["oesophagus"] = self.selector.verts
         else:
             self.selector.verts = [(0, 0)]
             self.__reset_selector()
+
         self.figure_canvas.draw_idle()
+
     def init_polygon_selector(self):
         color = self.polygon_colors[self.current_polygon_index]
         self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))

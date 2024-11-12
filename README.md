@@ -53,7 +53,11 @@ pip install -r requirements.txt
   4. Under the **Python Debugger** section, check the option named **PyQt compatible**.
   5. Ensure the **PyQt version** is set to **PyQt6**.
 
-
+3. **Download ML Model**
+    Download the model here:
+    [Zenodo website](https://zenodo.org/records/13980656?preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjA3MGI0MjI0LWEyN2ItNDlkNC05YjgxLTBkZThlNzgzNTljYSIsImRhdGEiOnt9LCJyYW5kb20iOiI4N2U4MmUxOTc3YTk2NTYxMDFmMjdiNzMyMjQzYWRiMCJ9.ISNr53t3UU1rBfBdi6Iyo8qznD_iIQSOMYUj6afUhyQqGPQlrKrNkVhttZcLL-Vc1brNMbboOo1KlUMVxBc4bg)
+    Copy the whole folder to: C:/  , if you want to use another location, you have to adapt the paths in xray_region_selection_window.py
+   
 ### Setup Docker
 1. **Install Docker Desktop**: 
     - If you don't already have Docker Desktop installed, download and install it from the [Docker website](https://www.docker.com/products/docker-desktop). 
