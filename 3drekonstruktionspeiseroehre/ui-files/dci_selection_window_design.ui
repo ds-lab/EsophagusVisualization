@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DciSelection</class>
+ <widget class="QMainWindow" name="PositionSelection">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>935</width>
+    <height>653</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Selection of the region that is relevant for the Esophageal Pressurization Index</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <property name="leftMargin">
+     <number>10</number>
+    </property>
+    <property name="topMargin">
+     <number>10</number>
+    </property>
+    <property name="rightMargin">
+     <number>10</number>
+    </property>
+    <property name="bottomMargin">
+     <number>10</number>
+    </property>
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item row="0" column="0">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="1">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item row="3" column="1">
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string>Height of LES:</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="QLabel" name="heightLabelLES">
+          <property name="styleSheet">
+              <string notr="true">
+                background-color: #fcfcfc;
+              </string>
+            </property>
+            <property name="text">
+            <string>0 cm</string>
+            </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="4" column="1" alignment="Qt::AlignTop">
+       <widget class="QGroupBox" name="endoscopy_groupbox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Esophageal Pressurization Index:</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="QLabel" name="DCI">
+            <property name="styleSheet">
+            <string notr="true">
+              background-color: #fcfcfc;
+            </string>
+          </property>
+            <property name="text">
+            <string>0 mmHgscm</string>
+            </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="1" alignment="Qt::AlignTop">
+       <widget class="QGroupBox" name="groupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="title">
+         <string>First sensor position:</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+        <widget class="QComboBox" name="first_combobox"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="1" alignment="Qt::AlignTop">
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Second sensor position:</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="1">
+         <widget class="QComboBox" name="second_combobox"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="title">
+         <string>Height of tubular esophagus:</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="QLabel" name="heightLabelEsophagus">
+            <property name="styleSheet">
+            <string notr="true">
+              background-color: #fcfcfc;
+            </string>
+          </property>
+            <property name="text">
+            <string>0 cm</string>
+            </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     <item row="5" column="1">
+      <widget class="QGroupBox" name="pressureThresholdGroupBox">
+        <property name="title">
+          <string>Pressure threshold for EPI</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+            <widget class="QRadioButton" name="radioButton20mmHg">
+              <property name="text">
+                <string>20 mmHg (standard)</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QRadioButton" name="radioButton0mmHg">
+              <property name="text">
+                <string>0 mmHg (e.g. after POEM)</string>
+              </property>
+            </widget>
+          </item>
+        </layout>
+      </widget>
+    </item>
+    <item row="6" column="1">
+      <widget class="QGroupBox" name="decoupleSelector">
+        <property name="title">
+          <string>Decouple DCI Selector</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+            <widget class="QCheckBox" name="checkBoxDecouple">
+              <property name="text">
+                <string>LES/UES limits of selector</string>
+              </property>
+            </widget>
+          </item>
+        </layout>
+      </widget>
+    </item>
+  
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="reset_button">
+      <property name="text">
+       <string>Start new selection</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="apply_button">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Apply selection and proceed</string>
+      </property>
+      <property name="default">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <layout class="QGridLayout" name="gridLayout"/>
+    </item>
+
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>935</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -31,6 +31,7 @@ class VisualizationData:
         self._sphincter_upper_pos = None
         self._esophagus_exit_pos = None
         self._endoflip_pos = None
+        self._esophageal_pressurization_index = 0.0 # default value for backwards compatibility
 
         self._figure_x = None
         self._figure_y = None
@@ -215,6 +216,14 @@ class VisualizationData:
     def endoflip_pos(self, value):
         # value is a x,y tuple
         self._endoflip_pos = value
+
+    @property
+    def esophageal_pressurization_index(self):
+        return self._esophageal_pressurization_index
+    
+    @esophageal_pressurization_index.setter
+    def esophageal_pressurization_index(self, value):
+        self._esophageal_pressurization_index = value
 
     @property
     def sphincter_length_cm(self):

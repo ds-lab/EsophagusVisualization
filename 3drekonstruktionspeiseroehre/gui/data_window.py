@@ -14,7 +14,7 @@ from gui.master_window import MasterWindow
 from gui.info_window import InfoWindow
 from gui.set_textfields import setText
 from gui.show_message import ShowMessage
-from gui.xray_window_managment import ManageXrayWindows
+from gui.dci_selection_window import DCISelectionWindow
 from gui.visualization_window import VisualizationWindow
 from gui.download_data_menu import DownloadData
 from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload, \
@@ -1582,7 +1582,7 @@ class DataWindow(QMainWindow):
 
                     visit.add_visualization(visualization_data)
 
-                ManageXrayWindows(self.master_window, visit, self.patient_data)
+                self.master_window.switch_to(DCISelectionWindow(self.master_window, self.patient_data, visit))
 
         else:
             print(f"reconstruction: {reconstruction}")

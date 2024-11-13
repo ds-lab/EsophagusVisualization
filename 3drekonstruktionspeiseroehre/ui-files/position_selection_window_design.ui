@@ -148,9 +148,6 @@
          <item row="0" column="0">
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QComboBox" name="first_combobox"/>
-           </item>
-           <item>
             <widget class="QPushButton" name="first_sensor_button">
              <property name="styleSheet">
               <string notr="true">color: rgb(138, 226, 52);</string>
@@ -195,9 +192,6 @@
          </item>
          <item row="0" column="0">
           <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QComboBox" name="second_combobox"/>
-           </item>
           </layout>
          </item>
         </layout>

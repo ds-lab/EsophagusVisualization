@@ -422,7 +422,7 @@ class VisualizationWindow(QMainWindow):
                      "Mean over all (Volume * min(sphincter pressure from frame))",
                      "Mean over all (Volume * mean(sphincter pressure from frame))",
                      "Tubular Pressure Max", "Tubular Pressure Min", "Tubular Pressure Mean",
-                     "Sphincter Pressure Max", "Sphincter Pressure Min", "Sphincter Pressure Mean"
+                     "Sphincter Pressure Max", "Sphincter Pressure Min", "Sphincter Pressure Mean", "Esophageal Pressurization Index"
                      ])
 
                 # loop through all visits.items (these are figures which are displayed in different threads)
@@ -450,6 +450,7 @@ class VisualizationWindow(QMainWindow):
                         volume_tubular = metrics['volume_sum_tubular']
                         volume_sphincter = metrics['volume_sum_sphincter']
                         esophagus_length = visit_data.visualization_data_list[j].figure_creator.get_esophagus_full_length_cm()
+                        esophageal_pressurization_index = metrics['esophageal_pressurization_index']
 
                         # Write metrics data to CSV file
                         writer.writerow([visit_name.encode("utf-8"), id_minute,
@@ -457,7 +458,7 @@ class VisualizationWindow(QMainWindow):
                                          round(tubular_metric_max, 2), round(tubular_metric_min, 2), round(tubular_metric_mean, 2),
                                          round(sphincter_metric_max, 2), round(sphincter_metric_min, 2), round(sphincter_metric_mean, 2),
                                          round(tubular_pressure_max, 2), round(tubular_pressure_min, 2), round(tubular_pressure_mean, 2),
-                                         round(sphincter_pressure_max, 2), round(sphincter_pressure_min, 2), round(sphincter_pressure_mean, 2)])
+                                         round(sphincter_pressure_max, 2), round(sphincter_pressure_min, 2), round(sphincter_pressure_mean, 2), round(esophageal_pressurization_index, 2)])
 
             # Check if the file was actually created
             if os.path.exists(destination_file_path):

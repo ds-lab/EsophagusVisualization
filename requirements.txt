@@ -32,4 +32,4 @@ cryptography==42.0.4
 psycopg2-binary==2.9.9
 nnUnetv2==2.5.1
 torch==2.5.0
-
+blosc2

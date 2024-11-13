@@ -793,7 +793,8 @@ class FigureCreator(ABC):
             'pressure_tubular_overall':pressure_tubular_overall,
             'pressure_sphincter_overall':pressure_sphincter_overall,
             'pressure_tubular_per_frame':pressure_tubular_per_frame,
-            'pressure_sphincter_per_frame':pressure_sphincter_per_frame
+            'pressure_sphincter_per_frame':pressure_sphincter_per_frame,
+            'esophageal_pressurization_index': visualization_data.esophageal_pressurization_index
         }
         return return_val
 

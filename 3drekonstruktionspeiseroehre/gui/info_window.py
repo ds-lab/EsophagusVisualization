@@ -177,3 +177,6 @@ class InfoWindow(QDialog):
     <p>Use the <strong>Reset</strong> button to clear the input fields and load new files, allowing you to create a new visualization.</p>
         """
         self.ui.textEdit.setHtml(text)
+
+    def show_dci_selection_info(self):
+        text = """In this window, the area of interest for the calculation of the DCI is selected. <br><br>""" # TODO: improve text
