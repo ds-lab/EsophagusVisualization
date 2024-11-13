@@ -59,22 +59,16 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <widget class="QLabel" name="heightLabelLES">
-             <property name="styleSheet">
+          <widget class="QLabel" name="heightLabelLES">
+          <property name="styleSheet">
               <string notr="true">
-                background-color: #3c3c3c;
-                border: 2px solid #3c3c3c;
-                border-radius: 50px;
+                background-color: #fcfcfc;
               </string>
             </property>
-             <property name="text">
-              <string>0 cm</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+            <property name="text">
+            <string>0 cm</string>
+            </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -105,22 +99,16 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <widget class="QLabel" name="DCI">
-             <property name="styleSheet">
-              <string notr="true">
-                border: 2px solid #3c3c3c;
-                border-radius: 50px;
-                background-color: #3c3c3c;
-              </string>
+          <widget class="QLabel" name="DCI">
+            <property name="styleSheet">
+            <string notr="true">
+              background-color: #fcfcfc;
+            </string>
+          </property>
+            <property name="text">
+            <string>0 mmHgscm</string>
             </property>
-             <property name="text">
-              <string>0 mmHgscm</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -174,22 +162,16 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <widget class="QLabel" name="heightLabelEsophagus">
-             <property name="styleSheet">
-              <string notr="true">
-                background-color: #3c3c3c;
-                border: 2px solid #3c3c3c;
-                border-radius: 50px;
-              </string>
+          <widget class="QLabel" name="heightLabelEsophagus">
+            <property name="styleSheet">
+            <string notr="true">
+              background-color: #fcfcfc;
+            </string>
+          </property>
+            <property name="text">
+            <string>0 cm</string>
             </property>
-             <property name="text">
-              <string>0 cm</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          </widget>
          </item>
         </layout>
        </widget>
