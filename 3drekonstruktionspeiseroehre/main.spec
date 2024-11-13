@@ -4,10 +4,10 @@ block_cipher = None
 
 a = Analysis(
     ['main.py'],
-    pathex=['C:\\Users\\piasc\\Documents\\Studium\\Projekt-Achalasie\\3drekonstruktionspeiseroehre\\3drekonstruktionspeiseroehre'],
+    pathex=['C:\\Users\\frede\\PycharmProjects\\3drekonstruktionspeiseroehre\\3drekonstruktionspeiseroehre'],
     binaries=[],
     datas=[
-        ('C:\\Users\\piasc\\anaconda3\\envs\\esophagus-requirements4\\Lib\\site-packages\\', '.'),
+        ('C:\\Users\\frede\\.conda\\envs\\esophagus-visualization\\Lib\\site-packages\\', '.'),
         ('ui-files', 'ui-files'),
         ('media', 'media'),
         ('logic', 'logic'),
@@ -18,7 +18,8 @@ a = Analysis(
     hiddenimports=[
         'PyQt6.QtWebEngineWidgets',
         'PyQt6.QtGui',
-        'PyQt6.QtCore'
+        'PyQt6.QtCore',
+        'numpy'
     ],
     hookspath=[],
     hooksconfig={},
@@ -53,7 +54,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=False,
-    console=False,
+    console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
