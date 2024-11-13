@@ -195,6 +195,12 @@ class DCISelectionWindow(QMainWindow):
         self.lower_les_backup = lower_les_y
         self.upper_les_backup = upper_les_y
         self.lower_ues_backup = lower_ues_y
+        first_sensor_pos = self.find_first_sensor_below_ues()
+        self.ui.first_combobox.setCurrentIndex(first_sensor_pos)
+        self.visualization_data.first_sensor_index = first_sensor_pos
+        second_sensor_pos = self.find_middle_sensor_in_les()
+        self.ui.second_combobox.setCurrentIndex(second_sensor_pos)
+        self.visualization_data.second_sensor_index = second_sensor_pos
 
     def __initialize_plot_analysis(self):
         """
