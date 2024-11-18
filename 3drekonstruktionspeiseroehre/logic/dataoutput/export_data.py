@@ -100,7 +100,7 @@ class ExportData:
                                         "height_contrast_medium_1min", "height_contrast_medium_2min",
                                         "height_contrast_medium_5min", "width_contrast_medium_1min",
                                         "width_contrast_medium_2min", "width_contrast_medium_5min"],
-                    "endoscopies": ["egd_id", "visit_id", "position_les"],
+                    "endoscopies": ["endoscopy_id", "visit_id", "position_les"],
                     "endoflips": ["endoflip_id", "visit_id", "csa_before", "di_before", "dmin_before", "ibp_before",
                                   "csa_during", "di_during", "dmin_during", "ibp_during", "csa_after", "di_after",
                                   "dmin_after", "ibp_after"]

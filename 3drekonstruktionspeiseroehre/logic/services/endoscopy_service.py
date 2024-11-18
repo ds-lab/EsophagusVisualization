@@ -12,7 +12,7 @@ class EndoscopyService:
         self.db = db_session
 
     def get_endoscopy(self, id: int):
-        stmt = select(Endoscopy).where(Endoscopy.egd_id == id)
+        stmt = select(Endoscopy).where(Endoscopy.endoscopy_id == id)
         try:
             result = self.db.execute(stmt).first()
             if result:
@@ -40,7 +40,7 @@ class EndoscopyService:
             self.show_error_msg()
 
     def delete_endoscopy(self, id: int):
-        stmt = delete(Endoscopy).where(Endoscopy.egd_id == id)
+        stmt = delete(Endoscopy).where(Endoscopy.endoscopy_id == id)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
@@ -50,7 +50,7 @@ class EndoscopyService:
             self.show_error_msg()
 
     def update_endoscopy(self, id: int, data: dict):
-        stmt = update(Endoscopy).where(Endoscopy.egd_id == id).values(**data)
+        stmt = update(Endoscopy).where(Endoscopy.endoscopy_id == id).values(**data)
         try:
             result = self.db.execute(stmt)
             self.db.commit()

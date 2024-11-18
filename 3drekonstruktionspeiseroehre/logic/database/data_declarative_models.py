@@ -214,7 +214,7 @@ class BariumSwallowFile(Base):
 
 class Endoscopy(Base):
     __tablename__ = "endoscopies"
-    egd_id = mapped_column(Integer, primary_key=True)
+    endoscopy_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
     position_les = mapped_column(Integer)
 

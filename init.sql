@@ -143,7 +143,7 @@ CREATE TABLE barium_swallow_files (
 );
 
 CREATE TABLE endoscopies (
-    egd_id SERIAL PRIMARY KEY,
+    endoscopy_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     position_les INT
 );

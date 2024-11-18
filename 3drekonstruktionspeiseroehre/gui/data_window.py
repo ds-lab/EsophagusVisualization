@@ -1035,7 +1035,7 @@ class DataWindow(QMainWindow):
                 return
 
             if egd:
-                self.endoscopy_service.update_endoscopy(egd.egd_id, egd_dict)
+                self.endoscopy_service.update_endoscopy(egd.endoscopy_id, egd_dict)
             else:
                 self.endoscopy_service.create_endoscopy(egd_dict)
             self.__init_endoscopy()
