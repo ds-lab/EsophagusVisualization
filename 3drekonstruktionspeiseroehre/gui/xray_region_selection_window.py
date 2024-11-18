@@ -169,7 +169,7 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         # Set the initial selection based on the number of points
         if len(points) > 2:
-            self.selector.verts = points
+            self.selector.verts = points[::5]
             self.polygon_points["oesophagus"] = self.selector.verts
         else:
             self.selector.verts = [(0, 0)]
