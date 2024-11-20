@@ -96,8 +96,5 @@ expansion_delta = 5
 
 
 # CHECKERS
-
-volumen_upper_boundary = 1
-volumen_lower_boundary = 2 # sys.maxint
 max_eso_length = 40
 min_eso_length = 10
