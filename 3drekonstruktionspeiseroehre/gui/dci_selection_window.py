@@ -335,6 +335,8 @@ class DCISelectionWindow(QMainWindow):
         self.fig.colorbar(im, ax=self.ax, label='Pressure')
         self.ax.set_ylabel('Height along esophagus (cm)')
         self.ax.set_xlabel('Time (s)')
+        self.ax.set_xlim(0, pressure_matrix_high_res.shape[1])
+        self.ax.set_ylim(pressure_matrix_high_res.shape[0], 0)
 
         self.figure_canvas = FigureCanvasQTAgg(figure=self.fig)
         self.ui.gridLayout.addWidget(self.figure_canvas)
@@ -356,17 +358,21 @@ class DCISelectionWindow(QMainWindow):
         """
         apply-button callback
         """
-        self.visit.visualization_data_list[0].sphincter_length_cm = self.get_les_height()
+        for i in range(len(self.visit.visualization_data_list)):
+            self.visit.visualization_data_list[i].sphincter_length_cm = self.get_les_height()
         if self.ui.first_combobox.currentIndex() != self.ui.second_combobox.currentIndex():
             if self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex():
-                self.visit.visualization_data_list[0].first_sensor_index = self.ui.first_combobox.currentIndex()
-                self.visit.visualization_data_list[0].second_sensor_index = self.ui.second_combobox.currentIndex()
+                for i in range(len(self.visit.visualization_data_list)):
+                    self.visit.visualization_data_list[i].first_sensor_index = self.ui.first_combobox.currentIndex()
+                    self.visit.visualization_data_list[i].second_sensor_index = self.ui.second_combobox.currentIndex()
             else:
-                self.visit.visualization_data_list[0].first_sensor_index = self.ui.second_combobox.currentIndex()
-                self.visit.visualization_data_list[0].second_sensor_index = self.ui.first_combobox.currentIndex()
+                for i in range(len(self.visit.visualization_data_list)):
+                    self.visit.visualization_data_list[i].first_sensor_index = self.ui.second_combobox.currentIndex()
+                    self.visit.visualization_data_list[i].second_sensor_index = self.ui.first_combobox.currentIndex()
         else:
             QMessageBox.critical(self, "Error", "Please select two different sensors.")
-        self.visit.visualization_data_list[0].esophageal_pressurization_index = float(self.ui.DCI.text().split()[0])
+        for i in range(len(self.visit.visualization_data_list)):
+            self.visit.visualization_data_list[i].esophageal_pressurization_index = float(self.ui.DCI.text().split()[0])
         ManageXrayWindows(self.master_window, self.visit, self.patient_data)
 
 
