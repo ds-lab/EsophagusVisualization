@@ -60,11 +60,6 @@
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
           <widget class="QLabel" name="heightLabelLES">
-          <property name="styleSheet">
-              <string notr="true">
-                background-color: #fcfcfc;
-              </string>
-            </property>
             <property name="text">
             <string>0 cm</string>
             </property>
@@ -100,11 +95,6 @@
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
           <widget class="QLabel" name="DCI">
-            <property name="styleSheet">
-            <string notr="true">
-              background-color: #fcfcfc;
-            </string>
-          </property>
             <property name="text">
             <string>0 mmHgscm</string>
             </property>
@@ -163,11 +153,6 @@
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
           <widget class="QLabel" name="heightLabelEsophagus">
-            <property name="styleSheet">
-            <string notr="true">
-              background-color: #fcfcfc;
-            </string>
-          </property>
             <property name="text">
             <string>0 cm</string>
             </property>

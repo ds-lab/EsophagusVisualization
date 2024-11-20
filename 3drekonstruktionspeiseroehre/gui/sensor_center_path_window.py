@@ -206,7 +206,7 @@ class SensorCenterPathWindow(QMainWindow):
         widths = np.array(self.visualization_data.widths)
         volumen_ready = (((widths * self.cm_to_px_ratio) / 2) ** 2) * np.pi
         volumen = np.sum(volumen_ready)
-        if config.volumen_upper_boundary < volumen or volumen < volumen_lower_boundary:
+        if config.volumen_upper_boundary < volumen or volumen < config.volumen_lower_boundary:
             return volumen
         return None
 
