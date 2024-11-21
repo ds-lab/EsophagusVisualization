@@ -78,10 +78,40 @@ class SensorPathWindow(QMainWindow):
         self.plot_ax.add_line(self.sens_drawn)
 
         self.sensor_path = [(yx[1], yx[0]) for yx in self.cal_sensor_path] # In format [(x,y)]
+        self.x_coords, self.y_coords = zip(*self.sensor_path)
+        self.x_coords = np.array(self.x_coords)[::15]
+        self.y_coords = np.array(self.y_coords)[::15]
 
-        # Make visualized center path adaptable for user
-        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color='red'))
-        self.selector.verts = self.sensor_path[::15]
+        self.line = Line2D(self.x_coords, self.y_coords, color="red", marker="o", markersize=4)
+        self.plot_ax.add_line(self.line)
+
+        self.dragging_point = None
+        self.figure_canvas.mpl_connect("button_press_event", self.on_press)
+        self.figure_canvas.mpl_connect("motion_notify_event", self.on_motion)
+        self.figure_canvas.mpl_connect("button_release_event", self.on_release)
+        self.figure_canvas.draw()
+
+    def on_press(self, event):
+        if event.inaxes != self.plot_ax:
+            return
+        # Check if the click is near a point of the line
+        for i, (x, y) in enumerate(zip(self.line.get_xdata(), self.line.get_ydata())):
+            if abs(x - event.xdata) < 4 and abs(y - event.ydata) < 4:
+                self.dragging_point = i
+                break
+
+    def on_motion(self, event):
+        if self.dragging_point is None or event.inaxes != self.plot_ax:
+            return
+        # Update the position of the dragged point
+        xdata, ydata = list(self.line.get_xdata()), list(self.line.get_ydata())
+        xdata[self.dragging_point] = event.xdata
+        ydata[self.dragging_point] = event.ydata
+        self.line.set_data(xdata, ydata)
+        self.figure_canvas.draw()
+
+    def on_release(self, event):
+        self.dragging_point = None
 
     def __onselect(self, verts):
         """
@@ -111,7 +141,8 @@ class SensorPathWindow(QMainWindow):
         """
         apply-button callback
         """
-
+        x_data, y_data = list(self.line.get_xdata()), list(self.line.get_ydata())
+        self.sensor_path = list(zip(x_data, y_data))
         # PROBLEM: when we manually select a center_path the slopes, widths, etc. don't match anymore
         # Save the new center path in the visualization_data
         if len(self.sensor_path) > 2:
