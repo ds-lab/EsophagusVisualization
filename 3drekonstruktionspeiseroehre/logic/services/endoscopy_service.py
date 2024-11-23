@@ -84,7 +84,7 @@ class EndoscopyFileService:
         self.db = db_session
 
     def get_endoscopy_file(self, id: int):
-        stmt = select(EndoscopyFile).where(EndoscopyFile.endoscopy_id == id)
+        stmt = select(EndoscopyFile).where(EndoscopyFile.egd_file_id == id)
         try:
             result = self.db.execute(stmt).first()
             if result:
@@ -115,7 +115,7 @@ class EndoscopyFileService:
             self.show_error_msg()
 
     def delete_endoscopy_file(self, id: str):
-        stmt = delete(EndoscopyFile).where(EndoscopyFile.endoscopy_id == id)
+        stmt = delete(EndoscopyFile).where(EndoscopyFile.egd_file_id == id)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
@@ -135,7 +135,7 @@ class EndoscopyFileService:
             self.show_error_msg()
 
     def update_endoscopy_file(self, id: str, data: dict):
-        stmt = update(EndoscopyFile).where(EndoscopyFile.endoscopy_id == id).values(**data)
+        stmt = update(EndoscopyFile).where(EndoscopyFile.egd_file_id == id).values(**data)
         try:
             result = self.db.execute(stmt)
             self.db.commit()
@@ -163,7 +163,7 @@ class EndoscopyFileService:
             self.show_error_msg()
 
     def get_endoscopy_image(self, id: int):
-        stmt = select(EndoscopyFile).where(EndoscopyFile.endoscopy_id == id)
+        stmt = select(EndoscopyFile).where(EndoscopyFile.egd_file_id == id)
         try:
             result = self.db.execute(stmt).first()
             if result:
