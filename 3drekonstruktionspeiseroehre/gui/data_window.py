@@ -1159,7 +1159,7 @@ class DataWindow(QMainWindow):
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
-                                         "' does not contain the required time information ('before', 'during' or 'after'), for example, 'before.jpg' ")
+                                         "' does not contain the required time information ('before', 'during' or 'after'), for example, 'before.xlsx' ")
                     break
             if not error:
                 for filename in filenames:
@@ -1194,7 +1194,7 @@ class DataWindow(QMainWindow):
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
-                                         "' does not contain the required time information, for example, '2.jpg' ")
+                                         "' does not contain the required time information ('before', 'during' or 'after'), for example, 'before.jpg' ")
                     break
 
             if not error:
