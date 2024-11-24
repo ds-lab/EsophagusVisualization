@@ -1149,8 +1149,8 @@ class DataWindow(QMainWindow):
         """
         EndoFLIP-file button callback. Handles EndoFLIP .xlsx file selection.
         """
-        endoflip_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
-        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip files"):
+        endoflip_file_exists = self.endoflip_file_service.get_endoflip_images_for_visit(self.selected_visit)
+        if not endoflip_file_exists or endoflip_file_exists and ShowMessage.to_update_for_visit("Endoflip files"):
             self.endoflip_file_service.delete_endoflip_file_for_visit(self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
             error = False
@@ -1183,8 +1183,8 @@ class DataWindow(QMainWindow):
             self.default_path = os.path.dirname(filename)
 
     def __upload_endoflip_image(self):
-        endoflip_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
-        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip images"):
+        endoflip_image_exists = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
+        if not endoflip_image_exists or endoflip_image_exists and ShowMessage.to_update_for_visit("Endoflip images"):
             self.endoflip_image_service.delete_endoflip_images_for_visit(self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
