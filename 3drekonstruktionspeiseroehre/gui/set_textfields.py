@@ -31,3 +31,11 @@ class setText:
             return text
         else:
             return f"No {description} for the selected visit.\n"
+
+    @staticmethod
+    def set_uploaded_text(db_relation, description):
+
+        if db_relation is not None:
+            return f"{description} is/are saved in the DB."
+        else:
+            return f"No {description} in the DB yet."

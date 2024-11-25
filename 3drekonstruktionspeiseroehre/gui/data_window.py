@@ -711,6 +711,7 @@ class DataWindow(QMainWindow):
         self.__init_eckardt_score()
         self.__init_gerd()
         self.__init_medication()
+        self.__init_visualization()
 
         visit = self.visit_service.get_visit(
             self.selected_visit)
@@ -917,6 +918,8 @@ class DataWindow(QMainWindow):
     def __init_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
         self.ui.manometry_text.setText(setText.set_text(manometry, "manometry data"))
+        manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+        self.ui.manometry_file_text.setText(setText.set_uploaded_text(manometry_file, "Manometry File"))
 
     def __upload_manometry_file(self):
         """
@@ -1140,6 +1143,7 @@ class DataWindow(QMainWindow):
         endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
         self.ui.endoflip_text.setText(setText.set_text(endoflip, "EndoFlip data"))
 
+
     def __delete_endoflip(self):
         if ShowMessage.deletion_confirmed("EndoFlip"):
             self.endoflip_service.delete_endoflip_for_visit(self.selected_visit)
@@ -1232,6 +1236,7 @@ class DataWindow(QMainWindow):
         if self.endoflip_image_index < len(self.endoflip_pixmaps) - 1:
             self.endoflip_image_index += 1
             self.__load_endoflip_image()
+
 
     def __upload_endosonography_images(self):
         """
@@ -1531,6 +1536,17 @@ class DataWindow(QMainWindow):
             self.poem_service.delete_poem_for_visit(self.selected_visit)
             self.complications_service.delete_complications_for_visit(self.selected_visit)
             self.__init_poem()
+
+    def __init_visualization(self):
+        reconstruction = self.reconstruction_service.get_reconstruction_for_visit(self.selected_visit)
+        if reconstruction:
+            self.ui.visitdata_create_visualization_button.setText("Create Visualization for selected Patient and selected Visit - A Reconstruction is saved in the DB")
+            self.ui.visits_create_visualization_button.setText("Create Visualization for selected Patient and selected Visit - A Reconstruction is saved in the DB")
+        else:
+            self.ui.visitdata_create_visualization_button.setText(
+                "Create Visualization for selected Patient and selected Visit")
+            self.ui.visits_create_visualization_button.setText(
+                "Create Visualization for selected Patient and selected Visit")
 
     def __create_visualization(self):
         barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(
