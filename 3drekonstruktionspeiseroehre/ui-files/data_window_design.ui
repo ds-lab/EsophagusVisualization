@@ -3558,8 +3558,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>965</width>
-             <height>321</height>
+             <width>1378</width>
+             <height>631</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3749,7 +3749,7 @@ p, li { white-space: pre-wrap; }
                <item row="9" column="0">
                 <widget class="QLabel" name="label_45">
                  <property name="text">
-                  <string>TBE Files:</string>
+                  <string>TBE Images:</string>
                  </property>
                 </widget>
                </item>
@@ -3768,7 +3768,7 @@ p, li { white-space: pre-wrap; }
                  <item>
                   <widget class="QPushButton" name="tbe_file_upload_button">
                    <property name="text">
-                    <string>Upload Files</string>
+                    <string>Upload Images</string>
                    </property>
                   </widget>
                  </item>
@@ -3876,8 +3876,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>792</width>
-             <height>151</height>
+             <width>1378</width>
+             <height>631</height>
             </rect>
            </property>
            <attribute name="label">
@@ -3924,7 +3924,7 @@ p, li { white-space: pre-wrap; }
                <item row="4" column="0">
                 <widget class="QLabel" name="label_57">
                  <property name="text">
-                  <string>EGD files:</string>
+                  <string>EGD Images:</string>
                  </property>
                 </widget>
                </item>
@@ -3943,7 +3943,7 @@ p, li { white-space: pre-wrap; }
                  <item>
                   <widget class="QPushButton" name="egd_file_upload_button">
                    <property name="text">
-                    <string>Upload Files</string>
+                    <string>Upload Images</string>
                    </property>
                   </widget>
                  </item>
@@ -4042,8 +4042,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>757</width>
-             <height>584</height>
+             <width>1378</width>
+             <height>631</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4558,8 +4558,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>523</width>
-             <height>142</height>
+             <width>1378</width>
+             <height>631</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4882,7 +4882,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
