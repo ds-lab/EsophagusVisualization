@@ -13,7 +13,7 @@ from matplotlib.patches import Polygon
 import matplotlib.pyplot as plt
 from matplotlib.widgets import PolygonSelector
 from PyQt6 import uic
-from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame
 from PyQt6.QtGui import QAction
 from logic.figure_creator.figure_creator import FigureCreator
 import numpy as np
@@ -56,6 +56,8 @@ class SensorCenterPathWindow(QMainWindow):
         self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis('off')
+
+        self.add_custom_legend()
 
         # Draw the polygon using the xray_polygon data
         if self.xray_polygon:
@@ -125,6 +127,34 @@ class SensorCenterPathWindow(QMainWindow):
 
     def on_release(self, event):
         self.dragging_point = None
+
+    def add_custom_legend(self):
+        """Add a custom legend to the existing window layout."""
+        # Create a container widget for the legend
+        legend_widget = QWidget()
+        legend_layout = QVBoxLayout()  # Vertical layout for stacking legend items
+        legend_widget.setLayout(legend_layout)
+        legend_widget.setFixedWidth(150)
+
+        # Helper function to create legend items
+        def create_legend_item(color, text):
+            item_layout = QHBoxLayout()
+            color_box = QFrame()
+            color_box.setFixedSize(20, 20)
+            color_box.setStyleSheet(f"background-color: {color}; border: 1px solid black;")
+            label = QLabel(text)
+            item_layout.addWidget(color_box)
+            item_layout.addWidget(label)
+            item_layout.addStretch()  # Push label to the left
+            return item_layout
+
+        # Add legend items
+        legend_layout.addLayout(create_legend_item("orange", "Sensor Path"))
+        legend_layout.addLayout(create_legend_item("blue", "Original Center Path"))
+        legend_layout.addLayout(create_legend_item("red", "Editable Center Path"))
+
+        # Add the legend widget to the existing layout
+        self.ui.legendLayout.addWidget(legend_widget, 0, 1)
 
     def __onselect(self, verts):
         """
