@@ -344,12 +344,15 @@ class DCISelectionWindow(QMainWindow):
         plt.contour(self.pressure_matrix_high_res > 30, levels=[0.5], colors='k', linestyles='solid', linewidths=0.3) # threshold for the contour plot is 30 mmHg
 
         # Plot small dots at the coordinates of the sensors
+        min_coord = min(config.coords_sensors)
+        max_coord = max(config.coords_sensors)
         for i, coord in enumerate(config.coords_sensors):
-            x = self.pressure_matrix_high_res.shape[1] -10
-            y = coord * int(np.ceil(10 * self.relation_x_y / self.goal_relation))
+            x = self.pressure_matrix_high_res.shape[1] - 10
+            # Normalize coord to the range of the pressure_matrix_high_res height
+            y = (coord - min_coord) / (max_coord - min_coord) * (self.pressure_matrix_high_res.shape[0] - 1)
+            y = int(np.ceil(y))
             self.ax.plot(x, y, 'ro', markersize=4)  # 'ro' means red color, circle marker
-            self.ax.annotate(f'P{len(config.coords_sensors) - i}', (x, y), textcoords="offset points", xytext=(5,-4), ha='left')
-
+            self.ax.annotate(f'P{len(config.coords_sensors) - i}', (x, y), textcoords="offset points", xytext=(5, -4), ha='left')
         self.figure_canvas.draw()
         self.__initialize_plot_analysis()
 
