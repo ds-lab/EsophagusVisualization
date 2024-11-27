@@ -89,6 +89,7 @@ points_for_smoothing_in_sharp_edges = 20  # number of points after a detected sh
 px_threshold_for_straight_line = 10  # pixel threshold for detecting the upper most horizontal line in shorted paths calculation
 cardinal_cost = 2  # costs for shortest path calculation
 diagonal_cost = 3  # costs for shortest path calculation
+distance_to_border = 10 # number of pixels the sensor path is away form the border
 # The esophagus is artifically expanded to create a straight line at the top.
 # This defines the number of pixels the esophagus is expanded BEYOND just building a straight line.
 # Necessary for better shortest paths / centers at the top of the esophagus

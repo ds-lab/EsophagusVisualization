@@ -67,9 +67,6 @@ class SensorCenterPathWindow(QMainWindow):
         # color (1 means white), thickness (thickness -1 means the areas bounded by the contours is filled)
         cv2.drawContours(mask, [np.array(self.visualization_data.xray_polygon)], -1, 1, -1)
         self.visualization_data.xray_mask = mask
-        #TO-DO
-        # remove duplication from creation_thread
-        #
 
         if self.visualization_data.sensor_path is not None:
             # If sensor path was created and/or adapted use that one
