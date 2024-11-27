@@ -60,6 +60,12 @@ pip install -r requirements.txt
     'C:/ModelAchalasia/nnUNet_results/Dataset001_Breischluck/nnUNetTrainer_100epochs__nnUNetResEncUNetMPlans__2d'
 
     If you save it in another folder, adapt the paths in xray_region_selection_window.py.
+    In the current pip version of the nnUnetv2 (2.5.1) an import error occurs. Delete the wrong import crop_to_bbox in the cropping file in the nnUnetv2 lib, is saved e.g.: 
+    C:\Users\frede\.conda\envs\esophagus-visualization\Lib\site-packages\nnunetv2\preprocessing\cropping\cropping.py
+
+
+    
+    from acvl_utils.cropping_and_padding.bounding_boxes import get_bbox_from_mask, **crop_to_bbox**, bounding_box_to_slice
    
 ### Setup Docker
 1. **Install Docker Desktop**: 

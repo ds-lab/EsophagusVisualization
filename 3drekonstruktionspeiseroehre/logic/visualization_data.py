@@ -36,6 +36,7 @@ class VisualizationData:
         self._figure_x = None
         self._figure_y = None
         self._figure_z = None
+        self._use_model = True
 
         self.center_path = None
         self.sensor_path = None
@@ -45,6 +46,7 @@ class VisualizationData:
         self.tubular_length_cm = 0
         self.sphincter_length_cm = 0
         self.esophagus_len = None
+
 
     @property
     def xray_file(self):
@@ -256,3 +258,11 @@ class VisualizationData:
     @figure_z.setter
     def figure_z(self, value):
         self._figure_z = value
+
+    @property
+    def use_model(self):
+        return self._use_model
+
+    @use_model.setter
+    def use_model(self, value):
+        self._use_model = value
