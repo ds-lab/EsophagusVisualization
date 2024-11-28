@@ -18,7 +18,7 @@ import numpy as np
 from scipy.ndimage import label
 
 class DCISelectionWindow(QMainWindow):
-    """Window where the user selects the rectangle for the DCI (EPI) calculation and the LES and UES positions"""
+    """Window where the user selects the rectangle for the EPI calculation and the LES and UES positions"""
 
     next_window = None
 
