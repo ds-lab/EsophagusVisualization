@@ -123,3 +123,7 @@ Enter all relevant attributes for POEM and any complications associated with thi
 The procedure duration is entered in hh:mm format but is converted to minutes in the database.  
 When finished, click the "Add / Update POEM" button. This button can also be used to update any incorrect data.
 
+## Segmentation of the esophagus with AI model
+
+
+This checkbox confirms whether you want to use an AI model for segmentation on the TBEs. Depending on the computer used, this may require longer computing time. 
