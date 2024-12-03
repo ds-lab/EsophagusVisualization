@@ -149,7 +149,7 @@ CREATE TABLE endoscopies (
 );
 
 CREATE TABLE endoscopy_files (
-    endoscopy_id SERIAL PRIMARY KEY,
+    egd_file_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
     image_position INT NOT NULL,
     file BYTEA NOT NULL

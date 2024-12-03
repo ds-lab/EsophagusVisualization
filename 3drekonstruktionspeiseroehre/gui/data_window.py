@@ -713,6 +713,7 @@ class DataWindow(QMainWindow):
         self.__init_eckardt_score()
         self.__init_gerd()
         self.__init_medication()
+        self.__init_visualization()
 
         visit = self.visit_service.get_visit(
             self.selected_visit)
@@ -918,7 +919,8 @@ class DataWindow(QMainWindow):
 
     def __init_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-        self.ui.manometry_text.setText(setText.set_text(manometry, "manometry data"))
+        manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+        self.ui.manometry_text.setText(setText.set_text_two(manometry, "Manometry Data", manometry_file, "Manometry File"))
 
     def __upload_manometry_file(self):
         """
@@ -1140,7 +1142,10 @@ class DataWindow(QMainWindow):
 
     def __init_endoflip(self):
         endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
-        self.ui.endoflip_text.setText(setText.set_text(endoflip, "EndoFlip data"))
+        endoflip_file = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
+        self.ui.endoflip_text.setText(setText.set_text_two(endoflip, "EndoFlip data", endoflip_file, description2= "EndoFlip file(s)"))
+
+
 
     def __delete_endoflip(self):
         if ShowMessage.deletion_confirmed("EndoFlip"):
@@ -1151,8 +1156,8 @@ class DataWindow(QMainWindow):
         """
         EndoFLIP-file button callback. Handles EndoFLIP .xlsx file selection.
         """
-        endoflip_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
-        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip files"):
+        endoflip_file_exists = self.endoflip_file_service.get_endoflip_images_for_visit(self.selected_visit)
+        if not endoflip_file_exists or endoflip_file_exists and ShowMessage.to_update_for_visit("Endoflip files"):
             self.endoflip_file_service.delete_endoflip_file_for_visit(self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
             error = False
@@ -1161,7 +1166,7 @@ class DataWindow(QMainWindow):
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
-                                         "' does not contain the required time information ('before', 'during' or 'after'), for example, 'before.jpg' ")
+                                         "' does not contain the required time information ('before', 'during' or 'after'), for example, 'before.xlsx' ")
                     break
             if not error:
                 for filename in filenames:
@@ -1185,8 +1190,8 @@ class DataWindow(QMainWindow):
             self.default_path = os.path.dirname(filename)
 
     def __upload_endoflip_image(self):
-        endoflip_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
-        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip images"):
+        endoflip_image_exists = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
+        if not endoflip_image_exists or endoflip_image_exists and ShowMessage.to_update_for_visit("Endoflip images"):
             self.endoflip_image_service.delete_endoflip_images_for_visit(self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
@@ -1196,7 +1201,7 @@ class DataWindow(QMainWindow):
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
-                                         "' does not contain the required time information, for example, '2.jpg' ")
+                                         "' does not contain the required time information ('before', 'during' or 'after'), for example, 'before.jpg' ")
                     break
 
             if not error:
@@ -1234,6 +1239,7 @@ class DataWindow(QMainWindow):
         if self.endoflip_image_index < len(self.endoflip_pixmaps) - 1:
             self.endoflip_image_index += 1
             self.__load_endoflip_image()
+
 
     def __upload_endosonography_images(self):
         """
@@ -1533,6 +1539,17 @@ class DataWindow(QMainWindow):
             self.poem_service.delete_poem_for_visit(self.selected_visit)
             self.complications_service.delete_complications_for_visit(self.selected_visit)
             self.__init_poem()
+
+    def __init_visualization(self):
+        reconstruction = self.reconstruction_service.get_reconstruction_for_visit(self.selected_visit)
+        if reconstruction:
+            self.ui.visitdata_create_visualization_button.setText("Create Visualization for selected Patient and selected Visit - A Reconstruction is saved in the DB")
+            self.ui.visits_create_visualization_button.setText("Create Visualization for selected Patient and selected Visit - A Reconstruction is saved in the DB")
+        else:
+            self.ui.visitdata_create_visualization_button.setText(
+                "Create Visualization for selected Patient and selected Visit")
+            self.ui.visits_create_visualization_button.setText(
+                "Create Visualization for selected Patient and selected Visit")
 
     def __create_visualization(self):
         barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(
