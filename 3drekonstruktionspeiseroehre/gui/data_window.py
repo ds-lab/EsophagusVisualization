@@ -917,9 +917,8 @@ class DataWindow(QMainWindow):
 
     def __init_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-        self.ui.manometry_text.setText(setText.set_text(manometry, "manometry data"))
         manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
-        self.ui.manometry_file_text.setText(setText.set_uploaded_text(manometry_file, "Manometry File"))
+        self.ui.manometry_text.setText(setText.set_text_two(manometry, "Manometry Data", manometry_file, "Manometry File"))
 
     def __upload_manometry_file(self):
         """
@@ -1141,7 +1140,9 @@ class DataWindow(QMainWindow):
 
     def __init_endoflip(self):
         endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
-        self.ui.endoflip_text.setText(setText.set_text(endoflip, "EndoFlip data"))
+        endoflip_file = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
+        self.ui.endoflip_text.setText(setText.set_text_two(endoflip, "EndoFlip data", endoflip_file, description2= "EndoFlip file(s)"))
+
 
 
     def __delete_endoflip(self):
