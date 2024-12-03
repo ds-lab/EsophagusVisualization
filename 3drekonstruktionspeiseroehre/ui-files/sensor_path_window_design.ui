@@ -48,7 +48,7 @@
      </layout>
     </item>
     <item row="0" column="1">
-     <layout class="QGridLayout" name="gridLayout_3">
+     <layout class="QGridLayout" name="legendLayout">
       <property name="sizeConstraint">
        <enum>QLayout::SetDefaultConstraint</enum>
       </property>
@@ -59,8 +59,8 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>20</width>
-          <height>40</height>
+          <width>150</width>
+          <height>100</height>
          </size>
         </property>
        </spacer>

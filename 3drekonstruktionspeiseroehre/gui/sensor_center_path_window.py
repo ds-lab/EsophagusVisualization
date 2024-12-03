@@ -13,7 +13,7 @@ from matplotlib.patches import Polygon
 import matplotlib.pyplot as plt
 from matplotlib.widgets import PolygonSelector
 from PyQt6 import uic
-from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame
 from PyQt6.QtGui import QAction
 from logic.figure_creator.figure_creator import FigureCreator
 import numpy as np
@@ -57,6 +57,8 @@ class SensorCenterPathWindow(QMainWindow):
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis('off')
 
+        self.add_custom_legend()
+
         # Draw the polygon using the xray_polygon data
         if self.xray_polygon:
             poly = Polygon(self.xray_polygon, closed=True, fill=None, edgecolor='lime', linewidth=1)
@@ -67,9 +69,6 @@ class SensorCenterPathWindow(QMainWindow):
         # color (1 means white), thickness (thickness -1 means the areas bounded by the contours is filled)
         cv2.drawContours(mask, [np.array(self.visualization_data.xray_polygon)], -1, 1, -1)
         self.visualization_data.xray_mask = mask
-        #TO-DO
-        # remove duplication from creation_thread
-        #
 
         if self.visualization_data.sensor_path is not None:
             # If sensor path was created and/or adapted use that one
@@ -89,12 +88,73 @@ class SensorCenterPathWindow(QMainWindow):
         self.plot_ax.add_line(self.center_drawn)
         self.plot_ax.add_line(self.sens_drawn)
 
-        # self.sensor_path = [(yx[1], yx[0]) for yx in self.cal_sensor_path] # In format [(x,y)]
         self.center_path = [(yx[1], yx[0]) for yx in self.cal_centers]  # In format [(x,y)]
+        self.x_coords, self.y_coords = zip(*self.center_path)
+        self.x_coords = np.array(self.x_coords)[::15]
+        self.y_coords = np.array(self.y_coords)[::15]
+
+        self.line = Line2D(self.x_coords, self.y_coords, color="red", marker="o", markersize=4)
+        self.plot_ax.add_line(self.line)
 
         # Make visualized center path adaptable for user
-        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color='red'))
-        self.selector.verts = self.center_path[::15]
+        # self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color='red'))
+        # self.selector.verts = self.center_path[::15]
+
+        self.dragging_point = None
+        self.figure_canvas.mpl_connect("button_press_event", self.on_press)
+        self.figure_canvas.mpl_connect("motion_notify_event", self.on_motion)
+        self.figure_canvas.mpl_connect("button_release_event", self.on_release)
+        self.figure_canvas.draw()
+
+    def on_press(self, event):
+        if event.inaxes != self.plot_ax:
+            return
+        # Check if the click is near a point of the line
+        for i, (x, y) in enumerate(zip(self.line.get_xdata(), self.line.get_ydata())):
+            if abs(x - event.xdata) < 4 and abs(y - event.ydata) < 4:
+                self.dragging_point = i
+                break
+
+    def on_motion(self, event):
+        if self.dragging_point is None or event.inaxes != self.plot_ax:
+            return
+        # Update the position of the dragged point
+        xdata, ydata = list(self.line.get_xdata()), list(self.line.get_ydata())
+        xdata[self.dragging_point] = event.xdata
+        ydata[self.dragging_point] = event.ydata
+        self.line.set_data(xdata, ydata)
+        self.figure_canvas.draw()
+
+    def on_release(self, event):
+        self.dragging_point = None
+
+    def add_custom_legend(self):
+        """Add a custom legend to the existing window layout."""
+        # Create a container widget for the legend
+        legend_widget = QWidget()
+        legend_layout = QVBoxLayout()  # Vertical layout for stacking legend items
+        legend_widget.setLayout(legend_layout)
+        legend_widget.setFixedWidth(150)
+
+        # Helper function to create legend items
+        def create_legend_item(color, text):
+            item_layout = QHBoxLayout()
+            color_box = QFrame()
+            color_box.setFixedSize(20, 20)
+            color_box.setStyleSheet(f"background-color: {color}; border: 1px solid black;")
+            label = QLabel(text)
+            item_layout.addWidget(color_box)
+            item_layout.addWidget(label)
+            item_layout.addStretch()  # Push label to the left
+            return item_layout
+
+        # Add legend items
+        legend_layout.addLayout(create_legend_item("orange", "Sensor Path"))
+        legend_layout.addLayout(create_legend_item("blue", "Original Center Path"))
+        legend_layout.addLayout(create_legend_item("red", "Editable Center Path"))
+
+        # Add the legend widget to the existing layout
+        self.ui.legendLayout.addWidget(legend_widget, 0, 1)
 
     def __onselect(self, verts):
         """
@@ -124,7 +184,8 @@ class SensorCenterPathWindow(QMainWindow):
         """
         apply-button callback
         """
-
+        x_data, y_data = list(self.line.get_xdata()), list(self.line.get_ydata())
+        self.center_path = list(zip(x_data, y_data))
         # PROBLEM: when we manually select a center_path the slopes, widths, etc. don't match anymore
         # Save the new center path in the visualization_data
         if len(self.center_path) > 2:

@@ -3,6 +3,7 @@ import os
 import subprocess
 import numpy as np
 import shutil
+import logic.image_polygon_detection as image_polygon_detection
 from gui.info_window import InfoWindow
 from gui.master_window import MasterWindow
 from gui.position_selection_window import PositionSelectionWindow
@@ -73,13 +74,20 @@ class XrayRegionSelectionWindow(QMainWindow):
         # Display the X-ray image
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis('off')
+        if self.visualization_data.use_model:
+            print("I am using the nnUnet model")
+            # Calculate the initial polygon from the X-ray image with the nnUnet
+            mask = self.predict_mask_with_nnunet_v2()
+            self.mask = (mask > 0.5).astype(np.uint8) * 255
+            self.polygonOes = self.mask_to_largest_polygon()
+            self.init_first_polygon_ml()
+        else:
+            print("I do not use the nnUnet model")
+            # Calculate the initial polygon from the X-ray image
+            self.polygonOes = image_polygon_detection.calculate_xray_polygon(self.xray_image)
+            self.init_first_polygon()
 
-        # Calculate the initial polygon from the X-ray image with the nnUnet
-        mask = self.predict_mask_with_nnunet_v2()
-        self.mask = (mask > 0.5).astype(np.uint8) * 255
-        self.polygonOes = self.mask_to_largest_polygon()
-        self.init_first_polygon()
-
+    #methods for ml integegration:
     def predict_mask_with_nnunet_v2(self):
         '''
             Uses the nnUnet for prediction of the oesophagus mask with values between 0 and 1
@@ -131,7 +139,6 @@ class XrayRegionSelectionWindow(QMainWindow):
         shutil.rmtree(temp_output_dir)
 
         return mask
-
     def mask_to_largest_polygon(self):
         '''
             If more than one contour is predicted, the largest is selected.
@@ -155,7 +162,7 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         return largest_polygon
 
-    def init_first_polygon(self):
+    def init_first_polygon_ml(self):
         # Always create the initial polygon
         color = self.polygon_colors[0]
         self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
@@ -169,7 +176,7 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         # Set the initial selection based on the number of points
         if len(points) > 2:
-            self.selector.verts = points[::3]
+            self.selector.verts = points[::10]
             self.polygon_points["oesophagus"] = self.selector.verts
         else:
             self.selector.verts = [(0, 0)]
@@ -177,6 +184,34 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         self.figure_canvas.draw_idle()
 
+
+    #methods for segmentation without ml
+    def init_first_polygon(self):
+        # Always create the initial polygon
+        color = self.polygon_colors[0]
+        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
+        self.polygon_selectors.append(self.selector)
+
+        # If the polygon has more than 2 points, set it as the initial selection
+        if len(self.polygonOes) > 2:
+            self.selector.verts = self.polygonOes
+            self.polygon_points["oesophagus"] = self.selector.verts
+        else:
+            self.selector.verts = [(0, 0)]
+            self.__reset_selector()
+        self.figure_canvas.draw_idle()
+
+    def init_polygon_selector(self):
+        color = self.polygon_colors[self.current_polygon_index]
+        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
+        self.polygon_selectors.append(self.selector)
+
+    def __onselect(self, verts):
+        checkbox = self.checkboxes[self.current_polygon_index]
+        polygon_name = self.checkbox_names[checkbox]
+        self.polygon_points[polygon_name] = verts
+
+    #methods for both segemenation types
     def init_polygon_selector(self):
         color = self.polygon_colors[self.current_polygon_index]
         self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
@@ -214,7 +249,6 @@ class XrayRegionSelectionWindow(QMainWindow):
 
             # Redraw the canvas to reflect changes
             self.figure_canvas.draw_idle()
-
     def __next_button_clicked(self):
         '''
         Starts the input for a new polygon if you want to save several masks
@@ -252,16 +286,14 @@ class XrayRegionSelectionWindow(QMainWindow):
             shapely_poly = Polygon(points)
             return shapely_poly.is_valid
         return False
-
     def __delete_button_clicked(self):
         '''
             Deletes the last point of the current polygon
         '''
-        points = self.selector.verts[:-1]
+        points = self.selector.verts[:]
         self.selector._xys = points
         self.selector._xs, self.selector._ys = zip(*points) if points else ([], [])
         self.figure_canvas.draw_idle()
-
     def __apply_button_clicked(self):
         """
         apply-button callback
@@ -297,7 +329,6 @@ class XrayRegionSelectionWindow(QMainWindow):
             shapely_poly = Polygon(points)
             return shapely_poly.is_valid
         return False
-
     def __process_and_save_masks(self):
         """
         Process and save mask images based on the selected checkboxes.
@@ -322,8 +353,6 @@ class XrayRegionSelectionWindow(QMainWindow):
                 if polygon:
                     mask_filename = f"{self.visualization_data.xray_minute}_{polygon_name}_mask.jpg"
                     self.__save_mask(polygon, base_path, mask_filename)
-
-
     def __save_mask(self, polygon, base_path, mask_filename):
         """
         Save the mask image for a given polygon.
@@ -342,3 +371,27 @@ class XrayRegionSelectionWindow(QMainWindow):
         info_window = InfoWindow()
         info_window.show_xray_region_selection_info()
         info_window.show()
+
+    def __process_and_save_masks(self):
+        """
+        Process and save mask images based on the selected checkboxes.
+        """
+
+        safe_visit_name = self.visit.name.replace(':', '_').replace('[', '_').replace(']', '_')
+
+        base_path = fr"C:\DataAchalasia\{safe_visit_name}"
+
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+        checked_count = sum(checkbox.isChecked() for checkbox in self.checkbox_names.keys())
+        if checked_count > 0:
+            img_filename = f"{self.visualization_data.xray_minute}.jpg"
+            path = os.path.join(base_path, img_filename)
+            xray_image = self.xray_image.astype(np.uint8)
+            cv2.imwrite(path, xray_image)
+        for checkbox, polygon_name in self.checkbox_names.items():
+            if checkbox.isChecked():
+                polygon = self.polygon_points.get(polygon_name)
+                if polygon:
+                    mask_filename = f"{self.visualization_data.xray_minute}_{polygon_name}_mask.jpg"
+                    self.__save_mask(polygon, base_path, mask_filename)

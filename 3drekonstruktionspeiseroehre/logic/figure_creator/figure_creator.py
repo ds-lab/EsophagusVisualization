@@ -555,11 +555,22 @@ class FigureCreator(ABC):
                 else:
                     print("nicht 0 oder 1")
 
+        border_mask = np.zeros((len(array), len(array[0])))
+        for row in range(len(array)):
+            for col in range(len(array[row])-1-config.distance_to_border):
+                if array[row][col+1] == 0 and array[row][col] == 1:
+                    for i in range(-config.distance_to_border, config.distance_to_border+1):
+                        border_mask[row][col+i+1] = 1
+                elif array[row][col+1] == 1 and array[row][col] == 0:
+                    for i in range(-config.distance_to_border,config.distance_to_border):
+                        border_mask[row][col-i] = 1
+
         # Use annotated endpoint as end of the shortest path
         endpoint = visualization_data.esophagus_exit_pos
 
         # Shortest path calculation
         cost = np.where(array, 1, 0)  # define costs according to needs of library tcod
+        cost[border_mask == 1] = 1000
         graph_path = tcod.path.SimpleGraph(cost=cost, cardinal=config.cardinal_cost, diagonal=config.diagonal_cost)
         pf = tcod.path.Pathfinder(graph_path)
         pf.add_root((middle_y, middle_x))

@@ -413,7 +413,7 @@ class VisualizationWindow(QMainWindow):
             with open(destination_file_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
-                    ["Id-Visit","Id-Picture"
+                    ["Id-Visit","Id-Picture",
                      "Volume Tubular", "Volume Sphincter", "Esophagus Length (cm)",
                      "Mean over all (Volume * max(tubular pressure from frame))",
                      "Mean over all (Volume * min(tubular pressure from frame))",

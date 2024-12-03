@@ -198,7 +198,9 @@ class DataWindow(QMainWindow):
         self.ui.endoflip_next_button.clicked.connect(self.__endoflip_next_button_clicked)
         self.ui.endosono_previous_button.clicked.connect(self.__endosonography_previous_button_clicked)
         self.ui.endosono_next_button.clicked.connect(self.__endosonography_next_button_clicked)
-
+        self.model_enabled = self.ui.use_model_checkbox
+        self.model_enabled_checked = True
+        self.model_enabled.toggled.connect(self.__on_model_enabled_toggled)
         self.widget_names = {
             "Botox injection": 1,
             "Pneumatic Dilation": 2,
@@ -1573,6 +1575,7 @@ class DataWindow(QMainWindow):
                     visualization_data = VisualizationData()
                     visualization_data.xray_minute = file.minute_of_picture
                     visualization_data.xray_file = BytesIO(file.file)
+                    visualization_data.use_model = self.model_enabled_checked
                     pressure_matrix = pickle.loads(manometry_file.pressure_matrix)
                     visualization_data.pressure_matrix = pressure_matrix
 
@@ -1618,3 +1621,6 @@ class DataWindow(QMainWindow):
     def __handle_data_selected(self, selected_data, destination_file_path):
         data = self.export_data.get_data(selected_data)
         ExportData.export_csv(data, selected_data, destination_file_path)
+
+    def __on_model_enabled_toggled(self, checked: bool):
+        self.model_enabled_checked = checked
