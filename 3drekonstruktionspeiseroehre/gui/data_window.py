@@ -1156,7 +1156,7 @@ class DataWindow(QMainWindow):
         """
         EndoFLIP-file button callback. Handles EndoFLIP .xlsx file selection.
         """
-        endoflip_file_exists = self.endoflip_file_service.get_endoflip_images_for_visit(self.selected_visit)
+        endoflip_file_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
         if not endoflip_file_exists or endoflip_file_exists and ShowMessage.to_update_for_visit("Endoflip files"):
             self.endoflip_file_service.delete_endoflip_file_for_visit(self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
