@@ -10,7 +10,8 @@ from gui.show_message import ShowMessage
 
 def process_and_upload_barium_swallow_images(selected_visit, filenames):
     for i, filename in enumerate(filenames):
-        match = re.search(r'(?P<time>[0-9]+)', filename)
+        timeextract = os.path.basename(filename)
+        match = re.search(r'(?P<time>[0-9]+)', timeextract)
         if match:
             time = match.group('time')
             fileextension = os.path.splitext(filename)[1][1:]

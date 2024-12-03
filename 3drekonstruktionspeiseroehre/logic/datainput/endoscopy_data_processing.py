@@ -9,7 +9,8 @@ from gui.show_message import ShowMessage
 
 def process_and_upload_endoscopy_images(selected_visit, filenames):
     for i, filename in enumerate(filenames):
-        match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+        positionextract = os.path.basename(filename)
+        match = re.search(r'_(?P<pos>[0-9]+)cm', positionextract)
         if match:
             position = int(match.group('pos'))
             fileextension = os.path.splitext(filename)[1][1:]

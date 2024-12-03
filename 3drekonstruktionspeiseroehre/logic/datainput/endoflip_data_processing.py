@@ -93,7 +93,8 @@ def process_endoflip_xlsx(file_path: str) -> dict:
 
 def process_and_upload_endoflip_images(selected_visit, filenames):
     for i, filename in enumerate(filenames):
-        match = re.search(r'(before|during|after)', filename)
+        timeextract = os.path.basename(filename)
+        match = re.search(r'(before|during|after)', timeextract)
         if match:
             timepoint = match.group(0)
             fileextension = os.path.splitext(filename)[1][1:]
