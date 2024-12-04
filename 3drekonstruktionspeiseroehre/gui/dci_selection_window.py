@@ -220,7 +220,7 @@ class DCISelectionWindow(QMainWindow):
         Initialize the plot analysis by creating the rectangle selector, the upper LES, lower LES, and lower UES lines, and the DCI value label
         """
         # Create a polygon selector for user interaction
-        self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=1.5, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
+        self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='white', linewidth=1.5, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
 
         if self.lower_ues is not None:
             self.lower_ues.line.remove()
@@ -236,7 +236,7 @@ class DCISelectionWindow(QMainWindow):
         
         self.selector.extents = (left_end, right_end, lower_ues, upper_les)
         self.line_manager = DraggableLineManager(self.fig.canvas)
-        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=1.5, picker=2), label='LES (L)', color='white', callback=self.on_lines_dragged)
+        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=1.5, picker=2), label='LES (L)', color='red', callback=self.on_lines_dragged)
         self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=1.5, picker=2), label='UES', color='blue', callback=self.on_lines_dragged)
         self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=1.5, picker=2), label='LES (U)', color='black', callback=self.on_lines_dragged)
         self.line_manager.add_line(self.lower_les)
