@@ -43,10 +43,11 @@ class DCISelectionWindow(QMainWindow):
 
         # Create a figure canvas for displaying the plot
         self.figure_canvas = None
+        self.connection_ids = []
 
         # Create a new figure and subplot
         self.fig, self.ax = plt.subplots()
-        self.ax.set_title('Select the region for Esophageal Pressure Index')
+        self.ax.set_title('Select the region for the Esophageal Pressure Index')
         self.lower_ues, self.lower_les, self.upper_les, self.selector = None, None, None, None
         self.relation_x_y, self.goal_relation = None, None 
 
@@ -202,6 +203,17 @@ class DCISelectionWindow(QMainWindow):
         self.ui.second_combobox.setCurrentIndex(second_sensor_pos)
         self.visualization_data.second_sensor_index = second_sensor_pos
 
+    def connect_events(self):
+        self.connection_ids.append(self.fig.canvas.mpl_connect('motion_notify_event', self.line_manager.on_hover))
+        self.connection_ids.append(self.fig.canvas.mpl_connect('button_press_event', self.line_manager.on_press))
+        self.connection_ids.append(self.fig.canvas.mpl_connect('button_release_event', self.line_manager.on_release))
+        self.connection_ids.append(self.fig.canvas.mpl_connect('motion_notify_event', self.line_manager.on_motion))
+
+    def disconnect_events(self):
+        for cid in self.connection_ids:
+            self.fig.canvas.mpl_disconnect(cid)
+        self.connection_ids.clear() 
+
     def __initialize_plot_analysis(self):
         """
         Initialize the plot analysis by creating the rectangle selector, the upper LES, lower LES, and lower UES lines, and the DCI value label
@@ -232,10 +244,7 @@ class DCISelectionWindow(QMainWindow):
         self.line_manager.add_line(self.lower_les)
         self.line_manager.add_line(self.lower_ues)
         self.line_manager.add_line(self.upper_les)
-        self.fig.canvas.mpl_connect('motion_notify_event', self.line_manager.on_hover)
-        self.fig.canvas.mpl_connect('button_press_event', self.line_manager.on_press)
-        self.fig.canvas.mpl_connect('button_release_event', self.line_manager.on_release)
-        self.fig.canvas.mpl_connect('motion_notify_event', self.line_manager.on_motion)
+        self.connect_events()
         self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
         first_sensor_pos = self.find_first_sensor_below_ues()
         second_sensor_pos = self.find_middle_sensor_in_les()
@@ -262,6 +271,7 @@ class DCISelectionWindow(QMainWindow):
         reset-button callback
         """
         self.remove_rectangle_selector()  # Remove the rectangle selector
+        self.disconnect_events()
         self.__initialize_plot_analysis()
 
     def __menu_button_clicked(self):
