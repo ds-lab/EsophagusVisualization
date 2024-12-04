@@ -933,6 +933,9 @@ class DataWindow(QMainWindow):
             if len(filename) > 0:
                 process_and_upload_manometry_file(self.selected_visit, filename)
                 self.ui.manometry_file_text.setText("Manometry File uploaded")
+                self.__init_manometry()
+
+            self.default_path = os.path.dirname(filename)
 
     def __add_barium_swallow(self):
         tbe = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
@@ -982,7 +985,8 @@ class DataWindow(QMainWindow):
             error = False
 
             for filename in filenames:
-                match = re.search(r'(?P<time>[0-9]+)', filename)
+                timeextract = os.path.basename(filename)
+                match = re.search(r'(?P<time>[0-9]+)', timeextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1003,6 +1007,8 @@ class DataWindow(QMainWindow):
                     self.barium_swallow_image_index = 0
                     self.barium_swallow_minutes = barium_swallow_minutes
                     self.__load_barium_swallow_image()
+
+            self.default_path = os.path.dirname(filename)
 
     def __load_barium_swallow_image(self):
         # Load and display the current image
@@ -1068,7 +1074,8 @@ class DataWindow(QMainWindow):
             error = False
 
             for filename in filenames:
-                match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+                positionextract = os.path.basename(filename)
+                match = re.search(r'_(?P<pos>[0-9]+)cm', positionextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1088,6 +1095,8 @@ class DataWindow(QMainWindow):
                     self.endoscopy_image_index = 0
                     self.endoscopy_positions = endoscopy_positions
                     self.__load_endoscopy_image()
+
+            self.default_path = os.path.dirname(filename)
 
     def __load_endoscopy_image(self):
         # Load and display the current image
@@ -1162,7 +1171,8 @@ class DataWindow(QMainWindow):
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
             error = False
             for filename in filenames:
-                match = re.search(r'(before|during|after)', filename)
+                timeextract = os.path.basename(filename)
+                match = re.search(r'(before|during|after)', timeextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1187,6 +1197,7 @@ class DataWindow(QMainWindow):
                             conduct_endoflip_file_upload(self.selected_visit, timepoint, data_bytes,
                                                          endoflip_screenshot)
                 self.ui.endoflip_file_text.setText(str(len(filenames)) + " File(s) uploaded")
+                self.__init_endoflip()
             self.default_path = os.path.dirname(filename)
 
     def __upload_endoflip_image(self):
@@ -1197,7 +1208,8 @@ class DataWindow(QMainWindow):
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
             error = False
             for filename in filenames:
-                match = re.search(r'(before|during|after)', filename)
+                timeextract = os.path.basename(filename)
+                match = re.search(r'(before|during|after)', timeextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1216,6 +1228,9 @@ class DataWindow(QMainWindow):
                     self.endoflip_image_index = 0
                     self.endoflip_timepoints = endoflip_timepoints
                     self.__load_endoflip_image()
+
+            self.default_path = os.path.dirname(filename)
+
 
     def __load_endoflip_image(self):
         # Load and display the current image
@@ -1256,7 +1271,8 @@ class DataWindow(QMainWindow):
             error = False
 
             for filename in filenames:
-                match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+                positionextract = os.path.basename(filename)
+                match = re.search(r'_(?P<pos>[0-9]+)cm', positionextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1277,6 +1293,8 @@ class DataWindow(QMainWindow):
                     self.endosono_image_index = 0
                     self.endosono_positions = endosono_positions
                     self.__load_endosonography_image()
+
+            self.default_path = os.path.dirname(filename)
 
     def __load_endosonography_image(self):
         # Load and display the current image
@@ -1311,6 +1329,8 @@ class DataWindow(QMainWindow):
                 self.endosonography_video_service.save_video_for_visit(visit_id=self.selected_visit,
                                                                        video_file_path=filename)
             self.ui.endosono_videos_text.setText(str(len(filenames)) + " Videos(s) uploaded")
+
+            self.default_path = os.path.dirname(filename)
 
     def __download_endosonography_video(self):
         destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
