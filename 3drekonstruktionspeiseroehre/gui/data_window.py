@@ -982,7 +982,8 @@ class DataWindow(QMainWindow):
             error = False
 
             for filename in filenames:
-                match = re.search(r'(?P<time>[0-9]+)', filename)
+                timeextract = os.path.basename(filename)
+                match = re.search(r'(?P<time>[0-9]+)', timeextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1068,7 +1069,8 @@ class DataWindow(QMainWindow):
             error = False
 
             for filename in filenames:
-                match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+                positionextract = os.path.basename(filename)
+                match = re.search(r'_(?P<pos>[0-9]+)cm', positionextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1162,7 +1164,8 @@ class DataWindow(QMainWindow):
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
             error = False
             for filename in filenames:
-                match = re.search(r'(before|during|after)', filename)
+                timeextract = os.path.basename(filename)
+                match = re.search(r'(before|during|after)', timeextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1197,7 +1200,8 @@ class DataWindow(QMainWindow):
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
             error = False
             for filename in filenames:
-                match = re.search(r'(before|during|after)', filename)
+                timeextract = os.path.basename(filename)
+                match = re.search(r'(before|during|after)', timeextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1256,7 +1260,8 @@ class DataWindow(QMainWindow):
             error = False
 
             for filename in filenames:
-                match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+                positionextract = os.path.basename(filename)
+                match = re.search(r'_(?P<pos>[0-9]+)cm', positionextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
