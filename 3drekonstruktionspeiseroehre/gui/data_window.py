@@ -713,6 +713,7 @@ class DataWindow(QMainWindow):
         self.__init_eckardt_score()
         self.__init_gerd()
         self.__init_medication()
+        self.__init_visualization()
 
         visit = self.visit_service.get_visit(
             self.selected_visit)
@@ -918,7 +919,8 @@ class DataWindow(QMainWindow):
 
     def __init_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-        self.ui.manometry_text.setText(setText.set_text(manometry, "manometry data"))
+        manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+        self.ui.manometry_text.setText(setText.set_text_two(manometry, "Manometry Data", manometry_file, "Manometry File"))
 
     def __upload_manometry_file(self):
         """
@@ -931,6 +933,9 @@ class DataWindow(QMainWindow):
             if len(filename) > 0:
                 process_and_upload_manometry_file(self.selected_visit, filename)
                 self.ui.manometry_file_text.setText("Manometry File uploaded")
+                self.__init_manometry()
+
+            self.default_path = os.path.dirname(filename)
 
     def __add_barium_swallow(self):
         tbe = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
@@ -980,7 +985,8 @@ class DataWindow(QMainWindow):
             error = False
 
             for filename in filenames:
-                match = re.search(r'(?P<time>[0-9]+)', filename)
+                timeextract = os.path.basename(filename)
+                match = re.search(r'(?P<time>[0-9]+)', timeextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1001,6 +1007,8 @@ class DataWindow(QMainWindow):
                     self.barium_swallow_image_index = 0
                     self.barium_swallow_minutes = barium_swallow_minutes
                     self.__load_barium_swallow_image()
+
+            self.default_path = os.path.dirname(filename)
 
     def __load_barium_swallow_image(self):
         # Load and display the current image
@@ -1066,7 +1074,8 @@ class DataWindow(QMainWindow):
             error = False
 
             for filename in filenames:
-                match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+                positionextract = os.path.basename(filename)
+                match = re.search(r'_(?P<pos>[0-9]+)cm', positionextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1086,6 +1095,8 @@ class DataWindow(QMainWindow):
                     self.endoscopy_image_index = 0
                     self.endoscopy_positions = endoscopy_positions
                     self.__load_endoscopy_image()
+
+            self.default_path = os.path.dirname(filename)
 
     def __load_endoscopy_image(self):
         # Load and display the current image
@@ -1140,7 +1151,10 @@ class DataWindow(QMainWindow):
 
     def __init_endoflip(self):
         endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
-        self.ui.endoflip_text.setText(setText.set_text(endoflip, "EndoFlip data"))
+        endoflip_file = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
+        self.ui.endoflip_text.setText(setText.set_text_two(endoflip, "EndoFlip data", endoflip_file, description2= "EndoFlip file(s)"))
+
+
 
     def __delete_endoflip(self):
         if ShowMessage.deletion_confirmed("EndoFlip"):
@@ -1151,17 +1165,18 @@ class DataWindow(QMainWindow):
         """
         EndoFLIP-file button callback. Handles EndoFLIP .xlsx file selection.
         """
-        endoflip_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
-        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip files"):
+        endoflip_file_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
+        if not endoflip_file_exists or endoflip_file_exists and ShowMessage.to_update_for_visit("Endoflip files"):
             self.endoflip_file_service.delete_endoflip_file_for_visit(self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select file', self.default_path, "Excel (*.xlsx *.XLSX)")
             error = False
             for filename in filenames:
-                match = re.search(r'(before|during|after)', filename)
+                timeextract = os.path.basename(filename)
+                match = re.search(r'(before|during|after)', timeextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
-                                         "' does not contain the required time information ('before', 'during' or 'after'), for example, 'before.jpg' ")
+                                         "' does not contain the required time information ('before', 'during' or 'after'), for example, 'before.xlsx' ")
                     break
             if not error:
                 for filename in filenames:
@@ -1182,21 +1197,23 @@ class DataWindow(QMainWindow):
                             conduct_endoflip_file_upload(self.selected_visit, timepoint, data_bytes,
                                                          endoflip_screenshot)
                 self.ui.endoflip_file_text.setText(str(len(filenames)) + " File(s) uploaded")
+                self.__init_endoflip()
             self.default_path = os.path.dirname(filename)
 
     def __upload_endoflip_image(self):
-        endoflip_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
-        if not endoflip_exists or endoflip_exists and ShowMessage.to_update_for_visit("Endoflip images"):
+        endoflip_image_exists = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
+        if not endoflip_image_exists or endoflip_image_exists and ShowMessage.to_update_for_visit("Endoflip images"):
             self.endoflip_image_service.delete_endoflip_images_for_visit(self.selected_visit)
             filenames, _ = QFileDialog.getOpenFileNames(self, 'Select Files', self.default_path,
                                                         "Images (*.jpg *.JPG *.png *.PNG)")
             error = False
             for filename in filenames:
-                match = re.search(r'(before|during|after)', filename)
+                timeextract = os.path.basename(filename)
+                match = re.search(r'(before|during|after)', timeextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
-                                         "' does not contain the required time information, for example, '2.jpg' ")
+                                         "' does not contain the required time information ('before', 'during' or 'after'), for example, 'before.jpg' ")
                     break
 
             if not error:
@@ -1211,6 +1228,9 @@ class DataWindow(QMainWindow):
                     self.endoflip_image_index = 0
                     self.endoflip_timepoints = endoflip_timepoints
                     self.__load_endoflip_image()
+
+            self.default_path = os.path.dirname(filename)
+
 
     def __load_endoflip_image(self):
         # Load and display the current image
@@ -1235,6 +1255,7 @@ class DataWindow(QMainWindow):
             self.endoflip_image_index += 1
             self.__load_endoflip_image()
 
+
     def __upload_endosonography_images(self):
         """
         Endosonography button callback. Handles Endosonography file selection.
@@ -1250,7 +1271,8 @@ class DataWindow(QMainWindow):
             error = False
 
             for filename in filenames:
-                match = re.search(r'_(?P<pos>[0-9]+)cm', filename)
+                positionextract = os.path.basename(filename)
+                match = re.search(r'_(?P<pos>[0-9]+)cm', positionextract)
                 if not match:
                     error = True
                     QMessageBox.critical(self, "Unvalid Name", "The filename of the file '" + filename +
@@ -1271,6 +1293,8 @@ class DataWindow(QMainWindow):
                     self.endosono_image_index = 0
                     self.endosono_positions = endosono_positions
                     self.__load_endosonography_image()
+
+            self.default_path = os.path.dirname(filename)
 
     def __load_endosonography_image(self):
         # Load and display the current image
@@ -1305,6 +1329,8 @@ class DataWindow(QMainWindow):
                 self.endosonography_video_service.save_video_for_visit(visit_id=self.selected_visit,
                                                                        video_file_path=filename)
             self.ui.endosono_videos_text.setText(str(len(filenames)) + " Videos(s) uploaded")
+
+            self.default_path = os.path.dirname(filename)
 
     def __download_endosonography_video(self):
         destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
@@ -1533,6 +1559,17 @@ class DataWindow(QMainWindow):
             self.poem_service.delete_poem_for_visit(self.selected_visit)
             self.complications_service.delete_complications_for_visit(self.selected_visit)
             self.__init_poem()
+
+    def __init_visualization(self):
+        reconstruction = self.reconstruction_service.get_reconstruction_for_visit(self.selected_visit)
+        if reconstruction:
+            self.ui.visitdata_create_visualization_button.setText("Create Visualization for selected Patient and selected Visit - A Reconstruction is saved in the DB")
+            self.ui.visits_create_visualization_button.setText("Create Visualization for selected Patient and selected Visit - A Reconstruction is saved in the DB")
+        else:
+            self.ui.visitdata_create_visualization_button.setText(
+                "Create Visualization for selected Patient and selected Visit")
+            self.ui.visits_create_visualization_button.setText(
+                "Create Visualization for selected Patient and selected Visit")
 
     def __create_visualization(self):
         barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(

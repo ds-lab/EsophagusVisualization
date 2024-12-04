@@ -176,7 +176,7 @@ class XrayRegionSelectionWindow(QMainWindow):
 
         # Set the initial selection based on the number of points
         if len(points) > 2:
-            self.selector.verts = points[::3]
+            self.selector.verts = points[::10]
             self.polygon_points["oesophagus"] = self.selector.verts
         else:
             self.selector.verts = [(0, 0)]
@@ -290,7 +290,7 @@ class XrayRegionSelectionWindow(QMainWindow):
         '''
             Deletes the last point of the current polygon
         '''
-        points = self.selector.verts[:-1]
+        points = self.selector.verts[:]
         self.selector._xys = points
         self.selector._xs, self.selector._ys = zip(*points) if points else ([], [])
         self.figure_canvas.draw_idle()

@@ -45,6 +45,7 @@ class SensorPathWindow(QMainWindow):
         self.next_window = next_window
 
         self.ui.apply_button.clicked.connect(self.__apply_button_clicked)
+        self.ui.reset_button.clicked.connect(self.__reset_button_clicked)
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -143,29 +144,27 @@ class SensorPathWindow(QMainWindow):
         # Add the legend widget to the existing layout
         self.ui.legendLayout.addWidget(legend_widget, 0, 1)
 
-    def __onselect(self, verts):
-        """
-        called when new polygon was created
-        :param polygon: new polygon
-        """
-        self.sensor_path = verts
-
     def __reset_button_clicked(self):
-        """
-        reset-button callback
-        """
-        self.__reset_selector()
+        # Reset the stored coordinates
+        self.x_coords = []
+        self.y_coords = []
+        self.line.set_data(self.x_coords, self.y_coords)
+        self.figure_canvas.draw()
+        # RESET button events
+        self.figure_canvas.mpl_connect("button_press_event", self.on_click_add_point)
+        self.figure_canvas.mpl_connect("motion_notify_event", lambda event: None)
+        self.figure_canvas.mpl_connect("button_release_event", lambda event: None)
 
-    def __reset_selector(self):
-        """
-        starts the selection of a new polygon/resets the polygon selector
-        """
-        self.selector._xs, self.selector._ys = [], []
-        self.selector._xys = [(0, 0)]
-        self.sensor_path.clear()
-        self.selector.clear()
-        self.selector._selection_completed = False
-        self.selector.set_visible(True)
+    def on_click_add_point(self, event):
+        """Add new points to the line on mouse click."""
+        if event.inaxes != self.plot_ax:
+            return
+        # Append the new point coordinates
+        self.x_coords.append(event.xdata)
+        self.y_coords.append(event.ydata)
+        # Update the line with the new points
+        self.line.set_data(self.x_coords, self.y_coords)
+        self.figure_canvas.draw()
 
     def __apply_button_clicked(self):
         """
