@@ -1,3 +1,4 @@
+from matplotlib.lines import Line2D
 from gui.master_window import MasterWindow
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QRadioButton, QCheckBox
 from logic.patient_data import PatientData
@@ -222,13 +223,10 @@ class DCISelectionWindow(QMainWindow):
         self.selector = CustomRectangleSelector(self.ax, self.__onselect, useblit=True, props=dict(facecolor=(1, 0, 0, 0), edgecolor='red', linewidth=1.5, linestyle='-'), interactive=True, ignore_event_outside=True, use_data_coordinates=True)
 
         if self.lower_ues is not None:
-            self.lower_ues.text.remove()
             self.lower_ues.line.remove()
         if self.upper_les is not None:
-            self.upper_les.text.remove()
             self.upper_les.line.remove()
         if self.lower_les is not None:
-            self.lower_les.text.remove()
             self.lower_les.line.remove()
         upper_les = self.find_upper_end_of_les()
         lower_ues = self.find_lower_end_of_ues()
@@ -238,12 +236,15 @@ class DCISelectionWindow(QMainWindow):
         
         self.selector.extents = (left_end, right_end, lower_ues, upper_les)
         self.line_manager = DraggableLineManager(self.fig.canvas)
-        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=1.5, picker=2), label='LES (L)', callback=self.on_lines_dragged)
-        self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=1.5, picker=2), label='UES', callback=self.on_lines_dragged)
-        self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=1.5, picker=2), label='LES (U)', callback=self.on_lines_dragged)
+        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=1.5, picker=2), label='LES (L)', color='black', callback=self.on_lines_dragged)
+        self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=1.5, picker=2), label='UES', color='blue', callback=self.on_lines_dragged)
+        self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=1.5, picker=2), label='LES (U)', color='green', callback=self.on_lines_dragged)
         self.line_manager.add_line(self.lower_les)
         self.line_manager.add_line(self.lower_ues)
         self.line_manager.add_line(self.upper_les)
+        legend_handles = [Line2D([0], [0], color=line.color, lw=2, linestyle='-') for line in self.line_manager.lines]
+        legend_labels = [line.label for line in self.line_manager.lines]
+        self.ax.legend(legend_handles, legend_labels, loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=len(self.line_manager.lines))
         self.connect_events()
         self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
         first_sensor_pos = self.find_first_sensor_below_ues()
