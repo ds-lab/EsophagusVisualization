@@ -187,7 +187,7 @@
     <item row="6" column="1">
       <widget class="QGroupBox" name="decoupleSelector">
         <property name="title">
-          <string>Decouple DCI Selector</string>
+          <string>Decouple EPI Selector</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
           <item>

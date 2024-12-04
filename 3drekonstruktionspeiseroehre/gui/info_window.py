@@ -179,4 +179,9 @@ class InfoWindow(QDialog):
         self.ui.textEdit.setHtml(text)
 
     def show_dci_selection_info(self):
-        text = """In this window, the area of interest for the calculation of the DCI is selected. <br><br>""" # TODO: improve text
+        text = """<h3>In this window, the area of interest for the calculation of the Esophageal Pressure Index (EPI) is selected.</h3> <br>
+        <p> The main component of this window is the visualization of the esophageal pressure over time. In this plot, the area of interest for the EPI is selected (red rectangle) as well as the position of the lower end of the UES and the upper and lower end of the LES (red lines with respective label). The position of the UES and LES can be adjusted by dragging the respective lines. The area of interest for the EPI can be adjusted by dragging the red rectangle. <br>
+        <p> On the right hand of the plot, the sensor positions are displayed. The calculated sensor positions can be adjusted in the right column of the window. The right column also contains other parameters of interest such as the height of the tubular esophagus, the length of the LES, and the EPI. Furthermore, it can be selected whether the threshold for the EPI calculation should be 20 mmHg (standard value) or 0 mmHg (for patients without peristalsis). It is also possible to decouple the EPI selector from the lower UES and upper LES positions. <br>
+        <p> To continue with the next step, simply click "Apply selection and proceed". <br>
+        """ 
+        self.ui.textEdit.setHtml(text)
