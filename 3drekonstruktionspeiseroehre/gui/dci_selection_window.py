@@ -236,9 +236,9 @@ class DCISelectionWindow(QMainWindow):
         
         self.selector.extents = (left_end, right_end, lower_ues, upper_les)
         self.line_manager = DraggableLineManager(self.fig.canvas)
-        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=1.5, picker=2), label='LES (L)', color='black', callback=self.on_lines_dragged)
+        self.lower_les = DraggableHorizontalLine(self.ax.axhline(y=lower_les, color='r', linewidth=1.5, picker=2), label='LES (L)', color='white', callback=self.on_lines_dragged)
         self.lower_ues = DraggableHorizontalLine(self.ax.axhline(y=lower_ues, color='r', linewidth=1.5, picker=2), label='UES', color='blue', callback=self.on_lines_dragged)
-        self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=1.5, picker=2), label='LES (U)', color='green', callback=self.on_lines_dragged)
+        self.upper_les = DraggableHorizontalLine(self.ax.axhline(y=upper_les, color='r', linewidth=1.5, picker=2), label='LES (U)', color='black', callback=self.on_lines_dragged)
         self.line_manager.add_line(self.lower_les)
         self.line_manager.add_line(self.lower_ues)
         self.line_manager.add_line(self.upper_les)
