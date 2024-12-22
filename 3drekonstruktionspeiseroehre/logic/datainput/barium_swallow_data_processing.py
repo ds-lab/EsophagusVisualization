@@ -26,8 +26,7 @@ def process_and_upload_barium_swallow_images(selected_visit, filenames):
 
             file = Image.open(filename)
 
-            if fileextension.lower() == 'png':
-                file = file.convert('RGB')
+            file = file.convert('RGB')
 
             file_bytes = BytesIO()
             file.save(file_bytes, format=extension)
