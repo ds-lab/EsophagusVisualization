@@ -1833,8 +1833,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1378</width>
-             <height>608</height>
+             <width>965</width>
+             <height>321</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2151,8 +2151,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1378</width>
-             <height>608</height>
+             <width>796</width>
+             <height>151</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2317,8 +2317,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1378</width>
-             <height>608</height>
+             <width>757</width>
+             <height>584</height>
             </rect>
            </property>
            <attribute name="label">
@@ -2833,8 +2833,8 @@ p, li { white-space: pre-wrap; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1378</width>
-             <height>608</height>
+             <width>523</width>
+             <height>142</height>
             </rect>
            </property>
            <attribute name="label">
@@ -4152,14 +4152,14 @@ p, li { white-space: pre-wrap; }
                  <item row="5" column="0">
                   <widget class="QLabel" name="label_69">
                    <property name="text">
-                    <string>Length of submucosal tunnel:</string>
+                    <string>Length of submucosal tunnel (in cm):</string>
                    </property>
                   </widget>
                  </item>
                  <item row="2" column="2">
                   <widget class="QLabel" name="label_72">
                    <property name="text">
-                    <string>Length of tubular myotomy</string>
+                    <string>Length of tubular myotomy (in cm):</string>
                    </property>
                   </widget>
                  </item>
@@ -4185,7 +4185,7 @@ p, li { white-space: pre-wrap; }
                  <item row="4" column="2">
                   <widget class="QLabel" name="peom_gastric_myotomy_length_spin">
                    <property name="text">
-                    <string>Length of gastric myotomy</string>
+                    <string>Length of gastric myotomy (in cm):</string>
                    </property>
                   </widget>
                  </item>
@@ -4230,14 +4230,14 @@ p, li { white-space: pre-wrap; }
                  <item row="2" column="0">
                   <widget class="QLabel" name="label_67">
                    <property name="text">
-                    <string>Height of mucosal incision (distance from LES):</string>
+                    <string>Height of mucosal incision (cm, dist. from LES):</string>
                    </property>
                   </widget>
                  </item>
                  <item row="4" column="0">
                   <widget class="QLabel" name="label_62">
                    <property name="text">
-                    <string>Length of mucosal incision:</string>
+                    <string>Length of mucosal incision (in cm):</string>
                    </property>
                   </widget>
                  </item>
@@ -4892,7 +4892,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
