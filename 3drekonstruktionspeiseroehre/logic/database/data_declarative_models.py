@@ -41,7 +41,9 @@ class Visit(Base):
     year_of_visit = mapped_column(Integer, nullable=False)
     visit_type = mapped_column(String(50), nullable=False)
     therapy_type = mapped_column(String(50), nullable=True)
-    months_after_therapy = mapped_column(Integer, nullable=True)
+    months_after_initial_therapy = mapped_column(Integer, nullable=True)
+    months_after_last_therapy = mapped_column(Integer, nullable=True)
+    months_after_diagnosis = mapped_column(Integer, nullable=True)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
@@ -65,7 +67,7 @@ class Gerd(Base):
     __tablename__ = "gerd_scores"
     gerd_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    grade = mapped_column(String(20))
+    grade = mapped_column(String(30))
     heart_burn = mapped_column(Boolean)
     ppi_use = mapped_column(Boolean)
     acid_exposure_time = mapped_column(Float)
@@ -148,6 +150,7 @@ class Complications(Base):
     pneumothorax = mapped_column(String(10))
     pneumomediastinum = mapped_column(String(10))
     other_complication = mapped_column(String(10))
+    other_complication_specified = mapped_column(String(40))
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
@@ -157,8 +160,8 @@ class Manometry(Base):
     __tablename__ = "manometries"
     manometry_id = mapped_column(Integer, primary_key=True)
     visit_id = mapped_column(ForeignKey("visits.visit_id", ondelete="CASCADE"), nullable=False)
-    catheter_type = mapped_column(String(20))
-    patient_position = mapped_column(String(20))
+    catheter_type = mapped_column(String(30))
+    patient_position = mapped_column(Integer)
     resting_pressure = mapped_column(Integer)
     ipr4 = mapped_column(Integer)
     dci = mapped_column(Integer)
@@ -241,10 +244,6 @@ class Endoflip(Base):
     di_before = mapped_column(Float)
     dmin_before = mapped_column(Float)
     ibp_before = mapped_column(Float)
-    csa_during = mapped_column(Float)
-    di_during = mapped_column(Float)
-    dmin_during = mapped_column(Float)
-    ibp_during = mapped_column(Float)
     csa_after = mapped_column(Float)
     di_after = mapped_column(Float)
     dmin_after = mapped_column(Float)

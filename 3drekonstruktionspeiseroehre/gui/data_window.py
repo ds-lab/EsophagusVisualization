@@ -150,7 +150,7 @@ class DataWindow(QMainWindow):
         # Create Visualization
         self.ui.visits_create_visualization_button.clicked.connect(self.__create_visualization)
 
-        # Visit Data Tab
+        # Diagnostics and Therapy Tab
         # Manometry
         self.ui.add_manometry_button.clicked.connect(self.__add_manometry)
         self.ui.delete_manometry_button.clicked.connect(self.__delete_manometry)
@@ -206,6 +206,11 @@ class DataWindow(QMainWindow):
             "Pneumatic Dilation": 2,
             "LHM": 3,
             "POEM": 4
+        }
+        self.endoflip_widgets = {
+            "Initial Diagnostic": 1,
+            "Therapy": 2,
+            "Follow-Up Diagnostic": 3
         }
 
         menu_button = QAction("Info", self)
@@ -621,7 +626,9 @@ class DataWindow(QMainWindow):
                       'year_of_visit': self.ui.year_of_visit_calendar.date().toPyDate().year,
                       'visit_type': self.ui.visit_type_dropdown.currentText(),
                       'therapy_type': self.ui.therapy_type_dropdown.currentText(),
-                      'months_after_therapy': self.ui.months_after_therapy_spin.value()}
+                      'months_after_initial_therapy': self.ui.months_after_initial_therapy_spin.value(),
+                      'months_after_last_therapy': self.ui.months_after_last_therapy_spin.value(),
+                      'months_after_diagnosis': self.ui.months_after_diagnosis_spin.value()}
         visit_dict, error = DataValidation.validate_visit(visit_dict)
         if error:
             return
@@ -717,7 +724,7 @@ class DataWindow(QMainWindow):
 
         visit = self.visit_service.get_visit(
             self.selected_visit)
-        # Show the correct widget in the visitdata tab
+        # Show the correct widget in the Diagnostic and Therapy tab
         if visit:
             if visit.therapy_type in self.widget_names:
                 widget_index = self.widget_names[visit.therapy_type]
@@ -725,6 +732,12 @@ class DataWindow(QMainWindow):
             else:
                 # No widget for therapy data input is shown
                 self.ui.stackedWidget.setCurrentIndex(0)
+
+        # Show the correct fields/widget for Endoflip
+        if visit:
+            if visit.visit_type in self.endoflip_widgets:
+                endoflip_widget_index = self.endoflip_widgets[visit.visit_type]
+                self.ui.stackedWidget.setCurrentIndex(endoflip_widget_index)
 
 
         # Show Images
@@ -882,7 +895,7 @@ class DataWindow(QMainWindow):
             les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
             manometry_dict = {'visit_id': self.selected_visit,
                               'catheter_type': self.ui.manometry_cathedertype_dropdown.currentText(),
-                              'patient_position': self.ui.manometry_patientposition_dropdown.currentText(),
+                              'patient_position': self.ui.manometry_patientposition_spin.value(),
                               'resting_pressure': self.ui.manometry_restingpressure_spin.value(),
                               'ipr4': self.ui.manometry_ipr4_spin.value(),
                               'dci': self.ui.manometry_dci_spin.value(),
@@ -1124,19 +1137,29 @@ class DataWindow(QMainWindow):
     def __add_endoflip(self):
         endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
         if not endoflip or endoflip and ShowMessage.to_update_for_visit("EndoFlip data"):
-            endoflip_dict = {'visit_id': self.selected_visit,
-                             'csa_before': self.ui.endflip_before_csa_spin.value(),
-                             'di_before': self.ui.endflip_before_di_spin.value(),
-                             'dmin_before': self.ui.endflip_before_dmin_spin.value(),
-                             'ibp_before': self.ui.endflip_before_ibp_spin.value(),
-                             'csa_during': self.ui.endflip_during_csa_spin.value(),
-                             'di_during': self.ui.endflip_during_di_spin.value(),
-                             'dmin_during': self.ui.endflip_during_dmin_spin.value(),
-                             'ibp_during': self.ui.endflip_during_ibp_spin.value(),
-                             'csa_after': self.ui.endflip_after_csa_spin.value(),
-                             'di_after': self.ui.endflip_after_di_spin.value(),
-                             'dmin_after': self.ui.endflip_after_dmin_spin.value(),
-                             'ibp_after': self.ui.endflip_after_ibp_spin.value()}
+            visit = self.visit_service.get_visit(self.selected_visit)
+            if visit.visit_type == "Initial Diagnostic":
+                endoflip_dict = {'visit_id': self.selected_visit,
+                                 'csa_before': self.ui.endflip_before_csa_spin.value(),
+                                 'di_before': self.ui.endflip_before_di_spin.value(),
+                                 'dmin_before': self.ui.endflip_before_dmin_spin.value(),
+                                 'ibp_before': self.ui.endflip_before_ibp_spin.value()}
+            elif visit.visit_type == "Therapy":
+                endoflip_dict = {'visit_id': self.selected_visit,
+                                 'csa_before': self.ui.endflip_before_therapy_csa_spin.value(),
+                                 'di_before': self.ui.endflip_before_therapy_di_spin.value(),
+                                 'dmin_before': self.ui.endflip_before_therapy_dmin_spin.value(),
+                                 'ibp_before': self.ui.endflip_before_therapy_ibp_spin.value(),
+                                 'csa_after': self.ui.endflip_after_therapy_csa_spin.value(),
+                                 'di_after': self.ui.endflip_after_therapy_di_spin.value(),
+                                 'dmin_after': self.ui.endflip_after_therapy_dmin_spin.value(),
+                                 'ibp_after': self.ui.endflip_after_therapy_ibp_spin.value()}
+            elif visit.visit_type == "Follow-Up Diagnostic":
+                endoflip_dict = {'visit_id': self.selected_visit,
+                                 'csa_after': self.ui.endflip_after_csa_spin.value(),
+                                 'di_after': self.ui.endflip_after_di_spin.value(),
+                                 'dmin_after': self.ui.endflip_after_dmin_spin.value(),
+                                 'ibp_after': self.ui.endflip_after_ibp_spin.value()}
 
             endoflip_dict, error = DataValidation.validate_visitdata(endoflip_dict)
 
@@ -1372,7 +1395,8 @@ class DataWindow(QMainWindow):
                                         'mucosal_tears': self.ui.mucusal_tears_botox.currentText(),
                                         'pneumothorax': self.ui.pneumothorax_botox.currentText(),
                                         'pneumomediastinum': self.ui.pneumomediastinum_botox.currentText(),
-                                        'other_complication': self.ui.other_botox.currentText()}
+                                        'other_complication': self.ui.other_botox.currentText(),
+                                        'other_complication_specified': self.ui.other_specified_botox.text()}
             botox_complications_dict, error = DataValidation.validate_complications(botox_complications_dict)
 
             if error:
@@ -1418,7 +1442,8 @@ class DataWindow(QMainWindow):
                                      'mucosal_tears': self.ui.mucusal_tears_pd.currentText(),
                                      'pneumothorax': self.ui.pneumothorax_pd.currentText(),
                                      'pneumomediastinum': self.ui.pneumomediastinum_pd.currentText(),
-                                     'other_complication': self.ui.other_pd.currentText()}
+                                     'other_complication': self.ui.other_pd.currentText(),
+                                     'other_complication_specified': self.ui.other_specified_pd.text()}
             pd_complications_dict, error = DataValidation.validate_complications(pd_complications_dict)
 
             if error:
@@ -1474,7 +1499,8 @@ class DataWindow(QMainWindow):
                                       'mucosal_tears': self.ui.mucusal_tears_lhm.currentText(),
                                       'pneumothorax': self.ui.pneumothorax_lhm.currentText(),
                                       'pneumomediastinum': self.ui.pneumomediastinum_lhm.currentText(),
-                                      'other_complication': self.ui.other_lhm.currentText()}
+                                      'other_complication': self.ui.other_lhm.currentText(),
+                                      'other_complication_specified': self.ui.other_specified_lhm.text()}
             lhm_complications_dict, error = DataValidation.validate_complications(lhm_complications_dict)
 
             if error:
@@ -1533,7 +1559,8 @@ class DataWindow(QMainWindow):
                                        'mucosal_tears': self.ui.mucusal_tears_poem.currentText(),
                                        'pneumothorax': self.ui.pneumothorax_poem.currentText(),
                                        'pneumomediastinum': self.ui.pneumomediastinum_poem.currentText(),
-                                       'other_complication': self.ui.other_poem.currentText()}
+                                       'other_complication': self.ui.other_poem.currentText(),
+                                       'other_complication_specified': self.ui.other_specified_poem.text()}
             poem_complications_dict, error = DataValidation.validate_complications(poem_complications_dict)
 
             if error:
