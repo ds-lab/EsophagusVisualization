@@ -32,6 +32,9 @@
       <property name="text">
        <string>Barium</string>
       </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="2" column="1">
@@ -45,6 +48,9 @@
      <widget class="QCheckBox" name="spine">
       <property name="text">
        <string>Spine</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -90,8 +96,14 @@
     </item>
     <item row="1" column="1">
      <widget class="QCheckBox" name="oesophagus">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="text">
        <string>Oesophagus</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -103,7 +115,7 @@
      <x>0</x>
      <y>0</y>
      <width>779</width>
-     <height>22</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>

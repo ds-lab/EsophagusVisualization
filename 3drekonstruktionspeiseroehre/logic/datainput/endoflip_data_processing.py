@@ -109,8 +109,8 @@ def process_and_upload_endoflip_images(selected_visit, filenames):
 
             file = Image.open(filename)
 
-            if fileextension.lower() == 'png':
-                file = file.convert('RGB')
+            if file.mode in ["RGBA", "P"]:
+                file = file.convert("RGB")
 
             file_bytes = BytesIO()
             file.save(file_bytes, format=extension)

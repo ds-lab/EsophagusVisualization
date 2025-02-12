@@ -38,23 +38,17 @@ class DraggableLineManager:
             line.on_motion(event)
 
 class DraggableHorizontalLine:
-    def __init__(self, line, label, callback=None):
+    def __init__(self, line, label, color, callback=None):
         self.line = line
         self.press = None
         self.label = label
+        self.color = color  # Set the initial color for the line
         self.is_dragging = False  # Flag to indicate dragging state
         self.callback = callback
         self.manager = None
 
-        # Create the label with a semi-transparent white background and smaller padding
-        self.text = self.line.axes.text(
-            self.line.get_xdata()[-1] + 20, 
-            max(self.line.get_ydata()[0] - 15, 0), 
-            self.label, 
-            color=self.line.get_color(), 
-            ha='left',
-            bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.1', alpha=0.5)
-        )
+        # Set the color of the line
+        self.line.set_color(self.color)
 
         # Blitting setup
         self.background = None
@@ -64,11 +58,9 @@ class DraggableHorizontalLine:
     def on_press(self, event):
         if event.inaxes != self.line.axes: return
 
-        # Check if the click is on the line or the text
+        # Check if the click is on the line
         contains_line, _ = self.line.contains(event)
-        contains_text = self.text.contains(event)[0]
-
-        if not contains_line and not contains_text: return
+        if not contains_line: return
 
         self.press = self.line.get_ydata(), event.ydata
         self.is_dragging = True  # Start dragging
@@ -108,10 +100,6 @@ class DraggableHorizontalLine:
         # Change cursor back to default
         self.manager.canvas.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
 
-        # Update the text position
-        new_ydata = self.line.get_ydata()
-        self.text.set_y(max(new_ydata[0] - 15, 0))
-
         # Redraw the full figure
         self.canvas.draw()
 
@@ -122,11 +110,9 @@ class DraggableHorizontalLine:
     def on_hover(self, event):
         if event.inaxes != self.line.axes: return False
 
-        # Check if the mouse is over the line or the text
+        # Check if the mouse is over the line
         contains_line, _ = self.line.contains(event)
-        contains_text = self.text.contains(event)[0]
-
-        if contains_line or contains_text:
+        if contains_line:
             # Change cursor to hand
             self.manager.canvas.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
             return True
@@ -137,5 +123,10 @@ class DraggableHorizontalLine:
 
     def set_y_position(self, y):
         self.line.set_ydata([y, y])
-        self.text.set_y(max(y - 15, 0))
+        self.canvas.draw_idle()
+
+    def set_line_color(self, color):
+        """Allows updating the color of the line"""
+        self.color = color
+        self.line.set_color(self.color)
         self.canvas.draw_idle()
