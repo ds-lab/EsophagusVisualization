@@ -31,7 +31,9 @@ class VisualizationData:
         self._sphincter_upper_pos = None
         self._esophagus_exit_pos = None
         self._endoflip_pos = None
-        self._esophageal_pressurization_index = 0.0 # default value for backwards compatibility
+        self._esophageal_pressurization_index = (
+            0.0  # default value for backwards compatibility
+        )
 
         self._figure_x = None
         self._figure_y = None
@@ -46,7 +48,6 @@ class VisualizationData:
         self.tubular_length_cm = 0
         self.sphincter_length_cm = 0
         self.esophagus_len = None
-
 
     @property
     def xray_file(self):
@@ -221,8 +222,9 @@ class VisualizationData:
 
     @property
     def esophageal_pressurization_index(self):
-        return self._esophageal_pressurization_index
-    
+        # Return default value if attribute doesn't exist
+        return getattr(self, "_esophageal_pressurization_index", None)
+
     @esophageal_pressurization_index.setter
     def esophageal_pressurization_index(self, value):
         self._esophageal_pressurization_index = value
