@@ -737,10 +737,14 @@ class FigureCreator(ABC):
             volume_sum_sphincter = volume_sum_sphincter + shapely_poly.area
         # one_px_as_cm factor is needed, because of the third dimension height
         volume_sum_sphincter = volume_sum_sphincter * one_px_as_cm
+        if volume_sum_sphincter == 0:
+            volume_sum_sphincter = 0.01
         len_sphincter = len_sphincter * one_px_as_cm
 
         # Calculate max, min, mean pressure over time and space for tubular part of esophagus
-        np_surfacecolor_list = surfacecolor_list
+        np_surfacecolor_list = np.array(surfacecolor_list)
+        np_surfacecolor_list[np_surfacecolor_list == 0] = 1
+        np_surfacecolor_list = np.abs(np_surfacecolor_list)
         tubular_section_surfacecolor_list = np_surfacecolor_list[:,
                                             tubular_part_upper_boundary:lower_sphincter_boundary[0] + 1]
         max_pressure_tubular_per_frame = np.max(tubular_section_surfacecolor_list, axis=1)
