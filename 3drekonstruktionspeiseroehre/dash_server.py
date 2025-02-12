@@ -92,6 +92,7 @@ class DashServer:
             dcc.Store(id='size-store', data=[[self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()["len_tubular"], self.visit.visualization_data_list[0].figure_creator.get_metrics()["len_sphincter"]],
                                              [self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()["volume_sum_tubular"], self.visit.visualization_data_list[0].figure_creator.get_metrics()["volume_sum_sphincter"]]]),
             dcc.Store(id='hidden-output'),
+            dcc.Store(id='camera-store'),
 
             html.Div([
                 endoflip_element,
@@ -252,13 +253,14 @@ class DashServer:
 
         self.dash_app.clientside_callback(
             """
-            function(time, index, figure, colors, metric, pressure, size, endoflip_on) {
+            function(time, index, figure, colors, metric, pressure, size, endoflip_on, camera) {
                 var expandedColors = [];
                 if (!endoflip_on && colors !== null && colors[time] !== undefined && Array.isArray(colors[time])) {
                     for (var i = 0; i < colors[time].length; i++) {
                         expandedColors[i] = new Array(""" + str(config.figure_number_of_angles) + """).fill(colors[time][i]);
                         }
                         new_figure = {...figure};
+                        if (camera !== null) {new_figure.layout.scene.camera = camera};
                         new_figure.data[0].surfacecolor = expandedColors;
                         new_figure.data[0].colorscale = """ + str(config.colorscale) + """;
                         new_figure.data[0].cmin=""" + str(config.cmin) + """;
@@ -295,7 +297,8 @@ class DashServer:
              State("metric-store", "data"),
              State("pressure-store", "data"),
              State("size-store", "data"),
-             State('pressure-or-endoflip','on')]
+             State('pressure-or-endoflip','on'),
+             State('camera-store', 'data')]
         )
 
         self.dash_app.callback([Output('pressure-control', 'style'), 
@@ -304,7 +307,8 @@ class DashServer:
                                 [Input('pressure-or-endoflip','on'),
                                  Input('endoflip-table-dropdown', 'value'),
                                  Input('30-or-40', 'on'),],
-                                 State('3d-figure', 'figure'))(self.__toggle_pressure_endoflip)
+                                 [State('3d-figure', 'figure'),
+                                  State('camera-store', 'data')])(self.__toggle_pressure_endoflip)
 
         self.dash_app.callback([Output('endoflip-table','figure'), Output('endoflip-table','style')], Input('endoflip-table-dropdown', 'value'))(self.__update_endoflip_table)
 
@@ -334,7 +338,13 @@ class DashServer:
                                 Output('static_values_sphincter', 'children'),
                                 Output('data_table_sphincter_pres', 'data'),
                                 Output('data_table_sphincter_metric', 'data')],
-                                Input('figure-selector', 'value'))(self.__update_figure)
+                                Input('figure-selector', 'value'),
+                                State('camera-store', 'data'))(self.__update_figure)
+
+        self.dash_app.callback(
+            Output('camera-store', 'data'),
+            Input('3d-figure', 'relayoutData')
+        )(self.store_camera_position)
 
         self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
         self.thread = KThread(target=self.server.run)
@@ -397,12 +407,13 @@ class DashServer:
             return new_value, no_update, no_update
     
 
-    def __update_figure(self,selected_figure):
+    def __update_figure(self, selected_figure, camera):
         """
         Callback to update the figure and related components.
 
         Args:
             selected_figure (int): Selected figure index.
+            camera (dict): Camera position state.
 
         Returns:
             list: Updated figure, color store, tubular metric store, sphincter metric store, maximum value of time slider, updated time slider value, metrics text.
@@ -410,6 +421,12 @@ class DashServer:
         self.selected_figure_index = selected_figure
         self.current_figure = self.visit_figures[selected_figure]
         if selected_figure is not None:
+            # Create a new figure that will preserve the camera position
+            new_figure = go.Figure(self.visit_figures[selected_figure])
+            if camera is not None:
+                new_figure.layout.scene.camera = camera
+            # Add uirevision to preserve camera position across mode changes
+            new_figure.update_layout(uirevision=True)
             metrics = self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()
             static_values_tubular = "Length: " + str(round(metrics['len_tubular'], 4)) + " cm  //  Volume: " + str(round(metrics['volume_sum_tubular'], 4)) + " cm^3"
             static_values_sphincter= "Length: " + str(round(metrics['len_sphincter'], 4)) + " cm  //  Volume: " + str(round(metrics['volume_sum_sphincter'], 4)) + " cm^3"
@@ -426,7 +443,7 @@ class DashServer:
                    'vol_min_sph_press_frame':str(round(metrics["metric_sphincter"]['min'][0], 6)),
                    'vol_mean_sph_press_frame':str(round(metrics["metric_sphincter"]['mean'][0], 6))}]
 
-            return [self.visit_figures[selected_figure], 
+            return [new_figure, 
                     self.visit.visualization_data_list[selected_figure].figure_creator.get_surfacecolor_list(),
                     [self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()['metric_tubular'], self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()['metric_sphincter']],
                     [self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()['pressure_tubular_per_frame'],self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()['pressure_sphincter_per_frame']],
@@ -442,7 +459,7 @@ class DashServer:
         else:
             raise PreventUpdate
         
-    def __toggle_pressure_endoflip(self, endoflip_selected, aggregate_function, ballon_volume, figure):
+    def __toggle_pressure_endoflip(self, endoflip_selected, aggregate_function, ballon_volume, figure, camera):
         """
         Callback to toggle between pressure and Endoflip visualization and update aggregate function/ballon volume visualization of EndoFLIP.
 
@@ -463,6 +480,10 @@ class DashServer:
             endoflip_color = self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_endoflip_surface_color('40' if ballon_volume else '30', aggregate_function)
             expandedColors = [[endoflip_color[i] for _ in range(config.figure_number_of_angles)] for i in range(len(endoflip_color))]
             figure = go.Figure(figure)
+            if camera is not None:
+                figure.layout.scene.camera = camera
+            # Add uirevision to preserve camera position across mode changes
+            figure.update_layout(uirevision=True)
             figure.data[0].surfacecolor = expandedColors
             figure.data[0].colorscale = px.colors.sample_colorscale("jet", [(30-(n+1))/(30-1) for n in range(30)])
             figure.data[0].cmin= 0
@@ -485,3 +506,8 @@ class DashServer:
         else:
             return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()[chosen_agg], {'display':'block'}
         
+
+    def store_camera_position(self, relayoutData):
+        if relayoutData is not None and 'scene.camera' in relayoutData:
+            return relayoutData['scene.camera']
+        return no_update
