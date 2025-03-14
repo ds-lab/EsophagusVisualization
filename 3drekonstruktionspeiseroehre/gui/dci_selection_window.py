@@ -412,7 +412,7 @@ class DCISelectionWindow(QMainWindow):
                 mean_pressure = np.mean(pressure_matrix)
         return np.round(mean_pressure * height * time, 2)
     
-    def find_lower_end_of_ues(self):
+    def find_lower_end_of_ues(self, threshold=30):
         """
         Detect the lower end of the Upper Esophageal Sphincter (UES).
         
@@ -420,23 +420,23 @@ class DCISelectionWindow(QMainWindow):
         
         :return: The y-coordinate of the lower end of the UES
         """
-        upper_half_boundary = len(self.pressure_matrix_high_res) // 2
+        lower_half_start = len(self.pressure_matrix_high_res) // 2
         stripe_size = max(1, len(self.pressure_matrix_high_res) // 100)
-        max_diff = -float('inf')
         lower_end_y = None
+        max_diff = -float('inf')
 
-        for y in range(stripe_size, upper_half_boundary, stripe_size // 2):
+        for y in range(0, lower_half_start, stripe_size // 2):
             current_stripe = self.pressure_matrix_high_res[y:y + stripe_size]
             previous_stripe = self.pressure_matrix_high_res[y - stripe_size:y]
 
-            current_average = sum(sum(row) for row in current_stripe) / (len(current_stripe) * len(current_stripe[0]))
-            previous_average = sum(sum(row) for row in previous_stripe) / (len(previous_stripe) * len(previous_stripe[0]))
+            current_count = sum(1 for row in current_stripe for value in row if value > threshold)
+            previous_count = sum(1 for row in previous_stripe for value in row if value > threshold)
 
-            diff = previous_average - current_average
+            diff = previous_count - current_count
 
             if diff > 0 and diff > max_diff:
                 max_diff = diff
-                lower_end_y = y + stripe_size
+                lower_end_y = y
 
         return lower_end_y if lower_end_y is not None else int(0.05 * len(self.pressure_matrix_high_res))
     
@@ -473,7 +473,7 @@ class DCISelectionWindow(QMainWindow):
         """
         Detect the lower end of the Lower Esophageal Sphincter (LES).
         
-        The LES is identified as a horizontal stripe in the lower part of the plot with higher pressure (>30 mmHg) than the regions above and below it. The LES must be in the lower half of the plot.
+        The LES is identified as a horizontal stripe in the lower half of the plot with higher pressure (>30 mmHg) than the regions above and below it.
         
         :param threshold: The pressure threshold indicating the LES
         :return: The y-coordinate of the lower end of the LES
@@ -533,7 +533,7 @@ class DCISelectionWindow(QMainWindow):
         left_end_x = np.min(max_region_coords[:, 1])
         right_end_x = np.max(max_region_coords[:, 1])
 
-        # Check if at least 5% of the points in the left and right end columns are above the threshold
+        # Check if at least 15% of the points in the left and right end columns are above the threshold
         def check_threshold_percentage(column_index):
             column_values = roi[:, column_index]
             above_threshold_count = np.sum(column_values > threshold)
