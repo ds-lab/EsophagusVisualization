@@ -84,7 +84,7 @@ class DCISelectionWindow(QMainWindow):
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
-
+        self.goal_relation = 16 / 9
         self.__plot_data()
 
     def __on_checkbox_toggled(self):
@@ -228,9 +228,9 @@ class DCISelectionWindow(QMainWindow):
             self.upper_les.line.remove()
         if self.lower_les is not None:
             self.lower_les.line.remove()
-        upper_les = self.find_upper_end_of_les()
-        lower_ues = self.find_lower_end_of_ues()
-        lower_les = self.find_lower_end_of_les()
+        upper_les = self.find_boundary(region="LES_upper")
+        lower_ues = self.find_boundary(region="UES_lower")
+        lower_les = self.find_boundary(region="LES_lower")
 
         left_end, right_end = self.find_biggest_connected_region(lower_ues, upper_les)
         
@@ -283,6 +283,47 @@ class DCISelectionWindow(QMainWindow):
         info_window.show_dci_selection_info()
         info_window.show()
 
+    def __generate_estimated_pressure_matrix(self, first_sensor, last_sensor, min_gap, number_of_measurements, coords_sensors):
+        """
+        Generate an estimated pressure matrix by interpolating the pressure values between the sensors
+        :param first_sensor: the position of the first sensor
+        :param last_sensor: the position of the last sensor
+        :param min_gap: the minimum gap between the sensors
+        :param number_of_measurements: the number of measurements
+        :param coords_sensors: the coordinates of the sensors
+        :return: the estimated pressure matrix
+        """
+        estimated_pressure_matrix = np.zeros(((last_sensor - first_sensor) // min_gap + 1, number_of_measurements))
+        for i in range(number_of_measurements):
+            sensor_counter = 0
+            for position in range(first_sensor, last_sensor + 1, min_gap):
+                if position in coords_sensors:
+                    estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = self.visualization_data.pressure_matrix[sensor_counter, i]
+                    sensor_counter += 1
+                else:
+                    value_before = self.visualization_data.pressure_matrix[sensor_counter - 1, i]
+                    value_after = self.visualization_data.pressure_matrix[sensor_counter, i]
+                    estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = (
+                        (position - coords_sensors[sensor_counter - 1]) * value_after + 
+                        (coords_sensors[sensor_counter] - position) * value_before
+                    ) / (coords_sensors[sensor_counter] - coords_sensors[sensor_counter - 1])
+        return estimated_pressure_matrix
+    
+    def __interpolate_pressure_matrix(self, estimated_pressure_matrix):
+        """
+        Interpolate the pressure matrix to a higher resolution
+        :param estimated_pressure_matrix: the estimated pressure matrix
+        :return: the interpolated pressure matrix in higher resolution
+        """
+        x = np.arange(estimated_pressure_matrix.shape[1])
+        y = np.arange(estimated_pressure_matrix.shape[0])
+        f = interpolate.interp2d(x, y, estimated_pressure_matrix, kind='cubic')
+
+        # Define higher resolution grid
+        xnew = np.linspace(0, estimated_pressure_matrix.shape[1], estimated_pressure_matrix.shape[1] * 10)
+        ynew = np.linspace(0, estimated_pressure_matrix.shape[0], int(np.floor(estimated_pressure_matrix.shape[0] * 10 * self.relation_x_y / self.goal_relation)))
+        return f(xnew, ynew)
+
     def __plot_data(self):
         """
         Create the visualization plot of the pressure matrix and initialize the plot analysis (rectangle selector, upper LES, lower LES, lower UES, etc.)
@@ -302,32 +343,13 @@ class DCISelectionWindow(QMainWindow):
         min_gap = np.gcd.reduce(np.diff(coords_sensors)) # assumption, that there is only one sensor at each position
         first_sensor = coords_sensors[0] # start at the first sensor (min value)
         last_sensor = coords_sensors[-1] # max value
-        estimated_pressure_matrix = np.zeros(((last_sensor - first_sensor) // min_gap + 1, number_of_measurements))
-        for i in range(number_of_measurements):
-            position = coords_sensors[0]
-            sensor_counter = 0
-            while position <= last_sensor:
-                if position in coords_sensors:
-                    estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = self.visualization_data.pressure_matrix[sensor_counter, i]
-                    sensor_counter += 1
-                else:
-                    # need position of the sensors before and after the current position
-                    value_before = self.visualization_data.pressure_matrix[sensor_counter - 1, i]
-                    value_after = self.visualization_data.pressure_matrix[sensor_counter, i]
-                    estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = ((position - coords_sensors[sensor_counter - 1]) * value_after + (coords_sensors[sensor_counter] - position) * value_before) / (coords_sensors[sensor_counter] - coords_sensors[sensor_counter - 1])
-                position += min_gap
 
-        x = np.arange(estimated_pressure_matrix.shape[1])
-        y = np.arange(estimated_pressure_matrix.shape[0])
-        f = interpolate.interp2d(x, y, estimated_pressure_matrix, kind='cubic')
+        estimated_pressure_matrix = self.__generate_estimated_pressure_matrix(
+            first_sensor, last_sensor, min_gap, number_of_measurements, coords_sensors
+        )
 
         self.relation_x_y = estimated_pressure_matrix.shape[1] / estimated_pressure_matrix.shape[0]
-        self.goal_relation = 16 / 9
-
-        # Define the higher resolution grid
-        xnew = np.linspace(0, estimated_pressure_matrix.shape[1], estimated_pressure_matrix.shape[1]*10)
-        ynew = np.linspace(0, estimated_pressure_matrix.shape[0], int(np.floor(estimated_pressure_matrix.shape[0]*10 * self.relation_x_y / self.goal_relation)))
-        pressure_matrix_high_res = f(xnew, ynew)
+        pressure_matrix_high_res = self.__interpolate_pressure_matrix(estimated_pressure_matrix)
         self.pressure_matrix_high_res = pressure_matrix_high_res
 
         im = self.ax.imshow(pressure_matrix_high_res, cmap=cmap, interpolation='nearest', vmin=config.cmin, vmax=config.cmax)
@@ -412,168 +434,67 @@ class DCISelectionWindow(QMainWindow):
                 mean_pressure = np.mean(pressure_matrix)
         return np.round(mean_pressure * height * time, 2)
 
-    def find_lower_end_of_ues(self, threshold=30, min_percentage=0.3):
+    def find_largest_stripe(self, binary_matrix, region_start, region_end):
         """
-        Detects the lower end of the biggest UES stripe, ensuring the selected boundary has at least a minimum percentage
-        of values above the threshold. Also integrates Sobel edge detection to refine the detection.
-
-        :param threshold: Pressure threshold in mmHg to define the UES region.
-        :param min_percentage: Minimum percentage of values in a row that must be above the threshold.
-        :return: The y-coordinate of the lower end of the UES.
+        Finds the largest connected stripe in the given binary matrix region.
         """
-        lower_half_start = self.pressure_matrix_high_res.shape[0] // 2
-        binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
-        upper_half = binary_matrix[:lower_half_start]
-        contours, _ = cv2.findContours(upper_half, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
+        region = binary_matrix[region_start:region_end]
+        contours, _ = cv2.findContours(region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours:
-            return int(0.05 * self.pressure_matrix_high_res.shape[0])  # Default if no stripe is found
-
-        # Find the largest stripe
+            return None, None
         best_contour = max(contours, key=cv2.contourArea)
         _, y, _, h = cv2.boundingRect(best_contour)
+        return y + region_start, h  # Adjust for offset
 
-        # Sobel edge detection
-        sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
-        sobel_edge_y = np.argmin(sobel_y[:lower_half_start].sum(axis=1))  # Strongest negative gradient
-
-        # Identify the lowest valid row in the biggest stripe
-        for row in range(y + h - 1, y - 1, -1):
-            above_threshold_count = np.sum(self.pressure_matrix_high_res[row] > threshold)
-            total_count = self.pressure_matrix_high_res.shape[1]
-            if (above_threshold_count / total_count) >= min_percentage:
-                largest_stripe_end = row
-                break
-        else:
-            largest_stripe_end = y + h
-
-        # Check if the Sobel edge is within the detected stripe
-        if y <= sobel_edge_y <= (y + h):
-            return sobel_edge_y
-        else:
-            return largest_stripe_end
-    
-
-    # def find_upper_end_of_les(self, threshold=30):
-    #     """
-    #     Detect the upper end of the Lower Esophageal Sphincter (LES) using the Sobel filter.
-        
-    #     :param threshold: Pressure threshold in mmHg to enhance detection.
-    #     :return: The y-coordinate of the upper end of the LES.
-    #     """
-    #     height = self.pressure_matrix_high_res.shape[0]
-    #     lower_half_start = height // 2
-    #     binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
-    #     sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
-
-    #     # Look only in the lower half for the strongest positive gradient
-    #     upper_end_y = lower_half_start + np.argmax(sobel_y[lower_half_start:].sum(axis=1))
-
-    #     return upper_end_y if upper_end_y is not None else int(0.75 * height)
-
-    def find_upper_end_of_les(self, threshold=30, min_percentage=0.3):
+    def find_sobel_edge(self, binary_matrix, region_start, region_end, edge_type):
         """
-        Detects the upper end of the biggest LES stripe, ensuring the selected boundary has at least a minimum percentage
-        of values above the threshold. Also integrates Sobel edge detection to refine the detection.
+        Detects the strongest gradient edge using Sobel filtering.
+        """
+        sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
+        if edge_type == "upper":
+            return region_start + np.argmax(sobel_y[region_start:region_end].sum(axis=1))
+        else:  # "lower"
+            return region_start + np.argmin(sobel_y[region_start:region_end].sum(axis=1))
 
-        :param threshold: Pressure threshold in mmHg to define the LES region.
-        :param min_percentage: Minimum percentage of values in a row that must be above the threshold.
-        :return: The y-coordinate of the upper end of the LES.
+    def find_boundary(self, threshold=30, min_percentage=0.3, region="UES_lower"):
+        """
+        General function to detect boundaries of UES and LES stripes.
         """
         height = self.pressure_matrix_high_res.shape[0]
-        lower_half_start = height // 2
         binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
-        lower_half = binary_matrix[lower_half_start:]
-        contours, _ = cv2.findContours(lower_half, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
-        if not contours:
-            return int(0.75 * height)  # Default if no stripe is found
-
-        # Find the largest stripe
-        best_contour = max(contours, key=cv2.contourArea)
-        _, y, _, h = cv2.boundingRect(best_contour)
-        y += lower_half_start  # Adjust for the offset since we processed only the lower half
-
-        # Sobel edge detection
-        sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
-        sobel_edge_y = lower_half_start + np.argmax(sobel_y[lower_half_start:].sum(axis=1))  # Strongest positive gradient
-
-        # Identify the highest valid row in the biggest stripe
-        for row in range(y, y + h):
-            above_threshold_count = np.sum(self.pressure_matrix_high_res[row] > threshold)
-            total_count = self.pressure_matrix_high_res.shape[1]
-            if (above_threshold_count / total_count) >= min_percentage:
-                largest_stripe_start = row
-                break
+        if region == "UES_lower":
+            region_start, region_end, edge_type, default = 0, height // 2, "lower", int(0.05 * height)
+        elif region == "LES_upper":
+            region_start, region_end, edge_type, default = height // 2, height, "upper", int(0.75 * height)
+        elif region == "LES_lower":
+            region_start, region_end, edge_type, default = height // 2, height, "lower", int(0.95 * height)
         else:
-            largest_stripe_start = y
-
-        # Check if the Sobel edge is within the detected stripe
-        if y <= sobel_edge_y <= (y + h):
-            return sobel_edge_y
-        else:
-            return largest_stripe_start
-
-
-    # def find_lower_end_of_les(self, threshold=30):
-    #     """
-    #     Detect the lower end of the Lower Esophageal Sphincter (LES) using the Sobel filter.
+            raise ValueError("Invalid region specified.")
         
-    #     :param threshold: Pressure threshold in mmHg to enhance detection.
-    #     :return: The y-coordinate of the lower end of the LES.
-    #     """
-    #     height = self.pressure_matrix_high_res.shape[0]
-    #     lower_half_start = height // 2
-    #     binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
-    #     sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
-
-    #     # Look only in the lower half for the strongest negative gradient
-    #     lower_end_y = lower_half_start + np.argmin(sobel_y[lower_half_start:].sum(axis=1))
-
-    #     return lower_end_y if lower_end_y is not None else int(0.95 * height)
-
-    def find_lower_end_of_les(self, threshold=30, min_percentage=0.3):
-        """
-        Detects the lower end of the biggest LES stripe, ensuring the selected boundary has at least a minimum percentage
-        of values above the threshold. Also integrates Sobel edge detection to refine the detection.
-
-        :param threshold: Pressure threshold in mmHg to define the LES region.
-        :param min_percentage: Minimum percentage of values in a row that must be above the threshold.
-        :return: The y-coordinate of the lower end of the LES.
-        """
-        height = self.pressure_matrix_high_res.shape[0]
-        lower_half_start = height // 2
-        binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
-        lower_half = binary_matrix[lower_half_start:]
-        contours, _ = cv2.findContours(lower_half, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        y, h = self.find_largest_stripe(binary_matrix, region_start, region_end)
+        if y is None:
+            return default
         
-        if not contours:
-            return int(0.95 * height)  # Default if no stripe is found
-
-        # Find the largest stripe
-        best_contour = max(contours, key=cv2.contourArea)
-        _, y, _, h = cv2.boundingRect(best_contour)
-        y += lower_half_start  # Adjust for the offset
-
-        # Sobel edge detection
-        sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
-        sobel_edge_y = lower_half_start + np.argmin(sobel_y[lower_half_start:].sum(axis=1))  # Strongest negative gradient
-
-        # Identify the lowest valid row in the biggest stripe
-        for row in range(y + h - 1, y - 1, -1):
-            above_threshold_count = np.sum(self.pressure_matrix_high_res[row] > threshold)
-            total_count = self.pressure_matrix_high_res.shape[1]
-            if (above_threshold_count / total_count) >= min_percentage:
-                largest_stripe_end = row
-                break
-        else:
-            largest_stripe_end = y + h
-
-        # Check if the Sobel edge is within the detected stripe
-        if y <= sobel_edge_y <= (y + h):
-            return sobel_edge_y
-        else:
-            return largest_stripe_end
+        sobel_edge_y = self.find_sobel_edge(binary_matrix, region_start, region_end, edge_type)
+        
+        if edge_type == "upper":
+            for row in range(y, y + h):
+                if np.sum(self.pressure_matrix_high_res[row] > threshold) / self.pressure_matrix_high_res.shape[1] >= min_percentage:
+                    largest_stripe_start = row
+                    break
+            else:
+                largest_stripe_start = y
+            return sobel_edge_y if y <= sobel_edge_y <= (y + h) else largest_stripe_start
+        
+        else:  # "lower"
+            for row in range(y + h - 1, y - 1, -1):
+                if np.sum(self.pressure_matrix_high_res[row] > threshold) / self.pressure_matrix_high_res.shape[1] >= min_percentage:
+                    largest_stripe_end = row
+                    break
+            else:
+                largest_stripe_end = y + h
+            return sobel_edge_y if y <= sobel_edge_y <= (y + h) else largest_stripe_end
 
     def find_biggest_connected_region(self, lower_ues, upper_les, threshold=30):
         """
