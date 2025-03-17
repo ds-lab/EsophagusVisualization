@@ -16,7 +16,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import config
 from scipy import interpolate
 import numpy as np
-from scipy.ndimage import label
+import cv2
 
 class DCISelectionWindow(QMainWindow):
     """Window where the user selects the rectangle for the EPI calculation and the LES and UES positions"""
@@ -411,134 +411,204 @@ class DCISelectionWindow(QMainWindow):
                 # Calculate the mean of these values
                 mean_pressure = np.mean(pressure_matrix)
         return np.round(mean_pressure * height * time, 2)
+
+    def find_lower_end_of_ues(self, threshold=30, min_percentage=0.3):
+        """
+        Detects the lower end of the biggest UES stripe, ensuring the selected boundary has at least a minimum percentage
+        of values above the threshold. Also integrates Sobel edge detection to refine the detection.
+
+        :param threshold: Pressure threshold in mmHg to define the UES region.
+        :param min_percentage: Minimum percentage of values in a row that must be above the threshold.
+        :return: The y-coordinate of the lower end of the UES.
+        """
+        lower_half_start = self.pressure_matrix_high_res.shape[0] // 2
+        binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
+        upper_half = binary_matrix[:lower_half_start]
+        contours, _ = cv2.findContours(upper_half, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        if not contours:
+            return int(0.05 * self.pressure_matrix_high_res.shape[0])  # Default if no stripe is found
+
+        # Find the largest stripe
+        best_contour = max(contours, key=cv2.contourArea)
+        _, y, _, h = cv2.boundingRect(best_contour)
+
+        # Sobel edge detection
+        sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
+        sobel_edge_y = np.argmin(sobel_y[:lower_half_start].sum(axis=1))  # Strongest negative gradient
+
+        # Identify the lowest valid row in the biggest stripe
+        for row in range(y + h - 1, y - 1, -1):
+            above_threshold_count = np.sum(self.pressure_matrix_high_res[row] > threshold)
+            total_count = self.pressure_matrix_high_res.shape[1]
+            if (above_threshold_count / total_count) >= min_percentage:
+                largest_stripe_end = row
+                break
+        else:
+            largest_stripe_end = y + h
+
+        # Check if the Sobel edge is within the detected stripe
+        if y <= sobel_edge_y <= (y + h):
+            return sobel_edge_y
+        else:
+            return largest_stripe_end
     
-    def find_lower_end_of_ues(self, threshold=30):
-        """
-        Detect the lower end of the Upper Esophageal Sphincter (UES).
+
+    # def find_upper_end_of_les(self, threshold=30):
+    #     """
+    #     Detect the upper end of the Lower Esophageal Sphincter (LES) using the Sobel filter.
         
-        The UES is identified as a horizontal stripe in the upper part of the plot with higher pressure (>30 mmHg) than the regions above and below it. The UES must be in the upper half of the plot.
-        
-        :return: The y-coordinate of the lower end of the UES
+    #     :param threshold: Pressure threshold in mmHg to enhance detection.
+    #     :return: The y-coordinate of the upper end of the LES.
+    #     """
+    #     height = self.pressure_matrix_high_res.shape[0]
+    #     lower_half_start = height // 2
+    #     binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
+    #     sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
+
+    #     # Look only in the lower half for the strongest positive gradient
+    #     upper_end_y = lower_half_start + np.argmax(sobel_y[lower_half_start:].sum(axis=1))
+
+    #     return upper_end_y if upper_end_y is not None else int(0.75 * height)
+
+    def find_upper_end_of_les(self, threshold=30, min_percentage=0.3):
         """
-        lower_half_start = len(self.pressure_matrix_high_res) // 2
-        stripe_size = max(1, len(self.pressure_matrix_high_res) // 100)
-        lower_end_y = None
-        max_diff = -float('inf')
+        Detects the upper end of the biggest LES stripe, ensuring the selected boundary has at least a minimum percentage
+        of values above the threshold. Also integrates Sobel edge detection to refine the detection.
 
-        for y in range(0, lower_half_start, stripe_size // 2):
-            current_stripe = self.pressure_matrix_high_res[y:y + stripe_size]
-            previous_stripe = self.pressure_matrix_high_res[y - stripe_size:y]
-
-            current_count = sum(1 for row in current_stripe for value in row if value > threshold)
-            previous_count = sum(1 for row in previous_stripe for value in row if value > threshold)
-
-            diff = previous_count - current_count
-
-            if diff > 0 and diff > max_diff:
-                max_diff = diff
-                lower_end_y = y
-
-        return lower_end_y if lower_end_y is not None else int(0.05 * len(self.pressure_matrix_high_res))
-    
-    def find_upper_end_of_les(self, threshold=30):
+        :param threshold: Pressure threshold in mmHg to define the LES region.
+        :param min_percentage: Minimum percentage of values in a row that must be above the threshold.
+        :return: The y-coordinate of the upper end of the LES.
         """
-        Detect the upper end of the Lower Esophageal Sphincter (LES).
+        height = self.pressure_matrix_high_res.shape[0]
+        lower_half_start = height // 2
+        binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
+        lower_half = binary_matrix[lower_half_start:]
+        contours, _ = cv2.findContours(lower_half, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
-        The LES is identified as a horizontal stripe in the lower part of the plot with a high number of points (>30 mmHg) than the regions above and below it. The LES must be in the lower half of the plot.
+        if not contours:
+            return int(0.75 * height)  # Default if no stripe is found
+
+        # Find the largest stripe
+        best_contour = max(contours, key=cv2.contourArea)
+        _, y, _, h = cv2.boundingRect(best_contour)
+        y += lower_half_start  # Adjust for the offset since we processed only the lower half
+
+        # Sobel edge detection
+        sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
+        sobel_edge_y = lower_half_start + np.argmax(sobel_y[lower_half_start:].sum(axis=1))  # Strongest positive gradient
+
+        # Identify the highest valid row in the biggest stripe
+        for row in range(y, y + h):
+            above_threshold_count = np.sum(self.pressure_matrix_high_res[row] > threshold)
+            total_count = self.pressure_matrix_high_res.shape[1]
+            if (above_threshold_count / total_count) >= min_percentage:
+                largest_stripe_start = row
+                break
+        else:
+            largest_stripe_start = y
+
+        # Check if the Sobel edge is within the detected stripe
+        if y <= sobel_edge_y <= (y + h):
+            return sobel_edge_y
+        else:
+            return largest_stripe_start
+
+
+    # def find_lower_end_of_les(self, threshold=30):
+    #     """
+    #     Detect the lower end of the Lower Esophageal Sphincter (LES) using the Sobel filter.
         
-        :param threshold: The pressure threshold indicating the LES
-        :return: The y-coordinate of the upper end of the LES
+    #     :param threshold: Pressure threshold in mmHg to enhance detection.
+    #     :return: The y-coordinate of the lower end of the LES.
+    #     """
+    #     height = self.pressure_matrix_high_res.shape[0]
+    #     lower_half_start = height // 2
+    #     binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
+    #     sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
+
+    #     # Look only in the lower half for the strongest negative gradient
+    #     lower_end_y = lower_half_start + np.argmin(sobel_y[lower_half_start:].sum(axis=1))
+
+    #     return lower_end_y if lower_end_y is not None else int(0.95 * height)
+
+    def find_lower_end_of_les(self, threshold=30, min_percentage=0.3):
         """
-        lower_half_start = len(self.pressure_matrix_high_res) // 2
-        stripe_size = max(1, len(self.pressure_matrix_high_res) // 100)
-        upper_end_y = None
-        max_diff = -float('inf')
+        Detects the lower end of the biggest LES stripe, ensuring the selected boundary has at least a minimum percentage
+        of values above the threshold. Also integrates Sobel edge detection to refine the detection.
 
-        for y in range(lower_half_start + stripe_size, len(self.pressure_matrix_high_res), stripe_size // 2):
-            current_stripe = self.pressure_matrix_high_res[y:y + stripe_size]
-            previous_stripe = self.pressure_matrix_high_res[y - stripe_size:y]
-
-            current_count = sum(1 for row in current_stripe for value in row if value > threshold)
-            previous_count = sum(1 for row in previous_stripe for value in row if value > threshold)
-
-            diff = current_count - previous_count
-
-            if diff > 0 and diff > max_diff:
-                max_diff = diff
-                upper_end_y = y
-
-        return upper_end_y if upper_end_y is not None else int(0.75 * len(self.pressure_matrix_high_res))
-    
-    def find_lower_end_of_les(self, threshold=30):
+        :param threshold: Pressure threshold in mmHg to define the LES region.
+        :param min_percentage: Minimum percentage of values in a row that must be above the threshold.
+        :return: The y-coordinate of the lower end of the LES.
         """
-        Detect the lower end of the Lower Esophageal Sphincter (LES).
+        height = self.pressure_matrix_high_res.shape[0]
+        lower_half_start = height // 2
+        binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
+        lower_half = binary_matrix[lower_half_start:]
+        contours, _ = cv2.findContours(lower_half, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
-        The LES is identified as a horizontal stripe in the lower half of the plot with higher pressure (>30 mmHg) than the regions above and below it.
-        
-        :param threshold: The pressure threshold indicating the LES
-        :return: The y-coordinate of the lower end of the LES
-        """
-        lower_half_start = len(self.pressure_matrix_high_res) // 2
-        stripe_size = max(1, len(self.pressure_matrix_high_res) // 100)
-        lower_end_y = None
-        max_diff = -float('inf')
+        if not contours:
+            return int(0.95 * height)  # Default if no stripe is found
 
-        for y in range(lower_half_start + stripe_size, len(self.pressure_matrix_high_res), stripe_size // 2):
-            current_stripe = self.pressure_matrix_high_res[y:y + stripe_size]
-            previous_stripe = self.pressure_matrix_high_res[y - stripe_size:y]
+        # Find the largest stripe
+        best_contour = max(contours, key=cv2.contourArea)
+        _, y, _, h = cv2.boundingRect(best_contour)
+        y += lower_half_start  # Adjust for the offset
 
-            current_count = sum(1 for row in current_stripe for value in row if value > threshold)
-            previous_count = sum(1 for row in previous_stripe for value in row if value > threshold)
+        # Sobel edge detection
+        sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
+        sobel_edge_y = lower_half_start + np.argmin(sobel_y[lower_half_start:].sum(axis=1))  # Strongest negative gradient
 
-            diff = previous_count - current_count
+        # Identify the lowest valid row in the biggest stripe
+        for row in range(y + h - 1, y - 1, -1):
+            above_threshold_count = np.sum(self.pressure_matrix_high_res[row] > threshold)
+            total_count = self.pressure_matrix_high_res.shape[1]
+            if (above_threshold_count / total_count) >= min_percentage:
+                largest_stripe_end = row
+                break
+        else:
+            largest_stripe_end = y + h
 
-            if diff > 0 and diff > max_diff:
-                max_diff = diff
-                lower_end_y = y + stripe_size
-
-        return lower_end_y if lower_end_y is not None else int(0.95 * len(self.pressure_matrix_high_res))
+        # Check if the Sobel edge is within the detected stripe
+        if y <= sobel_edge_y <= (y + h):
+            return sobel_edge_y
+        else:
+            return largest_stripe_end
 
     def find_biggest_connected_region(self, lower_ues, upper_les, threshold=30):
         """
-        :param lower_ues: The y-coordinate of the lower end of the UES
-        :param upper_les: The y-coordinate of the upper end of the LES
-        :param threshold: The pressure threshold to count values above
-        :return: A tuple (left_end_x, right_end_x) representing the x-coordinates of the left and right ends of the biggest connected region above a certain threshold
+        Find the biggest connected region of high pressure between UES and LES using contour detection.
+
+        :param lower_ues: The y-coordinate of the lower end of the UES.
+        :param upper_les: The y-coordinate of the upper end of the LES.
+        :param threshold: The pressure threshold to count values above.
+        :return: A tuple (left_end_x, right_end_x) representing the x-coordinates of the left and right ends of the biggest connected region above the threshold.
         """
-        # Extract the region of interest
         roi = np.array(self.pressure_matrix_high_res[lower_ues:upper_les])
+        binary_mask = (roi > threshold).astype(np.uint8) * 255
+        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Create a binary mask where values above the threshold are 1, and others are 0
-        binary_mask = roi > threshold
-
-        # Label connected regions
-        labeled_array, num_features = label(binary_mask)
-
-        # Find the largest connected region
-        max_region_size = 0
-        max_region_label = 0
-        for region_label in range(1, num_features + 1):
-            region_size = np.sum(labeled_array == region_label)
-            if region_size > max_region_size:
-                max_region_size = region_size
-                max_region_label = region_label
-
-        # Find the left and right ends of the largest connected region
-        if max_region_label == 0:
+        if not contours:
+            # Default to estimated position if no connected regions found
             left_end_x = self.find_leftmost_x_coordinate_above_threshold(self.pressure_matrix_high_res, lower_ues, threshold)
-            right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second)
+            right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (
+                len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second)
             return int(left_end_x), int(right_end_x)
 
-        max_region_coords = np.column_stack(np.where(labeled_array == max_region_label))
-        left_end_x = np.min(max_region_coords[:, 1])
-        right_end_x = np.max(max_region_coords[:, 1])
+        # Find the largest connected contour by area
+        largest_contour = max(contours, key=cv2.contourArea)
 
-        # Check if at least 15% of the points in the left and right end columns are above the threshold
+        # Get bounding box (x, y, width, height)
+        x, _, w, _ = cv2.boundingRect(largest_contour)
+        left_end_x = x
+        right_end_x = x + w
+
+        # Ensure at least threshold % of points in boundary columns exceed threshold
         def check_threshold_percentage(column_index):
-            column_values = roi[:, column_index]
-            above_threshold_count = np.sum(column_values > threshold)
-            total_count = len(column_values)
-            return (above_threshold_count / total_count) >= 0.15
+            if 0 <= column_index < roi.shape[1]:
+                column_values = roi[:, column_index]
+                return (np.sum(column_values > threshold) / len(column_values)) >= 0.15
+            return False
 
         while left_end_x < right_end_x and not check_threshold_percentage(left_end_x):
             left_end_x += 1
@@ -548,11 +618,12 @@ class DCISelectionWindow(QMainWindow):
 
         if left_end_x >= right_end_x:
             left_end_x = self.find_leftmost_x_coordinate_above_threshold(self.pressure_matrix_high_res, lower_ues, threshold)
-            right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second)
+            right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (
+                len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second)
             return int(left_end_x), int(right_end_x)
 
         return int(left_end_x), int(right_end_x)
-    
+
     def find_middle_sensor_in_les(self):
         """
         Finds the sensor closest to the middle of the Lower Esophageal Sphincter (LES).
@@ -576,35 +647,33 @@ class DCISelectionWindow(QMainWindow):
     
     def find_leftmost_x_coordinate_above_threshold(self, pressure_matrix, lower_ues_y, threshold=30):
         """
-        Finds the x-coordinate of the connected region above the lower UES that is above the threshold and has the most values in the upper parts of the plot.
+        Finds the leftmost x-coordinate of the connected region above the lower UES that has the most values in the upper part of the plot.
+        
         :param pressure_matrix: The pressure matrix.
         :param lower_ues_y: The y-coordinate of the lower UES.
         :param threshold: The pressure threshold (default is 30 mmHg).
-        :return: The x-coordinate of the leftmost point in the connected region above the threshold with the most values in the upper parts.
+        :return: The x-coordinate of the leftmost point in the best connected region.
         """
-        # Create a binary matrix where values above the threshold are 1 and others are 0
-        binary_matrix = pressure_matrix > threshold
+        binary_mask = (pressure_matrix > threshold).astype(np.uint8) * 255
+        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Label connected regions in the binary matrix
-        labeled_matrix, num_features = label(binary_matrix)
+        if not contours:
+            return 0
 
-        # Initialize variables to keep track of the best region
-        best_region_coords = None
+        best_region = None
         max_upper_values = 0
 
-        # Iterate through the labeled regions to find the best region above the lower UES
-        for region_label in range(1, num_features + 1):
-            region_coords = np.argwhere(labeled_matrix == region_label)
-            if np.any(region_coords[:, 0] < lower_ues_y):
-                # Count the number of values in the upper parts of the plot
-                upper_values_count = np.sum(region_coords[:, 0] < lower_ues_y / 2)
+        for contour in contours:
+            # Get bounding box of the contour
+            x, y, w, h = cv2.boundingRect(contour)
+            if y < lower_ues_y:
+                upper_values_count = np.sum(contour[:, :, 1] < (lower_ues_y / 2))
+
                 if upper_values_count > max_upper_values:
                     max_upper_values = upper_values_count
-                    best_region_coords = region_coords
-
-        if best_region_coords is not None:
-            # Find the leftmost x-coordinate in the best region
-            leftmost_x = np.min(best_region_coords[:, 1])
+                    best_region = contour
+        if best_region is not None:
+            leftmost_x = np.min(best_region[:, :, 0])
             return leftmost_x
 
-        return 0  # Return 0 if no region is found
+        return 0  # Return 0 if no valid region is found
