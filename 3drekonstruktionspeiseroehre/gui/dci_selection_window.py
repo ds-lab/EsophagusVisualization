@@ -42,11 +42,9 @@ class DCISelectionWindow(QMainWindow):
         self.rectangle = None
         self.pressure_matrix_high_res = None
 
-        # Create a figure canvas for displaying the plot
         self.figure_canvas = None
         self.connection_ids = []
 
-        # Create a new figure and subplot
         self.fig, self.ax = plt.subplots()
         self.ax.set_title('Select the region for the Esophageal Pressure Index')
         self.lower_ues, self.lower_les, self.upper_les, self.selector = None, None, None, None
@@ -271,7 +269,7 @@ class DCISelectionWindow(QMainWindow):
         """
         reset-button callback
         """
-        self.remove_rectangle_selector()  # Remove the rectangle selector
+        self.remove_rectangle_selector()
         self.disconnect_events()
         self.__initialize_plot_analysis()
 
@@ -365,7 +363,7 @@ class DCISelectionWindow(QMainWindow):
         self.ax.set_xticklabels(np.round(time[::int(np.ceil(10 * self.relation_x_y / self.goal_relation))], 1))  # Display only every 10th time point, rounded to 1 decimal place
         self.ax.set_yticklabels(np.arange(0, estimated_pressure_matrix.shape[0]+1, 10))
 
-        self.fig.colorbar(im, ax=self.ax, label='Pressure')
+        self.fig.colorbar(im, ax=self.ax, label='Pressure (mmHg·s·cm)')
         self.ax.set_ylabel('Height along esophagus (cm)')
         self.ax.set_xlabel('Time (s)')
         self.ax.set_xlim(0, pressure_matrix_high_res.shape[1])
@@ -524,7 +522,7 @@ class DCISelectionWindow(QMainWindow):
         left_end_x = x
         right_end_x = x + w
 
-        # Ensure at least threshold % of points in boundary columns exceed threshold
+        # Ensure at least 15 % of points in boundary columns exceed threshold
         def check_threshold_percentage(column_index):
             if 0 <= column_index < roi.shape[1]:
                 column_values = roi[:, column_index]
