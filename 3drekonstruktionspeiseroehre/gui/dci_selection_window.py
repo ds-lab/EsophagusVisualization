@@ -14,9 +14,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 import config
-from scipy import interpolate
+from scipy.interpolate import RectBivariateSpline
 import numpy as np
-from scipy.ndimage import label
+import cv2
 
 class DCISelectionWindow(QMainWindow):
     """Window where the user selects the rectangle for the EPI calculation and the LES and UES positions"""
@@ -42,11 +42,9 @@ class DCISelectionWindow(QMainWindow):
         self.rectangle = None
         self.pressure_matrix_high_res = None
 
-        # Create a figure canvas for displaying the plot
         self.figure_canvas = None
         self.connection_ids = []
 
-        # Create a new figure and subplot
         self.fig, self.ax = plt.subplots()
         self.ax.set_title('Select the region for the Esophageal Pressure Index')
         self.lower_ues, self.lower_les, self.upper_les, self.selector = None, None, None, None
@@ -84,7 +82,7 @@ class DCISelectionWindow(QMainWindow):
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
-
+        self.goal_relation = 16 / 9
         self.__plot_data()
 
     def __on_checkbox_toggled(self):
@@ -228,9 +226,9 @@ class DCISelectionWindow(QMainWindow):
             self.upper_les.line.remove()
         if self.lower_les is not None:
             self.lower_les.line.remove()
-        upper_les = self.find_upper_end_of_les()
-        lower_ues = self.find_lower_end_of_ues()
-        lower_les = self.find_lower_end_of_les()
+        upper_les = self.find_boundary(region="LES_upper")
+        lower_ues = self.find_boundary(region="UES_lower")
+        lower_les = self.find_boundary(region="LES_lower")
 
         left_end, right_end = self.find_biggest_connected_region(lower_ues, upper_les)
         
@@ -271,7 +269,7 @@ class DCISelectionWindow(QMainWindow):
         """
         reset-button callback
         """
-        self.remove_rectangle_selector()  # Remove the rectangle selector
+        self.remove_rectangle_selector()
         self.disconnect_events()
         self.__initialize_plot_analysis()
 
@@ -282,6 +280,49 @@ class DCISelectionWindow(QMainWindow):
         info_window = InfoWindow()
         info_window.show_dci_selection_info()
         info_window.show()
+
+    def __generate_estimated_pressure_matrix(self, first_sensor, last_sensor, min_gap, number_of_measurements, coords_sensors):
+        """
+        Generate an estimated pressure matrix by interpolating the pressure values between the sensors
+        :param first_sensor: the position of the first sensor
+        :param last_sensor: the position of the last sensor
+        :param min_gap: the minimum gap between the sensors
+        :param number_of_measurements: the number of measurements
+        :param coords_sensors: the coordinates of the sensors
+        :return: the estimated pressure matrix
+        """
+        estimated_pressure_matrix = np.zeros(((last_sensor - first_sensor) // min_gap + 1, number_of_measurements))
+        for i in range(number_of_measurements):
+            sensor_counter = 0
+            for position in range(first_sensor, last_sensor + 1, min_gap):
+                if position in coords_sensors:
+                    estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = self.visualization_data.pressure_matrix[sensor_counter, i]
+                    sensor_counter += 1
+                else:
+                    value_before = self.visualization_data.pressure_matrix[sensor_counter - 1, i]
+                    value_after = self.visualization_data.pressure_matrix[sensor_counter, i]
+                    estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = (
+                        (position - coords_sensors[sensor_counter - 1]) * value_after + 
+                        (coords_sensors[sensor_counter] - position) * value_before
+                    ) / (coords_sensors[sensor_counter] - coords_sensors[sensor_counter - 1])
+        return estimated_pressure_matrix
+    
+    def __interpolate_pressure_matrix(self, estimated_pressure_matrix):
+        """
+        Interpolate the pressure matrix to a higher resolution
+        :param estimated_pressure_matrix: the estimated pressure matrix
+        :return: the interpolated pressure matrix in higher resolution
+        """
+        y = np.arange(estimated_pressure_matrix.shape[0])
+        x = np.arange(estimated_pressure_matrix.shape[1])
+
+        # Create the spline interpolator
+        spline = RectBivariateSpline(y, x, estimated_pressure_matrix)  # Bicubic interpolation
+
+        # Define higher resolution grid
+        xnew = np.linspace(0, estimated_pressure_matrix.shape[1] - 1, estimated_pressure_matrix.shape[1] * 10)
+        ynew = np.linspace(0, estimated_pressure_matrix.shape[0] - 1, int(np.floor(estimated_pressure_matrix.shape[0] * 10 * self.relation_x_y / self.goal_relation)))
+        return spline(ynew, xnew)
 
     def __plot_data(self):
         """
@@ -302,32 +343,13 @@ class DCISelectionWindow(QMainWindow):
         min_gap = np.gcd.reduce(np.diff(coords_sensors)) # assumption, that there is only one sensor at each position
         first_sensor = coords_sensors[0] # start at the first sensor (min value)
         last_sensor = coords_sensors[-1] # max value
-        estimated_pressure_matrix = np.zeros(((last_sensor - first_sensor) // min_gap + 1, number_of_measurements))
-        for i in range(number_of_measurements):
-            position = coords_sensors[0]
-            sensor_counter = 0
-            while position <= last_sensor:
-                if position in coords_sensors:
-                    estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = self.visualization_data.pressure_matrix[sensor_counter, i]
-                    sensor_counter += 1
-                else:
-                    # need position of the sensors before and after the current position
-                    value_before = self.visualization_data.pressure_matrix[sensor_counter - 1, i]
-                    value_after = self.visualization_data.pressure_matrix[sensor_counter, i]
-                    estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = ((position - coords_sensors[sensor_counter - 1]) * value_after + (coords_sensors[sensor_counter] - position) * value_before) / (coords_sensors[sensor_counter] - coords_sensors[sensor_counter - 1])
-                position += min_gap
 
-        x = np.arange(estimated_pressure_matrix.shape[1])
-        y = np.arange(estimated_pressure_matrix.shape[0])
-        f = interpolate.interp2d(x, y, estimated_pressure_matrix, kind='cubic')
+        estimated_pressure_matrix = self.__generate_estimated_pressure_matrix(
+            first_sensor, last_sensor, min_gap, number_of_measurements, coords_sensors
+        )
 
         self.relation_x_y = estimated_pressure_matrix.shape[1] / estimated_pressure_matrix.shape[0]
-        self.goal_relation = 16 / 9
-
-        # Define the higher resolution grid
-        xnew = np.linspace(0, estimated_pressure_matrix.shape[1], estimated_pressure_matrix.shape[1]*10)
-        ynew = np.linspace(0, estimated_pressure_matrix.shape[0], int(np.floor(estimated_pressure_matrix.shape[0]*10 * self.relation_x_y / self.goal_relation)))
-        pressure_matrix_high_res = f(xnew, ynew)
+        pressure_matrix_high_res = self.__interpolate_pressure_matrix(estimated_pressure_matrix)
         self.pressure_matrix_high_res = pressure_matrix_high_res
 
         im = self.ax.imshow(pressure_matrix_high_res, cmap=cmap, interpolation='nearest', vmin=config.cmin, vmax=config.cmax)
@@ -343,7 +365,7 @@ class DCISelectionWindow(QMainWindow):
         self.ax.set_xticklabels(np.round(time[::int(np.ceil(10 * self.relation_x_y / self.goal_relation))], 1))  # Display only every 10th time point, rounded to 1 decimal place
         self.ax.set_yticklabels(np.arange(0, estimated_pressure_matrix.shape[0]+1, 10))
 
-        self.fig.colorbar(im, ax=self.ax, label='Pressure')
+        self.fig.colorbar(im, ax=self.ax, label='Pressure (mmHg·s·cm)')
         self.ax.set_ylabel('Height along esophagus (cm)')
         self.ax.set_xlabel('Time (s)')
         self.ax.set_xlim(0, pressure_matrix_high_res.shape[1])
@@ -411,134 +433,103 @@ class DCISelectionWindow(QMainWindow):
                 # Calculate the mean of these values
                 mean_pressure = np.mean(pressure_matrix)
         return np.round(mean_pressure * height * time, 2)
-    
-    def find_lower_end_of_ues(self):
+
+    def find_largest_stripe(self, binary_matrix, region_start, region_end):
         """
-        Detect the lower end of the Upper Esophageal Sphincter (UES).
-        
-        The UES is identified as a horizontal stripe in the upper part of the plot with higher pressure (>30 mmHg) than the regions above and below it. The UES must be in the upper half of the plot.
-        
-        :return: The y-coordinate of the lower end of the UES
+        Finds the largest connected stripe in the given binary matrix region.
         """
-        upper_half_boundary = len(self.pressure_matrix_high_res) // 2
-        stripe_size = max(1, len(self.pressure_matrix_high_res) // 100)
-        max_diff = -float('inf')
-        lower_end_y = None
+        region = binary_matrix[region_start:region_end]
+        contours, _ = cv2.findContours(region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if not contours:
+            return None, None
+        best_contour = max(contours, key=cv2.contourArea)
+        _, y, _, h = cv2.boundingRect(best_contour)
+        return y + region_start, h  # Adjust for offset
 
-        for y in range(stripe_size, upper_half_boundary, stripe_size // 2):
-            current_stripe = self.pressure_matrix_high_res[y:y + stripe_size]
-            previous_stripe = self.pressure_matrix_high_res[y - stripe_size:y]
-
-            current_average = sum(sum(row) for row in current_stripe) / (len(current_stripe) * len(current_stripe[0]))
-            previous_average = sum(sum(row) for row in previous_stripe) / (len(previous_stripe) * len(previous_stripe[0]))
-
-            diff = previous_average - current_average
-
-            if diff > 0 and diff > max_diff:
-                max_diff = diff
-                lower_end_y = y + stripe_size
-
-        return lower_end_y if lower_end_y is not None else int(0.05 * len(self.pressure_matrix_high_res))
-    
-    def find_upper_end_of_les(self, threshold=30):
+    def find_sobel_edge(self, binary_matrix, region_start, region_end, edge_type):
         """
-        Detect the upper end of the Lower Esophageal Sphincter (LES).
-        
-        The LES is identified as a horizontal stripe in the lower part of the plot with a high number of points (>30 mmHg) than the regions above and below it. The LES must be in the lower half of the plot.
-        
-        :param threshold: The pressure threshold indicating the LES
-        :return: The y-coordinate of the upper end of the LES
+        Detects the strongest gradient edge using Sobel filtering.
         """
-        lower_half_start = len(self.pressure_matrix_high_res) // 2
-        stripe_size = max(1, len(self.pressure_matrix_high_res) // 100)
-        upper_end_y = None
-        max_diff = -float('inf')
+        sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
+        if edge_type == "upper":
+            return region_start + np.argmax(sobel_y[region_start:region_end].sum(axis=1))
+        else:  # "lower"
+            return region_start + np.argmin(sobel_y[region_start:region_end].sum(axis=1))
 
-        for y in range(lower_half_start + stripe_size, len(self.pressure_matrix_high_res), stripe_size // 2):
-            current_stripe = self.pressure_matrix_high_res[y:y + stripe_size]
-            previous_stripe = self.pressure_matrix_high_res[y - stripe_size:y]
-
-            current_count = sum(1 for row in current_stripe for value in row if value > threshold)
-            previous_count = sum(1 for row in previous_stripe for value in row if value > threshold)
-
-            diff = current_count - previous_count
-
-            if diff > 0 and diff > max_diff:
-                max_diff = diff
-                upper_end_y = y
-
-        return upper_end_y if upper_end_y is not None else int(0.75 * len(self.pressure_matrix_high_res))
-    
-    def find_lower_end_of_les(self, threshold=30):
+    def find_boundary(self, threshold=30, min_percentage=0.3, region="UES_lower"):
         """
-        Detect the lower end of the Lower Esophageal Sphincter (LES).
-        
-        The LES is identified as a horizontal stripe in the lower part of the plot with higher pressure (>30 mmHg) than the regions above and below it. The LES must be in the lower half of the plot.
-        
-        :param threshold: The pressure threshold indicating the LES
-        :return: The y-coordinate of the lower end of the LES
+        General function to detect boundaries of UES and LES stripes.
         """
-        lower_half_start = len(self.pressure_matrix_high_res) // 2
-        stripe_size = max(1, len(self.pressure_matrix_high_res) // 100)
-        lower_end_y = None
-        max_diff = -float('inf')
-
-        for y in range(lower_half_start + stripe_size, len(self.pressure_matrix_high_res), stripe_size // 2):
-            current_stripe = self.pressure_matrix_high_res[y:y + stripe_size]
-            previous_stripe = self.pressure_matrix_high_res[y - stripe_size:y]
-
-            current_count = sum(1 for row in current_stripe for value in row if value > threshold)
-            previous_count = sum(1 for row in previous_stripe for value in row if value > threshold)
-
-            diff = previous_count - current_count
-
-            if diff > 0 and diff > max_diff:
-                max_diff = diff
-                lower_end_y = y + stripe_size
-
-        return lower_end_y if lower_end_y is not None else int(0.95 * len(self.pressure_matrix_high_res))
+        height = self.pressure_matrix_high_res.shape[0]
+        binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
+        
+        if region == "UES_lower":
+            region_start, region_end, edge_type, default = 0, height // 2, "lower", int(0.05 * height)
+        elif region == "LES_upper":
+            region_start, region_end, edge_type, default = height // 2, height, "upper", int(0.75 * height)
+        elif region == "LES_lower":
+            region_start, region_end, edge_type, default = height // 2, height, "lower", int(0.95 * height)
+        else:
+            raise ValueError("Invalid region specified.")
+        
+        y, h = self.find_largest_stripe(binary_matrix, region_start, region_end)
+        if y is None:
+            return default
+        
+        sobel_edge_y = self.find_sobel_edge(binary_matrix, region_start, region_end, edge_type)
+        
+        if edge_type == "upper":
+            for row in range(y, y + h):
+                if np.sum(self.pressure_matrix_high_res[row] > threshold) / self.pressure_matrix_high_res.shape[1] >= min_percentage:
+                    largest_stripe_start = row
+                    break
+            else:
+                largest_stripe_start = y
+            return sobel_edge_y if y <= sobel_edge_y <= (y + h) else largest_stripe_start
+        
+        else:  # "lower"
+            for row in range(y + h - 1, y - 1, -1):
+                if np.sum(self.pressure_matrix_high_res[row] > threshold) / self.pressure_matrix_high_res.shape[1] >= min_percentage:
+                    largest_stripe_end = row
+                    break
+            else:
+                largest_stripe_end = y + h
+            return sobel_edge_y if y <= sobel_edge_y <= (y + h) else largest_stripe_end
 
     def find_biggest_connected_region(self, lower_ues, upper_les, threshold=30):
         """
-        :param lower_ues: The y-coordinate of the lower end of the UES
-        :param upper_les: The y-coordinate of the upper end of the LES
-        :param threshold: The pressure threshold to count values above
-        :return: A tuple (left_end_x, right_end_x) representing the x-coordinates of the left and right ends of the biggest connected region above a certain threshold
+        Find the biggest connected region of high pressure between UES and LES using contour detection.
+
+        :param lower_ues: The y-coordinate of the lower end of the UES.
+        :param upper_les: The y-coordinate of the upper end of the LES.
+        :param threshold: The pressure threshold to count values above.
+        :return: A tuple (left_end_x, right_end_x) representing the x-coordinates of the left and right ends of the biggest connected region above the threshold.
         """
-        # Extract the region of interest
         roi = np.array(self.pressure_matrix_high_res[lower_ues:upper_les])
+        binary_mask = (roi > threshold).astype(np.uint8) * 255
+        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Create a binary mask where values above the threshold are 1, and others are 0
-        binary_mask = roi > threshold
-
-        # Label connected regions
-        labeled_array, num_features = label(binary_mask)
-
-        # Find the largest connected region
-        max_region_size = 0
-        max_region_label = 0
-        for region_label in range(1, num_features + 1):
-            region_size = np.sum(labeled_array == region_label)
-            if region_size > max_region_size:
-                max_region_size = region_size
-                max_region_label = region_label
-
-        # Find the left and right ends of the largest connected region
-        if max_region_label == 0:
+        if not contours:
+            # Default to estimated position if no connected regions found
             left_end_x = self.find_leftmost_x_coordinate_above_threshold(self.pressure_matrix_high_res, lower_ues, threshold)
-            right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second)
+            right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (
+                len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second)
             return int(left_end_x), int(right_end_x)
 
-        max_region_coords = np.column_stack(np.where(labeled_array == max_region_label))
-        left_end_x = np.min(max_region_coords[:, 1])
-        right_end_x = np.max(max_region_coords[:, 1])
+        # Find the largest connected contour by area
+        largest_contour = max(contours, key=cv2.contourArea)
 
-        # Check if at least 5% of the points in the left and right end columns are above the threshold
+        # Get bounding box (x, y, width, height)
+        x, _, w, _ = cv2.boundingRect(largest_contour)
+        left_end_x = x
+        right_end_x = x + w
+
+        # Ensure at least 15 % of points in boundary columns exceed threshold
         def check_threshold_percentage(column_index):
-            column_values = roi[:, column_index]
-            above_threshold_count = np.sum(column_values > threshold)
-            total_count = len(column_values)
-            return (above_threshold_count / total_count) >= 0.15
+            if 0 <= column_index < roi.shape[1]:
+                column_values = roi[:, column_index]
+                return (np.sum(column_values > threshold) / len(column_values)) >= 0.15
+            return False
 
         while left_end_x < right_end_x and not check_threshold_percentage(left_end_x):
             left_end_x += 1
@@ -548,11 +539,12 @@ class DCISelectionWindow(QMainWindow):
 
         if left_end_x >= right_end_x:
             left_end_x = self.find_leftmost_x_coordinate_above_threshold(self.pressure_matrix_high_res, lower_ues, threshold)
-            right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second)
+            right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (
+                len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second)
             return int(left_end_x), int(right_end_x)
 
         return int(left_end_x), int(right_end_x)
-    
+
     def find_middle_sensor_in_les(self):
         """
         Finds the sensor closest to the middle of the Lower Esophageal Sphincter (LES).
@@ -576,35 +568,33 @@ class DCISelectionWindow(QMainWindow):
     
     def find_leftmost_x_coordinate_above_threshold(self, pressure_matrix, lower_ues_y, threshold=30):
         """
-        Finds the x-coordinate of the connected region above the lower UES that is above the threshold and has the most values in the upper parts of the plot.
+        Finds the leftmost x-coordinate of the connected region above the lower UES that has the most values in the upper part of the plot.
+        
         :param pressure_matrix: The pressure matrix.
         :param lower_ues_y: The y-coordinate of the lower UES.
         :param threshold: The pressure threshold (default is 30 mmHg).
-        :return: The x-coordinate of the leftmost point in the connected region above the threshold with the most values in the upper parts.
+        :return: The x-coordinate of the leftmost point in the best connected region.
         """
-        # Create a binary matrix where values above the threshold are 1 and others are 0
-        binary_matrix = pressure_matrix > threshold
+        binary_mask = (pressure_matrix > threshold).astype(np.uint8) * 255
+        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Label connected regions in the binary matrix
-        labeled_matrix, num_features = label(binary_matrix)
+        if not contours:
+            return 0
 
-        # Initialize variables to keep track of the best region
-        best_region_coords = None
+        best_region = None
         max_upper_values = 0
 
-        # Iterate through the labeled regions to find the best region above the lower UES
-        for region_label in range(1, num_features + 1):
-            region_coords = np.argwhere(labeled_matrix == region_label)
-            if np.any(region_coords[:, 0] < lower_ues_y):
-                # Count the number of values in the upper parts of the plot
-                upper_values_count = np.sum(region_coords[:, 0] < lower_ues_y / 2)
+        for contour in contours:
+            # Get bounding box of the contour
+            x, y, w, h = cv2.boundingRect(contour)
+            if y < lower_ues_y:
+                upper_values_count = np.sum(contour[:, :, 1] < (lower_ues_y / 2))
+
                 if upper_values_count > max_upper_values:
                     max_upper_values = upper_values_count
-                    best_region_coords = region_coords
-
-        if best_region_coords is not None:
-            # Find the leftmost x-coordinate in the best region
-            leftmost_x = np.min(best_region_coords[:, 1])
+                    best_region = contour
+        if best_region is not None:
+            leftmost_x = np.min(best_region[:, :, 0])
             return leftmost_x
 
-        return 0  # Return 0 if no region is found
+        return 0  # Return 0 if no valid region is found

@@ -27,6 +27,13 @@ If you want to save the outline as a mask to create a dataset for maschine learn
 click 'Next selection'. The masks will be automatically saved in the C: drive in the folder 'DataAchalasia'. 
 When you're done, select "Apply selection and proceed."
 
+![DCI Selection Window](./manual_images/Pressure_Ex_entire_window.png)
+In this window, you need to mark several elements in the plot (upper and lower end of the LES, lower end of the LES and left and right border of the space-time box for the EPI) that are required to calculate the EPI metric and that are relevant for the visualization algorithm. All elements are predicted algorithmically but can be corrected by the user.
+
+- If the initial predictions have to be improved, the lines can simply be dragged to the desired location. The metrics will change automatically following any change to the lines in the plot.
+- The sensor positions that are required for the visualization algorithm can also be adapted by choosing a different sensor in the respective dropdown menu if needed.
+- If you are already satisfied with the predictions of the algorithm, you can simply click "Apply selection and proceed" and continue with the next window.
+
 ![Barium Swallow Outline](./manual_images/outline_esophagus.jpg)
 
 In the next window, you will need to mark several key points on the esophagus that are relevant for the visualization algorithm.
