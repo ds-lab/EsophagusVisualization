@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 import config
-from scipy import interpolate
+from scipy.interpolate import RectBivariateSpline
 import numpy as np
 import cv2
 
@@ -313,14 +313,16 @@ class DCISelectionWindow(QMainWindow):
         :param estimated_pressure_matrix: the estimated pressure matrix
         :return: the interpolated pressure matrix in higher resolution
         """
-        x = np.arange(estimated_pressure_matrix.shape[1])
         y = np.arange(estimated_pressure_matrix.shape[0])
-        f = interpolate.interp2d(x, y, estimated_pressure_matrix, kind='cubic')
+        x = np.arange(estimated_pressure_matrix.shape[1])
+
+        # Create the spline interpolator
+        spline = RectBivariateSpline(y, x, estimated_pressure_matrix)  # Bicubic interpolation
 
         # Define higher resolution grid
-        xnew = np.linspace(0, estimated_pressure_matrix.shape[1], estimated_pressure_matrix.shape[1] * 10)
-        ynew = np.linspace(0, estimated_pressure_matrix.shape[0], int(np.floor(estimated_pressure_matrix.shape[0] * 10 * self.relation_x_y / self.goal_relation)))
-        return f(xnew, ynew)
+        xnew = np.linspace(0, estimated_pressure_matrix.shape[1] - 1, estimated_pressure_matrix.shape[1] * 10)
+        ynew = np.linspace(0, estimated_pressure_matrix.shape[0] - 1, int(np.floor(estimated_pressure_matrix.shape[0] * 10 * self.relation_x_y / self.goal_relation)))
+        return spline(ynew, xnew)
 
     def __plot_data(self):
         """
