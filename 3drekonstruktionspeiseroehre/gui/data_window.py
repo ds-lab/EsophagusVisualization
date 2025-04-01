@@ -208,9 +208,9 @@ class DataWindow(QMainWindow):
             "POEM": 4
         }
         self.endoflip_widgets = {
-            "Initial Diagnostic": 1,
-            "Therapy": 2,
-            "Follow-Up Diagnostic": 3
+            "Initial Diagnostic": 0,
+            "Therapy": 1,
+            "Follow-Up Diagnostic": 2
         }
 
         menu_button = QAction("Info", self)
@@ -736,8 +736,9 @@ class DataWindow(QMainWindow):
         # Show the correct fields/widget for Endoflip
         if visit:
             if visit.visit_type in self.endoflip_widgets:
+                print(f"visit type: {visit.visit_type}")
                 endoflip_widget_index = self.endoflip_widgets[visit.visit_type]
-                self.ui.stackedWidget.setCurrentIndex(endoflip_widget_index)
+                self.ui.stackedWidget_2.setCurrentIndex(endoflip_widget_index)
 
 
         # Show Images
