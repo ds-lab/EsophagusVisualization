@@ -22,7 +22,9 @@ CREATE TABLE visits (
     year_of_visit INT NOT NULL,
     visit_type VARCHAR(50) NOT NULL,
     therapy_type VARCHAR(50),
-    months_after_therapy INT
+    months_after_initial_therapy INT,
+    months_after_last_therapy INT,
+    months_after_diagnosis INT
 );
 
 CREATE TABLE eckardt_scores (
@@ -38,7 +40,7 @@ CREATE TABLE eckardt_scores (
 CREATE TABLE gerd_scores (
     gerd_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    grade VARCHAR(20),
+    grade VARCHAR(30),
     heart_burn BOOLEAN,
     ppi_use BOOLEAN,
     acid_exposure_time FLOAT
@@ -96,14 +98,15 @@ CREATE TABLE complications (
     mucosal_tears VARCHAR(10),
     pneumothorax VARCHAR(10),
     pneumomediastinum VARCHAR(10),
-    other_complication VARCHAR(10)
+    other_complication VARCHAR(10),
+    other_complication_specified VARCHAR(40)
 );
 
 CREATE TABLE manometries (
     manometry_id SERIAL PRIMARY KEY,
     visit_id INT REFERENCES visits(visit_id) ON DELETE CASCADE NOT NULL,
-    catheter_type VARCHAR(20),
-    patient_position VARCHAR(20),
+    catheter_type VARCHAR(30),
+    patient_position INT,
     resting_pressure INT,
     ipr4 INT,
     dci INT,
@@ -162,10 +165,6 @@ CREATE TABLE endoflips (
     di_before FLOAT,
     dmin_before FLOAT,
     ibp_before FLOAT,
-    csa_during FLOAT,
-    di_during FLOAT,
-    dmin_during FLOAT,
-    ibp_during FLOAT,
     csa_after FLOAT,
     di_after FLOAT,
     dmin_after FLOAT,
