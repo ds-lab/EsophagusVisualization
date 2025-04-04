@@ -415,11 +415,12 @@ class FigureCreator(ABC):
 
         figure = go.Figure(data=[
             go.Surface(x=x, y=y, z=z, surfacecolor=first_surfacecolor, colorscale=config.colorscale, cmin=config.cmin,
-                       cmax=config.cmax)])
+                       cmax=config.cmax, hoverinfo='x+y+z', hoverlabel=dict(bgcolor='white', font_size=12))
+                        ])
 
         figure.update_layout(scene=dict(aspectmode='data'), uirevision='constant',
                              title=dict(text=title, font=dict(size=24)), title_x=0, title_y=1,
-                             margin=dict(l=20, r=20, t=30, b=20), hovermode=False)
+                             margin=dict(l=20, r=20, t=30, b=20), hovermode='closest')
         figure.update_scenes(zaxis_autorange="reversed", xaxis_autorange="reversed", xaxis_title_text=config.label_width,
                              yaxis_title_text=config.label_depth, zaxis_title_text=config.label_length)
         return figure
