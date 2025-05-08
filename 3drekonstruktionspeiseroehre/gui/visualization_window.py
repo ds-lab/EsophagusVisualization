@@ -101,9 +101,6 @@ class VisualizationWindow(QMainWindow):
         self.progress_dialog.setWindowTitle("Processing...")
         self.progress_dialog.show()
 
-        print(f"PatientData: {self.patient_data}")
-        print(f"patient_data.visit_data_dict.items() = Visits: {self.patient_data.visit_data_dict.items()}")
-
     def __menu_button_clicked(self):
         """
         Callback for the info-button

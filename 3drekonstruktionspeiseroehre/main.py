@@ -20,7 +20,7 @@ if __name__ == '__main__':
     create_db_and_tables_local_declarative()
     try:
         # close the splash screen if running as pyinstaller-exe
-        import pyi_splash
+        import pyi_splash # type: ignore
         pyi_splash.close()
     except ModuleNotFoundError:
         pass
