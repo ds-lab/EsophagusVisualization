@@ -418,7 +418,7 @@ class FigureCreator(ABC):
                        cmax=config.cmax, hoverinfo='x+y+z', hoverlabel=dict(bgcolor='white', font_size=12))
                         ])
 
-        figure.update_layout(scene=dict(aspectmode='data'), uirevision='constant',
+        figure.update_layout(scene=dict(aspectmode='data'), uirevision=True,
                              title=dict(text=title, font=dict(size=24)), title_x=0, title_y=1,
                              margin=dict(l=20, r=20, t=30, b=20), hovermode='closest')
         figure.update_scenes(zaxis_autorange="reversed", xaxis_autorange="reversed", xaxis_title_text=config.label_width,
@@ -858,7 +858,7 @@ class FigureCreator(ABC):
             )
 
             figure = go.Figure(data=[table])
-            figure.update_layout(width=150, margin=dict(l=10, r=10, t=60, b=10), title="Endoflip")
+            figure.update_layout(width=150, margin=dict(l=10, r=10, t=60, b=10), title="Endoflip", uirevision= True)
             tables[agg] = figure
         return tables
 

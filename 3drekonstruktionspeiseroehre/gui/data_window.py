@@ -199,7 +199,7 @@ class DataWindow(QMainWindow):
         self.ui.endosono_previous_button.clicked.connect(self.__endosonography_previous_button_clicked)
         self.ui.endosono_next_button.clicked.connect(self.__endosonography_next_button_clicked)
         self.model_enabled = self.ui.use_model_checkbox
-        self.model_enabled_checked = True
+        self.model_enabled_checked = False
         self.model_enabled.toggled.connect(self.__on_model_enabled_toggled)
         self.widget_names = {
             "Botox injection": 1,
@@ -1671,4 +1671,8 @@ class DataWindow(QMainWindow):
         ExportData.export_csv(data, selected_data, destination_file_path)
 
     def __on_model_enabled_toggled(self, checked: bool):
-        self.model_enabled_checked = checked
+        path = Path("C:\ModelAchalasia")
+        if path.exists():
+            self.model_enabled_checked = checked
+        else:
+            self.model_enabled_checked = False
