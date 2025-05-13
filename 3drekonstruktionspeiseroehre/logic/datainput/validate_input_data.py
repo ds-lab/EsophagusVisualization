@@ -90,7 +90,6 @@ class DataValidation:
         mandatory_values = []
         error = False
         for key, value in visit_dict.items():
-            print(f"key: {key}, value: {value}")
             if key == "patient_id" and value is None:
                 QMessageBox.critical(None, "No patient selected", "Error: Please select a patient.")
                 error = True
@@ -105,13 +104,23 @@ class DataValidation:
         for key, value in visit_dict.items():
             if value is None and key in config.mandatory_values_visit:
                 mandatory_values.append(key)
-        if ((visit_dict.get('visit_type') == "Initial Diagnostic" or visit_dict.get('visit_type') == "Therapy") and
-                visit_dict.get('months_after_therapy') is not None):
+            print(f"key: {key}, value: {value}")
+
+        # Uncommenteted: Additional restrictions for the data, that would probably make sense but are not stricly necessary
+
+        # if visit_dict.get('visit_type') == "Initial Diagnostic" and visit_dict.get('months_after_initial_therapy') is not None:
+        #     invalid_values.append('visit_type')
+        #     invalid_values.append('months_after_initial_therapy')
+        
+        # if visit_dict.get('visit_type') == "Initial Diagnostic" and visit_dict.get('months_after_last_therapy') is not None:
+        #     invalid_values.append('visit_type')
+        #     invalid_values.append('months_after_last_therapy')
+        if visit_dict.get('visit_type') == "Follow-Up Diagnostic" and visit_dict.get('months_after_last_therapy') is None:
             invalid_values.append('visit_type')
-            invalid_values.append('months_after_therapy')
-        if visit_dict.get('visit_type') == "Follow-Up Diagnostic" and visit_dict.get('months_after_therapy') is None:
-            invalid_values.append('visit_type')
-            invalid_values.append('months_after_therapy')
+            invalid_values.append('months_after_last_therapy')
+        # if visit_dict.get('visit_type') == "Therapy" and visit_dict.get('months_after_diagnosis') is None:
+        #     invalid_values.append('visit_type')
+        #     invalid_values.append('months_after_diagnosis')
         if visit_dict.get('visit_type') == "Therapy" and visit_dict.get('therapy_type') is None:
             invalid_values.append('visit_type')
             invalid_values.append('therapy_type')
