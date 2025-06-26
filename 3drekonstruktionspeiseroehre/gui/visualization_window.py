@@ -415,9 +415,9 @@ class VisualizationWindow(QMainWindow):
                      "Mean over all (Volume * max(tubular pressure from frame))",
                      "Mean over all (Volume * min(tubular pressure from frame))",
                      "Mean over all (Volume * mean(tubular pressure from frame))",
-                     "Mean over all (Volume * max(sphincter pressure from frame))",
-                     "Mean over all (Volume * min(sphincter pressure from frame))",
-                     "Mean over all (Volume * mean(sphincter pressure from frame))",
+                     "Mean over all (Volume / max(sphincter pressure from frame))",
+                     "Mean over all (Volume / min(sphincter pressure from frame))",
+                     "Mean over all (Volume / mean(sphincter pressure from frame))",
                      "Tubular Pressure Max", "Tubular Pressure Min", "Tubular Pressure Mean",
                      "Sphincter Pressure Max", "Sphincter Pressure Min", "Sphincter Pressure Mean", "Esophageal Pressurization Index"
                      ])
@@ -451,11 +451,11 @@ class VisualizationWindow(QMainWindow):
 
                         # Write metrics data to CSV file
                         writer.writerow([visit_name.encode("utf-8"), id_minute,
-                                         round(volume_tubular, 2), round(volume_sphincter, 2), round(esophagus_length, 2),
-                                         round(tubular_metric_max, 2), round(tubular_metric_min, 2), round(tubular_metric_mean, 2),
-                                         round(sphincter_metric_max, 2), round(sphincter_metric_min, 2), round(sphincter_metric_mean, 2),
-                                         round(tubular_pressure_max, 2), round(tubular_pressure_min, 2), round(tubular_pressure_mean, 2),
-                                         round(sphincter_pressure_max, 2), round(sphincter_pressure_min, 2), round(sphincter_pressure_mean, 2), round(esophageal_pressurization_index, 2)])
+                                         round(volume_tubular, 4), round(volume_sphincter, 4), round(esophagus_length, 4),
+                                         round(tubular_metric_max, 4), round(tubular_metric_min, 4), round(tubular_metric_mean, 4),
+                                         round(sphincter_metric_max, 4), round(sphincter_metric_min, 4), round(sphincter_metric_mean, 4),
+                                         round(tubular_pressure_max, 4), round(tubular_pressure_min, 4), round(tubular_pressure_mean, 4),
+                                         round(sphincter_pressure_max, 4), round(sphincter_pressure_min, 4), round(sphincter_pressure_mean, 4), round(esophageal_pressurization_index, 4)])
 
             # Check if the file was actually created
             if os.path.exists(destination_file_path):
@@ -537,11 +537,11 @@ class VisualizationWindow(QMainWindow):
                             len_sphincter = metrics['len_sphincter']
 
                             # Write metrics data to CSV file
-                            writer.writerow([visit_name.encode("utf-8"), id_minute, frame, len_tubular, len_sphincter, volume_tubular, volume_sphincter,
-                                             round(max_pressure_tubular_per_frame, 2),round(min_pressure_tubular_per_frame, 2),round(mean_pressure_tubular_per_frame, 2),
-                                             round(metric_max_tubular, 2), round(metric_min_tubular, 2), round(metric_mean_tubular, 2),
-                                             round(max_pressure_sphincter_per_frame, 2),round(min_pressure_sphincter_per_frame, 2),round(mean_pressure_sphincter_per_frame, 2),
-                                             round(metric_max_sphincter, 2), round(metric_min_sphincter, 2), round(metric_mean_sphincter, 2)])
+                            writer.writerow([visit_name.encode("utf-8"), id_minute, frame, round(len_tubular, 4), round(len_sphincter, 4), round(volume_tubular, 4), round(volume_sphincter, 4),
+                                             round(max_pressure_tubular_per_frame, 4),round(min_pressure_tubular_per_frame, 4),round(mean_pressure_tubular_per_frame, 4),
+                                             round(metric_max_tubular, 4), round(metric_min_tubular, 4), round(metric_mean_tubular, 4),
+                                             round(max_pressure_sphincter_per_frame, 4),round(min_pressure_sphincter_per_frame, 4),round(mean_pressure_sphincter_per_frame, 4),
+                                             round(metric_max_sphincter, 4), round(metric_min_sphincter, 4), round(metric_mean_sphincter, 4)])
             # Check if the file was actually created
             if os.path.exists(destination_file_path_metriks):
                 export_successful = True

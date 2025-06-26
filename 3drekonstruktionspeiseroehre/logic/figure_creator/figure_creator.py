@@ -739,7 +739,7 @@ class FigureCreator(ABC):
         # one_px_as_cm factor is needed, because of the third dimension height
         volume_sum_sphincter = volume_sum_sphincter * one_px_as_cm
         if volume_sum_sphincter == 0:
-            volume_sum_sphincter = 0.01
+            volume_sum_sphincter = 0.0001
         len_sphincter = len_sphincter * one_px_as_cm
 
         # Calculate max, min, mean pressure over time and space for tubular part of esophagus
@@ -748,17 +748,24 @@ class FigureCreator(ABC):
         np_surfacecolor_list = np.abs(np_surfacecolor_list)
         tubular_section_surfacecolor_list = np_surfacecolor_list[:,
                                             tubular_part_upper_boundary:lower_sphincter_boundary[0] + 1]
+        # Ensure no zero values
+        tubular_section_surfacecolor_list[tubular_section_surfacecolor_list == 0] = 0.0001
+        tubular_section_surfacecolor_list[np.isclose(tubular_section_surfacecolor_list, 0.0)] = 0.0001
+
         max_pressure_tubular_per_frame = np.max(tubular_section_surfacecolor_list, axis=1)
         max_pressure_tubular = np.max(max_pressure_tubular_per_frame)
         min_pressure_tubular_per_frame = np.min(tubular_section_surfacecolor_list, axis=1)
         min_pressure_tubular = np.min(min_pressure_tubular_per_frame)
         mean_pressure_tubular_per_frame = np.mean(tubular_section_surfacecolor_list, axis=1)
         mean_pressure_tubular = np.mean(mean_pressure_tubular_per_frame)
+        
         # Metrics Tubular
         metric_max_tubular = volume_sum_tubular * max_pressure_tubular_per_frame
         metric_max_tubular_all = np.mean(metric_max_tubular)
+
         metric_min_tubular = volume_sum_tubular * min_pressure_tubular_per_frame
         metric_min_tubular_all = np.mean(metric_min_tubular)
+
         metric_mean_tubular = volume_sum_tubular * mean_pressure_tubular_per_frame
         metric_mean_tubular_all = np.mean(metric_mean_tubular)
 
@@ -773,9 +780,11 @@ class FigureCreator(ABC):
         ls_section_surfacecolor_list = np_surfacecolor_list[:,
                                        lower_sphincter_boundary[0]:lower_sphincter_boundary[1] + 1]
         min_pressure_sphincter_per_frame = np.min(ls_section_surfacecolor_list, axis=1)
-        min_pressure_sphincter = np.mean(min_pressure_sphincter_per_frame)
+        # min_pressure_sphincter = np.mean(min_pressure_sphincter_per_frame)
+        min_pressure_sphincter = np.min(min_pressure_sphincter_per_frame)
         max_pressure_sphincter_per_frame = np.max(ls_section_surfacecolor_list, axis=1)
-        max_pressure_sphincter = np.mean(max_pressure_sphincter_per_frame)
+        # max_pressure_sphincter = np.mean(max_pressure_sphincter_per_frame)
+        max_pressure_sphincter = np.max(max_pressure_sphincter_per_frame)
         mean_pressure_sphincter_per_frame = np.mean(ls_section_surfacecolor_list, axis=1)
         mean_pressure_sphincter = np.mean(mean_pressure_sphincter_per_frame)
         # Metrics Sphincter
@@ -784,13 +793,13 @@ class FigureCreator(ABC):
         mask_min = min_pressure_sphincter_per_frame != 0
         mask_mean = mean_pressure_sphincter_per_frame != 0
         with np.errstate(divide='ignore'):
-            metric_max_sphincter = np.where(mask_max, volume_sum_sphincter / max_pressure_sphincter_per_frame, 0)
-            metric_max_sphincter_all = np.max(metric_max_sphincter)
-            metric_min_sphincter = np.where(mask_min, volume_sum_sphincter / min_pressure_sphincter_per_frame, 0)
-            metric_min_sphincter_all = np.min(metric_min_sphincter)
-            metric_mean_sphincter = np.where(mask_mean, volume_sum_sphincter / mean_pressure_sphincter_per_frame, 0)
+            metric_max_sphincter = np.where(mask_max, volume_sum_sphincter / max_pressure_sphincter_per_frame, 0.0001)
+            metric_max_sphincter_all = np.mean(metric_max_sphincter) # max
+            metric_min_sphincter = np.where(mask_min, volume_sum_sphincter / min_pressure_sphincter_per_frame, 0.0001)
+            metric_min_sphincter_all = np.mean(metric_min_sphincter) # min
+            metric_mean_sphincter = np.where(mask_mean, volume_sum_sphincter / mean_pressure_sphincter_per_frame, 0.0001)
             metric_mean_sphincter_all = np.mean(metric_mean_sphincter)
-
+            
         pressure_sphincter_per_frame = {'max':max_pressure_sphincter_per_frame, 'min':min_pressure_sphincter_per_frame,
                                         'mean':mean_pressure_sphincter_per_frame}
         pressure_sphincter_overall = {'max':max_pressure_sphincter, 'min':min_pressure_sphincter, 'mean':mean_pressure_sphincter}

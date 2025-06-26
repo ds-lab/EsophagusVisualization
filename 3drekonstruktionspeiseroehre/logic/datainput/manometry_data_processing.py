@@ -15,6 +15,7 @@ def process_and_upload_manometry_file(selected_visit, filename):
         matrix = df.to_numpy()
         matrix = matrix.T  # sensors in axis 0
         pressure_matrix = np.flipud(matrix)  # sensors from top to bottom
+        pressure_matrix[pressure_matrix == 0] = 0.0001  # replace 0 with 0.0001 for later calculations
     except:
         error = True
     if error or pressure_matrix.shape[1] < 1:
