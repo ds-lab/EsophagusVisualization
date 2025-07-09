@@ -10,6 +10,7 @@ from math import atan
 from scipy import spatial
 import matplotlib.pyplot as plt
 
+
 class FigureCreatorWithEndoscopy(FigureCreator):
     """Implements FigureCreator for figure creation with endoscopy"""
 
@@ -30,12 +31,13 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         slopes = visualization_data.slopes
         offset_top = visualization_data.offset_top
 
-        esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(sensor_path, 0,
-                                                                               visualization_data.esophagus_exit_pos)
+        esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(
+            sensor_path, 0, visualization_data.esophagus_exit_pos
+        )
 
-        esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(sensor_path,
-                                                                                    esophagus_full_length_px,
-                                                                                    visualization_data)
+        esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(
+            sensor_path, esophagus_full_length_px, visualization_data
+        )
         cm_to_px_ratio = esophagus_full_length_cm / esophagus_full_length_px
 
         # Calculate shape with endoscopy data
@@ -47,18 +49,26 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         for polygon in visualization_data.endoscopy_polygons:
             shapely_poly = shapely.geometry.Polygon(polygon)
             centroid = shapely_poly.centroid
-            max_diameter = int(round(shapely_poly.length))  # Round to the nearest integer for max_diameter
+            max_diameter = int(
+                round(shapely_poly.length)
+            )  # Round to the nearest integer for max_diameter
             current_polygon_distances_from_centroid = []
             for angle in angles:
                 x1, y1 = int(round(centroid.x)), int(round(centroid.y))
-                x2, y2 = int(round(centroid.x + (np.cos(angle) * max_diameter))), int(round(centroid.y + (np.sin(angle) * max_diameter)))
-                
+                x2, y2 = int(round(centroid.x + (np.cos(angle) * max_diameter))), int(
+                    round(centroid.y + (np.sin(angle) * max_diameter))
+                )
+
                 line = [(x1, y1), (x2, y2)]
                 shapely_line = shapely.geometry.LineString(line)
-                
-                boundary = [LineString([pt1, pt2]) for pt1, pt2 in
-                            zip(shapely_poly.boundary.coords, shapely_poly.boundary.coords[1:])]
-                
+
+                boundary = [
+                    LineString([pt1, pt2])
+                    for pt1, pt2 in zip(
+                        shapely_poly.boundary.coords, shapely_poly.boundary.coords[1:]
+                    )
+                ]
+
                 intersections = []
                 for boundary_line in boundary:
                     # Not all boundaries and lines intersect (logically), suppress shapely warning if no intersections occur
@@ -67,21 +77,41 @@ class FigureCreatorWithEndoscopy(FigureCreator):
                         intersection = shapely_line.intersection(boundary_line)
                         if not intersection.is_empty:
                             intersections.append(intersection)
-                
+
                 distance = max(
-                    [shapely.geometry.LineString([(x1, y1), (int(round(intersection.x)), int(round(intersection.y)))]).length for intersection in intersections] + [
-                        0])  # distance from centroid to outer polygon bound in specific angle
+                    [
+                        shapely.geometry.LineString(
+                            [
+                                (x1, y1),
+                                (
+                                    int(round(intersection.x)),
+                                    int(round(intersection.y)),
+                                ),
+                            ]
+                        ).length
+                        for intersection in intersections
+                    ]
+                    + [0]
+                )  # distance from centroid to outer polygon bound in specific angle
                 current_polygon_distances_from_centroid.append(distance)
             distances_from_centroid.append(current_polygon_distances_from_centroid)
 
         # Transform endoscopy position information
-        endoscopy_image_indexes = FigureCreatorWithEndoscopy.__calculate_endoscopy_indexes(
-            visualization_data.endoscopy_image_positions_cm, visualization_data.endoscopy_start_pos, offset_top,
-            sensor_path,
-            esophagus_full_length_px, esophagus_full_length_cm)
+        endoscopy_image_indexes = (
+            FigureCreatorWithEndoscopy.__calculate_endoscopy_indexes(
+                visualization_data.endoscopy_image_positions_cm,
+                visualization_data.endoscopy_start_pos,
+                offset_top,
+                sensor_path,
+                esophagus_full_length_px,
+                esophagus_full_length_cm,
+            )
+        )
 
         # Remove outliers
-        indexes_to_remove = [i for i, v in enumerate(endoscopy_image_indexes) if v is None]
+        indexes_to_remove = [
+            i for i, v in enumerate(endoscopy_image_indexes) if v is None
+        ]
         for i in indexes_to_remove:
             distances_from_centroid[i] = None
         endoscopy_image_indexes = [i for i in endoscopy_image_indexes if i is not None]
@@ -97,9 +127,30 @@ class FigureCreatorWithEndoscopy(FigureCreator):
                 y_for_interpolation.append(distances_from_centroid[0][i])
             if len(widths) - 1 not in x_for_interpolation:
                 x_for_interpolation.append(len(widths) - 1)
-                y_for_interpolation.append(distances_from_centroid[len(distances_from_centroid) - 1][i])
-            interpolation_function = interp1d(x_for_interpolation, y_for_interpolation, kind='linear')
-            interpolated_radius[:, i] = [interpolation_function(index) for index in range(len(widths))]
+                y_for_interpolation.append(
+                    distances_from_centroid[len(distances_from_centroid) - 1][i]
+                )
+
+            # Validate that x and y arrays have the same length before interpolation
+            if len(x_for_interpolation) != len(y_for_interpolation):
+                raise ValueError(
+                    f"Interpolation data mismatch: x_for_interpolation has {len(x_for_interpolation)} elements, "
+                    f"y_for_interpolation has {len(y_for_interpolation)} elements. "
+                    f"This indicates corrupted endoscopy polygon data. Please go back and redo the endoscopy segmentation."
+                )
+
+            # Ensure we have at least 2 points for interpolation
+            if len(x_for_interpolation) < 2:
+                raise ValueError(
+                    "Not enough data points for interpolation. Please go back and ensure all endoscopy images are properly segmented."
+                )
+
+            interpolation_function = interp1d(
+                x_for_interpolation, y_for_interpolation, kind="linear"
+            )
+            interpolated_radius[:, i] = [
+                interpolation_function(index) for index in range(len(widths))
+            ]
 
         # Initialize lists to store the calculated x, y, and z values
         x = []
@@ -123,22 +174,31 @@ class FigureCreatorWithEndoscopy(FigureCreator):
             max_x = np.max(x[i])
             min_x = np.min(x[i])
             width = max_x - min_x
-            x[i] = (x[i] - (min_x + (width / 2))) * ((widths[i] / width) if width > 0 else 1)
+            x[i] = (x[i] - (min_x + (width / 2))) * (
+                (widths[i] / width) if width > 0 else 1
+            )
             # y direction
             max_y = np.max(y[i])
             min_y = np.min(y[i])
             height = max_y - min_y
             y[i] = (y[i] - (min_y + (height / 2))) * (
-                (widths[i] / width) if width > 0 else 1)  # same factor as for x
+                (widths[i] / width) if width > 0 else 1
+            )  # same factor as for x
 
         # Apply rotation matrix
         for i in range(len(z)):
             slope_in_rad = atan(slopes[i])
             # Rotate around y-axis according to slopes
             rotated_coordinates = np.matmul(
-                np.array([[np.cos(slope_in_rad), 0, -np.sin(slope_in_rad)],
-                          [0, 1, 0],
-                          [np.sin(slope_in_rad), 0, np.cos(slope_in_rad)]]), np.array([x[i], y[i], z[i]]))
+                np.array(
+                    [
+                        [np.cos(slope_in_rad), 0, -np.sin(slope_in_rad)],
+                        [0, 1, 0],
+                        [np.sin(slope_in_rad), 0, np.cos(slope_in_rad)],
+                    ]
+                ),
+                np.array([x[i], y[i], z[i]]),
+            )
 
             # Rotated x and z coordinates
             x[i], _, z[i] = rotated_coordinates
@@ -157,37 +217,57 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         visualization_data.figure_z = z
 
         # calculate colors
-        self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(sensor_path, visualization_data,
-                                                                           esophagus_full_length_px,
-                                                                           esophagus_full_length_cm)
+        self.surfacecolor_list = FigureCreator.calculate_surfacecolor_list(
+            sensor_path,
+            visualization_data,
+            esophagus_full_length_px,
+            esophagus_full_length_cm,
+        )
 
         # create figure
-        self.figure = FigureCreator.create_figure(x, y, z, self.surfacecolor_list, config.title_with_endoscopy)
-        
+        self.figure = FigureCreator.create_figure(
+            x, y, z, self.surfacecolor_list, config.title_with_endoscopy
+        )
+
         # Create endoflip table and colors if necessary
         if visualization_data.endoflip_screenshot:
-            self.table_figures = FigureCreator.colored_vertical_endoflip_tables_and_colors(visualization_data.endoflip_screenshot)
-            self.endoflip_surface_color = FigureCreator.get_endoflip_surface_color(sensor_path,
-                                                                                   visualization_data,
-                                                                                   esophagus_full_length_cm,
-                                                                                   esophagus_full_length_px)
+            self.table_figures = (
+                FigureCreator.colored_vertical_endoflip_tables_and_colors(
+                    visualization_data.endoflip_screenshot
+                )
+            )
+            self.endoflip_surface_color = FigureCreator.get_endoflip_surface_color(
+                sensor_path,
+                visualization_data,
+                esophagus_full_length_cm,
+                esophagus_full_length_px,
+            )
         else:
             self.table_figures = None
             self.endoflip_surface_color = None
 
         # calculate metrics
-        self.metrics = FigureCreator.calculate_metrics(visualization_data, x, y, self.surfacecolor_list, centers,
-                                                       len(centers) - 1, esophagus_full_length_cm,
-                                                       esophagus_full_length_px)
+        self.metrics = FigureCreator.calculate_metrics(
+            visualization_data,
+            x,
+            y,
+            self.surfacecolor_list,
+            centers,
+            len(centers) - 1,
+            esophagus_full_length_cm,
+            esophagus_full_length_px,
+        )
 
-        self.esophagus_length_cm = FigureCreator.calculate_esophagus_exact_length(centers, cm_to_px_ratio)
+        self.esophagus_length_cm = FigureCreator.calculate_esophagus_exact_length(
+            centers, cm_to_px_ratio
+        )
 
     def get_figure(self):
         return self.figure
 
     def get_endoflip_tables(self):
         return self.table_figures
-    
+
     def get_endoflip_surface_color(self, ballon_volume: str, aggregate_function: str):
         return self.endoflip_surface_color[ballon_volume][aggregate_function]
 
@@ -204,9 +284,14 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         return self.esophagus_length_cm
 
     @staticmethod
-    def __calculate_endoscopy_indexes(endoscopy_image_positions_cm, endoscopy_start_pos, offset_top, sensor_path,
-                                      esophagus_full_length_px,
-                                      esophagus_full_length_cm):
+    def __calculate_endoscopy_indexes(
+        endoscopy_image_positions_cm,
+        endoscopy_start_pos,
+        offset_top,
+        sensor_path,
+        esophagus_full_length_px,
+        esophagus_full_length_cm,
+    ):
         """
         calculates the pixel positions of the endoscopy images
         :param endoscopy_image_positions_cm: the positions given by the filenames
@@ -219,8 +304,17 @@ class FigureCreatorWithEndoscopy(FigureCreator):
         endoscopy_image_indexes = []
         endoscopy_start_pos = (endoscopy_start_pos[1], endoscopy_start_pos[0])
         # Find endoscopy start position in sensor_path
-        _, index = spatial.KDTree(np.array(sensor_path)).query(np.array(endoscopy_start_pos))
+        _, index = spatial.KDTree(np.array(sensor_path)).query(
+            np.array(endoscopy_start_pos)
+        )
         for position in endoscopy_image_positions_cm:
-            endoscopy_image_indexes.append(FigureCreator.calculate_index_by_startindex_and_cm_position(
-                index, position, sensor_path, esophagus_full_length_px, esophagus_full_length_cm))
+            endoscopy_image_indexes.append(
+                FigureCreator.calculate_index_by_startindex_and_cm_position(
+                    index,
+                    position,
+                    sensor_path,
+                    esophagus_full_length_px,
+                    esophagus_full_length_cm,
+                )
+            )
         return endoscopy_image_indexes

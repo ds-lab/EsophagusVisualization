@@ -3,13 +3,18 @@ import sys
 from gui.master_window import MasterWindow
 from logic.database.database import create_db_and_tables_local_declarative
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QIcon
 from gui.data_window import DataWindow
 import multiprocessing
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     multiprocessing.freeze_support()
-    multiprocessing.set_start_method('spawn')
+    multiprocessing.set_start_method("spawn")
     app = QApplication(sys.argv)
+
+    # Set the application icon
+    app.setWindowIcon(QIcon("./media/icon.ico"))
+
     # create the MasterWindow and show the first UI
 
     master_window = MasterWindow()
@@ -20,7 +25,8 @@ if __name__ == '__main__':
     create_db_and_tables_local_declarative()
     try:
         # close the splash screen if running as pyinstaller-exe
-        import pyi_splash # type: ignore
+        import pyi_splash  # type: ignore
+
         pyi_splash.close()
     except ModuleNotFoundError:
         pass
