@@ -506,7 +506,7 @@ class VisualizationWindow(BaseWorkflowWindow):
 
         # Use HTML for proper line breaks in the label
         dialog_text = (
-            "How many pressure frames would you like to export?<br>"
+            "How many pressure frames would you like to export?"
             "<ul>"
             "<li><b>Basic:</b> Statistics only, smallest files. (~10MB)</li>"
             "<li><b>100 frames:</b> Fast export, medium size files. (~50MB)</li>"

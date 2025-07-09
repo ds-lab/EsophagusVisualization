@@ -2420,10 +2420,12 @@ class DataWindow(QMainWindow):
                     f"Failed: {results['failed_count']} filess\n"
                     f"Output directory: {results['output_directory']}\n\n"
                     f"All VTKHDF files include ML-ready attributes:\n"
-                    f"• Pressure data and statistics (all preserved)\n"
-                    f"• Anatomical region classification\n"
-                    f"• Wall thickness estimates\n"
-                    f"• Patient and visit metadata\n"
+                    f"• Per-vertex HRM pressure data\n"
+                    f"• Per-vertex wall thickness\n"
+                    f"• Per-vertex anatomical region classification (LES/tubular)\n"
+                    f"• Comprehensive patient and visit metadata\n"
+                    f"• Geometric features (normals, curvature)\n"
+                    f"• Complete acquisition parameters\n"
                     f"• HDF5 organization for efficient data access",
                 )
             else:

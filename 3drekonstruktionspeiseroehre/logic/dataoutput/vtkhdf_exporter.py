@@ -55,19 +55,6 @@ class VTKHDFExporter:
         """
         Recursively sanitizes a data structure for JSON serialization.
 
-        This function traverses nested dictionaries, lists, and tuples, converting
-        data types that are not natively supported by Python's `json` library into
-        compatible formats. Specifically, it handles:
-        - NumPy arrays (`np.ndarray`), which are converted to Python lists.
-        - NumPy integer types (`np.integer`), which are converted to Python integers.
-        - NumPy float types (`np.floating`), which are converted to Python floats.
-        - NumPy boolean types (`np.bool_`), which are converted to Python booleans.
-        - Datetime objects (`datetime`), which are converted to ISO 8601 string format.
-
-        This sanitization is crucial for preventing `TypeError` exceptions when
-        serializing metadata that contains NumPy objects, a common scenario in
-        scientific computing applications.
-
         Args:
             data: The data to be sanitized, can be of any type.
 
@@ -313,8 +300,14 @@ class VTKHDFExporter:
             except Exception as e:
                 print(f"Warning: Could not add metadata to mesh: {e}")
 
-            # Prepare mesh for export
-            surface = self._prepare_mesh_for_export(surface)
+            # Ensure triangular faces
+            surface = surface.triangulate()
+
+            # Clean the mesh
+            surface = surface.clean(tolerance=1e-6)
+
+            # Compute normals for better ML features
+            surface = surface.compute_normals(point_normals=True, cell_normals=True)
 
             # Export to VTKHDF
             return self._export_to_vtkhdf(surface, file_path)
@@ -334,7 +327,7 @@ class VTKHDFExporter:
             # Extract surface while preserving structure
             surface = grid.extract_surface()
 
-            # Clean mesh but preserve essential topology
+            # Clean the mesh
             surface = surface.clean(tolerance=1e-6)
 
             return surface
@@ -452,16 +445,6 @@ class VTKHDFExporter:
         regions = np.ones(n_vertices, dtype=int)  # Default to tubular
 
         try:
-            # Check if we have the required boundary positions
-            if not (
-                hasattr(visualization_data, "sphincter_upper_pos")
-                and visualization_data.sphincter_upper_pos
-                and hasattr(visualization_data, "esophagus_exit_pos")
-                and visualization_data.esophagus_exit_pos
-            ):
-                print("Missing sphincter boundary positions - using all tubular")
-                return regions
-
             # Get boundary positions (same as in calculate_metrics)
             ls_upper_pos = visualization_data.sphincter_upper_pos  # [x, y]
             ls_lower_pos = visualization_data.esophagus_exit_pos  # [x, y]
@@ -854,24 +837,6 @@ class VTKHDFExporter:
             print(f"Warning: Could not calculate boundary indices: {boundary_error}")
 
         return None
-
-    def _prepare_mesh_for_export(self, surface: pv.PolyData) -> pv.PolyData:
-        """Prepare mesh structure for export by cleaning and triangulating."""
-        try:
-            # Clean the mesh
-            surface = surface.clean(tolerance=1e-6)
-
-            # Ensure triangular faces
-            surface = surface.triangulate()
-
-            # Compute normals for better ML features
-            surface = surface.compute_normals(point_normals=True, cell_normals=True)
-
-            return surface
-
-        except Exception as e:
-            print(f"Error preparing mesh for export: {e}")
-            return surface
 
     def _export_to_vtkhdf(self, surface: pv.PolyData, file_path: str) -> bool:
         """Export the mesh with all attributes to VTKHDF format with compression."""
