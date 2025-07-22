@@ -100,6 +100,9 @@ class DCISelectionWindow(BaseWorkflowWindow):
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
 
+        # Set native menu bar flag as false to see MenuBar on Mac
+        self.ui.menubar.setNativeMenuBar(False)
+
         # Setup navigation buttons after UI is loaded
         self._setup_navigation_buttons()
 

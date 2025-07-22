@@ -81,6 +81,9 @@ class XrayRegionSelectionWindowWithBack(BaseWorkflowWindow):
         menu_button.triggered.connect(self.__menu_button_clicked)
         self.ui.menubar.addAction(menu_button)
 
+        # Set native menu bar flag as false to see MenuBar on Mac
+        self.ui.menubar.setNativeMenuBar(False)
+
         # Create a plot axis for displaying the image
         self.plot_ax = self.figure_canvas.figure.subplots()
         self.figure_canvas.figure.subplots_adjust(

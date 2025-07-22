@@ -7,6 +7,7 @@ from datetime import datetime
 from io import BytesIO
 from typing import Dict, List, Optional, Any, Tuple
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from scipy import spatial
 from logic.database.data_declarative_models import (
     Patient,
@@ -100,10 +101,15 @@ class VTKHDFExporter:
         """
         created_files = []
 
+        # Log export parameters for debugging
+        print(f"\nStarting VTKHDF export for visit: {visit_name}")
+        self._log_export_parameters(patient_id, visit_id, visit_name)
+
         # Ensure output directory exists
         os.makedirs(output_directory, exist_ok=True)
 
         # Extract database metadata if available
+        print(f"\nExtracting database metadata...")
         metadata = self._extract_database_metadata(patient_id, visit_id)
 
         # Process each visualization in the visit
@@ -126,19 +132,88 @@ class VTKHDFExporter:
                 print(f"Error exporting visualization {i}: {str(e)}")
                 continue
 
+        # Export summary
+        total_visualizations = len(visit_data.visualization_data_list)
+        successful_exports = len(created_files)
+        failed_exports = total_visualizations - successful_exports
+
+        print(f"\nExport Summary for visit: {visit_name}")
+        print(
+            f"Successfully exported: {successful_exports}/{total_visualizations} visualizations"
+        )
+        if failed_exports > 0:
+            print(f"Failed exports: {failed_exports}")
+
+        has_database_metadata = bool(metadata)
+        print(f"Database metadata included: {'Yes' if has_database_metadata else 'No'}")
+
+        if created_files:
+            print(f"Files created in: {output_directory}")
+            for file_path in created_files:
+                print(f"  - {os.path.basename(file_path)}")
+
         return created_files
+
+    def _validate_database_connection(self) -> bool:
+        """
+        Validate if database connection is active and accessible.
+
+        Returns:
+            bool: True if database connection is valid, False otherwise
+        """
+        if not self.db_session:
+            print(
+                "No database session provided - patient and clinical data will not be exported"
+            )
+            return False
+
+        try:
+            # Test database connection with a simple query
+            self.db_session.execute(text("SELECT 1"))
+            return True
+        except Exception as e:
+            print(f"Database connection test failed: {e}")
+            print(
+                "This may be due to SQLAlchemy version compatibility or database connectivity issues"
+            )
+            print("Patient and clinical data will not be exported")
+            return False
+
+    def _log_export_parameters(
+        self, patient_id: Optional[str], visit_id: Optional[int], visit_name: str
+    ):
+        """Log export parameters for debugging."""
+        print(f"Export Parameters:")
+        print(
+            f"  Patient ID: {patient_id if patient_id else 'None (WARNING: No patient data will be exported)'}"
+        )
+        print(
+            f"  Visit ID: {visit_id if visit_id else 'None (WARNING: No visit data will be exported)'}"
+        )
+        print(f"  Visit Name: {visit_name}")
+        print(
+            f"  Database Session: {'Available' if self.db_session else 'None (WARNING: No database metadata will be exported)'}"
+        )
 
     def _extract_database_metadata(
         self, patient_id: Optional[str], visit_id: Optional[int]
     ) -> Dict[str, Any]:
-        """Extract comprehensive metadata from database."""
+        """Extract comprehensive metadata from database with enhanced error handling."""
         metadata = {}
 
-        if not self.db_session or not patient_id:
+        # Validate database connection first
+        if not self._validate_database_connection():
             return metadata
 
+        # Check patient_id
+        if not patient_id:
+            print("No patient ID provided - patient data will not be exported")
+            return metadata
+
+        exported_data_types = []
+
+        # Extract Patient data
         try:
-            # Patient data
             patient = (
                 self.db_session.query(Patient)
                 .filter(Patient.patient_id == patient_id)
@@ -157,9 +232,19 @@ class VTKHDFExporter:
                         "patient_center": patient.center,
                     }
                 )
+                exported_data_types.append("Patient data")
+                print(
+                    f"Successfully extracted patient data for patient ID: {patient_id}"
+                )
+            else:
+                print(f"No patient found for patient ID: {patient_id}")
 
-            if visit_id:
-                # Visit data
+        except Exception as e:
+            print(f"Error extracting patient data: {e}")
+
+        # Extract Visit data
+        if visit_id:
+            try:
                 visit = (
                     self.db_session.query(Visit)
                     .filter(Visit.visit_id == visit_id)
@@ -178,8 +263,16 @@ class VTKHDFExporter:
                             "months_after_diagnosis": visit.months_after_diagnosis,
                         }
                     )
+                    exported_data_types.append("Visit data")
+                    print(f"Successfully extracted visit data for visit ID: {visit_id}")
+                else:
+                    print(f"No visit found for visit ID: {visit_id}")
 
-                # Manometry data
+            except Exception as e:
+                print(f"Error extracting visit data: {e}")
+
+            # Extract Manometry data
+            try:
                 manometry = (
                     self.db_session.query(Manometry)
                     .filter(Manometry.visit_id == visit_id)
@@ -202,8 +295,18 @@ class VTKHDFExporter:
                             "manometry_les_length": manometry.les_length,
                         }
                     )
+                    exported_data_types.append("Manometry data")
+                    print(
+                        f"Successfully extracted manometry data for visit ID: {visit_id}"
+                    )
+                else:
+                    print(f"No manometry data found for visit ID: {visit_id}")
 
-                # Additional clinical data
+            except Exception as e:
+                print(f"Error extracting manometry data: {e}")
+
+            # Extract Eckardt Score data
+            try:
                 eckardt = (
                     self.db_session.query(EckardtScore)
                     .filter(EckardtScore.visit_id == visit_id)
@@ -220,9 +323,27 @@ class VTKHDFExporter:
                             "eckardt_weightloss": eckardt.weightloss,
                         }
                     )
+                    exported_data_types.append("Eckardt Score data")
+                    print(
+                        f"Successfully extracted Eckardt Score data for visit ID: {visit_id}"
+                    )
+                else:
+                    print(f"No Eckardt Score data found for visit ID: {visit_id}")
 
-        except Exception as e:
-            print(f"Error extracting database metadata: {e}")
+            except Exception as e:
+                print(f"Error extracting Eckardt Score data: {e}")
+        else:
+            print(
+                "No visit ID provided - visit-related data (visit, manometry, Eckardt) will not be exported"
+            )
+
+        # Summary of exported database metadata
+        if exported_data_types:
+            print(f"Database metadata export summary: {', '.join(exported_data_types)}")
+        else:
+            print(
+                "No database metadata was exported - files will only contain computed reconstruction data"
+            )
 
         return metadata
 
@@ -340,6 +461,12 @@ class VTKHDFExporter:
         self, surface: pv.PolyData, visualization_data: VisualizationData
     ):
         """Add comprehensive HRM pressure data as vertex attributes."""
+        
+        # Early return if no vertex pressure data requested
+        if self.max_pressure_frames == 0:
+            print("Skipping per-vertex pressure data export as requested (metadata will still be exported)")
+            return
+        
         try:
             n_vertices = surface.n_points
 
@@ -437,7 +564,7 @@ class VTKHDFExporter:
 
         Only creates TWO regions:
         - Region 1: Tubular esophagus
-        - Region 2: Sphincter (LES only, no UES)
+        - Region 2: Sphincter
 
         This matches the original calculate_metrics function in figure_creator.py
         """
@@ -474,7 +601,7 @@ class VTKHDFExporter:
             sphincter_y_min = min(sphincter_y_start, sphincter_y_end)
             sphincter_y_max = max(sphincter_y_start, sphincter_y_end)
 
-            # Classify vertices: only tubular (1) and sphincter (2)
+            # Classify vertices: tubular (1) and sphincter (2)
             sphincter_mask = (y_coords >= sphincter_y_min) & (
                 y_coords <= sphincter_y_max
             )
@@ -872,40 +999,6 @@ class VTKHDFExporter:
             return False
 
 
-def export_all_visit_vtkhdf(
-    visits_dict: Dict[str, VisitData],
-    output_directory: str,
-    db_session: Optional[Session] = None,
-    max_pressure_frames: int = -1,
-) -> List[str]:
-    """
-    Convenience function to export all visits to VTKHDF format.
-
-    Args:
-        visits_dict: Dictionary of visit name -> VisitData
-        output_directory: Directory to save VTKHDF files
-        db_session: Database session for metadata
-        max_pressure_frames: Maximum pressure frames to export (-1 for all)
-
-    Returns:
-        List of successfully created file paths
-    """
-    exporter = VTKHDFExporter(db_session, max_pressure_frames)
-    all_created_files = []
-
-    for visit_name, visit_data in visits_dict.items():
-        try:
-            created_files = exporter.export_visit_reconstructions(
-                visit_data, visit_name, output_directory
-            )
-            all_created_files.extend(created_files)
-        except Exception as e:
-            print(f"Error exporting visit {visit_name}: {e}")
-            continue
-
-    return all_created_files
-
-
 def export_single_visit_vtkhdf(
     visit_id: int,
     output_directory: str,
@@ -1178,7 +1271,7 @@ def run_mass_export_with_progress(
             if progress_dialog:
                 progress_dialog.setValue(idx)
                 progress_dialog.setLabelText(
-                    f"Exporting reconstruction {idx + 1}/{len(all_reconstructions)}..."
+                    f"Exporting Patient reconstruction(s) {idx + 1}/{len(all_reconstructions)}..."
                 )
                 if progress_dialog.wasCanceled():
                     break

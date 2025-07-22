@@ -6,6 +6,7 @@ installer
 dist
 build
 .vscode
+.conda
 /3drekonstruktionspeiseroehre.egg-info
 database.db
 test_database.db

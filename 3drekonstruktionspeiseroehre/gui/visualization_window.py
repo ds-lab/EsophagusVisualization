@@ -499,19 +499,18 @@ class VisualizationWindow(BaseWorkflowWindow):
             return
 
         frame_options = [
-            "Basic (statistics only, ~10MB)",
-            "100 frames (~50MB)",
-            "All frames (Complete data, potentially large files, ~100MB+)",
+            "No vertex pressure data (~5MB)",
+            "All vertex pressure data (Complete data, potentially large files, ~100MB+)",
         ]
 
         # Use HTML for proper line breaks in the label
         dialog_text = (
-            "How many pressure frames would you like to export?"
+            "What vertex pressure data would you like to export?"
             "<ul>"
-            "<li><b>Basic:</b> Statistics only, smallest files. (~10MB)</li>"
-            "<li><b>100 frames:</b> Fast export, medium size files. (~50MB)</li>"
-            "<li><b>All frames:</b> Complete data, potentially large files. (~100MB+)</li>"
+            "<li><b>No vertex pressure data:</b> Only 3D geometry, metadata, and pressure statistics. Smallest files (~5MB)</li>"
+            "<li><b>All vertex pressure data:</b> Complete per-vertex pressure data with all frames. Larger files (~100MB+)</li>"
             "</ul>"
+            "<br><i>Note: Pressure metadata and statistics are always included in both options.</i>"
         )
 
         choice, ok = QInputDialog.getItem(
@@ -519,7 +518,7 @@ class VisualizationWindow(BaseWorkflowWindow):
             "Frame Export Options",
             dialog_text,
             frame_options,
-            2,  # Default to All frames
+            1,  # Default to All vertex pressure data
             False,
         )
 
@@ -527,17 +526,11 @@ class VisualizationWindow(BaseWorkflowWindow):
             return
 
         # Determine max frames and compression mode based on choice
-        if "Basic" in choice:
-            max_frames = 0
+        if "No vertex pressure data" in choice:
+            max_frames = 0  # No per-vertex pressure data
             compression_mode = "minimal"
-        elif "All" in choice:
-            max_frames = -1  # Use -1 to signify all frames to the exporter
-            compression_mode = "full"
-        elif "100" in choice:
-            max_frames = 100
-            compression_mode = "full"
-        else:
-            max_frames = -1
+        else:  # "All vertex pressure data"
+            max_frames = -1  # Export all per-vertex pressure frames
             compression_mode = "full"
 
         destination_directory = QFileDialog.getExistingDirectory(
@@ -571,10 +564,32 @@ class VisualizationWindow(BaseWorkflowWindow):
                 # Export entire visit using the optimized pipeline
                 try:
                     # Extract patient_id and visit_id from name
-                    patient_id_match = re.search(r"_([^_]+?)_", visit_name)
+                    # For visit name like "[Visit_ID_1]_Patient_1_InitialDiagnostic_1901"
+                    # Extract patient identifier (try multiple patterns)
+                    patient_id = None
+                    
+                    # Try pattern 1: Extract "Patient_1" from "]_Patient_1_"
+                    patient_id_match = re.search(r"\]_([^_]+_\d+)_", visit_name)
+                    if patient_id_match:
+                        patient_id = patient_id_match.group(1)  # Gets "Patient_1"
+                    else:
+                        # Try pattern 2: Extract "Patient" from "]_Patient_"
+                        patient_id_match = re.search(r"\]_([^_]+)_", visit_name)
+                        if patient_id_match:
+                            patient_id = patient_id_match.group(1)  # Gets "Patient"
+                        else:
+                            # Try pattern 3: Extract just the number from "Patient_1"
+                            patient_id_match = re.search(r"Patient_(\d+)", visit_name)
+                            if patient_id_match:
+                                patient_id = patient_id_match.group(1)  # Gets "1"
+                    
                     visit_id_match = re.search(r"Visit_ID_(\d+)", visit_name)
-                    patient_id = patient_id_match.group(1) if patient_id_match else None
                     visit_id = int(visit_id_match.group(1)) if visit_id_match else None
+                    
+                    print(f"🔍 Patient ID extraction debug:")
+                    print(f"  Visit name: {visit_name}")
+                    print(f"  Extracted patient_id: {patient_id}")
+                    print(f"  Extracted visit_id: {visit_id}")
 
                     created_files = exporter.export_visit_reconstructions(
                         visit_data,
@@ -594,12 +609,18 @@ class VisualizationWindow(BaseWorkflowWindow):
 
             # Inform the user that the export is complete
             if all_created_files:
+                # Conditional pressure features based on what was exported
+                if max_frames == 0:
+                    pressure_features = "• Pressure metadata and statistics\n"
+                else:
+                    pressure_features = "• Per-vertex HRM pressure data\n• Pressure metadata and statistics\n"
+                
                 QMessageBox.information(
                     self,
                     "VTKHDF Export Successful",
                     f"Successfully exported {len(all_created_files)} VTKHDF files to:\n{destination_directory}\n\n"
                     f"VTKHDF files features included:\n"
-                    f"• Per-vertex HRM pressure data\n"
+                    f"{pressure_features}"
                     f"• Per-vertex wall thickness\n"
                     f"• Per-vertex anatomical region classification (LES/tubular)\n"
                     f"• Comprehensive patient and visit metadata\n"

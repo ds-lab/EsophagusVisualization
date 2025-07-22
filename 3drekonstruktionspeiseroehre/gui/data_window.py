@@ -160,9 +160,12 @@ class DataWindow(QMainWindow):
         self.ui.menubar.addAction(menu_button)
 
         # Add Mass VTKHDF Export Button to UI (both menu and visible button)
-        mass_export_button = QAction("Mass Export VTKHDF", self)
+        mass_export_button = QAction("Mass Export VTKHDF for ML", self)
         mass_export_button.triggered.connect(self.__mass_export_vtkhdf)
         self.ui.menubar.addAction(mass_export_button)
+
+        # Set native menu bar flag as false to see MenuBar on Mac
+        self.ui.menubar.setNativeMenuBar(False)
 
         # Create navigation toolbar
         self.__setup_navigation_toolbar()
@@ -342,27 +345,7 @@ class DataWindow(QMainWindow):
                 # Add separator
                 self.nav_toolbar.addSeparator()
 
-            # Add spacer to push export button to the right
-            spacer = QWidget()
-            spacer.setSizePolicy(
-                QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
-            )
-            self.nav_toolbar.addWidget(spacer)
-
-            # Add export VTKHDF button with detailed text
-            self.export_gltf_action = QAction(
-                "Mass Export All 3D Models as VTKHDF", self
-            )
-            self.export_gltf_action.triggered.connect(self.__mass_export_vtkhdf)
-            self.export_gltf_action.setToolTip(
-                "Export all 3D models from the database as VTKHDF files with ML-ready attributes:\n"
-                "• Pressure data and statistics (all preserved)\n"
-                "• Anatomical region classification\n"
-                "• Wall thickness estimates\n"
-                "• Patient and visit metadata\n"
-                "• HDF5 organization for efficient data access"
-            )
-            self.nav_toolbar.addAction(self.export_gltf_action)
+            # No additional toolbar buttons needed since menu bar is now visible on Mac
 
         except Exception as e:
             # Silently handle any errors
@@ -2352,19 +2335,18 @@ class DataWindow(QMainWindow):
         from PyQt6.QtWidgets import QInputDialog
 
         frame_options = [
-            "Basic (statistics only, ~10MB)",
-            "100 frames (~50MB)",
-            "All frames (Complete data, potentially large files, ~100MB+)",
+            "No vertex pressure data (~5MB)",
+            "All vertex pressure data (Complete data, potentially large files, ~100MB+)",
         ]
 
         # Use HTML for proper line breaks in the label
         dialog_text = (
-            "How many pressure frames would you like to export?"
+            "What vertex pressure data would you like to export?"
             "<ul>"
-            "<li><b>Basic:</b> Statistics only, smallest files. (~10MB)</li>"
-            "<li><b>100 frames:</b> Fast export, medium size files. (~50MB)</li>"
-            "<li><b>All frames:</b> Complete data, potentially large files. (~100MB+)</li>"
+            "<li><b>No vertex pressure data:</b> Only 3D geometry, metadata, and pressure statistics. Smallest files (~5MB)</li>"
+            "<li><b>All vertex pressure data:</b> Complete per-vertex pressure data with all frames. Larger files (~100MB+)</li>"
             "</ul>"
+            "<br><i>Note: Pressure metadata and statistics are always included in both options.</i>"
         )
 
         choice, ok = QInputDialog.getItem(
@@ -2372,7 +2354,7 @@ class DataWindow(QMainWindow):
             "Frame Export Options",
             dialog_text,
             frame_options,
-            2,  # Default to All frames
+            1,  # Default to All vertex pressure data
             False,
         )
 
@@ -2380,17 +2362,11 @@ class DataWindow(QMainWindow):
             return  # User cancelled
 
         # Determine max frames and compression mode based on choice
-        if "Basic" in choice:
-            max_frames = 0
+        if "No vertex pressure data" in choice:
+            max_frames = 0  # No per-vertex pressure data
             compression_mode = "minimal"
-        elif "All" in choice:
-            max_frames = -1  # All frames
-            compression_mode = "full"
-        elif "100" in choice:
-            max_frames = 100
-            compression_mode = "full"
-        else:
-            max_frames = -1  # Fallback to all frames
+        else:  # "All vertex pressure data"
+            max_frames = -1  # Export all per-vertex pressure frames
             compression_mode = "full"
 
         # Prompt the user to choose a destination directory
@@ -2412,6 +2388,12 @@ class DataWindow(QMainWindow):
 
             # Show results to user
             if results["success"]:
+                # Conditional pressure features based on what was exported
+                if max_frames == 0:
+                    pressure_features = "• Pressure metadata and statistics\n"
+                else:
+                    pressure_features = "• Per-vertex HRM pressure data\n• Pressure metadata and statistics\n"
+
                 QMessageBox.information(
                     self,
                     "Mass Export Successful",
@@ -2420,7 +2402,7 @@ class DataWindow(QMainWindow):
                     f"Failed: {results['failed_count']} filess\n"
                     f"Output directory: {results['output_directory']}\n\n"
                     f"All VTKHDF files include ML-ready attributes:\n"
-                    f"• Per-vertex HRM pressure data\n"
+                    f"{pressure_features}"
                     f"• Per-vertex wall thickness\n"
                     f"• Per-vertex anatomical region classification (LES/tubular)\n"
                     f"• Comprehensive patient and visit metadata\n"
