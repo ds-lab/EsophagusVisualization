@@ -4,10 +4,10 @@ block_cipher = None
 
 a = Analysis(
     ['main.py'],
-    pathex=['\\mac\\Home\\Documents\\Studium\\WIN Master\\Semester\\MA\\3d_rekonstruktionspeiseroehre\\3drekonstruktionspeiseroehre'],
+    pathex=['C:\\Users\\frede\\PycharmProjects\\3drekonstruktionspeiseroehre\\3drekonstruktionspeiseroehre'],
     binaries=[],
     datas=[
-        ('C:\\Users\\davidjochner\\anaconda3\\envs\\esophagus-visualization\\Lib\\site-packages\\', '.'),
+        ('C:\\Users\\frede\\.conda\\envs\\esophagus-visualization\\Lib\\site-packages\\', '.'),
         ('ui-files', 'ui-files'),
         ('media', 'media'),
         ('logic', 'logic'),
