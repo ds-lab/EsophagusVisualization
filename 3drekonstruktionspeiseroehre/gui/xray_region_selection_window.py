@@ -29,13 +29,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
     next_window = None
     all_visualization = []
 
-    def __init__(
-        self,
-        master_window: MasterWindow,
-        patient_data: PatientData,
-        visit: VisitData,
-        n,
-    ):
+    def __init__(self, master_window: MasterWindow, patient_data: PatientData, visit: VisitData, n):
         """
         init XrayRegionSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
@@ -78,19 +72,13 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         self.ui.apply_button.setEnabled(True)
         # Create a plot axis for displaying the image
         self.plot_ax = self.figure_canvas.figure.subplots()
-        self.figure_canvas.figure.subplots_adjust(
-            bottom=0.05, top=0.95, left=0.05, right=0.95
-        )
+        self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
         self.polygon_colors = ["red", "blue", "green"]
         self.current_polygon_index = 0
         self.polygon_selectors = []
         self.polygon_points = {}
         self.checkboxes = [self.ui.oesophagus, self.ui.spine, self.ui.barium]
-        self.checkbox_names = {
-            self.ui.oesophagus: "oesophagus",
-            self.ui.spine: "spine",
-            self.ui.barium: "barium",
-        }
+        self.checkbox_names = {self.ui.oesophagus: "oesophagus", self.ui.spine: "spine", self.ui.barium: "barium"}
         # Load the X-ray image
         image = Image.open(self.visualization_data.xray_file)
         self.xray_image = np.array(image)
@@ -98,20 +86,43 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         # Display the X-ray image
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis("off")
-        if self.visualization_data.use_model:
-            print("I am using the nnUnet model")
-            # Calculate the initial polygon from the X-ray image with the nnUnet
-            mask = self.predict_mask_with_nnunet_v2()
-            self.mask = (mask > 0.5).astype(np.uint8) * 255
-            self.polygonOes = self.mask_to_largest_polygon()
-            self.init_first_polygon_ml()
+
+        # If a pre-existing polygon is available (from reconstruction), prefer it
+        preloaded_polygon = getattr(self.visualization_data, "xray_polygon", None)
+        if preloaded_polygon is not None and len(preloaded_polygon) > 2:
+            try:
+                import numpy as _np
+
+                self.polygonOes = preloaded_polygon.tolist() if isinstance(preloaded_polygon, _np.ndarray) else preloaded_polygon
+                self.init_first_polygon()
+            except Exception:
+                # Fallback to default behavior if preloading fails
+                self.polygonOes = None
+                # Proceed with default branch below
+                if self.visualization_data.use_model:
+                    print("I am using the nnUnet model")
+                    mask = self.predict_mask_with_nnunet_v2()
+                    self.mask = (mask > 0.5).astype(np.uint8) * 255
+                    self.polygonOes = self.mask_to_largest_polygon()
+                    self.init_first_polygon_ml()
+                else:
+                    print("I do not use the nnUnet model")
+                    self.polygonOes = image_polygon_detection.calculate_xray_polygon(self.xray_image)
+                    self.init_first_polygon()
         else:
-            print("I do not use the nnUnet model")
-            # Calculate the initial polygon from the X-ray image
-            self.polygonOes = image_polygon_detection.calculate_xray_polygon(
-                self.xray_image
-            )
-            self.init_first_polygon()
+            # No preloaded polygon → use normal initialization
+            if self.visualization_data.use_model:
+                print("I am using the nnUnet model")
+                # Calculate the initial polygon from the X-ray image with the nnUnet
+                mask = self.predict_mask_with_nnunet_v2()
+                self.mask = (mask > 0.5).astype(_np.uint8) * 255
+                self.polygonOes = self.mask_to_largest_polygon()
+                self.init_first_polygon_ml()
+            else:
+                print("I do not use the nnUnet model")
+                # Calculate the initial polygon from the X-ray image
+                self.polygonOes = image_polygon_detection.calculate_xray_polygon(self.xray_image)
+                self.init_first_polygon()
 
     # methods for ml integegration:
     def predict_mask_with_nnunet_v2(self):
@@ -123,9 +134,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         os.environ["nnUNet_results"] = "C:/ModelAchalasia/nnUNet_results"
 
         temp_input_dir = "C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs"
-        temp_output_dir = (
-            "C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs_pred"
-        )
+        temp_output_dir = "C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs_pred"
         os.makedirs(temp_output_dir, exist_ok=True)
         os.makedirs(temp_input_dir, exist_ok=True)
 
@@ -148,11 +157,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         )
         nnUNet_results = "C:/ModelAchalasia/nnUNet_results/Dataset001_Breischluck/nnUNetTrainer_100epochs__nnUNetResEncUNetMPlans__2d"
         # initializes the network architecture, loads the checkpoint
-        predictor.initialize_from_trained_model_folder(
-            nnUNet_results,
-            use_folds=(0,),
-            checkpoint_name="checkpoint_final.pth",
-        )
+        predictor.initialize_from_trained_model_folder(nnUNet_results, use_folds=(0,), checkpoint_name="checkpoint_final.pth")
         # variant 1: give input and output folders
         predictor.predict_from_files(
             "C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs",
@@ -178,9 +183,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         """
         If more than one contour is predicted, the largest is selected.
         """
-        contours, _ = cv2.findContours(
-            self.mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-        )
+        contours, _ = cv2.findContours(self.mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         largest_area = 0
         largest_polygon = None
@@ -202,9 +205,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
     def init_first_polygon_ml(self):
         # Always create the initial polygon
         color = self.polygon_colors[0]
-        self.selector = PolygonSelector(
-            self.plot_ax, self.__onselect, useblit=True, props=dict(color=color)
-        )
+        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
         self.polygon_selectors.append(self.selector)
 
         # Check if self.polygonOes is a Polygon object or a list of points
@@ -227,9 +228,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
     def init_first_polygon(self):
         # Always create the initial polygon
         color = self.polygon_colors[0]
-        self.selector = PolygonSelector(
-            self.plot_ax, self.__onselect, useblit=True, props=dict(color=color)
-        )
+        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
         self.polygon_selectors.append(self.selector)
 
         # If the polygon has more than 2 points, set it as the initial selection
@@ -243,9 +242,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
 
     def init_polygon_selector(self):
         color = self.polygon_colors[self.current_polygon_index]
-        self.selector = PolygonSelector(
-            self.plot_ax, self.__onselect, useblit=True, props=dict(color=color)
-        )
+        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
         self.polygon_selectors.append(self.selector)
 
     def __onselect(self, verts):
@@ -256,9 +253,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
     # methods for both segemenation types
     def init_polygon_selector(self):
         color = self.polygon_colors[self.current_polygon_index]
-        self.selector = PolygonSelector(
-            self.plot_ax, self.__onselect, useblit=True, props=dict(color=color)
-        )
+        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color=color))
         self.polygon_selectors.append(self.selector)
 
     def __onselect(self, verts):
@@ -303,11 +298,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         """
 
         if not self.__validate_current_polygon():
-            QMessageBox.critical(
-                self,
-                "Error",
-                "The current polygon is invalid. Please correct it before proceeding.",
-            )
+            QMessageBox.critical(self, "Error", "The current polygon is invalid. Please correct it before proceeding.")
             return
         # Move to the next checkbox
         self.current_polygon_index += 1
@@ -360,9 +351,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
             self.ui.apply_button.setDisabled(True)
 
             # Save the esophagus polygon
-            self.visualization_data.xray_polygon = np.array(
-                self.polygon_points["oesophagus"], dtype=int
-            )
+            self.visualization_data.xray_polygon = np.array(self.polygon_points["oesophagus"], dtype=int)
             self.visualization_data.xray_image_height = self.xray_image.shape[0]
             self.visualization_data.xray_image_width = self.xray_image.shape[1]
 
@@ -374,12 +363,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
 
             # Move to the next window
             position_selection_window = PositionSelectionWindow(
-                self.master_window,
-                self.next_window,
-                self.patient_data,
-                self.visit,
-                self.n,
-                self.polygon_points["oesophagus"],
+                self.master_window, self.next_window, self.patient_data, self.visit, self.n, self.polygon_points["oesophagus"]
             )
             self.master_window.switch_to(position_selection_window)
             self.close()
@@ -401,17 +385,13 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         Process and save mask images based on the selected checkboxes.
         """
 
-        safe_visit_name = (
-            self.visit.name.replace(":", "_").replace("[", "_").replace("]", "_")
-        )
+        safe_visit_name = self.visit.name.replace(":", "_").replace("[", "_").replace("]", "_")
 
         base_path = rf"C:\DataAchalasia\{safe_visit_name}"
 
         if not os.path.exists(base_path):
             os.makedirs(base_path)
-        checked_count = sum(
-            checkbox.isChecked() for checkbox in self.checkbox_names.keys()
-        )
+        checked_count = sum(checkbox.isChecked() for checkbox in self.checkbox_names.keys())
         if checked_count > 0:
             img_filename = f"{self.visualization_data.xray_minute}.jpg"
             path = os.path.join(base_path, img_filename)
@@ -421,18 +401,14 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
             if checkbox.isChecked():
                 polygon = self.polygon_points.get(polygon_name)
                 if polygon:
-                    mask_filename = (
-                        f"{self.visualization_data.xray_minute}_{polygon_name}_mask.jpg"
-                    )
+                    mask_filename = f"{self.visualization_data.xray_minute}_{polygon_name}_mask.jpg"
                     self.__save_mask(polygon, base_path, mask_filename)
 
     def __save_mask(self, polygon, base_path, mask_filename):
         """
         Save the mask image for a given polygon.
         """
-        colored_image = np.zeros(
-            (self.xray_image.shape[0], self.xray_image.shape[1]), dtype=np.uint8
-        )
+        colored_image = np.zeros((self.xray_image.shape[0], self.xray_image.shape[1]), dtype=np.uint8)
         cv2.fillPoly(colored_image, [np.array(polygon, dtype=int)], 255)
         mask_path = os.path.join(base_path, mask_filename)
         cv2.imwrite(mask_path, colored_image)

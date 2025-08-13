@@ -14,15 +14,7 @@ from matplotlib.patches import Polygon
 import matplotlib.pyplot as plt
 from matplotlib.widgets import PolygonSelector
 from PyQt6 import uic
-from PyQt6.QtWidgets import (
-    QMainWindow,
-    QMessageBox,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QFrame,
-)
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame
 from PyQt6.QtGui import QAction
 from logic.figure_creator.figure_creator import FigureCreator
 import numpy as np
@@ -34,15 +26,7 @@ from PIL import Image
 class SensorCenterPathWindow(BaseWorkflowWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    def __init__(
-        self,
-        master_window: MasterWindow,
-        next_window,
-        patient_data: PatientData,
-        visit: VisitData,
-        n: int,
-        xray_polygon,
-    ):
+    def __init__(self, master_window: MasterWindow, next_window, patient_data: PatientData, visit: VisitData, n: int, xray_polygon):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -86,9 +70,7 @@ class SensorCenterPathWindow(BaseWorkflowWindow):
         self.plot_ax = self.figure_canvas.figure.subplots()
         image = Image.open(self.visualization_data.xray_file)
         self.xray_image = np.array(image)
-        self.figure_canvas.figure.subplots_adjust(
-            bottom=0.05, top=0.95, left=0.05, right=0.95
-        )
+        self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis("off")
 
@@ -96,64 +78,40 @@ class SensorCenterPathWindow(BaseWorkflowWindow):
 
         # Draw the polygon using the xray_polygon data
         if self.xray_polygon:
-            poly = Polygon(
-                self.xray_polygon, closed=True, fill=None, edgecolor="lime", linewidth=1
-            )
+            poly = Polygon(self.xray_polygon, closed=True, fill=None, edgecolor="lime", linewidth=1)
             self.plot_ax.add_patch(poly)
 
-        mask = np.zeros(
-            (
-                self.visualization_data.xray_image_height,
-                self.visualization_data.xray_image_width,
-            )
-        )
+        mask = np.zeros((self.visualization_data.xray_image_height, self.visualization_data.xray_image_width))
         # parameter for drawContours: outputArray, inputArray, contourIdx (-1 means all contours),
         # color (1 means white), thickness (thickness -1 means the areas bounded by the contours is filled)
-        cv2.drawContours(
-            mask, [np.array(self.visualization_data.xray_polygon)], -1, 1, -1
-        )
+        cv2.drawContours(mask, [np.array(self.visualization_data.xray_polygon)], -1, 1, -1)
         self.visualization_data.xray_mask = mask
 
         if self.visualization_data.sensor_path is not None:
             # If sensor path was created and/or adapted use that one
             self.cal_sensor_path = self.visualization_data.sensor_path
-            print("TEST WHEN ACTIVATED")
         else:
             # Calculate a path through the esophagus along the xray image (sensor path)
-            self.cal_sensor_path = (
-                FigureCreator.calculate_shortest_path_through_esophagus(
-                    self.visualization_data
-                )
-            )
+            self.cal_sensor_path = FigureCreator.calculate_shortest_path_through_esophagus(self.visualization_data)
 
         # Calculate center path
-        self.cal_widths, self.cal_centers, self.cal_slopes, self.cal_offset_top = (
-            FigureCreator.calculate_widths_centers_slope_offset(
-                self.visualization_data, self.cal_sensor_path
-            )
+        self.cal_widths, self.cal_centers, self.cal_slopes, self.cal_offset_top = FigureCreator.calculate_widths_centers_slope_offset(
+            self.visualization_data, self.cal_sensor_path
         )
         self.cal_centers = np.array(self.cal_centers)
 
         # Visualize sensor/center path as colored Line
-        self.sens_drawn = Line2D(
-            self.cal_sensor_path[:, 1], self.cal_sensor_path[:, 0], color="orange"
-        )
-        self.center_drawn = Line2D(
-            self.cal_centers[:, 1], self.cal_centers[:, 0], color="blue"
-        )
+        self.sens_drawn = Line2D(self.cal_sensor_path[:, 1], self.cal_sensor_path[:, 0], color="orange")
+        self.center_drawn = Line2D(self.cal_centers[:, 1], self.cal_centers[:, 0], color="blue")
         self.plot_ax.add_line(self.center_drawn)
         self.plot_ax.add_line(self.sens_drawn)
 
-        self.center_path = [
-            (yx[1], yx[0]) for yx in self.cal_centers
-        ]  # In format [(x,y)]
+        self.center_path = [(yx[1], yx[0]) for yx in self.cal_centers]  # In format [(x,y)]
         self.x_coords, self.y_coords = zip(*self.center_path)
         self.x_coords = np.array(self.x_coords)[::15]
         self.y_coords = np.array(self.y_coords)[::15]
 
-        self.line = Line2D(
-            self.x_coords, self.y_coords, color="red", marker="o", markersize=4
-        )
+        self.line = Line2D(self.x_coords, self.y_coords, color="red", marker="o", markersize=4)
         self.plot_ax.add_line(self.line)
 
         # Make visualized center path adaptable for user
@@ -203,9 +161,7 @@ class SensorCenterPathWindow(BaseWorkflowWindow):
             item_layout = QHBoxLayout()
             color_box = QFrame()
             color_box.setFixedSize(20, 20)
-            color_box.setStyleSheet(
-                f"background-color: {color}; border: 1px solid black;"
-            )
+            color_box.setStyleSheet(f"background-color: {color}; border: 1px solid black;")
             label = QLabel(text)
             item_layout.addWidget(color_box)
             item_layout.addWidget(label)
@@ -254,38 +210,27 @@ class SensorCenterPathWindow(BaseWorkflowWindow):
         # Save the new center path in the visualization_data
         if len(self.center_path) > 2:
             if len(self.center_path) < len(self.cal_centers):
-                self.visualization_data.center_path = FigureCreator.interpolate_path(
-                    path=self.center_path, number=len(self.cal_centers)
-                )
+                self.visualization_data.center_path = FigureCreator.interpolate_path(path=self.center_path, number=len(self.cal_centers))
             elif len(self.center_path) > len(self.cal_centers):
                 factor = len(self.center_path) / len(self.cal_centers)
                 indices = np.arange(0, len(self.center_path), factor, dtype=int)
                 self.visualization_data.center_path = self.center_path[indices]
             else:
                 self.visualization_data.center_path = self.center_path
-        self.visualization_data.center_path = np.array(
-            [(yx[1], yx[0]) for yx in self.visualization_data.center_path],
-            dtype=np.int32,
-        )
+        self.visualization_data.center_path = np.array([(yx[1], yx[0]) for yx in self.visualization_data.center_path], dtype=np.int32)
         # self.cal_widths, _, self.cal_slopes, self.cal_offset_top = FigureCreator.calculate_widths_centers_slope_offset(
         #    self.visualization_data, self.visualization_data.center_path)
 
         self.visualization_data.widths = self.cal_widths
         self.visualization_data.slopes = self.cal_slopes
         self.visualization_data.offset = self.cal_offset_top
-        self.visualization_data.sensor_path = np.array(
-            self.cal_sensor_path, dtype=np.int32
-        )
+        self.visualization_data.sensor_path = np.array(self.cal_sensor_path, dtype=np.int32)
 
         esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(
-            self.visualization_data.sensor_path,
-            0,
-            self.visualization_data.esophagus_exit_pos,
+            self.visualization_data.sensor_path, 0, self.visualization_data.esophagus_exit_pos
         )
         esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(
-            self.visualization_data.sensor_path,
-            esophagus_full_length_px,
-            self.visualization_data,
+            self.visualization_data.sensor_path, esophagus_full_length_px, self.visualization_data
         )
         self.visualization_data.esophagus_len = esophagus_full_length_cm
         # v * mean(timeframe) ; v/mean(timeframe)
@@ -321,18 +266,14 @@ class SensorCenterPathWindow(BaseWorkflowWindow):
             self.master_window.switch_to(self.next_window)
         # Handle Endoscopy annotation
         elif len(self.visualization_data.endoscopy_files) > 0:
-            endoscopy_selection_window = EndoscopySelectionWindow(
-                self.master_window, self.patient_data, self.visit
-            )
+            endoscopy_selection_window = EndoscopySelectionWindow(self.master_window, self.patient_data, self.visit)
             self.master_window.switch_to(endoscopy_selection_window)
             self.close()
         # Else show the visualization
         else:
             # Add new visit to patient data
             self.patient_data.add_visit(self.visit.name, self.visit)
-            visualization_window = VisualizationWindow(
-                self.master_window, self.patient_data
-            )
+            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
             self.master_window.switch_to(visualization_window)
             self.close()
 
@@ -349,17 +290,12 @@ class SensorCenterPathWindow(BaseWorkflowWindow):
         widths = np.array(self.visualization_data.widths)
         volumen_ready = (((widths * self.cm_to_px_ratio) / 2) ** 2) * np.pi
         volumen = np.sum(volumen_ready)
-        if (
-            config.volumen_upper_boundary < volumen
-            or volumen < config.volumen_lower_boundary
-        ):
+        if config.volumen_upper_boundary < volumen or volumen < config.volumen_lower_boundary:
             return volumen
         return None
 
     def length_checker(self):
-        exact_length = FigureCreator.calculate_esophagus_exact_length(
-            self.visualization_data.center_path, self.cm_to_px_ratio
-        )
+        exact_length = FigureCreator.calculate_esophagus_exact_length(self.visualization_data.center_path, self.cm_to_px_ratio)
         if exact_length > config.max_eso_length or exact_length < config.min_eso_length:
             return exact_length
         return None

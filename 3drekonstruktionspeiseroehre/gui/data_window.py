@@ -18,21 +18,11 @@ from gui.show_message import ShowMessage
 from gui.dci_selection_window import DCISelectionWindow
 from gui.visualization_window import VisualizationWindow
 from gui.download_data_menu import DownloadData
-from logic.datainput.endoflip_data_processing import (
-    process_endoflip_xlsx,
-    conduct_endoflip_file_upload,
-    process_and_upload_endoflip_images,
-)
-from logic.datainput.endoscopy_data_processing import (
-    process_and_upload_endoscopy_images,
-)
-from logic.datainput.barium_swallow_data_processing import (
-    process_and_upload_barium_swallow_images,
-)
+from logic.datainput.endoflip_data_processing import process_endoflip_xlsx, conduct_endoflip_file_upload, process_and_upload_endoflip_images
+from logic.datainput.endoscopy_data_processing import process_and_upload_endoscopy_images
+from logic.datainput.barium_swallow_data_processing import process_and_upload_barium_swallow_images
 from logic.datainput.manometry_data_processing import process_and_upload_manometry_file
-from logic.datainput.endosonography_data_processing import (
-    process_and_upload_endosonography_images,
-)
+from logic.datainput.endosonography_data_processing import process_and_upload_endosonography_images
 from logic.database import database
 from logic.datainput.validate_input_data import DataValidation
 from logic.datainput.check_data_existence import CheckDataExistence
@@ -42,19 +32,9 @@ from logic.services.eckardtscore_service import EckardtscoreService
 from logic.services.manometry_service import ManometryService, ManometryFileService
 from logic.services.previous_therapy_service import PreviousTherapyService
 from logic.services.endoscopy_service import EndoscopyService, EndoscopyFileService
-from logic.services.endoflip_service import (
-    EndoflipService,
-    EndoflipFileService,
-    EndoflipImageService,
-)
-from logic.services.endosonography_service import (
-    EndosonographyImageService,
-    EndosonographyVideoService,
-)
-from logic.services.barium_swallow_service import (
-    BariumSwallowService,
-    BariumSwallowFileService,
-)
+from logic.services.endoflip_service import EndoflipService, EndoflipFileService, EndoflipImageService
+from logic.services.endosonography_service import EndosonographyImageService, EndosonographyVideoService
+from logic.services.barium_swallow_service import BariumSwallowService, BariumSwallowFileService
 from logic.services.botox_injection_service import BotoxInjectionService
 from logic.services.complications_service import ComplicationsService
 from logic.services.pneumatic_dilatation_service import PneumaticDilatationService
@@ -63,11 +43,7 @@ from logic.services.lhm_service import LHMService
 from logic.services.poem_service import POEMService
 from logic.services.gerd_service import GerdService
 from logic.services.reconstruction_service import ReconstructionService
-from logic.database.pyqt_models import (
-    CustomPatientModel,
-    CustomPreviousTherapyModel,
-    CustomVisitsModel,
-)
+from logic.database.pyqt_models import CustomPatientModel, CustomPreviousTherapyModel, CustomVisitsModel
 from logic.visit_data import VisitData
 from logic.visualization_data import VisualizationData
 from logic.dataoutput.export_data import ExportData
@@ -76,12 +52,7 @@ from logic.dataoutput.vtkhdf_exporter import run_mass_export_with_progress
 
 class DataWindow(QMainWindow):
 
-    def __init__(
-        self,
-        master_window: MasterWindow,
-        patient_data: PatientData = PatientData(),
-        return_to_visualization: bool = False,
-    ):
+    def __init__(self, master_window: MasterWindow, patient_data: PatientData = PatientData(), return_to_visualization: bool = False):
         super(DataWindow, self).__init__()
         self.selected_patient = None
         self.selected_visit = None
@@ -132,9 +103,7 @@ class DataWindow(QMainWindow):
         self.endoflip_file_service = EndoflipFileService(self.db)
         self.endoflip_image_service = EndoflipImageService(self.db)
         self.endosonography_image_service = EndosonographyImageService(self.db)
-        self.endosonography_video_service = EndosonographyVideoService(
-            self.db, self.engine
-        )
+        self.endosonography_video_service = EndosonographyVideoService(self.db, self.engine)
         self.botox_injection_service = BotoxInjectionService(self.db)
         self.complications_service = ComplicationsService(self.db)
         self.pneumatic_dilatation_service = PneumaticDilatationService(self.db)
@@ -173,15 +142,9 @@ class DataWindow(QMainWindow):
         # Connect Buttons to Functions
         # Patients Tab
         self.ui.patient_add_button.clicked.connect(self.__patient_add_button_clicked)
-        self.ui.patient_update_button.clicked.connect(
-            self.__patient_update_button_clicked
-        )
-        self.ui.patient_delete_button.clicked.connect(
-            self.__patient_delete_button_clicked
-        )
-        self.ui.patient_reset_filter_button.clicked.connect(
-            self.__patients_reset_filter_button_clicked
-        )
+        self.ui.patient_update_button.clicked.connect(self.__patient_update_button_clicked)
+        self.ui.patient_delete_button.clicked.connect(self.__patient_delete_button_clicked)
+        self.ui.patient_reset_filter_button.clicked.connect(self.__patients_reset_filter_button_clicked)
         # Filter Patients
         self.ui.patient_id_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.birthyear_radio.toggled.connect(self.__patients_apply_filter)
@@ -191,12 +154,8 @@ class DataWindow(QMainWindow):
         self.ui.firstsymptoms_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.center_radio.toggled.connect(self.__patients_apply_filter)
         # Previous Therapies
-        self.ui.previous_therapy_add_button.clicked.connect(
-            self.__previous_therapy_add_button_clicked
-        )
-        self.ui.previous_therapy_delete_button.clicked.connect(
-            self.__previous_therapy_delete_button_clicked
-        )
+        self.ui.previous_therapy_add_button.clicked.connect(self.__previous_therapy_add_button_clicked)
+        self.ui.previous_therapy_delete_button.clicked.connect(self.__previous_therapy_delete_button_clicked)
 
         # Visits Tab
         self.ui.visit_add_button.clicked.connect(self.__visit_add_button_clicked)
@@ -211,23 +170,17 @@ class DataWindow(QMainWindow):
         self.ui.add_medication_button.clicked.connect(self.__add_medication)
         self.ui.delete_medication_button.clicked.connect(self.__delete_medication)
         # Create Visualization
-        self.ui.visits_create_visualization_button.clicked.connect(
-            self.__create_visualization
-        )
+        self.ui.visits_create_visualization_button.clicked.connect(self.__create_visualization)
 
         # Diagnostics and Therapy Tab
         # Manometry
         self.ui.add_manometry_button.clicked.connect(self.__add_manometry)
         self.ui.delete_manometry_button.clicked.connect(self.__delete_manometry)
-        self.ui.manometry_file_upload_button.clicked.connect(
-            self.__upload_manometry_file
-        )
+        self.ui.manometry_file_upload_button.clicked.connect(self.__upload_manometry_file)
         # Barium Swallow / TBE
         self.ui.add_tbe_button.clicked.connect(self.__add_barium_swallow)
         self.ui.delete_tbe_button.clicked.connect(self.__delete_barium_swallow)
-        self.ui.tbe_file_upload_button.clicked.connect(
-            self.__upload_barium_swallow_images
-        )
+        self.ui.tbe_file_upload_button.clicked.connect(self.__upload_barium_swallow_images)
         # Endoscopy / EGD
         self.ui.add_egd_button.clicked.connect(self.__add_endoscopy)
         self.ui.delete_egd_button.clicked.connect(self.__delete_endoscopy)
@@ -235,22 +188,12 @@ class DataWindow(QMainWindow):
         # Endoflip
         self.ui.add_endoflip_button.clicked.connect(self.__add_endoflip)
         self.ui.delete_endoflip_button.clicked.connect(self.__delete_endoflip)
-        self.ui.endoflip_file_upload_button.clicked.connect(
-            self.__upload_endoflip_files
-        )
-        self.ui.endoflip_image_upload_button.clicked.connect(
-            self.__upload_endoflip_image
-        )
+        self.ui.endoflip_file_upload_button.clicked.connect(self.__upload_endoflip_files)
+        self.ui.endoflip_image_upload_button.clicked.connect(self.__upload_endoflip_image)
         # Endosonography
-        self.ui.endosono_image_upload_button.clicked.connect(
-            self.__upload_endosonography_images
-        )
-        self.ui.endosono_video_upload_button.clicked.connect(
-            self.__upload_endosonography_video
-        )
-        self.ui.endosono_video_download_button.clicked.connect(
-            self.__download_endosonography_video
-        )
+        self.ui.endosono_image_upload_button.clicked.connect(self.__upload_endosonography_images)
+        self.ui.endosono_video_upload_button.clicked.connect(self.__upload_endosonography_video)
+        self.ui.endosono_video_download_button.clicked.connect(self.__download_endosonography_video)
         # Therapy Buttons
         # Botox
         self.ui.add_botox_side_button.clicked.connect(self.__add_botox_injection)
@@ -266,49 +209,22 @@ class DataWindow(QMainWindow):
         self.ui.add_poem_button.clicked.connect(self.__add_poem)
         self.ui.delete_poem_button.clicked.connect(self.__delete_poem)
         # Create Visualization
-        self.ui.visitdata_create_visualization_button.clicked.connect(
-            self.__create_visualization
-        )
+        self.ui.visitdata_create_visualization_button.clicked.connect(self.__create_visualization)
 
         # Buttons of the Image Viewers
-        self.ui.endoscopy_previous_button.clicked.connect(
-            self.__endoscopy_previous_button_clicked
-        )
-        self.ui.endoscopy_next_button.clicked.connect(
-            self.__endoscopy_next_button_clicked
-        )
-        self.ui.tbe_previous_button.clicked.connect(
-            self.__barium_swallow_previous_button_clicked
-        )
-        self.ui.tbe_next_button.clicked.connect(
-            self.__barium_swallow_next_button_clicked
-        )
-        self.ui.endoflip_previous_button.clicked.connect(
-            self.__endoflip_previous_button_clicked
-        )
-        self.ui.endoflip_next_button.clicked.connect(
-            self.__endoflip_next_button_clicked
-        )
-        self.ui.endosono_previous_button.clicked.connect(
-            self.__endosonography_previous_button_clicked
-        )
-        self.ui.endosono_next_button.clicked.connect(
-            self.__endosonography_next_button_clicked
-        )
+        self.ui.endoscopy_previous_button.clicked.connect(self.__endoscopy_previous_button_clicked)
+        self.ui.endoscopy_next_button.clicked.connect(self.__endoscopy_next_button_clicked)
+        self.ui.tbe_previous_button.clicked.connect(self.__barium_swallow_previous_button_clicked)
+        self.ui.tbe_next_button.clicked.connect(self.__barium_swallow_next_button_clicked)
+        self.ui.endoflip_previous_button.clicked.connect(self.__endoflip_previous_button_clicked)
+        self.ui.endoflip_next_button.clicked.connect(self.__endoflip_next_button_clicked)
+        self.ui.endosono_previous_button.clicked.connect(self.__endosonography_previous_button_clicked)
+        self.ui.endosono_next_button.clicked.connect(self.__endosonography_next_button_clicked)
         self.model_enabled = self.ui.use_model_checkbox
         self.model_enabled_checked = False
         self.model_enabled.toggled.connect(self.__on_model_enabled_toggled)
-        self.widget_names = {
-            "Botox injection": 1,
-            "Pneumatic Dilation": 2,
-            "LHM": 3,
-            "POEM": 4,
-        }
-        self.endoflip_widgets = {
-            "Initial Diagnostic": 0,
-            "Therapy": 1,
-            "Follow-Up Diagnostic": 2,
-        }
+        self.widget_names = {"Botox injection": 1, "Pneumatic Dilation": 2, "LHM": 3, "POEM": 4}
+        self.endoflip_widgets = {"Initial Diagnostic": 0, "Therapy": 1, "Follow-Up Diagnostic": 2}
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
@@ -337,9 +253,7 @@ class DataWindow(QMainWindow):
             if self.return_to_visualization:
                 self.back_action = QAction("← Back to Visualization", self)
                 self.back_action.triggered.connect(self.__handle_back_to_visualization)
-                self.back_action.setToolTip(
-                    "Return to the visualization window without adding a new reconstruction"
-                )
+                self.back_action.setToolTip("Return to the visualization window without adding a new reconstruction")
                 self.nav_toolbar.addAction(self.back_action)
 
                 # Add separator
@@ -366,9 +280,7 @@ class DataWindow(QMainWindow):
             patient_data_to_use = self.patient_data
 
         # Create a new visualization window with the restored patient data
-        visualization_window = VisualizationWindow(
-            self.master_window, patient_data_to_use
-        )
+        visualization_window = VisualizationWindow(self.master_window, patient_data_to_use)
         self.master_window.switch_to(visualization_window, add_to_history=False)
 
     # Function of the UI
@@ -381,9 +293,7 @@ class DataWindow(QMainWindow):
         info_window.show_data_window_info()
         info_window.show()
 
-    def __initialize_patient_model(
-        self, filter_column: int = 6, filter_expression: str = ".*"
-    ):
+    def __initialize_patient_model(self, filter_column: int = 6, filter_expression: str = ".*"):
         self.patients = self.patient_service.get_all_patients()
         self.patient_model = CustomPatientModel(self.patients)
         self.patient_proxyModel = QSortFilterProxyModel()
@@ -398,12 +308,8 @@ class DataWindow(QMainWindow):
         self.patient_tableView.verticalHeader().setDefaultSectionSize(30)
         self.patient_tableView.setColumnWidth(0, 50)
         self.patient_tableView.resizeColumnsToContents()
-        self.patient_tableView.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows
-        )
-        self.patient_tableView.setSelectionMode(
-            QtWidgets.QAbstractItemView.SelectionMode.SingleSelection
-        )
+        self.patient_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.patient_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.patient_tableView.clicked.connect(self.__select_patient)
         # self.tableView.hideColumn(0)
 
@@ -432,24 +338,16 @@ class DataWindow(QMainWindow):
                     "gender": self.ui.gender_dropdown.currentText(),
                     "ethnicity": self.ui.ethnicity_dropdown.currentText(),
                     "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
-                    "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date()
-                    .toPyDate()
-                    .year,
-                    "year_first_symptoms": self.ui.firstsymptoms_calendar.date()
-                    .toPyDate()
-                    .year,
+                    "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                    "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
                     "center": self.ui.center_text.text(),
                 }
                 # Validate Patients data
                 patient_dict, error = DataValidation.validate_patient(pat_dict)
-                if (
-                    error
-                ):  # return if the user wants or needs to fill out additional data
+                if error:  # return if the user wants or needs to fill out additional data
                     return
                 # update the patient in the database
-                self.patient_service.update_patient(
-                    self.ui.patient_id_field.text(), pat_dict
-                )
+                self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
             else:  # return if the patient exists and should not be updated
                 return
         else:  # the patient does not exist yet
@@ -458,12 +356,8 @@ class DataWindow(QMainWindow):
                 "gender": self.ui.gender_dropdown.currentText(),
                 "ethnicity": self.ui.ethnicity_dropdown.currentText(),
                 "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
-                "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date()
-                .toPyDate()
-                .year,
-                "year_first_symptoms": self.ui.firstsymptoms_calendar.date()
-                .toPyDate()
-                .year,
+                "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
                 "center": self.ui.center_text.text(),
             }
             # Validate the Patients data
@@ -479,12 +373,8 @@ class DataWindow(QMainWindow):
             "gender": self.ui.gender_dropdown.currentText(),
             "ethnicity": self.ui.ethnicity_dropdown.currentText(),
             "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
-            "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date()
-            .toPyDate()
-            .year,
-            "year_first_symptoms": self.ui.firstsymptoms_calendar.date()
-            .toPyDate()
-            .year,
+            "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+            "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
             "center": self.ui.center_text.text(),
         }
         output = ""
@@ -507,19 +397,13 @@ class DataWindow(QMainWindow):
                     "gender": self.ui.gender_dropdown.currentText(),
                     "ethnicity": self.ui.ethnicity_dropdown.currentText(),
                     "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
-                    "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date()
-                    .toPyDate()
-                    .year,
-                    "year_first_symptoms": self.ui.firstsymptoms_calendar.date()
-                    .toPyDate()
-                    .year,
+                    "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                    "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
                     "center": self.ui.center_text.text(),
                 }
                 # Validate the Patients data
                 patient_dict, error = DataValidation.validate_patient(pat_dict)
-                if (
-                    error
-                ):  # return if the user wants or needs to fill out additional data
+                if error:  # return if the user wants or needs to fill out additional data
                     return
                 self.patient_service.create_patient(pat_dict)
         else:  # if patient exists in database, patient data can be updated
@@ -527,21 +411,15 @@ class DataWindow(QMainWindow):
                 "gender": self.ui.gender_dropdown.currentText(),
                 "ethnicity": self.ui.ethnicity_dropdown.currentText(),
                 "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
-                "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date()
-                .toPyDate()
-                .year,
-                "year_first_symptoms": self.ui.firstsymptoms_calendar.date()
-                .toPyDate()
-                .year,
+                "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+                "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
                 "center": self.ui.center_text.text(),
             }
             # Validate the Patients data
             patient_dict, error = DataValidation.validate_patient(pat_dict)
             if error:  # return if the user wants or needs to fill out additional data
                 return
-            self.patient_service.update_patient(
-                self.ui.patient_id_field.text(), pat_dict
-            )
+            self.patient_service.update_patient(self.ui.patient_id_field.text(), pat_dict)
         self.__init_ui()
         # Show the data of the selected patient in QTextEdit
         # pat_dict is needed again in case the patient was only updated
@@ -550,12 +428,8 @@ class DataWindow(QMainWindow):
             "gender": self.ui.gender_dropdown.currentText(),
             "ethnicity": self.ui.ethnicity_dropdown.currentText(),
             "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
-            "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date()
-            .toPyDate()
-            .year,
-            "year_first_symptoms": self.ui.firstsymptoms_calendar.date()
-            .toPyDate()
-            .year,
+            "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
+            "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
             "center": self.ui.center_text.text(),
         }
         output = ""
@@ -578,22 +452,12 @@ class DataWindow(QMainWindow):
             self.__init_visits_of_patient()
 
             self.selected_patient = None
-            self.ui.selected_patient_text_patientview.setText(
-                "please select or add a patient"
-            )
-            self.ui.selected_patient_text_visitview.setText(
-                "please select or add a patient"
-            )
-            self.ui.selected_patient_text_visitdataview.setText(
-                "please select or add a patient"
-            )
+            self.ui.selected_patient_text_patientview.setText("please select or add a patient")
+            self.ui.selected_patient_text_visitview.setText("please select or add a patient")
+            self.ui.selected_patient_text_visitdataview.setText("please select or add a patient")
             # Set the text of the selected visit to "please select a visit"
-            self.ui.selected_visit_text_visitview.setText(
-                "please select or add a visit"
-            )
-            self.ui.selected_visit_text_visitdataview.setText(
-                "please select or add a visit"
-            )
+            self.ui.selected_visit_text_visitview.setText("please select or add a visit")
+            self.ui.selected_visit_text_visitdataview.setText("please select or add a visit")
             # Set the text of the select previous therapy to ""
             self.ui.selected_therapy_text_patientview.setText("")
             # Set the text for the manometry data
@@ -642,37 +506,25 @@ class DataWindow(QMainWindow):
                 self.ui.ethnicity_dropdown.setCurrentIndex(0)
 
             if patient.year_first_diagnosis is not None:
-                self.ui.firstdiagnosis_calendar.setDate(
-                    QDate(patient.year_first_diagnosis, 1, 1)
-                )
+                self.ui.firstdiagnosis_calendar.setDate(QDate(patient.year_first_diagnosis, 1, 1))
             else:
-                self.ui.firstdiagnosis_calendar.setDate(
-                    QDate(config.min_value_year, 1, 1)
-                )
+                self.ui.firstdiagnosis_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
             if patient.year_first_symptoms is not None:
-                self.ui.firstsymptoms_calendar.setDate(
-                    QDate(patient.year_first_symptoms, 1, 1)
-                )
+                self.ui.firstsymptoms_calendar.setDate(QDate(patient.year_first_symptoms, 1, 1))
             else:
-                self.ui.firstsymptoms_calendar.setDate(
-                    QDate(config.min_value_year, 1, 1)
-                )
+                self.ui.firstsymptoms_calendar.setDate(QDate(config.min_value_year, 1, 1))
 
             if patient.center is not None:
                 self.ui.center_text.setText(patient.center)
 
     def __select_patient(self):
-        selected_indexes = (
-            self.patient_tableView.selectedIndexes()
-        )  # Get the indexes of all selected cells
+        selected_indexes = self.patient_tableView.selectedIndexes()  # Get the indexes of all selected cells
         if selected_indexes:
             # Get the row number of the first selected index
             selected_row = selected_indexes[0].row()
 
-            self.selected_patient = str(
-                self.patient_tableView.model().index(selected_row, 0).data()
-            )
+            self.selected_patient = str(self.patient_tableView.model().index(selected_row, 0).data())
 
             # Access data for all columns in the selected row
             data = []
@@ -690,9 +542,7 @@ class DataWindow(QMainWindow):
             self.__patient_selected(output)
 
             # Show the data of the selected patient in the drop-down/selection menu
-            self.ui.patient_id_field.setText(
-                str(self.patient_tableView.model().index(selected_row, 0).data())
-            )
+            self.ui.patient_id_field.setText(str(self.patient_tableView.model().index(selected_row, 0).data()))
             self.__patient_id_filled()
 
     def __patient_selected(self, patient_data):
@@ -706,9 +556,7 @@ class DataWindow(QMainWindow):
 
         # Set the text of the select visit to "please select or add a visit" until a visit for the patient is selected
         self.ui.selected_visit_text_visitview.setText("please select or add a visit")
-        self.ui.selected_visit_text_visitdataview.setText(
-            "please select or add a visit"
-        )
+        self.ui.selected_visit_text_visitdataview.setText("please select or add a visit")
         # Set the text of the select previous therapy to "" until a previous therapy is selected
         self.ui.selected_therapy_text_patientview.setText("")
         # Set the text for the manometry data
@@ -723,9 +571,7 @@ class DataWindow(QMainWindow):
 
     def __patients_apply_filter(self):
         if self.ui.patient_id_radio.isChecked():
-            filter_exp = (
-                "^" + self.ui.patient_id_field.text()
-            )  # all patient that start with this id are shown
+            filter_exp = "^" + self.ui.patient_id_field.text()  # all patient that start with this id are shown
             self.__init_ui(filter_column=0, filter_expression=filter_exp)
         if self.ui.birthyear_radio.isChecked():
             filter_exp = str(self.ui.birthyear_calendar.date().toPyDate().year)
@@ -743,9 +589,7 @@ class DataWindow(QMainWindow):
             filter_exp = str(self.ui.firstsymptoms_calendar.date().toPyDate().year)
             self.__init_ui(filter_column=5, filter_expression=filter_exp)
         if self.ui.center_radio.isChecked():
-            filter_exp = (
-                "^" + self.ui.center_text.text()
-            )  # all patients whos centers start with this string
+            filter_exp = "^" + self.ui.center_text.text()  # all patients whos centers start with this string
             self.__init_ui(filter_column=6, filter_expression=filter_exp)
 
     def __patients_reset_filter_button_clicked(self):
@@ -782,36 +626,20 @@ class DataWindow(QMainWindow):
     # Previous Therapy Functions
 
     def __init_previous_therapies(self):
-        self.previous_therapies_array = (
-            self.previous_therapy_service.get_prev_therapies_for_patient(
-                self.selected_patient
-            )
-        )
-        self.previous_therapies_model = CustomPreviousTherapyModel(
-            self.previous_therapies_array
-        )
+        self.previous_therapies_array = self.previous_therapy_service.get_prev_therapies_for_patient(self.selected_patient)
+        self.previous_therapies_model = CustomPreviousTherapyModel(self.previous_therapies_array)
         self.therapy_tableView.setModel(self.previous_therapies_model)
         self.therapy_tableView.verticalHeader().setDefaultSectionSize(30)
         self.therapy_tableView.setColumnWidth(0, 50)
         self.therapy_tableView.resizeColumnsToContents()
-        self.therapy_tableView.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows
-        )
-        self.therapy_tableView.setSelectionMode(
-            QtWidgets.QAbstractItemView.SelectionMode.SingleSelection
-        )
-        self.therapy_tableView.clicked.connect(
-            self.__show_selected_previous_therapy_data
-        )
+        self.therapy_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.therapy_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.therapy_tableView.clicked.connect(self.__show_selected_previous_therapy_data)
 
     def __show_selected_previous_therapy_data(self):
-        selected_indexes = (
-            self.therapy_tableView.selectedIndexes()
-        )  # Get the indexes of all selected cells
+        selected_indexes = self.therapy_tableView.selectedIndexes()  # Get the indexes of all selected cells
         if selected_indexes:
-            selected_row = selected_indexes[
-                0
-            ].row()  # Get the row number of the first selected index
+            selected_row = selected_indexes[0].row()  # Get the row number of the first selected index
 
             # Access data for all columns in the selected row
             data = []
@@ -821,9 +649,7 @@ class DataWindow(QMainWindow):
 
             labels = self.previous_therapies_model.columns
 
-            self.selected_previous_therapy = str(
-                self.therapy_tableView.model().index(selected_row, 0).data()
-            )
+            self.selected_previous_therapy = str(self.therapy_tableView.model().index(selected_row, 0).data())
 
             # Show the data of the selected patient in QTextEdit
             output = ""
@@ -838,9 +664,7 @@ class DataWindow(QMainWindow):
             "year": self.ui.therapy_calendar.date().toPyDate().year,
             "center": self.ui.center_previous_therapy_text.text(),
         }
-        patient_dict, error = DataValidation.validate_previous_therapy(
-            prev_therapy_dict
-        )
+        patient_dict, error = DataValidation.validate_previous_therapy(prev_therapy_dict)
         if error:  # return if the user wants or needs to fill out additional data
             return
         self.previous_therapy_service.create_previous_therapy(prev_therapy_dict)
@@ -848,29 +672,21 @@ class DataWindow(QMainWindow):
 
     def __previous_therapy_delete_button_clicked(self):
         if ShowMessage.deletion_confirmed("previous therapies"):
-            self.previous_therapy_service.delete_previous_therapy(
-                self.selected_previous_therapy
-            )
+            self.previous_therapy_service.delete_previous_therapy(self.selected_previous_therapy)
             self.__init_previous_therapies()
             self.selected_previous_therapy = None
             self.ui.selected_therapy_text_patientview.setText("")
 
     # Visit Functions
     def __init_visits_of_patient(self):
-        self.visits_array = self.visit_service.get_visits_for_patient(
-            self.selected_patient
-        )
+        self.visits_array = self.visit_service.get_visits_for_patient(self.selected_patient)
         self.visits_model = CustomVisitsModel(self.visits_array)
         self.visits_tableView.setModel(self.visits_model)
         self.visits_tableView.verticalHeader().setDefaultSectionSize(30)
         self.visits_tableView.setColumnWidth(0, 50)
         self.visits_tableView.resizeColumnsToContents()
-        self.visits_tableView.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows
-        )
-        self.visits_tableView.setSelectionMode(
-            QtWidgets.QAbstractItemView.SelectionMode.SingleSelection
-        )
+        self.visits_tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.visits_tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.visits_tableView.clicked.connect(self.__select_visit)
 
     def __visit_add_button_clicked(self):
@@ -930,9 +746,7 @@ class DataWindow(QMainWindow):
         self.ui.visit_data.setEnabled(False)
 
     def __select_visit(self):
-        selected_indexes = (
-            self.visits_tableView.selectedIndexes()
-        )  # Get the indexes of all selected cells
+        selected_indexes = self.visits_tableView.selectedIndexes()  # Get the indexes of all selected cells
         if selected_indexes:
             # Get the row number of the first selected index
             selected_row = selected_indexes[0].row()
@@ -950,9 +764,7 @@ class DataWindow(QMainWindow):
             for key, value in zip(labels, data):
                 output += f"{key}: {value}\n"
 
-            self.selected_visit = str(
-                self.visits_tableView.model().index(selected_row, 0).data()
-            )
+            self.selected_visit = str(self.visits_tableView.model().index(selected_row, 0).data())
 
             self.__visit_selected(output)
 
@@ -998,16 +810,8 @@ class DataWindow(QMainWindow):
 
         # Show Images
         # Barium Swallow
-        barium_swallow_images = (
-            self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
-                self.selected_visit
-            )
-        )
-        barium_swallow_minutes = (
-            self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(
-                self.selected_visit
-            )
-        )
+        barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
+        barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(self.selected_visit)
         if barium_swallow_images and barium_swallow_minutes:
             self.barium_swallow_pixmaps = barium_swallow_images
             self.barium_swallow_image_index = 0
@@ -1019,14 +823,8 @@ class DataWindow(QMainWindow):
             self.ui.tbe_imagedescription_text.setText("")
 
         # Endoscopy
-        endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(
-            self.selected_visit
-        )
-        endoscopy_positions = (
-            self.endoscopy_file_service.get_endoscopy_positions_for_visit(
-                self.selected_visit
-            )
-        )
+        endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
+        endoscopy_positions = self.endoscopy_file_service.get_endoscopy_positions_for_visit(self.selected_visit)
         if endoscopy_images and endoscopy_positions:
             self.endoscopy_pixmaps = endoscopy_images
             self.endoscopy_image_index = 0
@@ -1038,14 +836,8 @@ class DataWindow(QMainWindow):
             self.ui.endoscopy_imagedescription_text.setText("")
 
         # EndoFlip
-        endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(
-            self.selected_visit
-        )
-        endoflip_timepoints = (
-            self.endoflip_image_service.get_endoflip_timepoints_for_visit(
-                self.selected_visit
-            )
-        )
+        endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
+        endoflip_timepoints = self.endoflip_image_service.get_endoflip_timepoints_for_visit(self.selected_visit)
         if endoflip_images and endoflip_timepoints:
             self.endoflip_pixmaps = endoflip_images
             self.endoflip_image_index = 0
@@ -1057,16 +849,8 @@ class DataWindow(QMainWindow):
             self.ui.endoflip_imagedescription_text.setText("")
 
         # Endosonography
-        endosono_images = (
-            self.endosonography_image_service.get_endosonography_images_for_visit(
-                self.selected_visit
-            )
-        )
-        endosono_positions = (
-            self.endosonography_image_service.get_endosonography_positions_for_visit(
-                self.selected_visit
-            )
-        )
+        endosono_images = self.endosonography_image_service.get_endosonography_images_for_visit(self.selected_visit)
+        endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(self.selected_visit)
         if endosono_images and endosono_positions:
             self.endosono_pixmaps = endosono_images
             self.endosono_image_index = 0
@@ -1078,9 +862,7 @@ class DataWindow(QMainWindow):
             self.ui.endosono_imagedescription_text.setText("")
 
     def __add_eckardt_score(self):
-        eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(
-            self.selected_visit
-        )
+        eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
         if not eckardt or eckardt and ShowMessage.to_update_for_visit("Eckardt Score"):
             eckardt_dict = {
                 "visit_id": self.selected_visit,
@@ -1097,17 +879,13 @@ class DataWindow(QMainWindow):
 
             # check if an eckardt score is already in the DB for the selected visit
             if eckardt:
-                self.eckardtscore_service.update_eckardtscore(
-                    eckardt.eckardt_id, eckardt_dict
-                )
+                self.eckardtscore_service.update_eckardtscore(eckardt.eckardt_id, eckardt_dict)
             else:
                 self.eckardtscore_service.create_eckardtscore(eckardt_dict)
             self.__init_eckardt_score()
 
     def __init_eckardt_score(self):
-        eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(
-            self.selected_visit
-        )
+        eckardt = self.eckardtscore_service.get_eckardtscore_for_visit(self.selected_visit)
         self.ui.eckardt_score_text.setText(setText.set_text(eckardt, "eckardt score"))
 
     def __delete_eckardt_score(self):
@@ -1170,12 +948,8 @@ class DataWindow(QMainWindow):
         self.__init_medication()
 
     def __init_medication(self):
-        medication = self.medication_service.get_medications_for_visit(
-            self.selected_visit
-        )
-        self.ui.medication_text.setText(
-            setText.set_text_many(medication, "medication data")
-        )
+        medication = self.medication_service.get_medications_for_visit(self.selected_visit)
+        self.ui.medication_text.setText(setText.set_text_many(medication, "medication data"))
 
     def __delete_medication(self):
         if ShowMessage.deletion_confirmed("medications"):
@@ -1184,15 +958,8 @@ class DataWindow(QMainWindow):
 
     def __add_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-        if (
-            not manometry
-            or manometry
-            and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data")
-        ):
-            les_length = (
-                self.ui.manometry_upperboundary_les_spin.value()
-                - self.ui.manometry_lowerboundary_les_spin.value()
-            )
+        if not manometry or manometry and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
+            les_length = self.ui.manometry_upperboundary_les_spin.value() - self.ui.manometry_lowerboundary_les_spin.value()
             manometry_dict = {
                 "visit_id": self.selected_visit,
                 "catheter_type": self.ui.manometry_cathedertype_dropdown.currentText(),
@@ -1213,9 +980,7 @@ class DataWindow(QMainWindow):
                 return
 
             if manometry:
-                self.manometry_service.update_manometry(
-                    manometry.manometry_id, manometry_dict
-                )
+                self.manometry_service.update_manometry(manometry.manometry_id, manometry_dict)
             else:
                 self.manometry_service.create_manometry(manometry_dict)
             self.__init_manometry()
@@ -1226,39 +991,22 @@ class DataWindow(QMainWindow):
             self.__init_manometry()
 
     def __validate_manometry(self):
-        if (
-            self.ui.manometry_cathedertype_dropdown.currentText() != "---"
-            and self.ui.manometry_patientposition_dropdown.currentText() != "---"
-        ):
+        if self.ui.manometry_cathedertype_dropdown.currentText() != "---" and self.ui.manometry_patientposition_dropdown.currentText() != "---":
             return True
         return False
 
     def __init_manometry(self):
         manometry = self.manometry_service.get_manometry_for_visit(self.selected_visit)
-        manometry_file = self.manometry_file_service.get_manometry_file_for_visit(
-            self.selected_visit
-        )
-        self.ui.manometry_text.setText(
-            setText.set_text_two(
-                manometry, "Manometry Data", manometry_file, "Manometry File"
-            )
-        )
+        manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+        self.ui.manometry_text.setText(setText.set_text_two(manometry, "Manometry Data", manometry_file, "Manometry File"))
 
     def __upload_manometry_file(self):
         """
         Manometry callback. Handles Manometry file selection.
         """
-        manometry_exists = self.manometry_file_service.get_manometry_file_for_visit(
-            self.selected_visit
-        )
-        if (
-            not manometry_exists
-            or manometry_exists
-            and ShowMessage.to_update_for_visit("Manometry file")
-        ):
-            filename, _ = QFileDialog.getOpenFileName(
-                self, "Select Manometry file", self.default_path, "CSV (*.csv *.CSV)"
-            )
+        manometry_exists = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+        if not manometry_exists or manometry_exists and ShowMessage.to_update_for_visit("Manometry file"):
+            filename, _ = QFileDialog.getOpenFileName(self, "Select Manometry file", self.default_path, "CSV (*.csv *.CSV)")
             if len(filename) > 0:
                 process_and_upload_manometry_file(self.selected_visit, filename)
                 self.ui.manometry_file_text.setText("Manometry File uploaded")
@@ -1267,14 +1015,8 @@ class DataWindow(QMainWindow):
                 self.default_path = os.path.dirname(filename)
 
     def __add_barium_swallow(self):
-        tbe = self.barium_swallow_service.get_barium_swallow_for_visit(
-            self.selected_visit
-        )
-        if (
-            not tbe
-            or tbe
-            and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data")
-        ):
+        tbe = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
+        if not tbe or tbe and ShowMessage.to_update_for_visit("Timed Barium Swallow (TBE) data"):
             tbe_dict = {
                 "visit_id": self.selected_visit,
                 "type_contrast_medium": self.ui.tbe_cm_dropdown.currentText(),
@@ -1298,18 +1040,12 @@ class DataWindow(QMainWindow):
             self.__init_barium_swallow()
 
     def __init_barium_swallow(self):
-        barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(
-            self.selected_visit
-        )
-        self.ui.tbe_text.setText(
-            setText.set_text(barium_swallow, "timed barium swallow data")
-        )
+        barium_swallow = self.barium_swallow_service.get_barium_swallow_for_visit(self.selected_visit)
+        self.ui.tbe_text.setText(setText.set_text(barium_swallow, "timed barium swallow data"))
 
     def __delete_barium_swallow(self):
         if ShowMessage.deletion_confirmed("barium swallow"):
-            self.barium_swallow_service.delete_barium_swallow_for_visit(
-                self.selected_visit
-            )
+            self.barium_swallow_service.delete_barium_swallow_for_visit(self.selected_visit)
             self.__init_barium_swallow()
 
     def __upload_barium_swallow_images(self):
@@ -1317,26 +1053,11 @@ class DataWindow(QMainWindow):
         Timed Barium Swallow (TBE) button callback. Handles TBE file selection.
         """
         # If TBE images are already uploaded in the database, images are deleted and updated with new images
-        barium_swallow_exists = (
-            self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
-                self.selected_visit
-            )
-        )
-        if (
-            not barium_swallow_exists
-            or barium_swallow_exists
-            and ShowMessage.to_update_for_visit("TBE Images")
-        ):
-            self.barium_swallow_file_service.delete_barium_swallow_files_for_visit(
-                self.selected_visit
-            )
+        barium_swallow_exists = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
+        if not barium_swallow_exists or barium_swallow_exists and ShowMessage.to_update_for_visit("TBE Images"):
+            self.barium_swallow_file_service.delete_barium_swallow_files_for_visit(self.selected_visit)
 
-            filenames, _ = QFileDialog.getOpenFileNames(
-                self,
-                "Select Files",
-                self.default_path,
-                "Images (*.jpg *.JPG *.png *.PNG)",
-            )
+            filenames, _ = QFileDialog.getOpenFileNames(self, "Select Files", self.default_path, "Images (*.jpg *.JPG *.png *.PNG)")
             error = False
 
             for filename in filenames:
@@ -1347,25 +1068,17 @@ class DataWindow(QMainWindow):
                     QMessageBox.critical(
                         self,
                         "Unvalid Name",
-                        "The filename of the file '"
-                        + filename
-                        + "' does not contain the required time information, for example, '2.jpg' ",
+                        "The filename of the file '" + filename + "' does not contain the required time information, for example, '2.jpg' ",
                     )
                     break
 
             # if all images are named in the correct format, process and upload them
             if not error:
                 process_and_upload_barium_swallow_images(self.selected_visit, filenames)
-                self.ui.tbe_file_text.setText(
-                    str(len(filenames)) + " Image(s) uploaded"
-                )
+                self.ui.tbe_file_text.setText(str(len(filenames)) + " Image(s) uploaded")
                 # load the pixmaps of the images to make them viewable
-                barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(
-                    self.selected_visit
-                )
-                barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(
-                    self.selected_visit
-                )
+                barium_swallow_images = self.barium_swallow_file_service.get_barium_swallow_images_for_visit(self.selected_visit)
+                barium_swallow_minutes = self.barium_swallow_file_service.get_barium_swallow_minutes_for_visit(self.selected_visit)
                 if barium_swallow_images:
                     self.barium_swallow_pixmaps = barium_swallow_images
                     self.barium_swallow_image_index = 0
@@ -1377,15 +1090,11 @@ class DataWindow(QMainWindow):
     def __load_barium_swallow_image(self):
         # Load and display the current image
         if 0 <= self.barium_swallow_image_index < len(self.barium_swallow_pixmaps):
-            scaled_pixmap = self.barium_swallow_pixmaps[
-                self.barium_swallow_image_index
-            ].scaledToHeight(200)
+            scaled_pixmap = self.barium_swallow_pixmaps[self.barium_swallow_image_index].scaledToHeight(200)
             scaled_size = scaled_pixmap.size()
             self.ui.tbe_imageview.setPixmap(scaled_pixmap)
             self.ui.tbe_imageview.setFixedSize(scaled_size)
-            text = "Minute of image: " + str(
-                self.barium_swallow_minutes[self.barium_swallow_image_index]
-            )
+            text = "Minute of image: " + str(self.barium_swallow_minutes[self.barium_swallow_image_index])
             self.ui.tbe_imagedescription_text.setText(text)
             self.ui.tbe_imageview.update()
 
@@ -1404,10 +1113,7 @@ class DataWindow(QMainWindow):
     def __add_endoscopy(self):
         egd = self.endoscopy_service.get_endoscopy_for_visit(self.selected_visit)
         if not egd or egd and ShowMessage.to_update_for_visit("Endoscopy (EGD) data"):
-            egd_dict = {
-                "visit_id": self.selected_visit,
-                "position_les": self.ui.egd_position_les_spin.value(),
-            }
+            egd_dict = {"visit_id": self.selected_visit, "position_les": self.ui.egd_position_les_spin.value()}
 
             egd_dict, error = DataValidation.validate_visitdata(egd_dict)
 
@@ -1434,24 +1140,11 @@ class DataWindow(QMainWindow):
         Endoscopy button callback. Handles endoscopy image selection.
         """
         # If endoscopy images are already uploaded in the database, images are deleted and updated with new images
-        endoscopy_exists = self.endoscopy_file_service.get_endoscopy_images_for_visit(
-            self.selected_visit
-        )
-        if (
-            not endoscopy_exists
-            or endoscopy_exists
-            and ShowMessage.to_update_for_visit("Endoscopy Images")
-        ):
-            self.endoscopy_file_service.delete_endoscopy_file_for_visit(
-                self.selected_visit
-            )
+        endoscopy_exists = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
+        if not endoscopy_exists or endoscopy_exists and ShowMessage.to_update_for_visit("Endoscopy Images"):
+            self.endoscopy_file_service.delete_endoscopy_file_for_visit(self.selected_visit)
 
-            filenames, _ = QFileDialog.getOpenFileNames(
-                self,
-                "Select Files",
-                self.default_path,
-                "Images (*.jpg *.JPG *.png *.PNG)",
-            )
+            filenames, _ = QFileDialog.getOpenFileNames(self, "Select Files", self.default_path, "Images (*.jpg *.JPG *.png *.PNG)")
             error = False
 
             for filename in filenames:
@@ -1471,21 +1164,11 @@ class DataWindow(QMainWindow):
             # if all images have valid names, process and upload them
             if not error:
                 process_and_upload_endoscopy_images(self.selected_visit, filenames)
-                self.ui.egd_file_text.setText(
-                    str(len(filenames)) + " Image(s) uploaded"
-                )
+                self.ui.egd_file_text.setText(str(len(filenames)) + " Image(s) uploaded")
 
                 # load the pixmaps of the images to make them viewable
-                endoscopy_images = (
-                    self.endoscopy_file_service.get_endoscopy_images_for_visit(
-                        self.selected_visit
-                    )
-                )
-                endoscopy_positions = (
-                    self.endoscopy_file_service.get_endoscopy_positions_for_visit(
-                        self.selected_visit
-                    )
-                )
+                endoscopy_images = self.endoscopy_file_service.get_endoscopy_images_for_visit(self.selected_visit)
+                endoscopy_positions = self.endoscopy_file_service.get_endoscopy_positions_for_visit(self.selected_visit)
                 if endoscopy_images:
                     self.endoscopy_pixmaps = endoscopy_images
                     self.endoscopy_image_index = 0
@@ -1497,15 +1180,11 @@ class DataWindow(QMainWindow):
     def __load_endoscopy_image(self):
         # Load and display the current image
         if 0 <= self.endoscopy_image_index < len(self.endoscopy_pixmaps):
-            scaled_pixmap = self.endoscopy_pixmaps[
-                self.endoscopy_image_index
-            ].scaledToHeight(200)
+            scaled_pixmap = self.endoscopy_pixmaps[self.endoscopy_image_index].scaledToHeight(200)
             scaled_size = scaled_pixmap.size()
             self.ui.endoscopy_imageview.setPixmap(scaled_pixmap)
             self.ui.endoscopy_imageview.setFixedSize(scaled_size)
-            text = "Image position: " + str(
-                self.endoscopy_positions[self.endoscopy_image_index]
-            )
+            text = "Image position: " + str(self.endoscopy_positions[self.endoscopy_image_index])
             self.ui.endoscopy_imagedescription_text.setText(text)
             self.ui.endoscopy_imageview.update()
 
@@ -1523,11 +1202,7 @@ class DataWindow(QMainWindow):
 
     def __add_endoflip(self):
         endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
-        if (
-            not endoflip
-            or endoflip
-            and ShowMessage.to_update_for_visit("EndoFlip data")
-        ):
+        if not endoflip or endoflip and ShowMessage.to_update_for_visit("EndoFlip data"):
             visit = self.visit_service.get_visit(self.selected_visit)
             if visit.visit_type == "Initial Diagnostic":
                 endoflip_dict = {
@@ -1564,26 +1239,15 @@ class DataWindow(QMainWindow):
                 return
 
             if endoflip:
-                self.endoflip_service.update_endoflip(
-                    endoflip.endoflip_id, endoflip_dict
-                )
+                self.endoflip_service.update_endoflip(endoflip.endoflip_id, endoflip_dict)
             else:
                 self.endoflip_service.create_endoflip(endoflip_dict)
             self.__init_endoflip()
 
     def __init_endoflip(self):
         endoflip = self.endoflip_service.get_endoflip_for_visit(self.selected_visit)
-        endoflip_file = self.endoflip_file_service.get_endoflip_files_for_visit(
-            self.selected_visit
-        )
-        self.ui.endoflip_text.setText(
-            setText.set_text_two(
-                endoflip,
-                "EndoFlip data",
-                endoflip_file,
-                description2="EndoFlip file(s)",
-            )
-        )
+        endoflip_file = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
+        self.ui.endoflip_text.setText(setText.set_text_two(endoflip, "EndoFlip data", endoflip_file, description2="EndoFlip file(s)"))
 
     def __delete_endoflip(self):
         if ShowMessage.deletion_confirmed("EndoFlip"):
@@ -1594,20 +1258,10 @@ class DataWindow(QMainWindow):
         """
         EndoFLIP-file button callback. Handles EndoFLIP .xlsx file selection.
         """
-        endoflip_file_exists = self.endoflip_file_service.get_endoflip_files_for_visit(
-            self.selected_visit
-        )
-        if (
-            not endoflip_file_exists
-            or endoflip_file_exists
-            and ShowMessage.to_update_for_visit("Endoflip files")
-        ):
-            self.endoflip_file_service.delete_endoflip_file_for_visit(
-                self.selected_visit
-            )
-            filenames, _ = QFileDialog.getOpenFileNames(
-                self, "Select file", self.default_path, "Excel (*.xlsx *.XLSX)"
-            )
+        endoflip_file_exists = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
+        if not endoflip_file_exists or endoflip_file_exists and ShowMessage.to_update_for_visit("Endoflip files"):
+            self.endoflip_file_service.delete_endoflip_file_for_visit(self.selected_visit)
+            filenames, _ = QFileDialog.getOpenFileNames(self, "Select file", self.default_path, "Excel (*.xlsx *.XLSX)")
             error = False
             for filename in filenames:
                 timeextract = os.path.basename(filename)
@@ -1627,58 +1281,26 @@ class DataWindow(QMainWindow):
                     if len(filename) > 0:
                         error = False
                         try:
-                            data_bytes, endoflip_screenshot = process_endoflip_xlsx(
-                                filename
-                            )
+                            data_bytes, endoflip_screenshot = process_endoflip_xlsx(filename)
                         except:
                             error = True
-                        if (
-                            error
-                            or len(endoflip_screenshot["30"]["aggregates"]) != 4
-                            or len(endoflip_screenshot["40"]["aggregates"]) != 4
-                        ):
+                        if error or len(endoflip_screenshot["30"]["aggregates"]) != 4 or len(endoflip_screenshot["40"]["aggregates"]) != 4:
                             self.ui.endoflip_file_text.setText("")
-                            QMessageBox.critical(
-                                self,
-                                "Invalid File",
-                                "Error: The file does not have the expected format.",
-                            )
+                            QMessageBox.critical(self, "Invalid File", "Error: The file does not have the expected format.")
                         else:
                             match = re.search(r"(before|during|after)", filename)
                             timepoint = match.group(0)
-                            conduct_endoflip_file_upload(
-                                self.selected_visit,
-                                timepoint,
-                                data_bytes,
-                                endoflip_screenshot,
-                            )
-                self.ui.endoflip_file_text.setText(
-                    str(len(filenames)) + " File(s) uploaded"
-                )
+                            conduct_endoflip_file_upload(self.selected_visit, timepoint, data_bytes, endoflip_screenshot)
+                self.ui.endoflip_file_text.setText(str(len(filenames)) + " File(s) uploaded")
                 self.__init_endoflip()
             if filenames:
                 self.default_path = os.path.dirname(filename)
 
     def __upload_endoflip_image(self):
-        endoflip_image_exists = (
-            self.endoflip_image_service.get_endoflip_images_for_visit(
-                self.selected_visit
-            )
-        )
-        if (
-            not endoflip_image_exists
-            or endoflip_image_exists
-            and ShowMessage.to_update_for_visit("Endoflip images")
-        ):
-            self.endoflip_image_service.delete_endoflip_images_for_visit(
-                self.selected_visit
-            )
-            filenames, _ = QFileDialog.getOpenFileNames(
-                self,
-                "Select Files",
-                self.default_path,
-                "Images (*.jpg *.JPG *.png *.PNG)",
-            )
+        endoflip_image_exists = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
+        if not endoflip_image_exists or endoflip_image_exists and ShowMessage.to_update_for_visit("Endoflip images"):
+            self.endoflip_image_service.delete_endoflip_images_for_visit(self.selected_visit)
+            filenames, _ = QFileDialog.getOpenFileNames(self, "Select Files", self.default_path, "Images (*.jpg *.JPG *.png *.PNG)")
             error = False
             for filename in filenames:
                 timeextract = os.path.basename(filename)
@@ -1696,20 +1318,10 @@ class DataWindow(QMainWindow):
 
             if not error:
                 process_and_upload_endoflip_images(self.selected_visit, filenames)
-                self.ui.endoflip_imagedescription_text.setText(
-                    str(len(filenames)) + " Image(s) uploaded"
-                )
+                self.ui.endoflip_imagedescription_text.setText(str(len(filenames)) + " Image(s) uploaded")
                 # load the pixmaps of the images to make them viewable
-                endoflip_images = (
-                    self.endoflip_image_service.get_endoflip_images_for_visit(
-                        self.selected_visit
-                    )
-                )
-                endoflip_timepoints = (
-                    self.endoflip_image_service.get_endoflip_timepoints_for_visit(
-                        self.selected_visit
-                    )
-                )
+                endoflip_images = self.endoflip_image_service.get_endoflip_images_for_visit(self.selected_visit)
+                endoflip_timepoints = self.endoflip_image_service.get_endoflip_timepoints_for_visit(self.selected_visit)
                 if endoflip_images:
                     self.endoflip_pixmaps = endoflip_images
                     self.endoflip_image_index = 0
@@ -1721,15 +1333,11 @@ class DataWindow(QMainWindow):
     def __load_endoflip_image(self):
         # Load and display the current image
         if 0 <= self.endoflip_image_index < len(self.endoflip_pixmaps):
-            scaled_pixmap = self.endoflip_pixmaps[
-                self.endoflip_image_index
-            ].scaledToHeight(400)
+            scaled_pixmap = self.endoflip_pixmaps[self.endoflip_image_index].scaledToHeight(400)
             scaled_size = scaled_pixmap.size()
             self.ui.endoflip_imageview.setPixmap(scaled_pixmap)
             self.ui.endoflip_imageview.setFixedSize(scaled_size)
-            text = "Image timepoint: " + str(
-                self.endoflip_timepoints[self.endoflip_image_index]
-            )
+            text = "Image timepoint: " + str(self.endoflip_timepoints[self.endoflip_image_index])
             self.ui.endoflip_imagedescription_text.setText(text)
             self.ui.endoflip_imageview.update()
 
@@ -1750,26 +1358,11 @@ class DataWindow(QMainWindow):
         Endosonography button callback. Handles Endosonography file selection.
         """
         # If endosonography images are already uploaded in the database, images are deleted and updated with new images
-        endosono_exists = (
-            self.endosonography_image_service.get_endosonography_images_for_visit(
-                self.selected_visit
-            )
-        )
-        if (
-            not endosono_exists
-            or endosono_exists
-            and ShowMessage.to_update_for_visit("Endosonography Images")
-        ):
-            self.endosonography_image_service.delete_endosonography_file_for_visit(
-                self.selected_visit
-            )
+        endosono_exists = self.endosonography_image_service.get_endosonography_images_for_visit(self.selected_visit)
+        if not endosono_exists or endosono_exists and ShowMessage.to_update_for_visit("Endosonography Images"):
+            self.endosonography_image_service.delete_endosonography_file_for_visit(self.selected_visit)
 
-            filenames, _ = QFileDialog.getOpenFileNames(
-                self,
-                "Select Files",
-                self.default_path,
-                "Images (*.jpg *.JPG *.png *.PNG)",
-            )
+            filenames, _ = QFileDialog.getOpenFileNames(self, "Select Files", self.default_path, "Images (*.jpg *.JPG *.png *.PNG)")
             error = False
 
             for filename in filenames:
@@ -1789,16 +1382,10 @@ class DataWindow(QMainWindow):
             # if all images are named in the correct format, process and upload them
             if not error:
                 process_and_upload_endosonography_images(self.selected_visit, filenames)
-                self.ui.endosono_images_text.setText(
-                    str(len(filenames)) + " Images(s) uploaded"
-                )
+                self.ui.endosono_images_text.setText(str(len(filenames)) + " Images(s) uploaded")
                 # load the pixmaps of the images to make them viewable
-                endosono_images = self.endosonography_image_service.get_endosonography_images_for_visit(
-                    self.selected_visit
-                )
-                endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(
-                    self.selected_visit
-                )
+                endosono_images = self.endosonography_image_service.get_endosonography_images_for_visit(self.selected_visit)
+                endosono_positions = self.endosonography_image_service.get_endosonography_positions_for_visit(self.selected_visit)
                 if endosono_images:
                     self.endosono_pixmaps = endosono_images
                     self.endosono_image_index = 0
@@ -1810,15 +1397,11 @@ class DataWindow(QMainWindow):
     def __load_endosonography_image(self):
         # Load and display the current image
         if 0 <= self.endosono_image_index < len(self.endosono_pixmaps):
-            scaled_pixmap = self.endosono_pixmaps[
-                self.endosono_image_index
-            ].scaledToHeight(200)
+            scaled_pixmap = self.endosono_pixmaps[self.endosono_image_index].scaledToHeight(200)
             scaled_size = scaled_pixmap.size()
             self.ui.endosono_imageview.setPixmap(scaled_pixmap)
             self.ui.endosono_imageview.setFixedSize(scaled_size)
-            text = "Position of image: " + str(
-                self.endosono_positions[self.endosono_image_index]
-            )
+            text = "Position of image: " + str(self.endosono_positions[self.endosono_image_index])
             self.ui.endosono_imagedescription_text.setText(text)
             self.ui.endosono_imageview.update()
 
@@ -1835,53 +1418,27 @@ class DataWindow(QMainWindow):
             self.__load_endosonography_image()
 
     def __upload_endosonography_video(self):
-        endosono_exists = (
-            self.endosonography_video_service.get_endosonography_files_for_visit(
-                self.selected_visit
-            )
-        )
-        if (
-            not endosono_exists
-            or endosono_exists
-            and ShowMessage.to_update_for_visit("Endosonography videos")
-        ):
-            self.endosonography_video_service.delete_videos_for_visit(
-                visit_id=self.selected_visit
-            )
-            filenames, _ = QFileDialog.getOpenFileNames(
-                self, "Select Files", self.default_path, "Video Files (*.avi)"
-            )
+        endosono_exists = self.endosonography_video_service.get_endosonography_files_for_visit(self.selected_visit)
+        if not endosono_exists or endosono_exists and ShowMessage.to_update_for_visit("Endosonography videos"):
+            self.endosonography_video_service.delete_videos_for_visit(visit_id=self.selected_visit)
+            filenames, _ = QFileDialog.getOpenFileNames(self, "Select Files", self.default_path, "Video Files (*.avi)")
             for filename in filenames:
-                self.endosonography_video_service.save_video_for_visit(
-                    visit_id=self.selected_visit, video_file_path=filename
-                )
-            self.ui.endosono_videos_text.setText(
-                str(len(filenames)) + " Videos(s) uploaded"
-            )
+                self.endosonography_video_service.save_video_for_visit(visit_id=self.selected_visit, video_file_path=filename)
+            self.ui.endosono_videos_text.setText(str(len(filenames)) + " Videos(s) uploaded")
             if filenames:
                 self.default_path = os.path.dirname(filename)
 
     def __download_endosonography_video(self):
-        destination_directory = QFileDialog.getExistingDirectory(
-            self, "Select Directory"
-        )
+        destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory")
         if destination_directory:
-            videos = (
-                self.endosonography_video_service.get_endosonography_videos_for_visit(
-                    visit_id=self.selected_visit
-                )
-            )
+            videos = self.endosonography_video_service.get_endosonography_videos_for_visit(visit_id=self.selected_visit)
             for i, video_data in enumerate(videos):
                 path = os.path.join(destination_directory, f"{i}.mp4")
                 with open(path, "wb") as f:
                     f.write(video_data)
 
     def __add_botox_injection(self):
-        botox_dict = {
-            "visit_id": self.selected_visit,
-            "botox_units": self.ui.botox_units_spin.value(),
-            "botox_height": self.ui.botox_height_spin.value(),
-        }
+        botox_dict = {"visit_id": self.selected_visit, "botox_units": self.ui.botox_units_spin.value(), "botox_height": self.ui.botox_height_spin.value()}
         botox_dict, error = DataValidation.validate_visitdata(botox_dict)
 
         if error:
@@ -1891,26 +1448,16 @@ class DataWindow(QMainWindow):
         self.__init_botox()
 
     def __init_botox(self):
-        botox = self.botox_injection_service.get_botox_injections_for_visit(
-            self.selected_visit
-        )
-        complications = self.complications_service.get_complications_for_visit(
-            self.selected_visit
-        )
+        botox = self.botox_injection_service.get_botox_injections_for_visit(self.selected_visit)
+        complications = self.complications_service.get_complications_for_visit(self.selected_visit)
         botox_text = setText.set_text_many(botox, "Botox data")
         complications_text = setText.set_text(complications, "Complication data")
         text = botox_text + "\n" + "--- Complications ---\n" + complications_text
         self.ui.botox_text.setText(text)
 
     def __add_botox_complications(self):
-        botox_complications = self.complications_service.get_complications_for_visit(
-            self.selected_visit
-        )
-        if (
-            not botox_complications
-            or botox_complications
-            and ShowMessage.to_update_for_visit("complications for the botox therapy")
-        ):
+        botox_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        if not botox_complications or botox_complications and ShowMessage.to_update_for_visit("complications for the botox therapy"):
             botox_complications_dict = {
                 "visit_id": self.selected_visit,
                 "bleeding": self.ui.bleeding_botox.currentText(),
@@ -1922,44 +1469,26 @@ class DataWindow(QMainWindow):
                 "other_complication": self.ui.other_botox.currentText(),
                 "other_complication_specified": self.ui.other_specified_botox.text(),
             }
-            botox_complications_dict, error = DataValidation.validate_complications(
-                botox_complications_dict
-            )
+            botox_complications_dict, error = DataValidation.validate_complications(botox_complications_dict)
 
             if error:
                 return
 
             if botox_complications:
-                self.complications_service.update_complications(
-                    botox_complications.complication_id, botox_complications_dict
-                )
+                self.complications_service.update_complications(botox_complications.complication_id, botox_complications_dict)
             else:
-                self.complications_service.create_complications(
-                    botox_complications_dict
-                )
+                self.complications_service.create_complications(botox_complications_dict)
             self.__init_botox()
 
     def __delete_botox(self):
         if ShowMessage.deletion_confirmed("botox injections"):
-            self.botox_injection_service.delete_botox_injections_for_visit(
-                self.selected_visit
-            )
-            self.complications_service.delete_complications_for_visit(
-                self.selected_visit
-            )
+            self.botox_injection_service.delete_botox_injections_for_visit(self.selected_visit)
+            self.complications_service.delete_complications_for_visit(self.selected_visit)
             self.__init_botox()
 
     def __add_pneumatic_dilatation(self):
-        pneumatic_dilatation = (
-            self.pneumatic_dilatation_service.get_pneumatic_dilatation_for_visit(
-                self.selected_visit
-            )
-        )
-        if (
-            not pneumatic_dilatation
-            or pneumatic_dilatation
-            and ShowMessage.to_update_for_visit("pneumatic dilatation data")
-        ):
+        pneumatic_dilatation = self.pneumatic_dilatation_service.get_pneumatic_dilatation_for_visit(self.selected_visit)
+        if not pneumatic_dilatation or pneumatic_dilatation and ShowMessage.to_update_for_visit("pneumatic dilatation data"):
             dilatation_dict = {
                 "visit_id": self.selected_visit,
                 "balloon_volume": self.ui.pd_ballon_volume_dropdown.currentText(),
@@ -1971,23 +1500,11 @@ class DataWindow(QMainWindow):
                 return
 
             if pneumatic_dilatation:
-                self.pneumatic_dilatation_service.update_pneumatic_dilatation(
-                    pneumatic_dilatation.pneumatic_dilatation_id, dilatation_dict
-                )
+                self.pneumatic_dilatation_service.update_pneumatic_dilatation(pneumatic_dilatation.pneumatic_dilatation_id, dilatation_dict)
             else:
-                self.pneumatic_dilatation_service.create_pneumatic_dilatation(
-                    dilatation_dict
-                )
-        pd_complications = self.complications_service.get_complications_for_visit(
-            self.selected_visit
-        )
-        if (
-            not pd_complications
-            or pd_complications
-            and ShowMessage.to_update_for_visit(
-                "complications for the pneumatic dilation therapy"
-            )
-        ):
+                self.pneumatic_dilatation_service.create_pneumatic_dilatation(dilatation_dict)
+        pd_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        if not pd_complications or pd_complications and ShowMessage.to_update_for_visit("complications for the pneumatic dilation therapy"):
             pd_complications_dict = {
                 "visit_id": self.selected_visit,
                 "bleeding": self.ui.bleeding_pd.currentText(),
@@ -1999,30 +1516,20 @@ class DataWindow(QMainWindow):
                 "other_complication": self.ui.other_pd.currentText(),
                 "other_complication_specified": self.ui.other_specified_pd.text(),
             }
-            pd_complications_dict, error = DataValidation.validate_complications(
-                pd_complications_dict
-            )
+            pd_complications_dict, error = DataValidation.validate_complications(pd_complications_dict)
 
             if error:
                 return
 
             if pd_complications:
-                self.complications_service.update_complications(
-                    pd_complications.complication_id, pd_complications_dict
-                )
+                self.complications_service.update_complications(pd_complications.complication_id, pd_complications_dict)
             else:
                 self.complications_service.create_complications(pd_complications_dict)
         self.__init_pneumatic_dilatation()
 
     def __init_pneumatic_dilatation(self):
-        pneumatic_dilatation = (
-            self.pneumatic_dilatation_service.get_pneumatic_dilatation_for_visit(
-                self.selected_visit
-            )
-        )
-        complications = self.complications_service.get_complications_for_visit(
-            self.selected_visit
-        )
+        pneumatic_dilatation = self.pneumatic_dilatation_service.get_pneumatic_dilatation_for_visit(self.selected_visit)
+        complications = self.complications_service.get_complications_for_visit(self.selected_visit)
         pd_text = setText.set_text(pneumatic_dilatation, "Pneumatic dilatation data")
         complications_text = setText.set_text(complications, "Complication data")
         text = pd_text + "--- Complications ---\n" + complications_text
@@ -2030,20 +1537,14 @@ class DataWindow(QMainWindow):
 
     def __delete_pneumatic_dilatation(self):
         if ShowMessage.deletion_confirmed("pneumatic dilations"):
-            self.pneumatic_dilatation_service.delete_pneumatic_dilatation_for_visit(
-                self.selected_visit
-            )
-            self.complications_service.delete_complications_for_visit(
-                self.selected_visit
-            )
+            self.pneumatic_dilatation_service.delete_pneumatic_dilatation_for_visit(self.selected_visit)
+            self.complications_service.delete_complications_for_visit(self.selected_visit)
             self.__init_pneumatic_dilatation()
 
     def __add_lhm(self):
         lhm = self.lhm_service.get_lhm_for_visit(self.selected_visit)
         if not lhm or lhm and ShowMessage.to_update_for_visit("LHM data"):
-            op_duration = (
-                self.ui.lhm_time.time().hour() * 60
-            ) + self.ui.lhm_time.time().minute()
+            op_duration = (self.ui.lhm_time.time().hour() * 60) + self.ui.lhm_time.time().minute()
             lhm_dict = {
                 "visit_id": self.selected_visit,
                 "op_duration": op_duration,
@@ -2060,14 +1561,8 @@ class DataWindow(QMainWindow):
                 self.lhm_service.update_lhm(lhm.lhm_id, lhm_dict)
             else:
                 self.lhm_service.create_lhm(lhm_dict)
-        lhm_complications = self.complications_service.get_complications_for_visit(
-            self.selected_visit
-        )
-        if (
-            not lhm_complications
-            or lhm_complications
-            and ShowMessage.to_update_for_visit("complications for the LHM therapy")
-        ):
+        lhm_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        if not lhm_complications or lhm_complications and ShowMessage.to_update_for_visit("complications for the LHM therapy"):
             lhm_complications_dict = {
                 "visit_id": self.selected_visit,
                 "bleeding": self.ui.bleeding_lhm.currentText(),
@@ -2079,26 +1574,20 @@ class DataWindow(QMainWindow):
                 "other_complication": self.ui.other_lhm.currentText(),
                 "other_complication_specified": self.ui.other_specified_lhm.text(),
             }
-            lhm_complications_dict, error = DataValidation.validate_complications(
-                lhm_complications_dict
-            )
+            lhm_complications_dict, error = DataValidation.validate_complications(lhm_complications_dict)
 
             if error:
                 return
 
             if lhm_complications:
-                self.complications_service.update_complications(
-                    lhm_complications.complication_id, lhm_complications_dict
-                )
+                self.complications_service.update_complications(lhm_complications.complication_id, lhm_complications_dict)
             else:
                 self.complications_service.create_complications(lhm_complications_dict)
         self.__init_lhm()
 
     def __init_lhm(self):
         lhm = self.lhm_service.get_lhm_for_visit(self.selected_visit)
-        complications = self.complications_service.get_complications_for_visit(
-            self.selected_visit
-        )
+        complications = self.complications_service.get_complications_for_visit(self.selected_visit)
         lhm_text = setText.set_text(lhm, "LHM data")
         complications_text = setText.set_text(complications, "Complication data")
         text = lhm_text + "--- Complications ---\n" + complications_text
@@ -2107,17 +1596,13 @@ class DataWindow(QMainWindow):
     def __delete_lhm(self):
         if ShowMessage.deletion_confirmed("LHM"):
             self.lhm_service.delete_lhm_for_visit(self.selected_visit)
-            self.complications_service.delete_complications_for_visit(
-                self.selected_visit
-            )
+            self.complications_service.delete_complications_for_visit(self.selected_visit)
             self.__init_lhm()
 
     def __add_poem(self):
         poem = self.poem_service.get_poem_for_visit(self.selected_visit)
         if not poem or poem and ShowMessage.to_update_for_visit("POEM data"):
-            procedure_duration = (
-                self.ui.poem_time.time().hour() * 60
-            ) + self.ui.poem_time.time().minute()
+            procedure_duration = (self.ui.poem_time.time().hour() * 60) + self.ui.poem_time.time().minute()
             poem_dict = {
                 "visit_id": self.selected_visit,
                 "procedure_duration": procedure_duration,
@@ -2137,14 +1622,8 @@ class DataWindow(QMainWindow):
                 self.poem_service.update_poem(poem.poem_id, poem_dict)
             else:
                 self.poem_service.create_poem(poem_dict)
-        poem_complications = self.complications_service.get_complications_for_visit(
-            self.selected_visit
-        )
-        if (
-            not poem_complications
-            or poem_complications
-            and ShowMessage.to_update_for_visit("complications for the POEM therapy")
-        ):
+        poem_complications = self.complications_service.get_complications_for_visit(self.selected_visit)
+        if not poem_complications or poem_complications and ShowMessage.to_update_for_visit("complications for the POEM therapy"):
             poem_complications_dict = {
                 "visit_id": self.selected_visit,
                 "bleeding": self.ui.bleeding_poem.currentText(),
@@ -2156,26 +1635,20 @@ class DataWindow(QMainWindow):
                 "other_complication": self.ui.other_poem.currentText(),
                 "other_complication_specified": self.ui.other_specified_poem.text(),
             }
-            poem_complications_dict, error = DataValidation.validate_complications(
-                poem_complications_dict
-            )
+            poem_complications_dict, error = DataValidation.validate_complications(poem_complications_dict)
 
             if error:
                 return
 
             if poem_complications:
-                self.complications_service.update_complications(
-                    poem_complications.complication_id, poem_complications_dict
-                )
+                self.complications_service.update_complications(poem_complications.complication_id, poem_complications_dict)
             else:
                 self.complications_service.create_complications(poem_complications_dict)
         self.__init_poem()
 
     def __init_poem(self):
         poem = self.poem_service.get_poem_for_visit(self.selected_visit)
-        complications = self.complications_service.get_complications_for_visit(
-            self.selected_visit
-        )
+        complications = self.complications_service.get_complications_for_visit(self.selected_visit)
         poem_text = setText.set_text(poem, "LHM data")
         complications_text = setText.set_text(complications, "Complication data")
         text = poem_text + "--- Complications ---\n" + complications_text
@@ -2184,15 +1657,11 @@ class DataWindow(QMainWindow):
     def __delete_poem(self):
         if ShowMessage.deletion_confirmed("POEM"):
             self.poem_service.delete_poem_for_visit(self.selected_visit)
-            self.complications_service.delete_complications_for_visit(
-                self.selected_visit
-            )
+            self.complications_service.delete_complications_for_visit(self.selected_visit)
             self.__init_poem()
 
     def __init_visualization(self):
-        reconstruction = self.reconstruction_service.get_reconstruction_for_visit(
-            self.selected_visit
-        )
+        reconstruction = self.reconstruction_service.get_reconstruction_for_visit(self.selected_visit)
         if reconstruction:
             self.ui.visitdata_create_visualization_button.setText(
                 "Create Visualization for selected Patient and selected Visit - A Reconstruction is saved in the DB"
@@ -2201,51 +1670,25 @@ class DataWindow(QMainWindow):
                 "Create Visualization for selected Patient and selected Visit - A Reconstruction is saved in the DB"
             )
         else:
-            self.ui.visitdata_create_visualization_button.setText(
-                "Create Visualization for selected Patient and selected Visit"
-            )
-            self.ui.visits_create_visualization_button.setText(
-                "Create Visualization for selected Patient and selected Visit"
-            )
+            self.ui.visitdata_create_visualization_button.setText("Create Visualization for selected Patient and selected Visit")
+            self.ui.visits_create_visualization_button.setText("Create Visualization for selected Patient and selected Visit")
 
     def __create_visualization(self):
-        barium_swallow_files = (
-            self.barium_swallow_file_service.get_barium_swallow_files_for_visit(
-                self.selected_visit
-            )
-        )
-        manometry_file = self.manometry_file_service.get_manometry_file_for_visit(
-            self.selected_visit
-        )
-        reconstruction = self.reconstruction_service.get_reconstruction_for_visit(
-            self.selected_visit
-        )
+        barium_swallow_files = self.barium_swallow_file_service.get_barium_swallow_files_for_visit(self.selected_visit)
+        manometry_file = self.manometry_file_service.get_manometry_file_for_visit(self.selected_visit)
+        reconstruction = self.reconstruction_service.get_reconstruction_for_visit(self.selected_visit)
 
         patient = self.patient_service.get_patient(self.selected_patient)
         visit = self.visit_service.get_visit(self.selected_visit)
         visit_name = (
-            "[Visit_ID_"
-            + str(self.selected_visit)
-            + "]_"
-            + patient.patient_id
-            + "_"
-            + visit.visit_type.replace(" ", "")
-            + "_"
-            + str(visit.year_of_visit)
+            "[Visit_ID_" + str(self.selected_visit) + "]_" + patient.patient_id + "_" + visit.visit_type.replace(" ", "") + "_" + str(visit.year_of_visit)
         )
 
-        if (
-            not reconstruction
-            or reconstruction
-            and not ShowMessage.load_saved_reconstruction()
-        ):
+        if not reconstruction or reconstruction and not ShowMessage.load_saved_reconstruction():
 
             if barium_swallow_files is None or manometry_file is None:
                 QMessageBox.critical(
-                    self,
-                    "Missing Data",
-                    "The Manometry file and at least one barium swallow image "
-                    "are necessary for the 3D reconstruction.",
+                    self, "Missing Data", "The Manometry file and at least one barium swallow image " "are necessary for the 3D reconstruction."
                 )
                 return
             else:
@@ -2259,40 +1702,26 @@ class DataWindow(QMainWindow):
                     pressure_matrix = pickle.loads(manometry_file.pressure_matrix)
                     visualization_data.pressure_matrix = pressure_matrix
 
-                    endoscopy = (
-                        self.endoscopy_file_service.get_endoscopy_files_for_visit(
-                            self.selected_visit
-                        )
-                    )
+                    endoscopy = self.endoscopy_file_service.get_endoscopy_files_for_visit(self.selected_visit)
                     if endoscopy:
                         endoscopy_image_positions_cm = []
                         endoscopy_images = []
                         for endoscopy_file in endoscopy:
-                            endoscopy_image_positions_cm.append(
-                                endoscopy_file.image_position
-                            )
+                            endoscopy_image_positions_cm.append(endoscopy_file.image_position)
                             endoscopy_images.append(BytesIO(endoscopy_file.file))
 
                         self.endoscopy_image_positions = endoscopy_image_positions_cm
                         self.endoscopy_files = endoscopy_images
 
-                    visualization_data.endoscopy_image_positions_cm = (
-                        self.endoscopy_image_positions
-                    )
+                    visualization_data.endoscopy_image_positions_cm = self.endoscopy_image_positions
                     visualization_data.endoscopy_files = self.endoscopy_files
 
-                    endoflip = self.endoflip_file_service.get_endoflip_files_for_visit(
-                        self.selected_visit
-                    )
+                    endoflip = self.endoflip_file_service.get_endoflip_files_for_visit(self.selected_visit)
                     if endoflip is not None:
                         # The first endoflip screenshot is used, because the app can only process one endoflip screenshot
-                        visualization_data.endoflip_screenshot = pickle.loads(
-                            endoflip[0].screenshot
-                        )
+                        visualization_data.endoflip_screenshot = pickle.loads(endoflip[0].screenshot)
                     else:
-                        visualization_data.endoflip_screenshot = (
-                            self.endoflip_screenshot
-                        )
+                        visualization_data.endoflip_screenshot = self.endoflip_screenshot
 
                     visit.add_visualization(visualization_data)
 
@@ -2300,9 +1729,7 @@ class DataWindow(QMainWindow):
                 # When extending from visualization, this should add alongside existing reconstructions
                 self.patient_data.add_visit(visit_name, visit)
 
-                self.master_window.switch_to(
-                    DCISelectionWindow(self.master_window, self.patient_data, visit)
-                )
+                self.master_window.switch_to(DCISelectionWindow(self.master_window, self.patient_data, visit))
 
         else:
             reconstruction = pickle.loads(reconstruction.reconstruction_file)
@@ -2311,9 +1738,7 @@ class DataWindow(QMainWindow):
             # When extending from visualization, this should add alongside existing reconstructions
             self.patient_data.add_visit(visit_name, reconstruction)
 
-            visualization_window = VisualizationWindow(
-                self.master_window, self.patient_data
-            )
+            visualization_window = VisualizationWindow(self.master_window, self.patient_data)
             self.master_window.switch_to(visualization_window)
             self.close()
 
@@ -2336,43 +1761,38 @@ class DataWindow(QMainWindow):
 
         frame_options = [
             "No vertex pressure data (~5MB)",
+            "Per-slice HRM pressure data (compact per-height values) (~10MB)",
             "All vertex pressure data (Complete data, potentially large files, ~100MB+)",
         ]
 
-        # Use HTML for proper line breaks in the label
         dialog_text = (
             "What vertex pressure data would you like to export?"
             "<ul>"
             "<li><b>No vertex pressure data:</b> Only 3D geometry, metadata, and pressure statistics. Smallest files (~5MB)</li>"
+            "<li><b>Per-slice HRM pressure data:</b> Compact per-height values across frames. Smaller files (~10MB)</li>"
             "<li><b>All vertex pressure data:</b> Complete per-vertex pressure data with all frames. Larger files (~100MB+)</li>"
             "</ul>"
-            "<br><i>Note: Pressure metadata and statistics are always included in both options.</i>"
+            "<br><i>Note: Pressure metadata and statistics are always included in all options.</i>"
         )
 
-        choice, ok = QInputDialog.getItem(
-            self,
-            "Frame Export Options",
-            dialog_text,
-            frame_options,
-            1,  # Default to All vertex pressure data
-            False,
-        )
+        choice, ok = QInputDialog.getItem(self, "Frame Export Options", dialog_text, frame_options, 2, False)
 
         if not ok:
             return  # User cancelled
 
-        # Determine max frames and compression mode based on choice
+        # Determine mode and frame limits
         if "No vertex pressure data" in choice:
-            max_frames = 0  # No per-vertex pressure data
-            compression_mode = "minimal"
-        else:  # "All vertex pressure data"
-            max_frames = -1  # Export all per-vertex pressure frames
-            compression_mode = "full"
+            max_frames = 0
+            pressure_export_mode = "none"
+        elif "Per-slice" in choice:
+            max_frames = -1
+            pressure_export_mode = "per_slice"
+        else:
+            max_frames = -1
+            pressure_export_mode = "per_vertex"
 
         # Prompt the user to choose a destination directory
-        destination_directory = QFileDialog.getExistingDirectory(
-            self, "Select Directory for Mass VTKHDF Export"
-        )
+        destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory for Mass VTKHDF Export")
 
         if not destination_directory:
             return  # User cancelled
@@ -2384,13 +1804,16 @@ class DataWindow(QMainWindow):
                 output_directory=destination_directory,
                 parent_widget=self,
                 max_pressure_frames=max_frames,
+                pressure_export_mode=pressure_export_mode,
             )
 
             # Show results to user
             if results["success"]:
-                # Conditional pressure features based on what was exported
-                if max_frames == 0:
+                # Conditional pressure features based on chosen mode
+                if pressure_export_mode == "none" or max_frames == 0:
                     pressure_features = "• Pressure metadata and statistics\n"
+                elif pressure_export_mode == "per_slice":
+                    pressure_features = "• Per-slice HRM pressure (compact)\n• Pressure metadata and statistics\n"
                 else:
                     pressure_features = "• Per-vertex HRM pressure data\n• Pressure metadata and statistics\n"
 
@@ -2411,18 +1834,10 @@ class DataWindow(QMainWindow):
                     f"• HDF5 organization for efficient data access",
                 )
             else:
-                QMessageBox.warning(
-                    self,
-                    "Mass Export Failed",
-                    f"Mass VTKHDF export failed:\n{results['message']}",
-                )
+                QMessageBox.warning(self, "Mass Export Failed", f"Mass VTKHDF export failed:\n{results['message']}")
 
         except Exception as e:
-            QMessageBox.critical(
-                self,
-                "Mass Export Error",
-                f"An error occurred during mass export:\n{str(e)}",
-            )
+            QMessageBox.critical(self, "Mass Export Error", f"An error occurred during mass export:\n{str(e)}")
 
     def __on_model_enabled_toggled(self, checked: bool):
         path = Path("C:\ModelAchalasia")

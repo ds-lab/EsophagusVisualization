@@ -7,9 +7,11 @@ dist
 build
 .vscode
 .conda
+validation
 /3drekonstruktionspeiseroehre.egg-info
 database.db
 test_database.db
 esophagus-visualization
 .DS_Store
 **/.DS_Store
+pyproject.toml

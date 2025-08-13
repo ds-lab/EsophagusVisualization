@@ -13,6 +13,9 @@ class FigureCreatorWithoutEndoscopy(FigureCreator):
         initFigureCreatorWithoutEndoscopy
         :param visualization_data: VisualizationData
         """
+        # Store visualization data for center path access
+        self.visualization_data = visualization_data
+        
         # Frames of the pressure (Manometry) animation
         self.number_of_frames = visualization_data.pressure_matrix.shape[1]
 
