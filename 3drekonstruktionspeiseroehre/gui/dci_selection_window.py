@@ -26,9 +26,7 @@ class DCISelectionWindow(BaseWorkflowWindow):
 
     next_window = None
 
-    def __init__(
-        self, master_window: MasterWindow, patient_data: PatientData, visit: VisitData
-    ):
+    def __init__(self, master_window: MasterWindow, patient_data: PatientData, visit: VisitData):
         """
         init DciSelectionWindow
         :param master_window: the FlexibleWindow in which the next window will be displayed
@@ -57,18 +55,10 @@ class DCISelectionWindow(BaseWorkflowWindow):
 
         self.fig, self.ax = plt.subplots()
         self.ax.set_title("Select the region for the Esophageal Pressure Index")
-        self.lower_ues, self.lower_les, self.upper_les, self.selector = (
-            None,
-            None,
-            None,
-            None,
-        )
+        self.lower_ues, self.lower_les, self.upper_les, self.selector = (None, None, None, None)
         self.relation_x_y, self.goal_relation = None, None
 
-        sensor_names = [
-            "P" + str(len(config.coords_sensors) - i)
-            for i in range(len(config.coords_sensors))
-        ]
+        sensor_names = ["P" + str(len(config.coords_sensors) - i) for i in range(len(config.coords_sensors))]
         self.ui.first_combobox.addItems(sensor_names)
         self.ui.second_combobox.addItems(sensor_names)
 
@@ -109,6 +99,8 @@ class DCISelectionWindow(BaseWorkflowWindow):
 
         self.goal_relation = 16 / 9
         self.__plot_data()
+        # If a previous adjustment exists, preload HRM lines/rectangle and comboboxes
+        self.__maybe_preload_previous_adjustment()
 
     def __on_checkbox_toggled(self):
         """
@@ -128,12 +120,70 @@ class DCISelectionWindow(BaseWorkflowWindow):
             self.is_20mmHg_selected = True
         elif self.radioButton0mmHg.isChecked():
             self.is_20mmHg_selected = False
-        self.__update_DCI_value(
-            int(self.selector.extents[0]),
-            int(self.selector.extents[1]),
-            int(self.selector.extents[2]),
-            int(self.selector.extents[3]),
-        )
+        self.__update_DCI_value(int(self.selector.extents[0]), int(self.selector.extents[1]), int(self.selector.extents[2]), int(self.selector.extents[3]))
+
+    def __maybe_preload_previous_adjustment(self):
+        """
+        If the current visualization has normalized HRM boundaries/rectangle saved from a prior reconstruction,
+        convert them to absolute pixel coordinates and restore the UI (lines, selector, comboboxes).
+        """
+        try:
+            viz = self.visualization_data
+            # Need pressure_matrix_high_res and selector created already
+            if (
+                getattr(viz, "hrm_lower_ues_rel_y", None) is not None
+                and getattr(viz, "hrm_upper_les_rel_y", None) is not None
+                and getattr(viz, "hrm_lower_les_rel_y", None) is not None
+                and getattr(viz, "hrm_rect_rel_x1", None) is not None
+                and getattr(viz, "hrm_rect_rel_x2", None) is not None
+                and self.selector is not None
+                and self.pressure_matrix_high_res is not None
+            ):
+                height = self.pressure_matrix_high_res.shape[0]
+                width = self.pressure_matrix_high_res.shape[1]
+
+                # Restore lines
+                lower_ues_abs = int(round(viz.hrm_lower_ues_rel_y * height))
+                upper_les_abs = int(round(viz.hrm_upper_les_rel_y * height))
+                lower_les_abs = int(round(viz.hrm_lower_les_rel_y * height))
+                # Keep ordering/safety
+                lower_ues_abs = max(0, min(height - 1, lower_ues_abs))
+                upper_les_abs = max(0, min(height - 1, upper_les_abs))
+                lower_les_abs = max(0, min(height - 1, lower_les_abs))
+
+                # Set line positions
+                if self.lower_ues:
+                    self.lower_ues.set_y_position(lower_ues_abs)
+                    self.lower_ues_backup = lower_ues_abs
+                if self.upper_les:
+                    self.upper_les.set_y_position(upper_les_abs)
+                    self.upper_les_backup = upper_les_abs
+                if self.lower_les:
+                    self.lower_les.set_y_position(lower_les_abs)
+                    self.lower_les_backup = lower_les_abs
+
+                # Restore rectangle extents
+                x1_abs = int(round(viz.hrm_rect_rel_x1 * width))
+                x2_abs = int(round(viz.hrm_rect_rel_x2 * width))
+                x1_abs = max(0, min(width - 1, x1_abs))
+                x2_abs = max(0, min(width - 1, x2_abs))
+                # y extents bound to lines
+                self.selector.extents = (x1_abs, x2_abs, lower_ues_abs, upper_les_abs)
+                self.selector.update()
+
+                # Update comboboxes and DCI labels
+                first_sensor_pos = self.find_first_sensor_below_ues()
+                second_sensor_pos = self.find_middle_sensor_in_les()
+                self.ui.first_combobox.setCurrentIndex(first_sensor_pos)
+                self.ui.second_combobox.setCurrentIndex(second_sensor_pos)
+                self.visualization_data.first_sensor_index = first_sensor_pos
+                self.visualization_data.second_sensor_index = second_sensor_pos
+
+                self.__update_DCI_value(x1_abs, x2_abs, lower_ues_abs, upper_les_abs)
+                self.figure_canvas.draw_idle()
+        except Exception:
+            # Non-fatal: ignore preload errors
+            pass
 
     def __update_DCI_value(self, x1, x2, y1, y2):
         """
@@ -146,18 +196,9 @@ class DCISelectionWindow(BaseWorkflowWindow):
         # Extract the selected data
         selected_data = self.pressure_matrix_high_res[y1:y2, x1:x2]
 
-        height_in_cm = (
-            selected_data.shape[0]
-            / self.pressure_matrix_high_res.shape[0]
-            * np.sort(config.coords_sensors)[-1]
-        )
+        height_in_cm = selected_data.shape[0] / self.pressure_matrix_high_res.shape[0] * np.sort(config.coords_sensors)[-1]
         time_in_s = (
-            selected_data.shape[1]
-            / self.pressure_matrix_high_res.shape[1]
-            * (
-                self.visualization_data.pressure_matrix.shape[1]
-                / config.csv_values_per_second
-            )
+            selected_data.shape[1] / self.pressure_matrix_high_res.shape[1] * (self.visualization_data.pressure_matrix.shape[1] / config.csv_values_per_second)
         )
 
         dci_value = self.calculateDCI(selected_data, height_in_cm, time_in_s)
@@ -185,10 +226,7 @@ class DCISelectionWindow(BaseWorkflowWindow):
         :return: the height of the LES in cm
         """
         return np.round(
-            (self.lower_les.get_y_position() - self.upper_les.get_y_position())
-            * np.sort(config.coords_sensors)[-1]
-            / self.pressure_matrix_high_res.shape[0],
-            2,
+            (self.lower_les.get_y_position() - self.upper_les.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2
         )
 
     def get_esophagus_length(self):
@@ -197,10 +235,7 @@ class DCISelectionWindow(BaseWorkflowWindow):
         :return: the length of the tubular esophagus in cm
         """
         return np.round(
-            (self.upper_les.get_y_position() - self.lower_ues.get_y_position())
-            * np.sort(config.coords_sensors)[-1]
-            / self.pressure_matrix_high_res.shape[0],
-            2,
+            (self.upper_les.get_y_position() - self.lower_ues.get_y_position()) * np.sort(config.coords_sensors)[-1] / self.pressure_matrix_high_res.shape[0], 2
         )
 
     def __couple_selector(self):
@@ -208,19 +243,9 @@ class DCISelectionWindow(BaseWorkflowWindow):
         Couple the rectangle selector with the LES and UES lines
         """
         self.selectorIsCoupled = True
-        self.selector.extents = (
-            self.selector.extents[0],
-            self.selector.extents[1],
-            self.lower_ues.get_y_position(),
-            self.upper_les.get_y_position(),
-        )
+        self.selector.extents = (self.selector.extents[0], self.selector.extents[1], self.lower_ues.get_y_position(), self.upper_les.get_y_position())
         self.selector.update()
-        self.__update_DCI_value(
-            int(self.selector.extents[0]),
-            int(self.selector.extents[1]),
-            int(self.selector.extents[2]),
-            int(self.selector.extents[3]),
-        )
+        self.__update_DCI_value(int(self.selector.extents[0]), int(self.selector.extents[1]), int(self.selector.extents[2]), int(self.selector.extents[3]))
 
     def on_lines_dragged(self):
         """
@@ -232,39 +257,26 @@ class DCISelectionWindow(BaseWorkflowWindow):
         lower_les_y = self.lower_les.get_y_position()
 
         if (
-            upper_les_y
-            <= lower_ues_y
-            + 1
-            * self.pressure_matrix_high_res.shape[0]
-            / np.sort(config.coords_sensors)[-1]
+            upper_les_y <= lower_ues_y + 1 * self.pressure_matrix_high_res.shape[0] / np.sort(config.coords_sensors)[-1]
         ):  # length of tubular esophagus must be at least 1 cm
             self.upper_les.set_y_position(self.upper_les_backup)
             self.lower_ues.set_y_position(self.lower_ues_backup)
             return
         elif (
-            upper_les_y
-            >= lower_les_y
-            - 0.5
-            * self.pressure_matrix_high_res.shape[0]
-            / np.sort(config.coords_sensors)[-1]
+            upper_les_y >= lower_les_y - 0.5 * self.pressure_matrix_high_res.shape[0] / np.sort(config.coords_sensors)[-1]
         ):  # les must have a minimum height of 0.5 cm
             self.upper_les.set_y_position(self.upper_les_backup)
             self.lower_les.set_y_position(self.lower_les_backup)
             return
         elif (
-            lower_ues_y
-            >= lower_les_y
-            - 0.5
-            * self.pressure_matrix_high_res.shape[0]
-            / np.sort(config.coords_sensors)[-1]
+            lower_ues_y >= lower_les_y - 0.5 * self.pressure_matrix_high_res.shape[0] / np.sort(config.coords_sensors)[-1]
         ):  # should never happen since upper_les is always above lower_les
             self.lower_ues.set_y_position(self.lower_ues_backup)
             self.lower_les.set_y_position(self.lower_les_backup)
             return
 
         if (
-            self.lower_ues != self.lower_ues_backup
-            or self.upper_les != self.upper_les_backup
+            self.lower_ues != self.lower_ues_backup or self.upper_les != self.upper_les_backup
         ) and self.selectorIsCoupled:  # update the DCI value if rectangle selector is changed
             self.__couple_selector()
 
@@ -284,26 +296,10 @@ class DCISelectionWindow(BaseWorkflowWindow):
         self.visualization_data.second_sensor_index = second_sensor_pos
 
     def connect_events(self):
-        self.connection_ids.append(
-            self.fig.canvas.mpl_connect(
-                "motion_notify_event", self.line_manager.on_hover
-            )
-        )
-        self.connection_ids.append(
-            self.fig.canvas.mpl_connect(
-                "button_press_event", self.line_manager.on_press
-            )
-        )
-        self.connection_ids.append(
-            self.fig.canvas.mpl_connect(
-                "button_release_event", self.line_manager.on_release
-            )
-        )
-        self.connection_ids.append(
-            self.fig.canvas.mpl_connect(
-                "motion_notify_event", self.line_manager.on_motion
-            )
-        )
+        self.connection_ids.append(self.fig.canvas.mpl_connect("motion_notify_event", self.line_manager.on_hover))
+        self.connection_ids.append(self.fig.canvas.mpl_connect("button_press_event", self.line_manager.on_press))
+        self.connection_ids.append(self.fig.canvas.mpl_connect("button_release_event", self.line_manager.on_release))
+        self.connection_ids.append(self.fig.canvas.mpl_connect("motion_notify_event", self.line_manager.on_motion))
 
     def disconnect_events(self):
         for cid in self.connection_ids:
@@ -319,9 +315,7 @@ class DCISelectionWindow(BaseWorkflowWindow):
             self.ax,
             self.__onselect,
             useblit=True,
-            props=dict(
-                facecolor=(1, 0, 0, 0), edgecolor="white", linewidth=1.5, linestyle="-"
-            ),
+            props=dict(facecolor=(1, 0, 0, 0), edgecolor="white", linewidth=1.5, linestyle="-"),
             interactive=True,
             ignore_event_outside=True,
             use_data_coordinates=True,
@@ -342,38 +336,20 @@ class DCISelectionWindow(BaseWorkflowWindow):
         self.selector.extents = (left_end, right_end, lower_ues, upper_les)
         self.line_manager = DraggableLineManager(self.fig.canvas)
         self.lower_les = DraggableHorizontalLine(
-            self.ax.axhline(y=lower_les, color="r", linewidth=1.5, picker=2),
-            label="LES (L)",
-            color="red",
-            callback=self.on_lines_dragged,
+            self.ax.axhline(y=lower_les, color="r", linewidth=1.5, picker=2), label="LES (L)", color="red", callback=self.on_lines_dragged
         )
         self.lower_ues = DraggableHorizontalLine(
-            self.ax.axhline(y=lower_ues, color="r", linewidth=1.5, picker=2),
-            label="UES",
-            color="blue",
-            callback=self.on_lines_dragged,
+            self.ax.axhline(y=lower_ues, color="r", linewidth=1.5, picker=2), label="UES", color="blue", callback=self.on_lines_dragged
         )
         self.upper_les = DraggableHorizontalLine(
-            self.ax.axhline(y=upper_les, color="r", linewidth=1.5, picker=2),
-            label="LES (U)",
-            color="black",
-            callback=self.on_lines_dragged,
+            self.ax.axhline(y=upper_les, color="r", linewidth=1.5, picker=2), label="LES (U)", color="black", callback=self.on_lines_dragged
         )
         self.line_manager.add_line(self.lower_les)
         self.line_manager.add_line(self.lower_ues)
         self.line_manager.add_line(self.upper_les)
-        legend_handles = [
-            Line2D([0], [0], color=line.color, lw=2, linestyle="-")
-            for line in self.line_manager.lines
-        ]
+        legend_handles = [Line2D([0], [0], color=line.color, lw=2, linestyle="-") for line in self.line_manager.lines]
         legend_labels = [line.label for line in self.line_manager.lines]
-        self.ax.legend(
-            legend_handles,
-            legend_labels,
-            loc="upper center",
-            bbox_to_anchor=(0.5, -0.1),
-            ncol=len(self.line_manager.lines),
-        )
+        self.ax.legend(legend_handles, legend_labels, loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=len(self.line_manager.lines))
         self.connect_events()
         self.__update_DCI_value(left_end, right_end, lower_ues, upper_les)
         first_sensor_pos = self.find_first_sensor_below_ues()
@@ -412,9 +388,7 @@ class DCISelectionWindow(BaseWorkflowWindow):
         info_window.show_dci_selection_info()
         info_window.show()
 
-    def __generate_estimated_pressure_matrix(
-        self, first_sensor, last_sensor, min_gap, number_of_measurements, coords_sensors
-    ):
+    def __generate_estimated_pressure_matrix(self, first_sensor, last_sensor, min_gap, number_of_measurements, coords_sensors):
         """
         Generate an estimated pressure matrix by interpolating the pressure values between the sensors
         :param first_sensor: the position of the first sensor
@@ -424,33 +398,19 @@ class DCISelectionWindow(BaseWorkflowWindow):
         :param coords_sensors: the coordinates of the sensors
         :return: the estimated pressure matrix
         """
-        estimated_pressure_matrix = np.zeros(
-            ((last_sensor - first_sensor) // min_gap + 1, number_of_measurements)
-        )
+        estimated_pressure_matrix = np.zeros(((last_sensor - first_sensor) // min_gap + 1, number_of_measurements))
         for i in range(number_of_measurements):
             sensor_counter = 0
             for position in range(first_sensor, last_sensor + 1, min_gap):
                 if position in coords_sensors:
-                    estimated_pressure_matrix[
-                        (position - first_sensor) // min_gap, i
-                    ] = self.visualization_data.pressure_matrix[sensor_counter, i]
+                    estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = self.visualization_data.pressure_matrix[sensor_counter, i]
                     sensor_counter += 1
                 else:
-                    value_before = self.visualization_data.pressure_matrix[
-                        sensor_counter - 1, i
-                    ]
-                    value_after = self.visualization_data.pressure_matrix[
-                        sensor_counter, i
-                    ]
-                    estimated_pressure_matrix[
-                        (position - first_sensor) // min_gap, i
-                    ] = (
-                        (position - coords_sensors[sensor_counter - 1]) * value_after
-                        + (coords_sensors[sensor_counter] - position) * value_before
-                    ) / (
-                        coords_sensors[sensor_counter]
-                        - coords_sensors[sensor_counter - 1]
-                    )
+                    value_before = self.visualization_data.pressure_matrix[sensor_counter - 1, i]
+                    value_after = self.visualization_data.pressure_matrix[sensor_counter, i]
+                    estimated_pressure_matrix[(position - first_sensor) // min_gap, i] = (
+                        (position - coords_sensors[sensor_counter - 1]) * value_after + (coords_sensors[sensor_counter] - position) * value_before
+                    ) / (coords_sensors[sensor_counter] - coords_sensors[sensor_counter - 1])
         return estimated_pressure_matrix
 
     def __interpolate_pressure_matrix(self, estimated_pressure_matrix):
@@ -463,27 +423,12 @@ class DCISelectionWindow(BaseWorkflowWindow):
         x = np.arange(estimated_pressure_matrix.shape[1])
 
         # Create the spline interpolator
-        spline = RectBivariateSpline(
-            y, x, estimated_pressure_matrix
-        )  # Bicubic interpolation
+        spline = RectBivariateSpline(y, x, estimated_pressure_matrix)  # Bicubic interpolation
 
         # Define higher resolution grid
-        xnew = np.linspace(
-            0,
-            estimated_pressure_matrix.shape[1] - 1,
-            estimated_pressure_matrix.shape[1] * 10,
-        )
+        xnew = np.linspace(0, estimated_pressure_matrix.shape[1] - 1, estimated_pressure_matrix.shape[1] * 10)
         ynew = np.linspace(
-            0,
-            estimated_pressure_matrix.shape[0] - 1,
-            int(
-                np.floor(
-                    estimated_pressure_matrix.shape[0]
-                    * 10
-                    * self.relation_x_y
-                    / self.goal_relation
-                )
-            ),
+            0, estimated_pressure_matrix.shape[0] - 1, int(np.floor(estimated_pressure_matrix.shape[0] * 10 * self.relation_x_y / self.goal_relation))
         )
         return spline(ynew, xnew)
 
@@ -505,67 +450,34 @@ class DCISelectionWindow(BaseWorkflowWindow):
         positions = [0, 0.123552143573761, 0.274131298065186, 0.5, 0.702702701091766, 1]
 
         # Create the color map
-        cmap = LinearSegmentedColormap.from_list(
-            "custom_cmap", list(zip(positions, colors))
-        )
+        cmap = LinearSegmentedColormap.from_list("custom_cmap", list(zip(positions, colors)))
 
         # approximate values between sensors in equal distances
-        coords_sensors = np.sort(
-            config.coords_sensors
-        )  # sort the sensor positions if not already sorted
-        min_gap = np.gcd.reduce(
-            np.diff(coords_sensors)
-        )  # assumption, that there is only one sensor at each position
+        coords_sensors = np.sort(config.coords_sensors)  # sort the sensor positions if not already sorted
+        min_gap = np.gcd.reduce(np.diff(coords_sensors))  # assumption, that there is only one sensor at each position
         first_sensor = coords_sensors[0]  # start at the first sensor (min value)
         last_sensor = coords_sensors[-1]  # max value
 
-        estimated_pressure_matrix = self.__generate_estimated_pressure_matrix(
-            first_sensor, last_sensor, min_gap, number_of_measurements, coords_sensors
-        )
+        estimated_pressure_matrix = self.__generate_estimated_pressure_matrix(first_sensor, last_sensor, min_gap, number_of_measurements, coords_sensors)
 
-        self.relation_x_y = (
-            estimated_pressure_matrix.shape[1] / estimated_pressure_matrix.shape[0]
-        )
-        pressure_matrix_high_res = self.__interpolate_pressure_matrix(
-            estimated_pressure_matrix
-        )
+        self.relation_x_y = estimated_pressure_matrix.shape[1] / estimated_pressure_matrix.shape[0]
+        pressure_matrix_high_res = self.__interpolate_pressure_matrix(estimated_pressure_matrix)
         self.pressure_matrix_high_res = pressure_matrix_high_res
 
-        im = self.ax.imshow(
-            pressure_matrix_high_res,
-            cmap=cmap,
-            interpolation="nearest",
-            vmin=config.cmin,
-            vmax=config.cmax,
-        )
+        im = self.ax.imshow(pressure_matrix_high_res, cmap=cmap, interpolation="nearest", vmin=config.cmin, vmax=config.cmax)
 
         # Calculate the time for each measurement
-        time = (
-            np.arange(0, estimated_pressure_matrix.shape[1])
-            / config.csv_values_per_second
-        )
+        time = np.arange(0, estimated_pressure_matrix.shape[1]) / config.csv_values_per_second
 
         # Set the tick labels
-        x_ticks = np.linspace(
-            0,
-            pressure_matrix_high_res.shape[1],
-            len(time) // int(np.ceil(10 * self.relation_x_y / self.goal_relation)) + 1,
-        )
-        y_ticks = np.linspace(
-            0,
-            pressure_matrix_high_res.shape[0],
-            estimated_pressure_matrix.shape[0] // 10 + 1,
-        )
+        x_ticks = np.linspace(0, pressure_matrix_high_res.shape[1], len(time) // int(np.ceil(10 * self.relation_x_y / self.goal_relation)) + 1)
+        y_ticks = np.linspace(0, pressure_matrix_high_res.shape[0], estimated_pressure_matrix.shape[0] // 10 + 1)
         self.ax.set_xticks(x_ticks)
         self.ax.set_yticks(y_ticks)
         self.ax.set_xticklabels(
-            np.round(
-                time[:: int(np.ceil(10 * self.relation_x_y / self.goal_relation))], 1
-            )
+            np.round(time[:: int(np.ceil(10 * self.relation_x_y / self.goal_relation))], 1)
         )  # Display only every 10th time point, rounded to 1 decimal place
-        self.ax.set_yticklabels(
-            np.arange(0, estimated_pressure_matrix.shape[0] + 1, 10)
-        )
+        self.ax.set_yticklabels(np.arange(0, estimated_pressure_matrix.shape[0] + 1, 10))
 
         self.fig.colorbar(im, ax=self.ax, label="Pressure (mmHg·s·cm)")
         self.ax.set_ylabel("Height along esophagus (cm)")
@@ -577,11 +489,7 @@ class DCISelectionWindow(BaseWorkflowWindow):
         self.ui.gridLayout.addWidget(self.figure_canvas)
 
         plt.contour(
-            self.pressure_matrix_high_res > 30,
-            levels=[0.5],
-            colors="k",
-            linestyles="solid",
-            linewidths=0.3,
+            self.pressure_matrix_high_res > 30, levels=[0.5], colors="k", linestyles="solid", linewidths=0.3
         )  # threshold for the contour plot is 30 mmHg
 
         # Plot small dots at the coordinates of the sensors
@@ -590,22 +498,10 @@ class DCISelectionWindow(BaseWorkflowWindow):
         for i, coord in enumerate(config.coords_sensors):
             x = self.pressure_matrix_high_res.shape[1] - 10
             # Normalize coord to the range of the pressure_matrix_high_res height
-            y = (
-                (coord - min_coord)
-                / (max_coord - min_coord)
-                * (self.pressure_matrix_high_res.shape[0] - 1)
-            )
+            y = (coord - min_coord) / (max_coord - min_coord) * (self.pressure_matrix_high_res.shape[0] - 1)
             y = int(np.ceil(y))
-            self.ax.plot(
-                x, y, "ro", markersize=4
-            )  # 'ro' means red color, circle marker
-            self.ax.annotate(
-                f"P{len(config.coords_sensors) - i}",
-                (x, y),
-                textcoords="offset points",
-                xytext=(5, -4),
-                ha="left",
-            )
+            self.ax.plot(x, y, "ro", markersize=4)  # 'ro' means red color, circle marker
+            self.ax.annotate(f"P{len(config.coords_sensors) - i}", (x, y), textcoords="offset points", xytext=(5, -4), ha="left")
         self.figure_canvas.draw()
         self.__initialize_plot_analysis()
 
@@ -614,38 +510,41 @@ class DCISelectionWindow(BaseWorkflowWindow):
         apply-button callback
         """
         for i in range(len(self.visit.visualization_data_list)):
-            self.visit.visualization_data_list[i].sphincter_length_cm = (
-                self.get_les_height()
-            )
-        if (
-            self.ui.first_combobox.currentIndex()
-            != self.ui.second_combobox.currentIndex()
-        ):
-            if (
-                self.ui.first_combobox.currentIndex()
-                > self.ui.second_combobox.currentIndex()
-            ):
+            self.visit.visualization_data_list[i].sphincter_length_cm = self.get_les_height()
+        if self.ui.first_combobox.currentIndex() != self.ui.second_combobox.currentIndex():
+            if self.ui.first_combobox.currentIndex() > self.ui.second_combobox.currentIndex():
                 for i in range(len(self.visit.visualization_data_list)):
-                    self.visit.visualization_data_list[i].first_sensor_index = (
-                        self.ui.first_combobox.currentIndex()
-                    )
-                    self.visit.visualization_data_list[i].second_sensor_index = (
-                        self.ui.second_combobox.currentIndex()
-                    )
+                    self.visit.visualization_data_list[i].first_sensor_index = self.ui.first_combobox.currentIndex()
+                    self.visit.visualization_data_list[i].second_sensor_index = self.ui.second_combobox.currentIndex()
             else:
                 for i in range(len(self.visit.visualization_data_list)):
-                    self.visit.visualization_data_list[i].first_sensor_index = (
-                        self.ui.second_combobox.currentIndex()
-                    )
-                    self.visit.visualization_data_list[i].second_sensor_index = (
-                        self.ui.first_combobox.currentIndex()
-                    )
+                    self.visit.visualization_data_list[i].first_sensor_index = self.ui.second_combobox.currentIndex()
+                    self.visit.visualization_data_list[i].second_sensor_index = self.ui.first_combobox.currentIndex()
         else:
             QMessageBox.critical(self, "Error", "Please select two different sensors.")
         for i in range(len(self.visit.visualization_data_list)):
-            self.visit.visualization_data_list[i].esophageal_pressurization_index = (
-                float(self.ui.DCI.text().split()[0])
-            )
+            self.visit.visualization_data_list[i].esophageal_pressurization_index = float(self.ui.DCI.text().split()[0])
+        # Persist current HRM lines and rectangle as normalized values on each visualization for re-adjustment later
+        try:
+            height = self.pressure_matrix_high_res.shape[0]
+            width = self.pressure_matrix_high_res.shape[1]
+            # Calculate normalized values
+            lower_ues_rel = float(self.lower_ues.get_y_position()) / float(height)
+            upper_les_rel = float(self.upper_les.get_y_position()) / float(height)
+            lower_les_rel = float(self.lower_les.get_y_position()) / float(height)
+            x1_rel = float(self.selector.extents[0]) / float(width)
+            x2_rel = float(self.selector.extents[1]) / float(width)
+
+            for i in range(len(self.visit.visualization_data_list)):
+                viz = self.visit.visualization_data_list[i]
+                viz.hrm_lower_ues_rel_y = lower_ues_rel
+                viz.hrm_upper_les_rel_y = upper_les_rel
+                viz.hrm_lower_les_rel_y = lower_les_rel
+                viz.hrm_rect_rel_x1 = x1_rel
+                viz.hrm_rect_rel_x2 = x2_rel
+        except Exception:
+            pass
+
         ManageXrayWindows(self.master_window, self.visit, self.patient_data)
 
     def calculateDCI(self, pressure_matrix, height, time):
@@ -675,9 +574,7 @@ class DCISelectionWindow(BaseWorkflowWindow):
         Finds the largest connected stripe in the given binary matrix region.
         """
         region = binary_matrix[region_start:region_end]
-        contours, _ = cv2.findContours(
-            region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-        )
+        contours, _ = cv2.findContours(region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours:
             return None, None
         best_contour = max(contours, key=cv2.contourArea)
@@ -690,44 +587,23 @@ class DCISelectionWindow(BaseWorkflowWindow):
         """
         sobel_y = cv2.Sobel(binary_matrix, cv2.CV_64F, dx=0, dy=1, ksize=3)
         if edge_type == "upper":
-            return region_start + np.argmax(
-                sobel_y[region_start:region_end].sum(axis=1)
-            )
+            return region_start + np.argmax(sobel_y[region_start:region_end].sum(axis=1))
         else:  # "lower"
-            return region_start + np.argmin(
-                sobel_y[region_start:region_end].sum(axis=1)
-            )
+            return region_start + np.argmin(sobel_y[region_start:region_end].sum(axis=1))
 
     def find_boundary(self, threshold=30, min_percentage=0.3, region="UES_lower"):
         """
         General function to detect boundaries of UES and LES stripes.
         """
         height = self.pressure_matrix_high_res.shape[0]
-        binary_matrix = (self.pressure_matrix_high_res > threshold).astype(
-            np.uint8
-        ) * 255
+        binary_matrix = (self.pressure_matrix_high_res > threshold).astype(np.uint8) * 255
 
         if region == "UES_lower":
-            region_start, region_end, edge_type, default = (
-                0,
-                height // 2,
-                "lower",
-                int(0.05 * height),
-            )
+            region_start, region_end, edge_type, default = (0, height // 2, "lower", int(0.05 * height))
         elif region == "LES_upper":
-            region_start, region_end, edge_type, default = (
-                height // 2,
-                height,
-                "upper",
-                int(0.75 * height),
-            )
+            region_start, region_end, edge_type, default = (height // 2, height, "upper", int(0.75 * height))
         elif region == "LES_lower":
-            region_start, region_end, edge_type, default = (
-                height // 2,
-                height,
-                "lower",
-                int(0.95 * height),
-            )
+            region_start, region_end, edge_type, default = (height // 2, height, "lower", int(0.95 * height))
         else:
             raise ValueError("Invalid region specified.")
 
@@ -735,32 +611,20 @@ class DCISelectionWindow(BaseWorkflowWindow):
         if y is None:
             return default
 
-        sobel_edge_y = self.find_sobel_edge(
-            binary_matrix, region_start, region_end, edge_type
-        )
+        sobel_edge_y = self.find_sobel_edge(binary_matrix, region_start, region_end, edge_type)
 
         if edge_type == "upper":
             for row in range(y, y + h):
-                if (
-                    np.sum(self.pressure_matrix_high_res[row] > threshold)
-                    / self.pressure_matrix_high_res.shape[1]
-                    >= min_percentage
-                ):
+                if np.sum(self.pressure_matrix_high_res[row] > threshold) / self.pressure_matrix_high_res.shape[1] >= min_percentage:
                     largest_stripe_start = row
                     break
             else:
                 largest_stripe_start = y
-            return (
-                sobel_edge_y if y <= sobel_edge_y <= (y + h) else largest_stripe_start
-            )
+            return sobel_edge_y if y <= sobel_edge_y <= (y + h) else largest_stripe_start
 
         else:  # "lower"
             for row in range(y + h - 1, y - 1, -1):
-                if (
-                    np.sum(self.pressure_matrix_high_res[row] > threshold)
-                    / self.pressure_matrix_high_res.shape[1]
-                    >= min_percentage
-                ):
+                if np.sum(self.pressure_matrix_high_res[row] > threshold) / self.pressure_matrix_high_res.shape[1] >= min_percentage:
                     largest_stripe_end = row
                     break
             else:
@@ -778,18 +642,13 @@ class DCISelectionWindow(BaseWorkflowWindow):
         """
         roi = np.array(self.pressure_matrix_high_res[lower_ues:upper_les])
         binary_mask = (roi > threshold).astype(np.uint8) * 255
-        contours, _ = cv2.findContours(
-            binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-        )
+        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         if not contours:
             # Default to estimated position if no connected regions found
-            left_end_x = self.find_leftmost_x_coordinate_above_threshold(
-                self.pressure_matrix_high_res, lower_ues, threshold
-            )
+            left_end_x = self.find_leftmost_x_coordinate_above_threshold(self.pressure_matrix_high_res, lower_ues, threshold)
             right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (
-                len(self.visualization_data.pressure_matrix[1])
-                / config.csv_values_per_second
+                len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second
             )
             return int(left_end_x), int(right_end_x)
 
@@ -815,12 +674,9 @@ class DCISelectionWindow(BaseWorkflowWindow):
             right_end_x -= 1
 
         if left_end_x >= right_end_x:
-            left_end_x = self.find_leftmost_x_coordinate_above_threshold(
-                self.pressure_matrix_high_res, lower_ues, threshold
-            )
+            left_end_x = self.find_leftmost_x_coordinate_above_threshold(self.pressure_matrix_high_res, lower_ues, threshold)
             right_end_x = left_end_x + self.pressure_matrix_high_res.shape[1] * 10 / (
-                len(self.visualization_data.pressure_matrix[1])
-                / config.csv_values_per_second
+                len(self.visualization_data.pressure_matrix[1]) / config.csv_values_per_second
             )
             return int(left_end_x), int(right_end_x)
 
@@ -831,17 +687,11 @@ class DCISelectionWindow(BaseWorkflowWindow):
         Finds the sensor closest to the middle of the Lower Esophageal Sphincter (LES).
         :return: the index of the closest sensor to the middle of the LES.
         """
-        les_start = self.lower_les.get_y_position() / int(
-            np.ceil(10 * self.relation_x_y / self.goal_relation)
-        )
-        les_end = self.upper_les.get_y_position() / int(
-            np.ceil(10 * self.relation_x_y / self.goal_relation)
-        )
+        les_start = self.lower_les.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
+        les_end = self.upper_les.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
         middle_position = (les_start + les_end) / 2
 
-        closest_sensor = min(
-            config.coords_sensors, key=lambda sensor: abs(sensor - middle_position)
-        )
+        closest_sensor = min(config.coords_sensors, key=lambda sensor: abs(sensor - middle_position))
         return config.coords_sensors.index(closest_sensor)
 
     def find_first_sensor_below_ues(self):
@@ -849,17 +699,11 @@ class DCISelectionWindow(BaseWorkflowWindow):
         Finds the first sensor below the lower end of the Upper Esophageal Sphincter (UES).
         :return: the sensor position of the first sensor below the lower end of the UES.
         """
-        lower_ues_position = self.lower_ues.get_y_position() / int(
-            np.ceil(10 * self.relation_x_y / self.goal_relation)
-        )
-        first_sensor_above_ues = next(
-            sensor for sensor in config.coords_sensors if sensor > lower_ues_position
-        )
+        lower_ues_position = self.lower_ues.get_y_position() / int(np.ceil(10 * self.relation_x_y / self.goal_relation))
+        first_sensor_above_ues = next(sensor for sensor in config.coords_sensors if sensor > lower_ues_position)
         return config.coords_sensors.index(first_sensor_above_ues)
 
-    def find_leftmost_x_coordinate_above_threshold(
-        self, pressure_matrix, lower_ues_y, threshold=30
-    ):
+    def find_leftmost_x_coordinate_above_threshold(self, pressure_matrix, lower_ues_y, threshold=30):
         """
         Finds the leftmost x-coordinate of the connected region above the lower UES that has the most values in the upper part of the plot.
 
@@ -869,9 +713,7 @@ class DCISelectionWindow(BaseWorkflowWindow):
         :return: The x-coordinate of the leftmost point in the best connected region.
         """
         binary_mask = (pressure_matrix > threshold).astype(np.uint8) * 255
-        contours, _ = cv2.findContours(
-            binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-        )
+        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         if not contours:
             return 0

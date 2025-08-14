@@ -80,7 +80,7 @@ class VisualizationWindow(BaseWorkflowWindow):
         menu_button_8.triggered.connect(self.__save_reconstruction_in_db)
         self.ui.menubar.addAction(menu_button_8)
         # Adjust segmentation entry point
-        menu_button_adjust = QAction("Adjust current separation", self)
+        menu_button_adjust = QAction("Adjust current Reconstruction(s)", self)
         menu_button_adjust.triggered.connect(self.__adjust_current_segmentation)
         self.ui.menubar.addAction(menu_button_adjust)
         menu_button_4 = QAction("Add Reconstruction(s)", self)
@@ -137,8 +137,11 @@ class VisualizationWindow(BaseWorkflowWindow):
             self.progress_dialog.close()
             self.progress_dialog = None
 
-        # Stop all dash servers
-        for dash_server in self.dash_servers:
+        # Stop all dash servers (ensure shutdown)
+        for dash_server in getattr(self, "dask_servers", []) or []:
+            # typo safeguard, do nothing
+            pass
+        for dash_server in getattr(self, "dash_servers", []) or []:
             try:
                 dash_server.stop()
             except Exception:
@@ -146,7 +149,7 @@ class VisualizationWindow(BaseWorkflowWindow):
                 pass
 
         # Close all web views
-        for web_view in self.web_views:
+        for web_view in getattr(self, "web_views", []) or []:
             try:
                 web_view.close()
             except Exception:
@@ -445,22 +448,19 @@ class VisualizationWindow(BaseWorkflowWindow):
             compression_mode = "full"
             pressure_export_mode = "per_vertex"
 
-        # Validation JSON export temporarily disabled. Keeping original code commented for later re-enable.
-        # validation_options = ["No validation attributes", "Export validation attributes (JSON format)"]
-        # validation_dialog_text = (
-        #     "Do you want to export validation attributes for the validation framework?"
-        #     "<ul>"
-        #     "<li><b>No validation attributes:</b> Only export the 3D mesh file</li>"
-        #     "<li><b>JSON format:</b> Export validation data in a single JSON file</li>"
-        #     "</ul>"
-        #     "<br><i>Validation attributes enable automated validation of reconstruction accuracy.</i>"
-        # )
-        # validation_choice, validation_ok = QInputDialog.getItem(self, "Validation Export Options", validation_dialog_text, validation_options, 0, False)
-        # if not validation_ok:
-        #     return
-        # export_validation_attributes = validation_choice == validation_options[1]
-        # validation_format = "json"  # JSON only
-        export_validation_attributes = False
+        validation_options = ["No validation attributes", "Export validation attributes (JSON format)"]
+        validation_dialog_text = (
+            "Do you want to export validation attributes for the validation framework?"
+            "<ul>"
+            "<li><b>No validation attributes:</b> Only export the 3D mesh file</li>"
+            "<li><b>JSON format:</b> Export validation data in a single JSON file</li>"
+            "</ul>"
+            "<br><i>Validation attributes enable automated validation of reconstruction accuracy.</i>"
+        )
+        validation_choice, validation_ok = QInputDialog.getItem(self, "Validation Export Options", validation_dialog_text, validation_options, 0, False)
+        if not validation_ok:
+            return
+        export_validation_attributes = validation_choice == validation_options[1]
         validation_format = "json"
 
         destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory for VTKHDF Export")
@@ -482,9 +482,9 @@ class VisualizationWindow(BaseWorkflowWindow):
             exporter = VTKHDFExporter(db_session=db_session, max_pressure_frames=max_frames, pressure_export_mode=pressure_export_mode)
 
             all_created_files = []
-            # Initialize validation files tracking (disabled)
-            # if export_validation_attributes:
-            #     self._validation_files = []
+            # Initialize validation files tracking
+            if export_validation_attributes:
+                self._validation_files = []
 
             # loop through all visits.items (these are figures which are displayed in different threads)
             for i, (name, visit_data) in enumerate(self.visits.items()):
@@ -526,8 +526,7 @@ class VisualizationWindow(BaseWorkflowWindow):
                     )
 
                     mesh_files = export_result.get("mesh_files", [])
-                    # validation_files = export_result.get("validation_files", [])
-                    validation_files = []
+                    validation_files = export_result.get("validation_files", [])
                     all_created_files.extend(mesh_files)
 
                     # Track validation files separately for the final message
@@ -553,10 +552,10 @@ class VisualizationWindow(BaseWorkflowWindow):
                 else:
                     pressure_features = "• Per-vertex HRM pressure data\n• Pressure metadata and statistics\n"
 
-                # Add validation files info to success message (disabled)
+                # Add validation files info to success message
                 validation_info = ""
-                # if export_validation_attributes and hasattr(self, '_validation_files'):
-                #     validation_info = f"\n• {len(self._validation_files)} validation attribute files ({validation_format.upper()} format)"
+                if export_validation_attributes and hasattr(self, '_validation_files'):
+                    validation_info = f"\n• {len(self._validation_files)} validation attribute files ({validation_format.upper()} format)"
 
                 QMessageBox.information(
                     self,
@@ -905,17 +904,19 @@ class VisualizationWindow(BaseWorkflowWindow):
                 return
 
             visit_id = int(match.group(1))
+            # Provide in-memory override so re-adjustment uses the latest unsaved edits
+            visit_data_override = self.visits.get(first_visit_name, None)
 
             # Start at HRM (DCI) step so user can adjust pressures/LES/UES,
             # then proceed to X-ray segmentation with preloaded polygons
-            if not start_hrm_adjustment(self.master_window, db_session, visit_id):
+            if not start_hrm_adjustment(self.master_window, db_session, visit_id, visit_data_override=visit_data_override):
                 QMessageBox.warning(self, "Adjustment unavailable", "No reconstruction found or failed to load HRM/segmentation for this visit.")
                 return
             # Note: after finishing DCI step, workflow continues into X-ray windows; if needed call below directly.
             # start_xray_adjustment(self.master_window, db_session, visit_id)
 
-            # The workflow switches windows; close this one
-            self.close()
+            # Do NOT close this window here. We keep it alive so that the Back button
+            # can return to the existing visualization without a black screen.
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to start segmentation adjustment: {e}")
 

@@ -14,9 +14,7 @@ class MasterWindow:
         init MasterWindow
         """
         self.stacked_widget = QtWidgets.QStackedWidget()
-        self.stacked_widget.resize(
-            config.window_start_size_width, config.window_start_size_height
-        )
+        self.stacked_widget.resize(config.window_start_size_width, config.window_start_size_height)
         self.stacked_widget.closeEvent = self.__stacked_widget_close_event
         self.stacked_widget.setWindowIcon(QIcon(resource_path("media/icon.ico")))
 
@@ -116,6 +114,22 @@ class MasterWindow:
         """
         closing callback
         """
+        # Close the currently visible window first
         current_widget = self.stacked_widget.currentWidget()
         if current_widget:
-            current_widget.close()
+            try:
+                current_widget.close()
+            except Exception:
+                pass
+
+        # Also close any windows kept in the navigation history to ensure
+        # they release resources (e.g., Dash servers) when quitting the app
+        try:
+            while self.navigation_stack:
+                previous = self.navigation_stack.pop()
+                try:
+                    previous.close()
+                except Exception:
+                    pass
+        except Exception:
+            pass

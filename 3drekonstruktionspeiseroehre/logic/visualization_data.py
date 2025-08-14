@@ -31,9 +31,7 @@ class VisualizationData:
         self._sphincter_upper_pos = None
         self._esophagus_exit_pos = None
         self._endoflip_pos = None
-        self._esophageal_pressurization_index = (
-            0.0  # default value for backwards compatibility
-        )
+        self._esophageal_pressurization_index = 0.0  # default value for backwards compatibility
 
         self._figure_x = None
         self._figure_y = None
@@ -48,6 +46,15 @@ class VisualizationData:
         self.tubular_length_cm = 0
         self.sphincter_length_cm = 0
         self.esophagus_len = None
+
+        # Normalized HRM adjustment state (persisted to enable re-adjustment without re-annotation)
+        # Values are stored relative to the high-res HRM image dimensions (0..1)
+        # They are optional for backwards compatibility with older reconstructions
+        self._hrm_lower_ues_rel_y = None
+        self._hrm_upper_les_rel_y = None
+        self._hrm_lower_les_rel_y = None
+        self._hrm_rect_rel_x1 = None
+        self._hrm_rect_rel_x2 = None
 
     @property
     def xray_file(self):
@@ -268,3 +275,44 @@ class VisualizationData:
     @use_model.setter
     def use_model(self, value):
         self._use_model = value
+
+    # --- HRM adjustment state (normalized) ---
+    @property
+    def hrm_lower_ues_rel_y(self):
+        return getattr(self, "_hrm_lower_ues_rel_y", None)
+
+    @hrm_lower_ues_rel_y.setter
+    def hrm_lower_ues_rel_y(self, value):
+        self._hrm_lower_ues_rel_y = value
+
+    @property
+    def hrm_upper_les_rel_y(self):
+        return getattr(self, "_hrm_upper_les_rel_y", None)
+
+    @hrm_upper_les_rel_y.setter
+    def hrm_upper_les_rel_y(self, value):
+        self._hrm_upper_les_rel_y = value
+
+    @property
+    def hrm_lower_les_rel_y(self):
+        return getattr(self, "_hrm_lower_les_rel_y", None)
+
+    @hrm_lower_les_rel_y.setter
+    def hrm_lower_les_rel_y(self, value):
+        self._hrm_lower_les_rel_y = value
+
+    @property
+    def hrm_rect_rel_x1(self):
+        return getattr(self, "_hrm_rect_rel_x1", None)
+
+    @hrm_rect_rel_x1.setter
+    def hrm_rect_rel_x1(self, value):
+        self._hrm_rect_rel_x1 = value
+
+    @property
+    def hrm_rect_rel_x2(self):
+        return getattr(self, "_hrm_rect_rel_x2", None)
+
+    @hrm_rect_rel_x2.setter
+    def hrm_rect_rel_x2(self, value):
+        self._hrm_rect_rel_x2 = value

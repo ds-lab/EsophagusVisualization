@@ -97,7 +97,7 @@ def _create_xray_windows_with_preloaded_polygons(master_window: MasterWindow, pa
         master_window.switch_to(xray_windows[0])
 
 
-def start_xray_adjustment(master_window: MasterWindow, db_session: Session, visit_id: int) -> bool:
+def start_xray_adjustment(master_window: MasterWindow, db_session: Session, visit_id: int, visit_data_override: Optional[VisitData] = None) -> bool:
     """
     Entry point to start the X-ray segmentation adjustment workflow for a visit.
 
@@ -108,8 +108,8 @@ def start_xray_adjustment(master_window: MasterWindow, db_session: Session, visi
 
     Returns True on success, False otherwise.
     """
-    # Load visit data from DB reconstruction
-    visit_data = load_visitdata_from_db(db_session, visit_id)
+    # Load visit data from DB reconstruction unless an in-memory override is provided
+    visit_data = visit_data_override or load_visitdata_from_db(db_session, visit_id)
     if visit_data is None:
         return False
 
@@ -124,7 +124,9 @@ def start_xray_adjustment(master_window: MasterWindow, db_session: Session, visi
     visit_name = _build_visit_name(visit_model, patient_id)
 
     # Attach name and prepare a minimal PatientData for the workflow
-    visit_data.name = visit_name
+    # If an override was provided, keep its name if already set; otherwise attach name
+    if not getattr(visit_data, "name", None):
+        visit_data.name = visit_name
 
     # Ensure essential data are present (rehydrate from DB if needed)
     try:
@@ -199,7 +201,7 @@ def start_xray_adjustment(master_window: MasterWindow, db_session: Session, visi
     return True
 
 
-def start_hrm_adjustment(master_window: MasterWindow, db_session: Session, visit_id: int) -> bool:
+def start_hrm_adjustment(master_window: MasterWindow, db_session: Session, visit_id: int, visit_data_override: Optional[VisitData] = None) -> bool:
     """
     Entry point to start the HRM (manometry) adjustment workflow for a visit.
 
@@ -207,8 +209,8 @@ def start_hrm_adjustment(master_window: MasterWindow, db_session: Session, visit
     - Rehydrates dependent data (x-ray, HRM, endoscopy, endoflip) if missing
     - Opens DCI selection window where the user can adjust LES/UES and the DCI window
     """
-    # Load visit data
-    visit_data = load_visitdata_from_db(db_session, visit_id)
+    # Load visit data unless an in-memory override is provided
+    visit_data = visit_data_override or load_visitdata_from_db(db_session, visit_id)
     if visit_data is None:
         return False
 
@@ -221,7 +223,9 @@ def start_hrm_adjustment(master_window: MasterWindow, db_session: Session, visit
     patient = patient_service.get_patient(visit_model.patient_id)
     patient_id = getattr(patient, "patient_id", "Patient") if patient else "Patient"
     visit_name = _build_visit_name(visit_model, patient_id)
-    visit_data.name = visit_name
+    # Preserve pre-existing name from override; otherwise attach DB-consistent name
+    if not getattr(visit_data, "name", None):
+        visit_data.name = visit_name
 
     # Rehydrate DB-backed fields very similar to xray adjustment (idempotent)
     try:

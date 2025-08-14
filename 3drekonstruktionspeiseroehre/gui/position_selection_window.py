@@ -24,15 +24,7 @@ from gui.sensor_path_window import SensorPathWindow
 class PositionSelectionWindow(BaseWorkflowWindow):
     """Window where the user selects needed positions for the calculation"""
 
-    def __init__(
-        self,
-        master_window: MasterWindow,
-        next_window,
-        patient_data: PatientData,
-        visit: VisitData,
-        n: int,
-        xray_polygon,
-    ):
+    def __init__(self, master_window: MasterWindow, next_window, patient_data: PatientData, visit: VisitData, n: int, xray_polygon):
         """
         init PositionSelectionWindow
         :param master_window: the MasterWindow in which the next window will be displayed
@@ -53,9 +45,7 @@ class PositionSelectionWindow(BaseWorkflowWindow):
         self.has_changes = False
         self.ui.apply_button.clicked.connect(self.__apply_button_clicked)
         self.ui.first_sensor_button.clicked.connect(self.__first_sensor_button_clicked)
-        self.ui.second_sensor_button.clicked.connect(
-            self.__second_sensor_button_clicked
-        )
+        self.ui.second_sensor_button.clicked.connect(self.__second_sensor_button_clicked)
         self.ui.sphinkter_button.clicked.connect(self.__sphincter_button_clicked)
         self.ui.eso_exit_button.clicked.connect(self.__eso_exit_button_clicked)
         self.checkbox_sens = self.ui.sensor_checker
@@ -90,17 +80,13 @@ class PositionSelectionWindow(BaseWorkflowWindow):
         image = Image.open(self.visualization_data.xray_file)
         self.xray_image = np.array(image)
         self.plot_ax = self.figure_canvas.figure.subplots()
-        self.figure_canvas.figure.subplots_adjust(
-            bottom=0.05, top=0.95, left=0.05, right=0.95
-        )
+        self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
         self.plot_ax.imshow(self.xray_image)
         self.plot_ax.axis("off")
 
         # Draw the polygon using the xray_polygon data
         if self.xray_polygon:
-            poly = Polygon(
-                self.xray_polygon, closed=True, fill=None, edgecolor="lime", linewidth=1
-            )
+            poly = Polygon(self.xray_polygon, closed=True, fill=None, edgecolor="lime", linewidth=1)
             self.plot_ax.add_patch(poly)
 
         self.figure_canvas.mpl_connect("button_press_event", self.__on_left_click)
@@ -114,6 +100,9 @@ class PositionSelectionWindow(BaseWorkflowWindow):
         self.esophagus_exit_pos = None
         self.endoflip_pos = None
 
+        # Preload previously saved annotation points if available in visualization_data
+        self.__preload_saved_points()
+
     def __on_left_click(self, event):
         """
         handles left-click on image
@@ -126,13 +115,7 @@ class PositionSelectionWindow(BaseWorkflowWindow):
             # Redraw image and polygon
             self.plot_ax.imshow(self.xray_image)
             if self.xray_polygon:
-                poly = Polygon(
-                    self.xray_polygon,
-                    closed=True,
-                    fill=None,
-                    edgecolor="lime",
-                    linewidth=1,
-                )
+                poly = Polygon(self.xray_polygon, closed=True, fill=None, edgecolor="lime", linewidth=1)
                 self.plot_ax.add_patch(poly)
             self.plot_ax.axis("off")
 
@@ -172,6 +155,65 @@ class PositionSelectionWindow(BaseWorkflowWindow):
 
             self.figure_canvas.figure.canvas.draw()
 
+    def __preload_saved_points(self):
+        """
+        If the visualization already contains saved positions (from a previous reconstruction),
+        pre-draw them and set the internal variables so the user does not need to re-add them.
+        """
+        try:
+            redraw = False
+            self.plot_ax.clear()
+            self.plot_ax.imshow(self.xray_image)
+            if self.xray_polygon:
+                poly = Polygon(self.xray_polygon, closed=True, fill=None, edgecolor="lime", linewidth=1)
+                self.plot_ax.add_patch(poly)
+            self.plot_ax.axis("off")
+
+            if getattr(self.visualization_data, "first_sensor_pos", None):
+                self.first_sensor_pos = tuple(self.visualization_data.first_sensor_pos)
+            if getattr(self.visualization_data, "second_sensor_pos", None):
+                self.second_sensor_pos = tuple(self.visualization_data.second_sensor_pos)
+
+            # Ensure semantic order: green (first) must be the TOP of the tubular (smaller y),
+            # blue (second) must be the END of the tubular (larger y). If reversed, swap and persist.
+            if self.first_sensor_pos and self.second_sensor_pos:
+                first_y = self.first_sensor_pos[1]
+                second_y = self.second_sensor_pos[1]
+                if first_y > second_y:
+                    self.first_sensor_pos, self.second_sensor_pos = self.second_sensor_pos, self.first_sensor_pos
+                    # Persist corrected order to visualization_data
+                    self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
+                    self.visualization_data.second_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1]))
+
+            if self.first_sensor_pos:
+                self.plot_ax.add_patch(Circle(self.first_sensor_pos, 4.0, color="green"))
+                redraw = True
+            if self.second_sensor_pos:
+                self.plot_ax.add_patch(Circle(self.second_sensor_pos, 4.0, color="blue"))
+                redraw = True
+            if getattr(self.visualization_data, "sphincter_upper_pos", None):
+                self.sphincter_upper_pos = tuple(self.visualization_data.sphincter_upper_pos)
+                self.plot_ax.add_patch(Circle(self.sphincter_upper_pos, 4.0, color="yellow"))
+                redraw = True
+            if getattr(self.visualization_data, "esophagus_exit_pos", None):
+                self.esophagus_exit_pos = tuple(self.visualization_data.esophagus_exit_pos)
+                self.plot_ax.add_patch(Circle(self.esophagus_exit_pos, 4.0, color="hotpink"))
+                redraw = True
+            if len(self.visualization_data.endoscopy_files) > 0 and getattr(self.visualization_data, "endoscopy_start_pos", None):
+                self.endoscopy_pos = tuple(self.visualization_data.endoscopy_start_pos)
+                self.plot_ax.add_patch(Circle(self.endoscopy_pos, 4.0, color="red"))
+                redraw = True
+            if getattr(self.visualization_data, "endoflip_screenshot", None) is not None and getattr(self.visualization_data, "endoflip_pos", None):
+                self.endoflip_pos = tuple(self.visualization_data.endoflip_pos)
+                self.plot_ax.add_patch(Circle(self.endoflip_pos, 4.0, color="darkorchid"))
+                redraw = True
+
+            if redraw:
+                self.figure_canvas.figure.canvas.draw()
+        except Exception:
+            # Non-fatal: continue without preloading
+            pass
+
     def __apply_button_clicked(self):
         """
         apply-button callback
@@ -179,60 +221,25 @@ class PositionSelectionWindow(BaseWorkflowWindow):
 
         if self.__are_necessary_positions_set():
             if not self.__is_sensor_order_correct():
-                self.first_sensor_pos, self.second_sensor_pos = (
-                    self.second_sensor_pos,
-                    self.first_sensor_pos,
-                )
+                self.first_sensor_pos, self.second_sensor_pos = (self.second_sensor_pos, self.first_sensor_pos)
             if not self.__is_any_position_outside_polygon():
                 self.ui.apply_button.setDisabled(True)
-                self.visualization_data.first_sensor_pos = (
-                    int(self.first_sensor_pos[0]),
-                    int(self.first_sensor_pos[1]),
-                )
-                self.visualization_data.second_sensor_pos = (
-                    int(self.second_sensor_pos[0]),
-                    int(self.second_sensor_pos[1]),
-                )
-                self.visualization_data.sphincter_upper_pos = (
-                    int(self.sphincter_upper_pos[0]),
-                    int(self.sphincter_upper_pos[1]),
-                )
-                self.visualization_data.esophagus_exit_pos = (
-                    int(self.esophagus_exit_pos[0]),
-                    int(self.esophagus_exit_pos[1]),
-                )
+                self.visualization_data.first_sensor_pos = (int(self.first_sensor_pos[0]), int(self.first_sensor_pos[1]))
+                self.visualization_data.second_sensor_pos = (int(self.second_sensor_pos[0]), int(self.second_sensor_pos[1]))
+                self.visualization_data.sphincter_upper_pos = (int(self.sphincter_upper_pos[0]), int(self.sphincter_upper_pos[1]))
+                self.visualization_data.esophagus_exit_pos = (int(self.esophagus_exit_pos[0]), int(self.esophagus_exit_pos[1]))
                 if self.visualization_data.endoflip_screenshot:
-                    self.visualization_data.endoflip_pos = (
-                        int(self.endoflip_pos[0]),
-                        int(self.endoflip_pos[1]),
-                    )
+                    self.visualization_data.endoflip_pos = (int(self.endoflip_pos[0]), int(self.endoflip_pos[1]))
 
                 if len(self.visualization_data.endoscopy_files) > 0:
-                    self.visualization_data.endoscopy_start_pos = (
-                        int(self.endoscopy_pos[0]),
-                        int(self.endoscopy_pos[1]),
-                    )
+                    self.visualization_data.endoscopy_start_pos = (int(self.endoscopy_pos[0]), int(self.endoscopy_pos[1]))
 
                 if self.checkbox_sens.isChecked():
                     # Go to sensor_path visualization first
-                    next_window = SensorPathWindow(
-                        self.master_window,
-                        self.next_window,
-                        self.patient_data,
-                        self.visit,
-                        self.n,
-                        self.xray_polygon,
-                    )
+                    next_window = SensorPathWindow(self.master_window, self.next_window, self.patient_data, self.visit, self.n, self.xray_polygon)
                 else:
                     # Go to center_path visualization
-                    next_window = SensorCenterPathWindow(
-                        self.master_window,
-                        self.next_window,
-                        self.patient_data,
-                        self.visit,
-                        self.n,
-                        self.xray_polygon,
-                    )
+                    next_window = SensorCenterPathWindow(self.master_window, self.next_window, self.patient_data, self.visit, self.n, self.xray_polygon)
 
                 # Mark as saved
                 self.has_changes = False
@@ -240,15 +247,9 @@ class PositionSelectionWindow(BaseWorkflowWindow):
                 self.master_window.switch_to(next_window)
                 self.close()
             else:
-                QMessageBox.critical(
-                    self,
-                    "Error",
-                    "The positions must be within the previously marked outline of the esophagus.",
-                )
+                QMessageBox.critical(self, "Error", "The positions must be within the previously marked outline of the esophagus.")
         else:
-            QMessageBox.critical(
-                self, "Error", "Please enter all required items into the graph."
-            )
+            QMessageBox.critical(self, "Error", "Please enter all required items into the graph.")
 
     def __menu_button_clicked(self):
         """
@@ -286,12 +287,8 @@ class PositionSelectionWindow(BaseWorkflowWindow):
             and self.second_sensor_pos
             and self.sphincter_upper_pos
             and self.esophagus_exit_pos
-            and (
-                self.endoscopy_pos or len(self.visualization_data.endoscopy_files) == 0
-            )
-            and (
-                self.endoflip_pos or self.visualization_data.endoflip_screenshot == None
-            )
+            and (self.endoscopy_pos or len(self.visualization_data.endoscopy_files) == 0)
+            and (self.endoflip_pos or self.visualization_data.endoflip_screenshot == None)
         )
 
     def __is_sensor_order_correct(self):
