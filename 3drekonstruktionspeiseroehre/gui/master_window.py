@@ -3,6 +3,7 @@ from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QApplication
 from PyQt6.QtGui import QIcon
+from utils.path_utils import resource_path
 
 
 class MasterWindow:
@@ -17,7 +18,7 @@ class MasterWindow:
             config.window_start_size_width, config.window_start_size_height
         )
         self.stacked_widget.closeEvent = self.__stacked_widget_close_event
-        self.stacked_widget.setWindowIcon(QIcon("./media/icon.ico"))
+        self.stacked_widget.setWindowIcon(QIcon(resource_path("media/icon.ico")))
 
         # Center the window on screen
         self._center_window()

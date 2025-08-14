@@ -12,6 +12,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
 from PyQt6 import QtWidgets, uic
+from utils.path_utils import resource_path
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMessageBox
 from shapely.geometry import Polygon
@@ -51,7 +52,7 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
         # Call parent constructor
         super().__init__(master_window, patient_data, visit, None)
 
-        self.ui = uic.loadUi("./ui-files/endoscopy_selection_window_design.ui", self)
+        self.ui = uic.loadUi(resource_path("ui-files/endoscopy_selection_window_design.ui"), self)
 
         # Note: We track unsaved changes by comparing current_polygon with polygon_list
 

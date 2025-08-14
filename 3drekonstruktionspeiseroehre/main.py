@@ -1,4 +1,5 @@
 import sys
+from utils.path_utils import resource_path
 
 from gui.master_window import MasterWindow
 from logic.database.database import create_db_and_tables_local_declarative
@@ -13,7 +14,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     # Set the application icon
-    app.setWindowIcon(QIcon("./media/icon.ico"))
+    app.setWindowIcon(QIcon(resource_path("media/icon.ico")))
 
     # create the MasterWindow and show the first UI
 

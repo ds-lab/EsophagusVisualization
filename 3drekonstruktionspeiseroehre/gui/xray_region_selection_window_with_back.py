@@ -3,6 +3,7 @@ import shutil
 import numpy as np
 import cv2
 from PyQt6 import uic
+from utils.path_utils import resource_path
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from PyQt6.QtGui import QAction
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -53,7 +54,7 @@ class XrayRegionSelectionWindowWithBack(BaseWorkflowWindow):
         super().__init__(master_window, patient_data, visit, self.visualization_data)
 
         # Initialize UI
-        self.ui = uic.loadUi("./ui-files/xray_region_selection_window_design.ui", self)
+        self.ui = uic.loadUi(resource_path("ui-files/xray_region_selection_window_design.ui"), self)
         self.master_window.maximize()
 
         # Setup the rest of the window

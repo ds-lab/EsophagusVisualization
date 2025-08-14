@@ -15,6 +15,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import PolygonSelector
 from PyQt6 import uic
+from utils.path_utils import resource_path
 from PyQt6.QtGui import QAction, QImage, QPainter, QPixmap, QColor
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from shapely.geometry import Polygon, Point
@@ -41,7 +42,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         # Call parent constructor
         super().__init__(master_window, patient_data, visit, self.visualization_data)
 
-        self.ui = uic.loadUi("./ui-files/xray_region_selection_window_design.ui", self)
+        self.ui = uic.loadUi(resource_path("ui-files/xray_region_selection_window_design.ui"), self)
         self.master_window.maximize()
 
         # Track changes for unsaved changes detection

@@ -1,4 +1,5 @@
 from PyQt6 import uic, QtCore
+from utils.path_utils import resource_path
 from PyQt6.QtWidgets import QMainWindow, QFileDialog
 
 
@@ -7,7 +8,7 @@ class DownloadData(QMainWindow):  # Ändere die Basisklasse zu QMainWindow
 
     def __init__(self):
         super().__init__()
-        self.ui = uic.loadUi("./ui-files/download_data_menu_design.ui", self)
+        self.ui = uic.loadUi(resource_path("ui-files/download_data_menu_design.ui"), self)
 
         # Connect Buttons to Functions
         self.ui.check_all_button.clicked.connect(self.__check_all_button_clicked)

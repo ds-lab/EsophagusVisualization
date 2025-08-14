@@ -7,6 +7,7 @@ from io import BytesIO
 import copy
 
 from PyQt6 import uic, QtWidgets
+from utils.path_utils import resource_path
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QCompleter
 from PyQt6.QtCore import Qt, QDate, QSortFilterProxyModel
@@ -69,7 +70,7 @@ class DataWindow(QMainWindow):
 
         # For displaying images
 
-        self.ui = uic.loadUi("./ui-files/data_window_design.ui", self)
+        self.ui = uic.loadUi(resource_path("ui-files/data_window_design.ui"), self)
 
         self.patient_tableView = self.ui.patient_tableView
         self.therapy_tableView = self.ui.therapy_tableView

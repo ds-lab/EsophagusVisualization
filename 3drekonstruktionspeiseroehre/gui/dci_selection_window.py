@@ -6,6 +6,7 @@ from logic.patient_data import PatientData
 from logic.visit_data import VisitData
 from gui.rectangle_selector import CustomRectangleSelector
 from PyQt6 import uic
+from utils.path_utils import resource_path
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from PyQt6.QtGui import QAction
 from gui.draggable_horizontal_line import DraggableHorizontalLine, DraggableLineManager
@@ -36,7 +37,7 @@ class DCISelectionWindow(BaseWorkflowWindow):
         """
 
         super().__init__(master_window, patient_data, visit, None)
-        self.ui = uic.loadUi("./ui-files/dci_selection_window_design.ui", self)
+        self.ui = uic.loadUi(resource_path("ui-files/dci_selection_window_design.ui"), self)
         self.master_window.maximize()
 
         # Store visit reference for access in methods

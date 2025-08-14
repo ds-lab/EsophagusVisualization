@@ -14,6 +14,7 @@ from matplotlib.patches import Polygon
 import matplotlib.pyplot as plt
 from matplotlib.widgets import PolygonSelector
 from PyQt6 import uic
+from utils.path_utils import resource_path
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame
 from PyQt6.QtGui import QAction
 from logic.figure_creator.figure_creator import FigureCreator
@@ -43,7 +44,7 @@ class SensorCenterPathWindow(BaseWorkflowWindow):
         # Call parent constructor
         super().__init__(master_window, patient_data, visit, self.visualization_data)
 
-        self.ui = uic.loadUi("./ui-files/sensor_center_path_window_design.ui", self)
+        self.ui = uic.loadUi(resource_path("ui-files/sensor_center_path_window_design.ui"), self)
 
         # Track changes for unsaved changes detection
         self.has_changes = False

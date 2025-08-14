@@ -20,6 +20,7 @@ from logic.database import database
 from logic.services.reconstruction_service import ReconstructionService
 
 from PyQt6 import uic
+from utils.path_utils import resource_path
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QFont, QAction
 from PyQt6.QtWebEngineWidgets import QWebEngineView
@@ -42,7 +43,7 @@ class VisualizationWindow(BaseWorkflowWindow):
         super().__init__(master_window, patient_data, None, None)
 
         self.setAcceptDrops(True)
-        self.ui = uic.loadUi("./ui-files/visualization_window_design.ui", self)
+        self.ui = uic.loadUi(resource_path("ui-files/visualization_window_design.ui"), self)
 
         # Setup navigation buttons after UI is loaded
         self._setup_navigation_buttons()

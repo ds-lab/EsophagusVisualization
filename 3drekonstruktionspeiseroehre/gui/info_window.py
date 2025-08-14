@@ -1,4 +1,5 @@
 from PyQt6 import uic
+from utils.path_utils import resource_path
 from PyQt6.QtWidgets import QDialog
 
 
@@ -10,7 +11,7 @@ class InfoWindow(QDialog):
         init InfoWindow
         """
         super().__init__()
-        self.ui = uic.loadUi('./ui-files/info_window_design.ui', self)
+        self.ui = uic.loadUi(resource_path('ui-files/info_window_design.ui'), self)
 
     def show_data_window_info(self):
         text = """In this window, patients and visits can be created.<br>

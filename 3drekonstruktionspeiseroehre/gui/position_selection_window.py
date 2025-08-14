@@ -12,6 +12,7 @@ from matplotlib.figure import Figure
 from matplotlib.pyplot import Circle
 from matplotlib.patches import Polygon
 from PyQt6 import uic
+from utils.path_utils import resource_path
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from skimage import io
@@ -46,7 +47,7 @@ class PositionSelectionWindow(BaseWorkflowWindow):
         # Call parent constructor
         super().__init__(master_window, patient_data, visit, self.visualization_data)
 
-        self.ui = uic.loadUi("./ui-files/position_selection_window_design.ui", self)
+        self.ui = uic.loadUi(resource_path("ui-files/position_selection_window_design.ui"), self)
 
         # Track changes for unsaved changes detection
         self.has_changes = False
