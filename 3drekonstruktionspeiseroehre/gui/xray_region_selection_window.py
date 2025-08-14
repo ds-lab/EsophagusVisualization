@@ -89,15 +89,13 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         preloaded_polygon = getattr(self.visualization_data, "xray_polygon", None)
         if preloaded_polygon is not None and len(preloaded_polygon) > 2:
             try:
-                import numpy as _np
-
-                self.polygonOes = preloaded_polygon.tolist() if isinstance(preloaded_polygon, _np.ndarray) else preloaded_polygon
+                self.polygonOes = preloaded_polygon.tolist() if isinstance(preloaded_polygon, np.ndarray) else preloaded_polygon
                 self.init_first_polygon()
             except Exception:
                 # Fallback to default behavior if preloading fails
                 self.polygonOes = None
                 # Proceed with default branch below
-                if self.visualization_data.use_model:
+                if self.visualization_data.use_model and self._nnunet_ready():
                     print("I am using the nnUnet model")
                     mask = self.predict_mask_with_nnunet_v2()
                     self.mask = (mask > 0.5).astype(np.uint8) * 255
@@ -109,11 +107,11 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
                     self.init_first_polygon()
         else:
             # No preloaded polygon → use normal initialization
-            if self.visualization_data.use_model:
+            if self.visualization_data.use_model and self._nnunet_ready():
                 print("I am using the nnUnet model")
                 # Calculate the initial polygon from the X-ray image with the nnUnet
                 mask = self.predict_mask_with_nnunet_v2()
-                self.mask = (mask > 0.5).astype(_np.uint8) * 255
+                self.mask = (mask > 0.5).astype(np.uint8) * 255
                 self.polygonOes = self.mask_to_largest_polygon()
                 self.init_first_polygon_ml()
             else:
@@ -131,8 +129,11 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         os.environ.setdefault("nnUNet_preprocessed", "C:/ModelAchalasia/nnUNet_preprocessed")
         os.environ.setdefault("nnUNet_results", "C:/ModelAchalasia/nnUNet_results")
 
-        temp_input_dir = "C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs"
-        temp_output_dir = "C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs_pred"
+        raw_root = os.environ.get("nnUNet_raw", "C:/ModelAchalasia/nnUNet_raw")
+        results_root = os.environ.get("nnUNet_results", "C:/ModelAchalasia/nnUNet_results")
+
+        temp_input_dir = os.path.join(raw_root, "Dataset001_Breischluck", "imagesTs")
+        temp_output_dir = os.path.join(raw_root, "Dataset001_Breischluck", "imagesTs_pred")
         os.makedirs(temp_output_dir, exist_ok=True)
         os.makedirs(temp_input_dir, exist_ok=True)
 
@@ -150,7 +151,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
             tile_step_size=0.5,
             use_gaussian=True,
             use_mirroring=True,
-            perform_everything_on_device=True,
+            perform_everything_on_device=torch.cuda.is_available(),
             device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
             verbose=False,
             verbose_preprocessing=False,
@@ -162,7 +163,10 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
             "nnUNetTrainer_100epochs__nnUNetResEncUNetMPlans__2d",
         )
         # initializes the network architecture, loads the checkpoint
-        predictor.initialize_from_trained_model_folder(nnUNet_results, use_folds=(0,), checkpoint_name="checkpoint_final.pth")
+        ckpt_name = "checkpoint_final.pth"
+        if not os.path.isfile(os.path.join(model_dir, "fold_0", ckpt_name)):
+            ckpt_name = "checkpoint_best.pth"
+        predictor.initialize_from_trained_model_folder(model_dir, use_folds=(0,), checkpoint_name=ckpt_name)
         # variant 1: give input and output folders
         predictor.predict_from_files(
             temp_input_dir,
