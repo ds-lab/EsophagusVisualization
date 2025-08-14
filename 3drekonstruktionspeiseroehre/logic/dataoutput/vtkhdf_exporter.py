@@ -9,12 +9,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from scipy import spatial
-from logic.database.data_declarative_models import (
-    Patient,
-    Visit,
-    Manometry,
-    EckardtScore,
-)
+from logic.database.data_declarative_models import Patient, Visit, Manometry, BariumSwallow
 from logic.services.patient_service import PatientService
 from logic.services.visit_service import VisitService
 from logic.services.reconstruction_service import ReconstructionService
@@ -39,9 +34,7 @@ class VTKHDFExporter:
     - HDF5 organization for efficient data access
     """
 
-    def __init__(
-        self, db_session: Optional[Session] = None, max_pressure_frames: int = -1
-    ):
+    def __init__(self, db_session: Optional[Session] = None, max_pressure_frames: int = -1, pressure_export_mode: str = "per_vertex"):
         """
         Initialize the VTKHDF Exporter.
 
@@ -51,6 +44,8 @@ class VTKHDFExporter:
         """
         self.db_session = db_session
         self.max_pressure_frames = max_pressure_frames
+        # pressure_export_mode: 'per_vertex' | 'per_slice' | 'none'
+        self.pressure_export_mode = pressure_export_mode
 
     def _sanitize_for_json(self, data: Any) -> Any:
         """
@@ -74,6 +69,10 @@ class VTKHDFExporter:
             return float(data)
         elif isinstance(data, np.bool_):
             return bool(data)
+        elif isinstance(data, np.generic):  # Catch any numpy scalar types
+            return data.item()  # Convert numpy scalar to Python scalar
+        elif hasattr(data, "tolist") and callable(getattr(data, "tolist")):  # Handle numpy-like objects
+            return data.tolist()
         elif isinstance(data, datetime):
             return data.isoformat()
         return data
@@ -85,7 +84,9 @@ class VTKHDFExporter:
         output_directory: str,
         patient_id: Optional[str] = None,
         visit_id: Optional[int] = None,
-    ) -> List[str]:
+        export_validation_attributes: bool = False,
+        validation_attributes_format: str = "json",
+    ) -> Dict[str, List[str]]:
         """
         Export all reconstructions from a visit to VTKHDF files.
 
@@ -95,21 +96,22 @@ class VTKHDFExporter:
             output_directory: Directory to save VTKHDF files
             patient_id: Patient ID for metadata
             visit_id: Visit ID for database metadata lookup
+            export_validation_attributes: Whether to export validation attributes
+            validation_attributes_format: Ignored (JSON is always used)
 
         Returns:
-            List of created file paths
+            Dictionary with 'mesh_files' and 'validation_files' lists
         """
-        created_files = []
+        created_mesh_files = []
+        created_validation_files = []
 
-        # Log export parameters for debugging
-        print(f"\nStarting VTKHDF export for visit: {visit_name}")
-        self._log_export_parameters(patient_id, visit_id, visit_name)
+        # Minimal export log
+        print(f"Starting VTKHDF export for visit: {visit_name}")
 
         # Ensure output directory exists
         os.makedirs(output_directory, exist_ok=True)
 
         # Extract database metadata if available
-        print(f"\nExtracting database metadata...")
         metadata = self._extract_database_metadata(patient_id, visit_id)
 
         # Process each visualization in the visit
@@ -118,15 +120,16 @@ class VTKHDFExporter:
                 file_name = f"{visit_name}_{visualization_data.xray_minute}.vtkhdf"
                 file_path = os.path.join(output_directory, file_name)
 
-                success = self._export_single_reconstruction(
-                    visualization_data, file_path, metadata, visit_name, i
-                )
+                success = self._export_single_reconstruction(visualization_data, file_path, metadata, visit_name, i)
 
                 if success:
-                    created_files.append(file_path)
-                    print(f"Successfully exported: {file_name}")
-                else:
-                    print(f"Failed to export: {file_name}")
+                    created_mesh_files.append(file_path)
+                    if export_validation_attributes:
+                        validation_file_path = self._export_validation_attributes(
+                            visualization_data, visit_name, output_directory, metadata, validation_attributes_format
+                        )
+                        if validation_file_path:
+                            created_validation_files.append(validation_file_path)
 
             except Exception as e:
                 print(f"Error exporting visualization {i}: {str(e)}")
@@ -134,25 +137,16 @@ class VTKHDFExporter:
 
         # Export summary
         total_visualizations = len(visit_data.visualization_data_list)
-        successful_exports = len(created_files)
+        successful_exports = len(created_mesh_files)
         failed_exports = total_visualizations - successful_exports
 
-        print(f"\nExport Summary for visit: {visit_name}")
         print(
-            f"Successfully exported: {successful_exports}/{total_visualizations} visualizations"
+            f"Export summary for visit '{visit_name}': "
+            f"{successful_exports}/{total_visualizations} meshes, "
+            f"{len(created_validation_files)} validation files"
         )
-        if failed_exports > 0:
-            print(f"Failed exports: {failed_exports}")
 
-        has_database_metadata = bool(metadata)
-        print(f"Database metadata included: {'Yes' if has_database_metadata else 'No'}")
-
-        if created_files:
-            print(f"Files created in: {output_directory}")
-            for file_path in created_files:
-                print(f"  - {os.path.basename(file_path)}")
-
-        return created_files
+        return {"mesh_files": created_mesh_files, "validation_files": created_validation_files}
 
     def _validate_database_connection(self) -> bool:
         """
@@ -162,9 +156,7 @@ class VTKHDFExporter:
             bool: True if database connection is valid, False otherwise
         """
         if not self.db_session:
-            print(
-                "No database session provided - patient and clinical data will not be exported"
-            )
+            print("No database session provided - patient and clinical data will not be exported")
             return False
 
         try:
@@ -173,31 +165,19 @@ class VTKHDFExporter:
             return True
         except Exception as e:
             print(f"Database connection test failed: {e}")
-            print(
-                "This may be due to SQLAlchemy version compatibility or database connectivity issues"
-            )
+            print("This may be due to SQLAlchemy version compatibility or database connectivity issues")
             print("Patient and clinical data will not be exported")
             return False
 
-    def _log_export_parameters(
-        self, patient_id: Optional[str], visit_id: Optional[int], visit_name: str
-    ):
+    def _log_export_parameters(self, patient_id: Optional[str], visit_id: Optional[int], visit_name: str):
         """Log export parameters for debugging."""
-        print(f"Export Parameters:")
-        print(
-            f"  Patient ID: {patient_id if patient_id else 'None (WARNING: No patient data will be exported)'}"
-        )
-        print(
-            f"  Visit ID: {visit_id if visit_id else 'None (WARNING: No visit data will be exported)'}"
-        )
+        print("Export Parameters:")
+        print(f"  Patient ID: {patient_id if patient_id else 'None'}")
+        print(f"  Visit ID: {visit_id if visit_id else 'None'}")
         print(f"  Visit Name: {visit_name}")
-        print(
-            f"  Database Session: {'Available' if self.db_session else 'None (WARNING: No database metadata will be exported)'}"
-        )
+        print(f"  Database Session: {'Available' if self.db_session else 'None'}")
 
-    def _extract_database_metadata(
-        self, patient_id: Optional[str], visit_id: Optional[int]
-    ) -> Dict[str, Any]:
+    def _extract_database_metadata(self, patient_id: Optional[str], visit_id: Optional[int]) -> Dict[str, Any]:
         """Extract comprehensive metadata from database with enhanced error handling."""
         metadata = {}
 
@@ -207,18 +187,14 @@ class VTKHDFExporter:
 
         # Check patient_id
         if not patient_id:
-            print("No patient ID provided - patient data will not be exported")
+            # No patient id: skip metadata
             return metadata
 
         exported_data_types = []
 
         # Extract Patient data
         try:
-            patient = (
-                self.db_session.query(Patient)
-                .filter(Patient.patient_id == patient_id)
-                .first()
-            )
+            patient = self.db_session.query(Patient).filter(Patient.patient_id == patient_id).first()
 
             if patient:
                 metadata.update(
@@ -233,11 +209,6 @@ class VTKHDFExporter:
                     }
                 )
                 exported_data_types.append("Patient data")
-                print(
-                    f"Successfully extracted patient data for patient ID: {patient_id}"
-                )
-            else:
-                print(f"No patient found for patient ID: {patient_id}")
 
         except Exception as e:
             print(f"Error extracting patient data: {e}")
@@ -245,11 +216,7 @@ class VTKHDFExporter:
         # Extract Visit data
         if visit_id:
             try:
-                visit = (
-                    self.db_session.query(Visit)
-                    .filter(Visit.visit_id == visit_id)
-                    .first()
-                )
+                visit = self.db_session.query(Visit).filter(Visit.visit_id == visit_id).first()
 
                 if visit:
                     metadata.update(
@@ -264,20 +231,13 @@ class VTKHDFExporter:
                         }
                     )
                     exported_data_types.append("Visit data")
-                    print(f"Successfully extracted visit data for visit ID: {visit_id}")
-                else:
-                    print(f"No visit found for visit ID: {visit_id}")
 
             except Exception as e:
                 print(f"Error extracting visit data: {e}")
 
             # Extract Manometry data
             try:
-                manometry = (
-                    self.db_session.query(Manometry)
-                    .filter(Manometry.visit_id == visit_id)
-                    .first()
-                )
+                manometry = self.db_session.query(Manometry).filter(Manometry.visit_id == visit_id).first()
 
                 if manometry:
                     metadata.update(
@@ -288,72 +248,74 @@ class VTKHDFExporter:
                             "manometry_ipr4": manometry.ipr4,
                             "manometry_dci": manometry.dci,
                             "manometry_dl": manometry.dl,
-                            "manometry_ues_upper": manometry.ues_upper_boundary,
-                            "manometry_ues_lower": manometry.ues_lower_boundary,
-                            "manometry_les_upper": manometry.les_upper_boundary,
-                            "manometry_les_lower": manometry.les_lower_boundary,
-                            "manometry_les_length": manometry.les_length,
                         }
                     )
                     exported_data_types.append("Manometry data")
-                    print(
-                        f"Successfully extracted manometry data for visit ID: {visit_id}"
-                    )
-                else:
-                    print(f"No manometry data found for visit ID: {visit_id}")
 
             except Exception as e:
                 print(f"Error extracting manometry data: {e}")
 
-            # Extract Eckardt Score data
+            # Extract TBE (Barium Swallow) contrast information
             try:
-                eckardt = (
-                    self.db_session.query(EckardtScore)
-                    .filter(EckardtScore.visit_id == visit_id)
-                    .first()
-                )
-
-                if eckardt:
-                    metadata.update(
-                        {
-                            "eckardt_total_score": eckardt.total_score,
-                            "eckardt_dysphagia": eckardt.dysphagia,
-                            "eckardt_retrosternal_pain": eckardt.retrosternal_pain,
-                            "eckardt_regurgitation": eckardt.regurgitation,
-                            "eckardt_weightloss": eckardt.weightloss,
-                        }
-                    )
-                    exported_data_types.append("Eckardt Score data")
-                    print(
-                        f"Successfully extracted Eckardt Score data for visit ID: {visit_id}"
-                    )
-                else:
-                    print(f"No Eckardt Score data found for visit ID: {visit_id}")
-
+                tbe = self.db_session.query(BariumSwallow).filter(BariumSwallow.visit_id == visit_id).first()
+                if tbe:
+                    metadata.update({"tbe_contrast_medium_type": tbe.type_contrast_medium, "tbe_contrast_medium_amount_ml": tbe.amount_contrast_medium})
+                    exported_data_types.append("Barium Swallow data")
             except Exception as e:
-                print(f"Error extracting Eckardt Score data: {e}")
-        else:
-            print(
-                "No visit ID provided - visit-related data (visit, manometry, Eckardt) will not be exported"
-            )
+                print(f"Error extracting Barium Swallow data: {e}")
 
-        # Summary of exported database metadata
-        if exported_data_types:
-            print(f"Database metadata export summary: {', '.join(exported_data_types)}")
+            # Extract EGD (Endoscopy) image positions if available
+            try:
+                from logic.services.endoscopy_service import EndoscopyFileService as _EgdFileService
+
+                egd_service = _EgdFileService(self.db_session)
+                egd_positions = egd_service.get_endoscopy_positions_for_visit(visit_id)
+                if egd_positions:
+                    metadata.update({"egd_positions_cm": [float(p) for p in egd_positions], "egd_images_count": int(len(egd_positions))})
+                    exported_data_types.append("Endoscopy image positions")
+            except Exception as e:
+                print(f"Error extracting EGD positions: {e}")
+
+            # Derive years since first symptoms (visit_year - patient_year_first_symptoms)
+            try:
+                visit_year = metadata.get("visit_year")
+                first_symptoms = metadata.get("patient_year_first_symptoms")
+                if visit_year is not None and first_symptoms is not None:
+                    metadata["years_since_first_symptoms"] = int(visit_year) - int(first_symptoms)
+            except Exception:
+                pass
+
+            # Build visit history for the patient (therapy/follow-up only)
+            try:
+                if "patient_id" in metadata:
+                    vs = VisitService(self.db_session)
+                    visits = vs.get_visits_for_patient(metadata["patient_id"]) or []
+                    history = []
+                    for v in visits:
+                        v_type = v.get("visit_type")
+                        v_year = v.get("year_of_visit") or v.get("year") or v.get("visit_year")
+                        if isinstance(v_year, dict):
+                            v_year = v_year.get("year")
+                        # Keep only therapy or follow-up
+                        if v_type and ("Therapy" in v_type or "Follow-Up" in v_type or "Follow" in v_type):
+                            try:
+                                history.append({"visit_type": v_type, "visit_year": int(v_year)})
+                            except Exception:
+                                pass
+                    if history:
+                        # Sort chronologically
+                        history = sorted(history, key=lambda x: x["visit_year"])
+                        metadata["visit_history"] = history
+            except Exception as e:
+                print(f"Error building visit history: {e}")
+
         else:
-            print(
-                "No database metadata was exported - files will only contain computed reconstruction data"
-            )
+            pass
 
         return metadata
 
     def _export_single_reconstruction(
-        self,
-        visualization_data: VisualizationData,
-        file_path: str,
-        base_metadata: Dict[str, Any],
-        visit_name: str,
-        reconstruction_index: int,
+        self, visualization_data: VisualizationData, file_path: str, base_metadata: Dict[str, Any], visit_name: str, reconstruction_index: int
     ) -> bool:
         """
         Export a single 3D reconstruction to VTKHDF with comprehensive attributes.
@@ -380,44 +342,52 @@ class VTKHDFExporter:
             surface = self._add_geometric_attributes(surface, visualization_data)
 
             # Prepare comprehensive metadata
-            metadata = self._prepare_comprehensive_metadata(
-                base_metadata, visualization_data, visit_name, reconstruction_index
-            )
+            metadata = self._prepare_comprehensive_metadata(base_metadata, visualization_data, visit_name, reconstruction_index)
 
             # Add metadata to mesh field data
             try:
+                # Keys that must not be written to field_data
+                blacklist_keys = {
+                    "boundary_indices",
+                    "esophagus_length_cm",
+                    "les_lower_position",
+                    "les_upper_position",
+                    "metric_sphincter_overall",
+                    "metric_sphincter_per_frame",
+                    "metric_tubular_overall",
+                    "metric_tubular_per_frame",
+                    "n_pressure_frames",
+                    "patient_birth_year",
+                    "patient_center",
+                    "patient_ethnicity",
+                    "patient_gender",
+                    "patient_id",
+                    "pressure_tubular_overall",
+                    "pressure_sphincter_overall",
+                    "reconstruction_index",
+                    "visit_id",
+                    "visit_name",
+                }
+
                 for key, value in metadata.items():
+                    if key in blacklist_keys:
+                        continue
                     if isinstance(value, (int, float, str, bool)):
                         surface.field_data[key] = [value]
                     elif isinstance(value, dict):
                         sanitized_value = self._sanitize_for_json(value)
-                        surface.field_data[f"{key}_json"] = [
-                            json.dumps(sanitized_value)
-                        ]
+                        surface.field_data[f"{key}_json"] = [json.dumps(sanitized_value)]
                     elif isinstance(value, (list, tuple)) and len(value) > 0:
-                        # Handle numpy arrays in lists
+                        # Prefer numeric arrays for flat numeric lists; otherwise JSON
                         try:
-                            # Convert numpy arrays to Python lists for serialization
-                            if isinstance(value, np.ndarray):
-                                clean_value = value.tolist()
-                            elif isinstance(value, (list, tuple)):
-                                clean_value = []
-                                for item in value:
-                                    if isinstance(item, np.ndarray):
-                                        clean_value.append(item.tolist())
-                                    elif isinstance(item, (np.integer, np.floating)):
-                                        clean_value.append(float(item))
-                                    else:
-                                        clean_value.append(item)
-                            else:
-                                clean_value = value
-                            surface.field_data[f"{key}_json"] = [
-                                json.dumps(clean_value)
-                            ]
-                        except Exception as json_error:
-                            print(f"Warning: Could not serialize {key}: {json_error}")
-                            # Skip this metadata item
-                            continue
+                            arr = np.asarray(value, dtype=float)
+                        except Exception:
+                            arr = None
+                        if arr is not None and np.issubdtype(arr.dtype, np.number) and arr.ndim == 1:
+                            surface.field_data[key] = arr
+                        else:
+                            clean_value = self._sanitize_for_json(value)
+                            surface.field_data[f"{key}_json"] = [json.dumps(clean_value)]
             except Exception as e:
                 print(f"Warning: Could not add metadata to mesh: {e}")
 
@@ -437,9 +407,7 @@ class VTKHDFExporter:
             print(f"Error in single reconstruction export: {e}")
             return False
 
-    def _create_mesh_from_coords(
-        self, figure_x: np.ndarray, figure_y: np.ndarray, figure_z: np.ndarray
-    ) -> Optional[pv.PolyData]:
+    def _create_mesh_from_coords(self, figure_x: np.ndarray, figure_y: np.ndarray, figure_z: np.ndarray) -> Optional[pv.PolyData]:
         """Create a mesh from figure data."""
         try:
             # Create structured grid preserving topology
@@ -457,61 +425,51 @@ class VTKHDFExporter:
             print(f"Error creating mesh: {e}")
             return None
 
-    def _add_pressure_attributes(
-        self, surface: pv.PolyData, visualization_data: VisualizationData
-    ):
-        """Add comprehensive HRM pressure data as vertex attributes."""
-        
-        # Early return if no vertex pressure data requested
-        if self.max_pressure_frames == 0:
-            print("Skipping per-vertex pressure data export as requested (metadata will still be exported)")
+    def _add_pressure_attributes(self, surface: pv.PolyData, visualization_data: VisualizationData):
+        """Add HRM pressure to mesh: per-vertex (default) or compact per-slice."""
+
+        # Early return if no pressure data requested
+        if self.max_pressure_frames == 0 or self.pressure_export_mode == "none":
             return
-        
+
         try:
             n_vertices = surface.n_points
 
             # Get pressure data from figure creator
-            if hasattr(visualization_data.figure_creator, "get_surfacecolor_list"):
-                surfacecolor_list = (
-                    visualization_data.figure_creator.get_surfacecolor_list()
-                )
+            if hasattr(visualization_data, "figure_creator") and hasattr(visualization_data.figure_creator, "get_surfacecolor_list"):
+                surfacecolor_list = visualization_data.figure_creator.get_surfacecolor_list()
+            else:
+                surfacecolor_list = None
 
-                if surfacecolor_list is not None and len(surfacecolor_list) > 0:
-                    n_frames = len(surfacecolor_list)
-                    n_pressure_points = len(surfacecolor_list[0])
+            if surfacecolor_list is not None and len(surfacecolor_list) > 0:
+                n_frames = len(surfacecolor_list)
 
-                    # Map pressure data to mesh vertices
-                    pressure_per_frame = self._map_pressure_to_vertices(
-                        surfacecolor_list, n_vertices, visualization_data
-                    )
-
-                    # Add per-frame pressure data (configurable limit to avoid huge files)
-                    if self.max_pressure_frames == -1:
-                        max_frames = n_frames  # Export all frames
-                    else:
-                        max_frames = min(n_frames, self.max_pressure_frames)
-
+                if self.pressure_export_mode == "per_vertex":
+                    # Full per-vertex mapping
+                    pressure_per_frame = self._map_pressure_to_vertices(surfacecolor_list, n_vertices, visualization_data)
+                    max_frames = n_frames if self.max_pressure_frames == -1 else min(n_frames, self.max_pressure_frames)
+                    # Record number of exported pressure frames for consumers
+                    surface.field_data["pressure_frames_count"] = [int(max_frames)]
                     for frame_idx in range(max_frames):
-                        surface[f"pressure_frame_{frame_idx:03d}"] = pressure_per_frame[
-                            frame_idx
-                        ]
+                        surface[f"pressure_frame_{frame_idx:03d}"] = pressure_per_frame[frame_idx]
 
-                    # Add pressure statistics
-                    all_pressures = np.array(pressure_per_frame)
-                    surface["pressure_max"] = np.max(all_pressures, axis=0)
-                    surface["pressure_min"] = np.min(all_pressures, axis=0)
-                    surface["pressure_mean"] = np.mean(all_pressures, axis=0)
-                    surface["pressure_std"] = np.std(all_pressures, axis=0)
+                elif self.pressure_export_mode == "per_slice":
+                    # Compact: keep per-slice pressures only, no per-vertex arrays
+                    # Store per-slice arrays in field_data as JSON to keep file small
+                    max_frames = n_frames if self.max_pressure_frames == -1 else min(n_frames, self.max_pressure_frames)
+                    # Use indices to indicate slice positions (0..num_slices-1)
+                    num_slices = len(surfacecolor_list[0])
+                    surface.field_data["pressure_slices_count"] = [int(num_slices)]
+                    surface.field_data["pressure_frames_count"] = [int(max_frames)]
+
+                    # Per-frame per-slice matrix and aggregate stats
+                    slice_matrix = np.array(surfacecolor_list[:max_frames])  # shape (frames, slices)
+                    surface.field_data["pressure_slice_matrix_json"] = [json.dumps(slice_matrix.tolist())]
 
         except Exception as e:
             print(f"Error adding pressure attributes: {e}")
 
-    def _map_pressure_to_vertices(
-        self,
-        surfacecolor_list: List[List[float]],
-        n_vertices: int,
-        visualization_data: VisualizationData,
-    ) -> np.ndarray:
+    def _map_pressure_to_vertices(self, surfacecolor_list: List[List[float]], n_vertices: int, visualization_data: VisualizationData) -> np.ndarray:
         """Map pressure data from esophagus path to mesh vertices."""
         n_frames = len(surfacecolor_list)
         pressure_per_frame = np.zeros((n_frames, n_vertices))
@@ -524,28 +482,20 @@ class VTKHDFExporter:
                     pressure_per_frame[frame_idx] = pressure_values
                 elif len(pressure_values) > 0:
                     # Interpolate to match vertex count
-                    pressure_per_frame[frame_idx] = np.interp(
-                        np.linspace(0, 1, n_vertices),
-                        np.linspace(0, 1, len(pressure_values)),
-                        pressure_values,
-                    )
+                    pressure_per_frame[frame_idx] = np.interp(np.linspace(0, 1, n_vertices), np.linspace(0, 1, len(pressure_values)), pressure_values)
 
         except Exception as e:
             print(f"Error in pressure mapping: {e}")
 
         return pressure_per_frame
 
-    def _add_wall_thickness_attributes(
-        self, surface: pv.PolyData, visualization_data: VisualizationData
-    ):
+    def _add_wall_thickness_attributes(self, surface: pv.PolyData, visualization_data: VisualizationData):
         """Add wall thickness estimates per vertex, simplified to a uniform value."""
-        # Use uniform wall thickness of 0.35cm for simplification
-        wall_thickness = np.full(surface.n_points, 0.35)
+        # Use uniform wall thickness of 0.01cm for simplification, this is a placeholder for now
+        wall_thickness = np.full(surface.n_points, 0.001)
         surface["wall_thickness_cm"] = wall_thickness
 
-    def _add_anatomical_region_attributes(
-        self, surface: pv.PolyData, visualization_data: VisualizationData
-    ):
+    def _add_anatomical_region_attributes(self, surface: pv.PolyData, visualization_data: VisualizationData):
         """Add anatomical region classification per vertex."""
         try:
             regions = self._classify_anatomical_regions(surface, visualization_data)
@@ -556,9 +506,7 @@ class VTKHDFExporter:
         except Exception as e:
             print(f"Error adding anatomical regions: {e}")
 
-    def _classify_anatomical_regions(
-        self, surface: pv.PolyData, visualization_data: VisualizationData
-    ) -> np.ndarray:
+    def _classify_anatomical_regions(self, surface: pv.PolyData, visualization_data: VisualizationData) -> np.ndarray:
         """
         Classify vertices into anatomical regions following the reconstruction software logic.
 
@@ -584,9 +532,7 @@ class VTKHDFExporter:
 
             # Calculate sphincter region boundaries in mesh coordinates
             # The sphincter is typically in the lower portion of the esophagus
-            if (
-                ls_upper_pos[1] < ls_lower_pos[1]
-            ):  # Normal case: upper pos has lower Y pixel
+            if ls_upper_pos[1] < ls_lower_pos[1]:  # Normal case: upper pos has lower Y pixel
                 # Sphincter is at the bottom of the mesh (higher Y values)
                 sphincter_start_ratio = 0.75  # Start at 75% along the esophagus
                 sphincter_end_ratio = 0.95  # End at 95% along the esophagus
@@ -602,9 +548,7 @@ class VTKHDFExporter:
             sphincter_y_max = max(sphincter_y_start, sphincter_y_end)
 
             # Classify vertices: tubular (1) and sphincter (2)
-            sphincter_mask = (y_coords >= sphincter_y_min) & (
-                y_coords <= sphincter_y_max
-            )
+            sphincter_mask = (y_coords >= sphincter_y_min) & (y_coords <= sphincter_y_max)
             regions[sphincter_mask] = 2  # Sphincter region
 
         except Exception as e:
@@ -612,9 +556,7 @@ class VTKHDFExporter:
 
         return regions.astype(int)
 
-    def _add_geometric_attributes(
-        self, surface: pv.PolyData, visualization_data: VisualizationData
-    ) -> pv.PolyData:
+    def _add_geometric_attributes(self, surface: pv.PolyData, visualization_data: VisualizationData) -> pv.PolyData:
         """Add geometric attributes for enhanced ML features."""
         try:
             # Calculate vertex normals
@@ -633,11 +575,7 @@ class VTKHDFExporter:
         return surface
 
     def _prepare_comprehensive_metadata(
-        self,
-        base_metadata: Dict[str, Any],
-        visualization_data: VisualizationData,
-        visit_name: str,
-        reconstruction_index: int,
+        self, base_metadata: Dict[str, Any], visualization_data: VisualizationData, visit_name: str, reconstruction_index: int
     ) -> Dict[str, Any]:
         """Prepare comprehensive metadata for the VTKHDF file."""
         metadata = base_metadata.copy()
@@ -650,196 +588,118 @@ class VTKHDFExporter:
                 "xray_minute": str(visualization_data.xray_minute),
                 "export_timestamp": datetime.now().isoformat(),
                 "exporter_version": "2.0_vtkhdf",
-                "coordinate_system": "right_handed_y_up",
+                "coordinate_system": "right_handed_z_up",
                 "file_format": "VTKHDF",
                 "units": {
                     "length": "centimeters",
                     "pressure": "mmHg",
                     "wall_thickness": "centimeters",
                     "time": "seconds",
+                    "angle": "degrees",
+                    "volume": "cm^3",
                 },
             }
         )
 
         # Add esophagus measurements
         try:
-            if hasattr(
-                visualization_data.figure_creator, "get_esophagus_full_length_cm"
-            ):
-                metadata["esophagus_length_cm"] = float(
-                    visualization_data.figure_creator.get_esophagus_full_length_cm()
-                )
+            if hasattr(visualization_data.figure_creator, "get_esophagus_full_length_cm"):
+                metadata["esophagus_length_cm"] = float(visualization_data.figure_creator.get_esophagus_full_length_cm())
 
             # Use the original calculate_metrics function from reconstruction software
-            (
-                calculated_metrics,
-                surfacecolor_list,
-                center_path,
-            ) = self._invoke_figure_creator_metrics(visualization_data)
+            (calculated_metrics, surfacecolor_list, center_path) = self._invoke_figure_creator_metrics(visualization_data)
             if calculated_metrics:
-                self._process_and_store_metrics(
-                    calculated_metrics, metadata, visualization_data
-                )
+                self._process_and_store_metrics(calculated_metrics, metadata, visualization_data)
 
                 # Store boundary information for evaluation model to use exact same spatial indices
-                boundary_indices = self._calculate_boundary_indices(
-                    visualization_data, surfacecolor_list, center_path
-                )
+                boundary_indices = self._calculate_boundary_indices(visualization_data, surfacecolor_list, center_path)
                 if boundary_indices:
                     metadata["boundary_indices"] = boundary_indices
 
             # Add acquisition parameters
             if hasattr(visualization_data.figure_creator, "get_number_of_frames"):
-                metadata["n_pressure_frames"] = (
-                    visualization_data.figure_creator.get_number_of_frames()
-                )
+                metadata["n_pressure_frames"] = visualization_data.figure_creator.get_number_of_frames()
 
             metadata["pressure_frame_rate"] = config.csv_values_per_second
             metadata["sensor_configuration"] = config.coords_sensors.copy()
 
             # Add anatomical landmarks
-            if (
-                hasattr(visualization_data, "sphincter_upper_pos")
-                and visualization_data.sphincter_upper_pos
-            ):
-                metadata["les_upper_position"] = list(
-                    visualization_data.sphincter_upper_pos
-                )
+            if hasattr(visualization_data, "sphincter_upper_pos") and visualization_data.sphincter_upper_pos:
+                metadata["les_upper_position"] = list(visualization_data.sphincter_upper_pos)
 
-            if (
-                hasattr(visualization_data, "esophagus_exit_pos")
-                and visualization_data.esophagus_exit_pos
-            ):
-                metadata["les_lower_position"] = list(
-                    visualization_data.esophagus_exit_pos
-                )
+            if hasattr(visualization_data, "esophagus_exit_pos") and visualization_data.esophagus_exit_pos:
+                metadata["les_lower_position"] = list(visualization_data.esophagus_exit_pos)
 
         except Exception as e:
             print(f"Error preparing metadata: {e}")
 
-        # Add ML-specific metadata
-        metadata.update(
-            {
-                "ground_truth": True,
-                "attribute_description": {
-                    "pressure_frame_XXX": "HRM pressure at frame XXX in mmHg",
-                    "pressure_max": "Maximum pressure across all frames in mmHg",
-                    "pressure_min": "Minimum pressure across all frames in mmHg",
-                    "pressure_mean": "Mean pressure across all frames in mmHg",
-                    "pressure_std": "Standard deviation of pressure across all frames",
-                    "wall_thickness_cm": "Estimated wall thickness in centimeters",
-                    "anatomical_region": "1=tubular, 2=LES",
-                },
-            }
-        )
+        attribute_description = {
+            "wall_thickness_cm": "Estimated wall thickness in centimeters",
+            "anatomical_region": "1=tubular, 2=LES",
+            "pressure_export_mode": "none | per_slice | per_vertex",
+            "tbe_contrast_medium_type": "Type of contrast medium used in TBE",
+            "tbe_contrast_medium_amount_ml": "Amount of contrast medium in milliliters",
+        }
 
+        if getattr(self, "pressure_export_mode", "per_vertex") == "per_vertex" and self.max_pressure_frames != 0:
+            attribute_description.update(
+                {"pressure_frame_XXX": "HRM pressure at frame XXX in mmHg", "pressure_frames_count": "Number of exported pressure frames"}
+            )
+        elif getattr(self, "pressure_export_mode", "per_vertex") == "per_slice":
+            attribute_description.update(
+                {
+                    "pressure_slice_matrix_json": "Per-frame per-slice pressure values (frames x slices) in mmHg",
+                    "pressure_slices_count": "Number of slices (heights) for per-slice pressure",
+                    "pressure_frames_count": "Number of exported pressure frames",
+                }
+            )
+
+        # Add EGD descriptions only if present in metadata
+        if "egd_positions_cm" in metadata or "egd_images_count" in metadata:
+            attribute_description.update(
+                {"egd_positions_cm": "Positions (in cm) of EGD images along the esophagus", "egd_images_count": "Number of EGD images provided"}
+            )
+
+        metadata.update({"ground_truth": True, "attribute_description": attribute_description})
+
+        # Record selected pressure export mode
+        metadata["pressure_export_mode"] = getattr(self, "pressure_export_mode", "per_vertex")
         return metadata
 
-    def _invoke_figure_creator_metrics(
-        self, visualization_data: "VisualizationData"
-    ) -> Tuple[Optional[Dict[str, Any]], Optional[List], Optional[List]]:
+    def _invoke_figure_creator_metrics(self, visualization_data: "VisualizationData") -> Tuple[Optional[Dict[str, Any]], Optional[List], Optional[List]]:
         """Gather parameters and invoke the static calculate_metrics from FigureCreator."""
         try:
-            # Import the original function
-            from logic.figure_creator.figure_creator import FigureCreator
+            # Import and instantiate the same FigureCreator as the visualization flow
+            from logic.figure_creator.figure_creator_with_endoscopy import FigureCreatorWithEndoscopy
+            from logic.figure_creator.figure_creator_without_endoscopy import FigureCreatorWithoutEndoscopy
 
-            # Get all required parameters for the original function
-            figure_x = visualization_data.figure_x
-            figure_y = visualization_data.figure_y
+            if getattr(visualization_data, "endoscopy_polygons", None):
+                fc = FigureCreatorWithEndoscopy(visualization_data)
+            else:
+                fc = FigureCreatorWithoutEndoscopy(visualization_data)
 
-            # Get pressure data (surfacecolor_list)
-            surfacecolor_list = None
-            if hasattr(visualization_data.figure_creator, "get_surfacecolor_list"):
-                surfacecolor_list = (
-                    visualization_data.figure_creator.get_surfacecolor_list()
-                )
+            # Store on visualization_data for later access if needed
+            visualization_data.figure_creator = fc
 
-            # Get center path
-            center_path = None
-            if hasattr(visualization_data.figure_creator, "get_center_path"):
-                center_path = visualization_data.figure_creator.get_center_path()
-            elif hasattr(visualization_data, "center_path"):
-                center_path = visualization_data.center_path
-
-            # Get max index
-            max_index = None
-            if center_path is not None:
-                max_index = len(center_path) - 1
-
-            # Get esophagus length
-            esophagus_full_length_cm = None
-            esophagus_full_length_px = None
-            if hasattr(
-                visualization_data.figure_creator, "get_esophagus_full_length_cm"
-            ):
-                esophagus_full_length_cm = (
-                    visualization_data.figure_creator.get_esophagus_full_length_cm()
-                )
-            if hasattr(
-                visualization_data.figure_creator, "get_esophagus_full_length_px"
-            ):
-                esophagus_full_length_px = (
-                    visualization_data.figure_creator.get_esophagus_full_length_px()
-                )
-
-            # Calculate pixel length if not available, as it's required for metrics
-            if esophagus_full_length_px is None and center_path is not None:
-                esophagus_full_length_px = FigureCreator.calculate_path_length_px(
-                    center_path
-                )
-
-            # Check if we have all required parameters
-            params_valid = (
-                figure_x is not None
-                and figure_y is not None
-                and surfacecolor_list is not None
-                and center_path is not None
-                and max_index is not None
-                and esophagus_full_length_cm is not None
-                and esophagus_full_length_px is not None
-            )
-
-            if not params_valid:
-                print(
-                    "Warning: Missing parameters for FigureCreator.calculate_metrics."
-                )
-                return None, None, None
-
-            # Call the original calculate_metrics function
-            calculated_metrics = FigureCreator.calculate_metrics(
-                visualization_data,
-                figure_x,
-                figure_y,
-                surfacecolor_list,
-                center_path,
-                max_index,
-                esophagus_full_length_cm,
-                esophagus_full_length_px,
-            )
+            # Use exactly the same outputs as visualization for metrics and inputs
+            calculated_metrics = fc.get_metrics()
+            surfacecolor_list = fc.get_surfacecolor_list()
+            center_path = fc.get_center_path()
             return calculated_metrics, surfacecolor_list, center_path
 
         except Exception as e:
             print(f"Error invoking FigureCreator.calculate_metrics: {e}")
             return None, None, None
 
-    def _process_and_store_metrics(
-        self,
-        calculated_metrics: Dict[str, Any],
-        metadata: Dict[str, Any],
-        visualization_data: "VisualizationData",
-    ):
+    def _process_and_store_metrics(self, calculated_metrics: Dict[str, Any], metadata: Dict[str, Any], visualization_data: "VisualizationData"):
         """Process the metrics dictionary and update metadata and visualization data."""
         # Extract metrics directly from the returned dictionary
         volume_tubular = float(calculated_metrics.get("volume_sum_tubular", 0))
         volume_sphincter = float(calculated_metrics.get("volume_sum_sphincter", 0))
         length_tubular = float(calculated_metrics.get("len_tubular", 0))
         length_sphincter = float(calculated_metrics.get("len_sphincter", 0))
-        height_tubular = float(
-            calculated_metrics.get("height_tubular_cm", length_tubular)
-        )
-        height_sphincter = float(
-            calculated_metrics.get("height_sphincter_cm", length_sphincter)
-        )
+        height_tubular = float(calculated_metrics.get("height_tubular_cm", length_tubular))
+        height_sphincter = float(calculated_metrics.get("height_sphincter_cm", length_sphincter))
 
         # Store in metadata (ensure all values are JSON serializable)
         metadata.update(
@@ -856,29 +716,23 @@ class VTKHDFExporter:
         # Store additional overall metrics (convert numpy types to Python types)
         if "metric_tubular_overall" in calculated_metrics:
             val = calculated_metrics["metric_tubular_overall"]
-            metadata["metric_tubular_overall"] = (
-                float(val) if isinstance(val, (np.number, int, float)) else val
-            )
+            metadata["metric_tubular_overall"] = float(val) if isinstance(val, (np.number, int, float)) else val
         if "metric_sphincter_overall" in calculated_metrics:
             val = calculated_metrics["metric_sphincter_overall"]
-            metadata["metric_sphincter_overall"] = (
-                float(val) if isinstance(val, (np.number, int, float)) else val
-            )
+            metadata["metric_sphincter_overall"] = float(val) if isinstance(val, (np.number, int, float)) else val
         if "pressure_tubular_overall" in calculated_metrics:
             val = calculated_metrics["pressure_tubular_overall"]
-            metadata["pressure_tubular_overall"] = (
-                float(val) if isinstance(val, (np.number, int, float)) else val
-            )
+            metadata["pressure_tubular_overall"] = float(val) if isinstance(val, (np.number, int, float)) else val
         if "pressure_sphincter_overall" in calculated_metrics:
             val = calculated_metrics["pressure_sphincter_overall"]
-            metadata["pressure_sphincter_overall"] = (
-                float(val) if isinstance(val, (np.number, int, float)) else val
-            )
+            metadata["pressure_sphincter_overall"] = float(val) if isinstance(val, (np.number, int, float)) else val
+        # Prefer software-derived DCI (esophageal_pressurization_index) to DB value
         if "esophageal_pressurization_index" in calculated_metrics:
             val = calculated_metrics["esophageal_pressurization_index"]
-            metadata["esophageal_pressurization_index"] = (
-                float(val) if isinstance(val, (np.number, int, float)) else val
-            )
+            try:
+                metadata["manometry_dci"] = float(val) if isinstance(val, (np.number, int, float)) else val
+            except Exception:
+                metadata["manometry_dci"] = val
 
         # Store in visualization data for consistency
         visualization_data.tubular_length_cm = length_tubular
@@ -911,10 +765,7 @@ class VTKHDFExporter:
                 metadata["pressure_sphincter_per_frame"] = pressure_sphincter
 
     def _calculate_boundary_indices(
-        self,
-        visualization_data: "VisualizationData",
-        surfacecolor_list: List[List[float]],
-        center_path: List[List[float]],
+        self, visualization_data: "VisualizationData", surfacecolor_list: List[List[float]], center_path: List[List[float]]
     ) -> Optional[Dict[str, int]]:
         """Calculate spatial boundary indices from the original reconstruction."""
         try:
@@ -925,25 +776,13 @@ class VTKHDFExporter:
                 ls_upper_pos = visualization_data.sphincter_upper_pos
                 ls_lower_pos = visualization_data.esophagus_exit_pos
 
-                if (
-                    ls_upper_pos is not None
-                    and ls_lower_pos is not None
-                    and center_path is not None
-                    and len(center_path) > 0
-                ):
+                if ls_upper_pos is not None and ls_lower_pos is not None and center_path is not None and len(center_path) > 0:
                     # Use KDTree to find closest points (same as calculate_metrics)
-                    ls_upper_pos_yx = [
-                        ls_upper_pos[1],
-                        ls_upper_pos[0],
-                    ]  # Switch to y,x for center_path
+                    ls_upper_pos_yx = [ls_upper_pos[1], ls_upper_pos[0]]  # Switch to y,x for center_path
                     ls_lower_pos_yx = [ls_lower_pos[1], ls_lower_pos[0]]
 
-                    _, ls_index_upper = spatial.KDTree(np.array(center_path)).query(
-                        np.array(ls_upper_pos_yx)
-                    )
-                    _, ls_index_lower = spatial.KDTree(np.array(center_path)).query(
-                        np.array(ls_lower_pos_yx)
-                    )
+                    _, ls_index_upper = spatial.KDTree(np.array(center_path)).query(np.array(ls_upper_pos_yx))
+                    _, ls_index_lower = spatial.KDTree(np.array(center_path)).query(np.array(ls_lower_pos_yx))
 
                     # Convert numpy integers to Python integers for JSON serialization
                     ls_index_upper = int(ls_index_upper)
@@ -964,6 +803,242 @@ class VTKHDFExporter:
             print(f"Warning: Could not calculate boundary indices: {boundary_error}")
 
         return None
+
+    def _export_validation_attributes(
+        self, visualization_data: VisualizationData, visit_name: str, output_directory: str, base_metadata: Dict[str, Any], format_type: str = "json"
+    ) -> Optional[str]:
+        """
+        Export validation attributes for validation framework consumption.
+
+        Args:
+            visualization_data: VisualizationData containing reconstruction data
+            visit_name: Name identifier for the visit
+            output_directory: Directory to save validation attributes
+            base_metadata: Base metadata from database
+            format_type: Ignored (JSON is always exported)
+
+        Returns:
+            Path to created validation attributes file, or None if failed
+        """
+        try:
+            # Create validation data structure
+            validation_data = self._extract_validation_data(visualization_data, base_metadata)
+            if validation_data is None:
+                return None
+
+            # Always export JSON (CSV removed)
+            base_filename = f"{visit_name}_{visualization_data.xray_minute}_validation_attributes"
+            file_path = os.path.join(output_directory, f"{base_filename}.json")
+            return self._save_validation_json(validation_data, file_path)
+
+        except Exception:
+            return None
+
+    def _extract_validation_data(self, visualization_data: VisualizationData, base_metadata: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """
+        Extract validation-specific data from VisualizationData.
+
+        Args:
+            visualization_data: VisualizationData containing reconstruction data
+            base_metadata: Base metadata from database
+
+        Returns:
+            Dictionary containing validation data structure
+        """
+        try:
+            # Extract 3D mesh data
+            figure_x = visualization_data.figure_x
+            figure_y = visualization_data.figure_y
+            figure_z = visualization_data.figure_z
+
+            if figure_x is None or figure_y is None or figure_z is None:
+                print("No 3D mesh data available for validation export")
+                return None
+
+            # Get center path
+            center_path = None
+            if hasattr(visualization_data.figure_creator, "get_center_path"):
+                center_path = visualization_data.figure_creator.get_center_path()
+            elif hasattr(visualization_data, "center_path"):
+                center_path = visualization_data.center_path
+
+            # Get computed metrics using the existing function
+            calculated_metrics, surfacecolor_list, _ = self._invoke_figure_creator_metrics(visualization_data)
+
+            # Create validation data structure
+            validation_data = {
+                "metadata": {
+                    "export_timestamp": datetime.now().isoformat(),
+                    "reconstruction_name": f"{base_metadata.get('visit_name', 'Unknown')}_{visualization_data.xray_minute}",
+                    "coordinate_system": "right_handed_z_up",
+                    "units": {"length": "centimeters", "pressure": "mmHg", "wall_thickness": "centimeters", "volume": "cubic_centimeters"},
+                }
+            }
+
+            # Add center path data - TRANSFORM TO MATCH MESH COORDINATES
+            if center_path is not None:
+                # Transform center path to match mesh coordinate system
+                transformed_center_path = self._transform_center_path_to_mesh_coordinates(center_path, figure_x, figure_y, figure_z, visualization_data)
+
+                validation_data["center_path"] = {
+                    "points": transformed_center_path,
+                    "original_pixel_points": center_path,
+                    "length_cm": (float(calculated_metrics.get("len_tubular", 0) + calculated_metrics.get("len_sphincter", 0)) if calculated_metrics else 0.0),
+                    "description": "Center path transformed to mesh coordinate system",
+                }
+
+            # Add vertices data
+            points = np.column_stack((figure_x.flatten(), figure_y.flatten(), figure_z.flatten()))
+            validation_data["vertices"] = {"points": points.tolist(), "count": len(points), "description": "Original mesh vertices"}
+
+            # Add original figure coordinate bounds for consistent center path transformations
+            # This ensures the same pixel coordinates always map to identical world coordinates
+            # regardless of export format (STL vs VTKHDF) differences
+            validation_data["original_figure_bounds"] = {
+                "x_min": float(np.min(figure_x)),
+                "x_max": float(np.max(figure_x)),
+                "y_min": float(np.min(figure_y)),
+                "y_max": float(np.max(figure_y)),
+                "z_min": float(np.min(figure_z)),
+                "z_max": float(np.max(figure_z)),
+                "description": "Original figure coordinate bounds for consistent transformations",
+            }
+
+            # Add boundary indices for anatomical regions
+            boundary_indices = self._calculate_boundary_indices(visualization_data, surfacecolor_list, center_path)
+            if boundary_indices:
+                validation_data["anatomical_boundaries"] = boundary_indices
+
+            # Add volume data
+            if calculated_metrics:
+                validation_data["volumes"] = {
+                    "volume_tubular_cm3": float(calculated_metrics.get("volume_sum_tubular", 0)),
+                    "volume_sphincter_cm3": float(calculated_metrics.get("volume_sum_sphincter", 0)),
+                    "total_volume_cm3": float(calculated_metrics.get("volume_sum_tubular", 0) + calculated_metrics.get("volume_sum_sphincter", 0)),
+                    "calculated_metrics": self._sanitize_for_json(calculated_metrics),
+                }
+
+            # Add validation config with default thresholds
+            validation_data["validation_config"] = {
+                "thresholds": {"center_path_chamfer_threshold_mm": 2.0, "vertex_distance_threshold_mm": 0.1, "volume_error_threshold_percent": 10.0}
+            }
+
+            # Add anatomical landmarks
+            if hasattr(visualization_data, "sphincter_upper_pos") and visualization_data.sphincter_upper_pos:
+                validation_data["anatomical_landmarks"] = {"les_upper_position": list(visualization_data.sphincter_upper_pos)}
+                if hasattr(visualization_data, "esophagus_exit_pos") and visualization_data.esophagus_exit_pos:
+                    validation_data["anatomical_landmarks"]["les_lower_position"] = list(visualization_data.esophagus_exit_pos)
+
+            return validation_data
+
+        except Exception as e:
+            print(f"Error extracting validation data: {e}")
+            return None
+
+    def _save_validation_json(self, validation_data: Dict[str, Any], file_path: str) -> Optional[str]:
+        """Save validation data as JSON file."""
+        try:
+            sanitized_data = self._sanitize_for_json(validation_data)
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(sanitized_data, f, indent=2, ensure_ascii=False)
+            return file_path
+        except Exception:
+            return None
+
+    def _transform_center_path_to_mesh_coordinates(
+        self, center_path: List[List[float]], figure_x: np.ndarray, figure_y: np.ndarray, figure_z: np.ndarray, visualization_data: VisualizationData
+    ) -> List[List[float]]:
+        """
+        Transform center path coordinates to match the mesh coordinate system.
+
+        This applies the same coordinate transformations that were applied to the mesh
+        during figure creation to ensure spatial alignment.
+
+        Args:
+            center_path: Original center path in pixel coordinates [(y,x), ...]
+            figure_x, figure_y, figure_z: Transformed mesh coordinates
+            visualization_data: VisualizationData for transformation parameters
+
+        Returns:
+            Transformed center path in mesh coordinate system [(x,y,z), ...]
+        """
+        try:
+            if center_path is None or len(center_path) == 0:
+                return []
+
+            # Compute scale
+            sensor_path = visualization_data.sensor_path
+            esophagus_full_length_px = self._calculate_esophagus_length_px(sensor_path, visualization_data.esophagus_exit_pos)
+            esophagus_full_length_cm = self._calculate_esophagus_full_length_cm(sensor_path, esophagus_full_length_px, visualization_data)
+            px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
+
+            # Map center_path (pixel) to mesh coordinate axes (robust for lists/ndarrays)
+            cp = np.asarray(center_path)
+            transformed_points = np.column_stack((cp[:, 1], np.zeros(cp.shape[0]), cp[:, 0])).astype(float)
+
+            # Mesh bounds and centers
+            mesh_x_min, mesh_x_max = float(figure_x.min()), float(figure_x.max())
+            mesh_y_min, mesh_y_max = float(figure_y.min()), float(figure_y.max())
+            mesh_z_min, mesh_z_max = float(figure_z.min()), float(figure_z.max())
+            mesh_x_center = (mesh_x_min + mesh_x_max) / 2.0
+            mesh_z_center = (mesh_z_min + mesh_z_max) / 2.0
+
+            # Pixel mins for figure-creator style normalization
+            pixel_x = transformed_points[:, 0]
+            pixel_z = transformed_points[:, 2]
+            pixel_x_min, pixel_y_min = float(pixel_x.min()), float(pixel_z.min())
+
+            # Scale using px->cm factor
+            scaled_x = (pixel_x - pixel_x_min) * px_to_cm_factor
+            scaled_z = (pixel_z - pixel_y_min) * px_to_cm_factor
+
+            # Center-align with mesh
+            path_x_center = (scaled_x.min() + scaled_x.max()) / 2.0
+            path_z_center = (scaled_z.min() + scaled_z.max()) / 2.0
+            x_offset = mesh_x_center - path_x_center
+            z_offset = mesh_z_center - path_z_center
+
+            final_x = scaled_x + x_offset
+            final_y = np.full_like(final_x, (mesh_y_min + mesh_y_max) / 2.0)
+            final_z = scaled_z + z_offset
+
+            return np.column_stack((final_x, final_y, final_z)).tolist()
+
+        except Exception:
+            return []
+
+    def _calculate_esophagus_length_px(self, sensor_path, esophagus_exit_pos):
+        """Calculate esophagus length in pixels (helper method)."""
+        path_length_px = 0
+        for i in range(1, len(sensor_path)):
+            path_length_px += np.sqrt((sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
+            if sensor_path[i][1] == esophagus_exit_pos[1] and sensor_path[i][0] == esophagus_exit_pos[0]:
+                break
+        return path_length_px
+
+    def _calculate_esophagus_full_length_cm(self, sensor_path, esophagus_full_length_px, visualization_data):
+        """Calculate esophagus length in cm (helper method)."""
+        from scipy import spatial
+
+        # Map sensor indices to centimeter
+        first_sensor_cm = config.coords_sensors[visualization_data.first_sensor_index]
+        second_sensor_cm = config.coords_sensors[visualization_data.second_sensor_index]
+
+        # sensor_pos are coordinates (x, y) and sensor_path is a list of coordinates (y, x)
+        first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
+        second_sensor_pos_switched = (visualization_data.second_sensor_pos[1], visualization_data.second_sensor_pos[0])
+
+        # KDTree to find nearest points on the sensor_path
+        _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
+        _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(second_sensor_pos_switched))
+
+        path_length_px = 0
+        for i in range(index_second, index_first + 1):
+            if i > index_second:
+                path_length_px += np.sqrt((sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
+
+        length_cm = first_sensor_cm - second_sensor_cm
+        return length_cm * (esophagus_full_length_px / path_length_px)
 
     def _export_to_vtkhdf(self, surface: pv.PolyData, file_path: str) -> bool:
         """Export the mesh with all attributes to VTKHDF format with compression."""
@@ -1000,11 +1075,7 @@ class VTKHDFExporter:
 
 
 def export_single_visit_vtkhdf(
-    visit_id: int,
-    output_directory: str,
-    db_session: Session,
-    visit_name_override: Optional[str] = None,
-    max_pressure_frames: int = -1,
+    visit_id: int, output_directory: str, db_session: Session, visit_name_override: Optional[str] = None, max_pressure_frames: int = -1
 ) -> List[str]:
     """
     Export a single visit's reconstructions to VTKHDF format.
@@ -1040,14 +1111,7 @@ def export_single_visit_vtkhdf(
         patient = patient_service.get_patient(visit.patient_id)
 
         # Reconstruct visit data
-        visit_data = _reconstruct_visit_data_from_db(
-            reconstruction,
-            visit,
-            barium_service,
-            manometry_service,
-            endoscopy_service,
-            endoflip_service,
-        )
+        visit_data = _reconstruct_visit_data_from_db(reconstruction, visit, barium_service, manometry_service, endoscopy_service, endoflip_service)
 
         if visit_data is None:
             return []
@@ -1056,21 +1120,14 @@ def export_single_visit_vtkhdf(
         if visit_name_override:
             visit_name = visit_name_override
         else:
-            visit_name = (
-                f"Visit_{visit.visit_id}_{patient.patient_id}_"
-                f"{visit.visit_type.replace(' ', '')}_{visit.year_of_visit}"
-            )
+            visit_name = f"Visit_{visit.visit_id}_{patient.patient_id}_" f"{visit.visit_type.replace(' ', '')}_{visit.year_of_visit}"
 
         # Export using enhanced exporter
         exporter = VTKHDFExporter(db_session, max_pressure_frames)
-        created_files = exporter.export_visit_reconstructions(
-            visit_data,
-            visit_name,
-            output_directory,
-            patient_id=patient.patient_id,
-            visit_id=visit.visit_id,
-        )
+        export_result = exporter.export_visit_reconstructions(visit_data, visit_name, output_directory, patient_id=patient.patient_id, visit_id=visit.visit_id)
 
+        # Extract mesh files for backward compatibility
+        created_files = export_result.get("mesh_files", [])
         return created_files
 
     except Exception as e:
@@ -1110,14 +1167,7 @@ def _reconstruct_visit_data_from_db(
             return None
 
         # Enhance with additional database information if needed
-        _enhance_visit_data_with_db_info(
-            visit_data,
-            visit,
-            barium_service,
-            manometry_service,
-            endoscopy_service,
-            endoflip_service,
-        )
+        _enhance_visit_data_with_db_info(visit_data, visit, barium_service, manometry_service, endoscopy_service, endoflip_service)
 
         return visit_data
 
@@ -1142,22 +1192,15 @@ def _enhance_visit_data_with_db_info(
         # Get fresh data from database
         barium_files = barium_service.get_barium_swallow_files_for_visit(visit.visit_id)
         manometry_file = manometry_service.get_manometry_file_for_visit(visit.visit_id)
-        endoscopy_files = endoscopy_service.get_endoscopy_files_for_visit(
-            visit.visit_id
-        )
+        endoscopy_files = endoscopy_service.get_endoscopy_files_for_visit(visit.visit_id)
         endoflip_files = endoflip_service.get_endoflip_files_for_visit(visit.visit_id)
 
         # Ensure each visualization has complete data
         for i, viz_data in enumerate(visit_data.visualization_data_list):
             # Ensure pressure matrix is available
-            if (
-                not hasattr(viz_data, "pressure_matrix")
-                or viz_data.pressure_matrix is None
-            ):
+            if not hasattr(viz_data, "pressure_matrix") or viz_data.pressure_matrix is None:
                 if manometry_file:
-                    viz_data.pressure_matrix = pickle.loads(
-                        manometry_file.pressure_matrix
-                    )
+                    viz_data.pressure_matrix = pickle.loads(manometry_file.pressure_matrix)
 
             # Ensure X-ray data is available
             if not hasattr(viz_data, "xray_file") or viz_data.xray_file is None:
@@ -1167,9 +1210,7 @@ def _enhance_visit_data_with_db_info(
                         break
 
             # Ensure endoscopy data is available
-            if endoscopy_files and (
-                not hasattr(viz_data, "endoscopy_files") or not viz_data.endoscopy_files
-            ):
+            if endoscopy_files and (not hasattr(viz_data, "endoscopy_files") or not viz_data.endoscopy_files):
                 endoscopy_image_positions_cm = []
                 endoscopy_images = []
                 for endoscopy_file in endoscopy_files:
@@ -1180,23 +1221,15 @@ def _enhance_visit_data_with_db_info(
                 viz_data.endoscopy_files = endoscopy_images
 
             # Ensure endoflip data is available
-            if endoflip_files and (
-                not hasattr(viz_data, "endoflip_screenshot")
-                or not viz_data.endoflip_screenshot
-            ):
-                viz_data.endoflip_screenshot = pickle.loads(
-                    endoflip_files[0].screenshot
-                )
+            if endoflip_files and (not hasattr(viz_data, "endoflip_screenshot") or not viz_data.endoflip_screenshot):
+                viz_data.endoflip_screenshot = pickle.loads(endoflip_files[0].screenshot)
 
     except Exception as e:
         print(f"Warning: Could not enhance visit data with database info: {e}")
 
 
 def run_mass_export_with_progress(
-    db_session: Session,
-    output_directory: str,
-    parent_widget=None,
-    max_pressure_frames: int = -1,
+    db_session: Session, output_directory: str, parent_widget=None, max_pressure_frames: int = -1, pressure_export_mode: str = "per_vertex"
 ) -> Dict[str, any]:
     """
     Export all reconstructions with progress tracking.
@@ -1228,19 +1261,13 @@ def run_mass_export_with_progress(
     endoflip_service = EndoflipFileService(db_session)
 
     # Initialize one exporter for the entire run
-    exporter = VTKHDFExporter(db_session, max_pressure_frames)
+    exporter = VTKHDFExporter(db_session, max_pressure_frames, pressure_export_mode=pressure_export_mode)
 
     # Get all reconstructions
     all_reconstructions = reconstruction_service.get_all_reconstructions()
 
     if not all_reconstructions:
-        return {
-            "success": False,
-            "message": "No reconstructions found in database",
-            "total_files": 0,
-            "successful_files": 0,
-            "file_paths": [],
-        }
+        return {"success": False, "message": "No reconstructions found in database", "total_files": 0, "successful_files": 0, "file_paths": []}
 
     all_created_files = []
     successful_exports = 0
@@ -1252,13 +1279,7 @@ def run_mass_export_with_progress(
             from PyQt6.QtWidgets import QProgressDialog
             from PyQt6.QtCore import Qt
 
-            progress_dialog = QProgressDialog(
-                "Exporting VTKHDF files...",
-                "Cancel",
-                0,
-                len(all_reconstructions),
-                parent_widget,
-            )
+            progress_dialog = QProgressDialog("Exporting VTKHDF files...", "Cancel", 0, len(all_reconstructions), parent_widget)
             progress_dialog.setWindowModality(Qt.WindowModality.WindowModal)
             progress_dialog.setMinimumDuration(0)
             progress_dialog.show()
@@ -1270,59 +1291,37 @@ def run_mass_export_with_progress(
             # Update progress
             if progress_dialog:
                 progress_dialog.setValue(idx)
-                progress_dialog.setLabelText(
-                    f"Exporting Patient reconstruction(s) {idx + 1}/{len(all_reconstructions)}..."
-                )
+                progress_dialog.setLabelText(f"Exporting Patient reconstruction(s) {idx + 1}/{len(all_reconstructions)}...")
                 if progress_dialog.wasCanceled():
                     break
 
             # Get visit and patient info
-            visit_id = (
-                reconstruction["visit_id"]
-                if isinstance(reconstruction, dict)
-                else reconstruction.visit_id
-            )
+            visit_id = reconstruction["visit_id"] if isinstance(reconstruction, dict) else reconstruction.visit_id
             visit = visit_service.get_visit(visit_id)
             patient = patient_service.get_patient(visit.patient_id)
 
             # Reconstruct visit data
-            visit_data = _reconstruct_visit_data_from_db(
-                reconstruction,
-                visit,
-                barium_service,
-                manometry_service,
-                endoscopy_service,
-                endoflip_service,
-            )
+            visit_data = _reconstruct_visit_data_from_db(reconstruction, visit, barium_service, manometry_service, endoscopy_service, endoflip_service)
 
             if visit_data is None:
                 continue
 
             # Create visit name
-            visit_name = (
-                f"Visit_{visit.visit_id}_{patient.patient_id}_"
-                f"{visit.visit_type.replace(' ', '')}_{visit.year_of_visit}"
-            )
+            visit_name = f"Visit_{visit.visit_id}_{patient.patient_id}_" f"{visit.visit_type.replace(' ', '')}_{visit.year_of_visit}"
 
             # Export using the single enhanced exporter instance
-            created_files = exporter.export_visit_reconstructions(
-                visit_data,
-                visit_name,
-                output_directory,
-                patient_id=patient.patient_id,
-                visit_id=visit.visit_id,
+            export_result = exporter.export_visit_reconstructions(
+                visit_data, visit_name, output_directory, patient_id=patient.patient_id, visit_id=visit.visit_id
             )
 
-            all_created_files.extend(created_files)
-            if created_files:
+            # Extract mesh files and extend the list
+            mesh_files = export_result.get("mesh_files", [])
+            all_created_files.extend(mesh_files)
+            if mesh_files:
                 successful_exports += 1
 
         except Exception as e:
-            reconstruction_id = (
-                reconstruction["reconstruction_id"]
-                if isinstance(reconstruction, dict)
-                else reconstruction.reconstruction_id
-            )
+            reconstruction_id = reconstruction["reconstruction_id"] if isinstance(reconstruction, dict) else reconstruction.reconstruction_id
             print(f"Error exporting reconstruction {reconstruction_id}: {e}")
             continue
 

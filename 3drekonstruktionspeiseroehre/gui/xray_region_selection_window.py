@@ -89,36 +89,34 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         preloaded_polygon = getattr(self.visualization_data, "xray_polygon", None)
         if preloaded_polygon is not None and len(preloaded_polygon) > 2:
             try:
-                self.polygonOes = preloaded_polygon.tolist() if isinstance(preloaded_polygon, np.ndarray) else preloaded_polygon
+                import numpy as _np
+
+                self.polygonOes = preloaded_polygon.tolist() if isinstance(preloaded_polygon, _np.ndarray) else preloaded_polygon
                 self.init_first_polygon()
             except Exception:
                 # Fallback to default behavior if preloading fails
                 self.polygonOes = None
                 # Proceed with default branch below
-                if self.visualization_data.use_model and self._nnunet_ready():
+                if self.visualization_data.use_model:
                     print("I am using the nnUnet model")
                     mask = self.predict_mask_with_nnunet_v2()
                     self.mask = (mask > 0.5).astype(np.uint8) * 255
                     self.polygonOes = self.mask_to_largest_polygon()
                     self.init_first_polygon_ml()
                 else:
-                    if self.visualization_data.use_model:
-                        print("nnU-Net not configured. Falling back to classical segmentation.")
                     print("I do not use the nnUnet model")
                     self.polygonOes = image_polygon_detection.calculate_xray_polygon(self.xray_image)
                     self.init_first_polygon()
         else:
             # No preloaded polygon → use normal initialization
-            if self.visualization_data.use_model and self._nnunet_ready():
+            if self.visualization_data.use_model:
                 print("I am using the nnUnet model")
-                # Calculate the initial polygon from the X-ray image with the nnUnet (lazy import)
+                # Calculate the initial polygon from the X-ray image with the nnUnet
                 mask = self.predict_mask_with_nnunet_v2()
-                self.mask = (mask > 0.5).astype(np.uint8) * 255
+                self.mask = (mask > 0.5).astype(_np.uint8) * 255
                 self.polygonOes = self.mask_to_largest_polygon()
                 self.init_first_polygon_ml()
             else:
-                if self.visualization_data.use_model:
-                    print("nnU-Net not configured. Falling back to classical segmentation.")
                 print("I do not use the nnUnet model")
                 # Calculate the initial polygon from the X-ray image
                 self.polygonOes = image_polygon_detection.calculate_xray_polygon(self.xray_image)
@@ -133,11 +131,8 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
         os.environ.setdefault("nnUNet_preprocessed", "C:/ModelAchalasia/nnUNet_preprocessed")
         os.environ.setdefault("nnUNet_results", "C:/ModelAchalasia/nnUNet_results")
 
-        raw_root = os.environ.get("nnUNet_raw", "C:/ModelAchalasia/nnUNet_raw")
-        results_root = os.environ.get("nnUNet_results", "C:/ModelAchalasia/nnUNet_results")
-
-        temp_input_dir = os.path.join(raw_root, "Dataset001_Breischluck", "imagesTs")
-        temp_output_dir = os.path.join(raw_root, "Dataset001_Breischluck", "imagesTs_pred")
+        temp_input_dir = "C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs"
+        temp_output_dir = "C:/ModelAchalasia/nnUNet_raw/Dataset001_Breischluck/imagesTs_pred"
         os.makedirs(temp_output_dir, exist_ok=True)
         os.makedirs(temp_input_dir, exist_ok=True)
 
@@ -167,10 +162,7 @@ class XrayRegionSelectionWindow(BaseWorkflowWindow):
             "nnUNetTrainer_100epochs__nnUNetResEncUNetMPlans__2d",
         )
         # initializes the network architecture, loads the checkpoint
-        ckpt_name = "checkpoint_final.pth"
-        if not os.path.isfile(os.path.join(model_dir, "fold_0", ckpt_name)):
-            ckpt_name = "checkpoint_best.pth"
-        predictor.initialize_from_trained_model_folder(model_dir, use_folds=(0,), checkpoint_name=ckpt_name)
+        predictor.initialize_from_trained_model_folder(nnUNet_results, use_folds=(0,), checkpoint_name="checkpoint_final.pth")
         # variant 1: give input and output folders
         predictor.predict_from_files(
             temp_input_dir,
