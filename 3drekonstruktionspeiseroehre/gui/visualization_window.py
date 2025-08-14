@@ -21,9 +21,10 @@ from logic.services.reconstruction_service import ReconstructionService
 
 from PyQt6 import uic
 from utils.path_utils import resource_path
-from PyQt6.QtCore import QUrl
+from PyQt6.QtCore import QUrl, QTimer
 from PyQt6.QtGui import QFont, QAction
 from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEnginePage
 from PyQt6.QtWidgets import QFileDialog, QLabel, QMessageBox, QProgressDialog, QPushButton, QSizePolicy, QStyle, QVBoxLayout
 import pyvista as pv
 
@@ -198,10 +199,8 @@ class VisualizationWindow(BaseWorkflowWindow):
             visit (VisitData): VisitData object
         """
         dash_server = DashServer(visit)
-        url = QUrl()
-        url.setScheme("http")
-        url.setHost("127.0.0.1")
-        url.setPort(dash_server.get_port())
+        # Use explicit URL string including trailing slash
+        url = QUrl(f"http://127.0.0.1:{dash_server.get_port()}/")
 
         # Create a new QVBoxLayout for each visualization
         vbox = QVBoxLayout()
@@ -231,7 +230,18 @@ class VisualizationWindow(BaseWorkflowWindow):
 
         # Create a new QWebEngineView for each visualization
         web_view = QWebEngineView()
-        web_view.load(url)
+        # Use an isolated, in-memory web profile per view to avoid stale cache/service-worker issues under Windows
+        profile = QWebEngineProfile(f"dash_view_{dash_server.get_port()}", web_view)
+        try:
+            # Prefer ephemeral in-memory cache/cookies
+            profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.MemoryHttpCache)
+            profile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.NoPersistentCookies)
+        except Exception:
+            pass
+        web_view.setPage(QWebEnginePage(profile, web_view))
+        # Load with a short delay and retry on failure (helps on Windows where
+        # the server might not yet accept connections at first attempt)
+        self.__load_webview_with_retries(web_view, url, max_attempts=20, delay_ms=250)
         vbox.addWidget(web_view)
 
         # Set vbox as the DragItem's layout and add it to the visualization layout
@@ -241,6 +251,35 @@ class VisualizationWindow(BaseWorkflowWindow):
         # Save the DashServer and QWebEngineView instances for cleanup later
         self.dash_servers.append(dash_server)
         self.web_views.append(web_view)
+
+    def __load_webview_with_retries(self, web_view: QWebEngineView, url: QUrl, max_attempts: int = 15, delay_ms: int = 200):
+        """
+        Ensure the given QWebEngineView loads the URL reliably by retrying a few
+        times with a small delay. This mitigates race conditions between server
+        startup and the first navigation attempt (observed under Windows).
+        """
+
+        web_view.setProperty("retry_count", 0)
+
+        def _on_finished(ok, w=web_view, u=url):
+            if ok:
+                try:
+                    w.loadFinished.disconnect()
+                except Exception:
+                    pass
+                return
+            retries = w.property("retry_count") or 0
+            if retries < max_attempts:
+                w.setProperty("retry_count", retries + 1)
+                QTimer.singleShot(delay_ms, lambda w=w, u=u: w.load(u))
+            else:
+                try:
+                    w.loadFinished.disconnect()
+                except Exception:
+                    pass
+
+        web_view.loadFinished.connect(_on_finished)
+        QTimer.singleShot(delay_ms, lambda w=web_view, u=url: w.load(u))
 
     def __download_object_files(self):
         """
@@ -938,21 +977,52 @@ class VisualizationWindow(BaseWorkflowWindow):
             self.progress_dialog.close()
             self.progress_dialog = None
 
-        # Stop all dash servers and close web views
+        # Stop all dash servers and close web views (aggressively free QWebEngine resources like cache/profile)
         for dash_server in self.dash_servers:
             try:
                 dash_server.stop()
             except Exception:
-                # Ignore errors when stopping servers that might already be stopped
                 pass
 
         for web_view in self.web_views:
             try:
+                # Navigate to about:blank to break any active connections first
+                web_view.setHtml("")
+            except Exception:
+                pass
+            try:
+                page = web_view.page()
+                if page is not None:
+                    try:
+                        profile = page.profile()
+                        if profile is not None:
+                            try:
+                                profile.clearHttpCache()
+                                profile.clearAllVisitedLinks()
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            try:
                 web_view.close()
             except Exception:
-                # Ignore errors when closing views that might already be closed
+                pass
+            try:
+                web_view.deleteLater()
+            except Exception:
                 pass
 
         # Clear the lists
         self.dash_servers.clear()
         self.web_views.clear()
+
+        # Align behavior with the Reset button: clear reconstructed visits so the
+        # next visualization starts from a clean PatientData state. This avoids
+        # stale references that can affect the embedded browser on Windows.
+        try:
+            if hasattr(self, "patient_data") and hasattr(self.patient_data, "visit_data_dict"):
+                self.patient_data.visit_data_dict = {}
+        except Exception:
+            pass

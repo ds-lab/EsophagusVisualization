@@ -829,8 +829,26 @@ class DashServer:
         """
         Stops the server and closes the socket.
         """
-        self.thread.terminate()
-        self.server_socket.close()
+        try:
+            # Politely ask waitress to stop accepting new connections
+            if hasattr(self, "server") and self.server is not None:
+                self.server.close()
+        except Exception:
+            pass
+        try:
+            if hasattr(self, "thread") and self.thread is not None and self.thread.is_alive():
+                self.thread.terminate()
+        except Exception:
+            pass
+        try:
+            # Ensure the socket is fully shut down (prevents TIME_WAIT issues on Windows)
+            self.server_socket.shutdown(socket.SHUT_RDWR)
+        except Exception:
+            pass
+        try:
+            self.server_socket.close()
+        except Exception:
+            pass
 
     def get_port(self):
         """

@@ -109,4 +109,4 @@ min_eso_length = 10
 # UI / Export toggles
 # If set to False, the app will not show the validation export prompt
 # in the VTKHDF export flow and will not export validation attributes.
-enable_validation_export_prompt = True
+enable_validation_export_prompt = False
