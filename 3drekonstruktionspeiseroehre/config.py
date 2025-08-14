@@ -1,4 +1,5 @@
 import sys
+
 # Config file
 
 # data validation for database:
@@ -59,12 +60,14 @@ animation_frames_per_second = 5  # (should be a divisor of csv_values_per_second
 length_tubular_part_cm = 15  # regarded length of the tubular part above the lower sphincter
 
 # colorscale (as in 'Laborie'-software)
-colorscale = [[0, "rgb(16, 1, 255)"],
-              [0.123552143573761, "rgb(5, 252, 252)"],
-              [0.274131298065186, "rgb(19, 254, 3)"],
-              [0.5, "rgb(252, 237, 3)"],
-              [0.702702701091766, "rgb(255, 0, 0)"],
-              [1, "rgb(91, 5, 132)"]]
+colorscale = [
+    [0, "rgb(16, 1, 255)"],
+    [0.123552143573761, "rgb(5, 252, 252)"],
+    [0.274131298065186, "rgb(19, 254, 3)"],
+    [0.5, "rgb(252, 237, 3)"],
+    [0.702702701091766, "rgb(255, 0, 0)"],
+    [1, "rgb(91, 5, 132)"],
+]
 cmin = -15  # min pressure -> 0 in colorscale
 cmax = 200  # max pressure -> 1 in colorscale
 
@@ -89,7 +92,7 @@ points_for_smoothing_in_sharp_edges = 20  # number of points after a detected sh
 px_threshold_for_straight_line = 10  # pixel threshold for detecting the upper most horizontal line in shorted paths calculation
 cardinal_cost = 2  # costs for shortest path calculation
 diagonal_cost = 3  # costs for shortest path calculation
-distance_to_border = 10 # number of pixels the sensor path is away form the border
+distance_to_border = 10  # number of pixels the sensor path is away form the border
 # The esophagus is artifically expanded to create a straight line at the top.
 # This defines the number of pixels the esophagus is expanded BEYOND just building a straight line.
 # Necessary for better shortest paths / centers at the top of the esophagus
@@ -99,6 +102,11 @@ expansion_delta = 5
 # CHECKERS
 
 volumen_upper_boundary = 1
-volumen_lower_boundary = 2 # sys.maxint
+volumen_lower_boundary = 2  # sys.maxint
 max_eso_length = 40
 min_eso_length = 10
+
+# UI / Export toggles
+# If set to False, the app will not show the validation export prompt
+# in the VTKHDF export flow and will not export validation attributes.
+enable_validation_export_prompt = True

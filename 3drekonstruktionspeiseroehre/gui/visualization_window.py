@@ -406,6 +406,7 @@ class VisualizationWindow(BaseWorkflowWindow):
         Callback for the download button to store graphs as .vtkhdf for ML with enhanced attributes
         """
         from PyQt6.QtWidgets import QInputDialog
+        import config
 
         if not self.visits:
             QMessageBox.warning(self, "Export Error", "No visualizations to export.")
@@ -448,20 +449,23 @@ class VisualizationWindow(BaseWorkflowWindow):
             compression_mode = "full"
             pressure_export_mode = "per_vertex"
 
-        validation_options = ["No validation attributes", "Export validation attributes (JSON format)"]
-        validation_dialog_text = (
-            "Do you want to export validation attributes for the validation framework?"
-            "<ul>"
-            "<li><b>No validation attributes:</b> Only export the 3D mesh file</li>"
-            "<li><b>JSON format:</b> Export validation data in a single JSON file</li>"
-            "</ul>"
-            "<br><i>Validation attributes enable automated validation of reconstruction accuracy.</i>"
-        )
-        validation_choice, validation_ok = QInputDialog.getItem(self, "Validation Export Options", validation_dialog_text, validation_options, 0, False)
-        if not validation_ok:
-            return
-        export_validation_attributes = validation_choice == validation_options[1]
+        # Validation selection: if prompt disabled in config, skip and default to no validation export
+        export_validation_attributes = False
         validation_format = "json"
+        if getattr(config, "enable_validation_export_prompt", True):
+            validation_options = ["No validation attributes", "Export validation attributes (JSON format)"]
+            validation_dialog_text = (
+                "Do you want to export validation attributes for the validation framework?"
+                "<ul>"
+                "<li><b>No validation attributes:</b> Only export the 3D mesh file</li>"
+                "<li><b>JSON format:</b> Export validation data in a single JSON file</li>"
+                "</ul>"
+                "<br><i>Validation attributes enable automated validation of reconstruction accuracy.</i>"
+            )
+            validation_choice, validation_ok = QInputDialog.getItem(self, "Validation Export Options", validation_dialog_text, validation_options, 0, False)
+            if not validation_ok:
+                return
+            export_validation_attributes = validation_choice == validation_options[1]
 
         destination_directory = QFileDialog.getExistingDirectory(self, "Select Directory for VTKHDF Export")
 
