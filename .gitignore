@@ -7,6 +7,7 @@ dist
 build
 .vscode
 .conda
+validation
 /3drekonstruktionspeiseroehre.egg-info
 database.db
 test_database.db

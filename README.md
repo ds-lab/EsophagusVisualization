@@ -56,7 +56,7 @@ pip install -r requirements.txt
 3. **Download ML Model**
     Download the model here:
     [Zenodo website](https://zenodo.org/records/13980656?preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjA3MGI0MjI0LWEyN2ItNDlkNC05YjgxLTBkZThlNzgzNTljYSIsImRhdGEiOnt9LCJyYW5kb20iOiI4N2U4MmUxOTc3YTk2NTYxMDFmMjdiNzMyMjQzYWRiMCJ9.ISNr53t3UU1rBfBdi6Iyo8qznD_iIQSOMYUj6afUhyQqGPQlrKrNkVhttZcLL-Vc1brNMbboOo1KlUMVxBc4bg)
-    Add two empty folders with following paths: 'C:/ModelAchalasia/nnUNet_results' and 'C:/ModelAchalasia/nnUNet_preprocessed'. Then copy the model in the nnUNet_results folder: 
+    Add three empty folders with following paths: 'C:/ModelAchalasia/nnUNet_results' and 'C:/ModelAchalasia/nnUNet_preprocessed' and 'C:/ModelAchalasia/nnUNet_raw'. Then copy the model in the nnUNet_results folder: 
     'C:/ModelAchalasia/nnUNet_results/Dataset001_Breischluck/nnUNetTrainer_100epochs__nnUNetResEncUNetMPlans__2d'
 
     If you save it in another folder, adapt the paths in xray_region_selection_window.py.
