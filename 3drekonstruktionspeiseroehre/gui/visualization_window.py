@@ -21,7 +21,7 @@ from logic.services.reconstruction_service import ReconstructionService
 
 from PyQt6 import uic
 from utils.path_utils import resource_path
-from PyQt6.QtCore import QUrl, QTimer
+from PyQt6.QtCore import QUrl, QTimer, Qt
 from PyQt6.QtGui import QFont, QAction
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEnginePage
@@ -110,9 +110,33 @@ class VisualizationWindow(BaseWorkflowWindow):
 
         self.setCentralWidget(self.visualization_layout)
 
-        self.progress_dialog = QProgressDialog("Creating Visualisation", None, 0, 100, None)
+        # Ensure the progress dialog stays in front of the main window
+        self.progress_dialog = QProgressDialog("Creating Visualization", None, 0, 100, self)
         self.progress_dialog.setWindowTitle("Processing...")
+        self.progress_dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.progress_dialog.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
         self.progress_dialog.show()
+        try:
+            self.progress_dialog.raise_()
+            self.progress_dialog.activateWindow()
+        except Exception:
+            pass
+        # Center the progress dialog after it is shown (ensure final size is known)
+        try:
+            QTimer.singleShot(0, self.__center_progress_dialog)
+        except Exception:
+            pass
+
+    def __center_progress_dialog(self):
+        try:
+            if hasattr(self, "progress_dialog") and self.progress_dialog:
+                self.progress_dialog.adjustSize()
+                parent_rect = self.frameGeometry()
+                dlg_rect = self.progress_dialog.frameGeometry()
+                dlg_rect.moveCenter(parent_rect.center())
+                self.progress_dialog.move(dlg_rect.topLeft())
+        except Exception:
+            pass
 
     def __menu_button_clicked(self):
         """
@@ -468,7 +492,7 @@ class VisualizationWindow(BaseWorkflowWindow):
             "<br><i>Note: Pressure metadata and statistics are always included in both options.</i>"
         )
 
-        choice, ok = QInputDialog.getItem(self, "Frame Export Options", dialog_text, frame_options, 2, False)  # Default to All vertex pressure data
+        choice, ok = QInputDialog.getItem(self, "Frame Export Options", dialog_text, frame_options, 1, False)  # Default to Per-slice
 
         if not ok:
             return

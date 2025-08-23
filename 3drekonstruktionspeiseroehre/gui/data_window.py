@@ -149,6 +149,7 @@ class DataWindow(QMainWindow):
         # Filter Patients
         self.ui.patient_id_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.birthyear_radio.toggled.connect(self.__patients_apply_filter)
+        self.ui.height_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.gender_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.ethnicity_radio.toggled.connect(self.__patients_apply_filter)
         self.ui.firstdiagnosis_radio.toggled.connect(self.__patients_apply_filter)
@@ -339,6 +340,7 @@ class DataWindow(QMainWindow):
                     "gender": self.ui.gender_dropdown.currentText(),
                     "ethnicity": self.ui.ethnicity_dropdown.currentText(),
                     "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
+                    "height_cm": self.ui.height_cm_spin.value(),
                     "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                     "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
                     "center": self.ui.center_text.text(),
@@ -357,6 +359,7 @@ class DataWindow(QMainWindow):
                 "gender": self.ui.gender_dropdown.currentText(),
                 "ethnicity": self.ui.ethnicity_dropdown.currentText(),
                 "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
+                "height_cm": self.ui.height_cm_spin.value(),
                 "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                 "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
                 "center": self.ui.center_text.text(),
@@ -374,6 +377,7 @@ class DataWindow(QMainWindow):
             "gender": self.ui.gender_dropdown.currentText(),
             "ethnicity": self.ui.ethnicity_dropdown.currentText(),
             "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
+            "height_cm": self.ui.height_cm_spin.value(),
             "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
             "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
             "center": self.ui.center_text.text(),
@@ -398,6 +402,7 @@ class DataWindow(QMainWindow):
                     "gender": self.ui.gender_dropdown.currentText(),
                     "ethnicity": self.ui.ethnicity_dropdown.currentText(),
                     "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
+                    "height_cm": self.ui.height_cm_spin.value(),
                     "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                     "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
                     "center": self.ui.center_text.text(),
@@ -412,6 +417,7 @@ class DataWindow(QMainWindow):
                 "gender": self.ui.gender_dropdown.currentText(),
                 "ethnicity": self.ui.ethnicity_dropdown.currentText(),
                 "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
+                "height_cm": self.ui.height_cm_spin.value(),
                 "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
                 "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
                 "center": self.ui.center_text.text(),
@@ -429,6 +435,7 @@ class DataWindow(QMainWindow):
             "gender": self.ui.gender_dropdown.currentText(),
             "ethnicity": self.ui.ethnicity_dropdown.currentText(),
             "birth_year": self.ui.birthyear_calendar.date().toPyDate().year,
+            "height_cm": self.ui.height_cm_spin.value(),
             "year_first_diagnosis": self.ui.firstdiagnosis_calendar.date().toPyDate().year,
             "year_first_symptoms": self.ui.firstsymptoms_calendar.date().toPyDate().year,
             "center": self.ui.center_text.text(),
@@ -479,6 +486,11 @@ class DataWindow(QMainWindow):
                 self.ui.birthyear_calendar.setDate(QDate(patient.birth_year, 1, 1))
             else:
                 self.ui.birthyear_calendar.setDate(QDate(config.min_value_year, 1, 1))
+
+            if hasattr(patient, 'height_cm') and patient.height_cm is not None:
+                self.ui.height_cm_spin.setValue(patient.height_cm)
+            else:
+                self.ui.height_cm_spin.setValue(config.missing_int)
 
             if patient.gender is not None:
                 if patient.gender == "male":
@@ -577,6 +589,9 @@ class DataWindow(QMainWindow):
         if self.ui.birthyear_radio.isChecked():
             filter_exp = str(self.ui.birthyear_calendar.date().toPyDate().year)
             self.__init_ui(filter_column=3, filter_expression=filter_exp)
+        if self.ui.height_radio.isChecked():
+            filter_exp = str(self.ui.height_cm_spin.value())
+            self.__init_ui(filter_column=7, filter_expression=filter_exp)
         if self.ui.gender_radio.isChecked():
             filter_exp = "^" + self.ui.gender_dropdown.currentText() + "$"
             self.__init_ui(filter_column=1, filter_expression=filter_exp)
@@ -603,6 +618,10 @@ class DataWindow(QMainWindow):
         self.ui.birthyear_radio.setAutoExclusive(False)
         self.ui.birthyear_radio.setChecked(False)
         self.ui.birthyear_radio.setAutoExclusive(True)
+        # Uncheck height
+        self.ui.height_radio.setAutoExclusive(False)
+        self.ui.height_radio.setChecked(False)
+        self.ui.height_radio.setAutoExclusive(True)
         # Uncheck gender
         self.ui.gender_radio.setAutoExclusive(False)
         self.ui.gender_radio.setChecked(False)
@@ -1776,7 +1795,7 @@ class DataWindow(QMainWindow):
             "<br><i>Note: Pressure metadata and statistics are always included in all options.</i>"
         )
 
-        choice, ok = QInputDialog.getItem(self, "Frame Export Options", dialog_text, frame_options, 2, False)
+        choice, ok = QInputDialog.getItem(self, "Frame Export Options", dialog_text, frame_options, 1, False)
 
         if not ok:
             return  # User cancelled

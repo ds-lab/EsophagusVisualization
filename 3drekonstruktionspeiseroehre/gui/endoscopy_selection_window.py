@@ -22,9 +22,7 @@ from PIL import Image
 class EndoscopySelectionWindow(BaseWorkflowWindow):
     """Window where the user selects the polyon shape on the endoscopy images"""
 
-    def __init__(
-        self, master_window: MasterWindow, patient_data: PatientData, visit: VisitData
-    ):
+    def __init__(self, master_window: MasterWindow, patient_data: PatientData, visit: VisitData):
         """
         Initialize EndoscopySelectionWindow.
 
@@ -38,10 +36,7 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
 
         # Check if we're returning from a visualization (endoscopy polygons already exist)
         existing_polygons = None
-        if (
-            self.visit.visualization_data_list
-            and self.visit.visualization_data_list[0].endoscopy_polygons is not None
-        ):
+        if self.visit.visualization_data_list and self.visit.visualization_data_list[0].endoscopy_polygons is not None:
             existing_polygons = self.visit.visualization_data_list[0].endoscopy_polygons
 
         # Clear any existing endoscopy polygons from the visit to ensure clean state
@@ -79,24 +74,17 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
         if hasattr(self.ui, "apply_button"):
             self.ui.apply_button.setEnabled(True)
         self.plot_ax = self.figure_canvas.figure.subplots()
-        self.figure_canvas.figure.subplots_adjust(
-            bottom=0.05, top=0.95, left=0.05, right=0.95
-        )
+        self.figure_canvas.figure.subplots_adjust(bottom=0.05, top=0.95, left=0.05, right=0.95)
 
-        # Get endoscopy images (same for all visualisation data since only xray differ)
-        self.endoscopy_images = [
-            np.array(Image.open(file))
-            for file in visit.visualization_data_list[0].endoscopy_files
-        ]
+        # Get endoscopy images (same for all visualization data since only xray differ)
+        self.endoscopy_images = [np.array(Image.open(file)) for file in visit.visualization_data_list[0].endoscopy_files]
 
         # Initialize polygon_list as a list with None values for each image
         # (must be done after endoscopy_images is defined)
         self.polygon_list = [None] * len(self.endoscopy_images)
 
         # If we had existing polygons (returning from visualization), restore them
-        if existing_polygons is not None and len(existing_polygons) == len(
-            self.endoscopy_images
-        ):
+        if existing_polygons is not None and len(existing_polygons) == len(self.endoscopy_images):
             self.polygon_list = [poly.copy() for poly in existing_polygons]
             # Also populate temporary storage for smooth editing
             for i, poly in enumerate(existing_polygons):
@@ -106,14 +94,9 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
             # Determine starting image index based on navigation history
             # If we came directly from visualization window (back button), start on last image
             # If we came from earlier in the workflow (TBE -> forward), start on first image
-            if (
-                hasattr(self.master_window, "navigation_stack")
-                and len(self.master_window.navigation_stack) > 0
-            ):
+            if hasattr(self.master_window, "navigation_stack") and len(self.master_window.navigation_stack) > 0:
                 # Check if the previous window was the visualization window
-                previous_window_type = type(
-                    self.master_window.navigation_stack[-1]
-                ).__name__
+                previous_window_type = type(self.master_window.navigation_stack[-1]).__name__
                 if previous_window_type == "VisualizationWindow":
                     # Coming directly from visualization - start on last image for final adjustments
                     self.current_image_index = len(self.endoscopy_images) - 1
@@ -149,9 +132,7 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
         # Update window title to show current image progress
         total_images = len(self.endoscopy_images)
         current_image_num = self.current_image_index + 1
-        self.setWindowTitle(
-            f"Selection of the cross-section of the esophagus - Image {current_image_num}/{total_images}"
-        )
+        self.setWindowTitle(f"Selection of the cross-section of the esophagus - Image {current_image_num}/{total_images}")
 
     def __is_last_image(self) -> bool:
         """
@@ -183,9 +164,7 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
                 pass  # Ignore errors if selector is already disconnected
 
         # Create a new polygon selector
-        self.selector = PolygonSelector(
-            self.plot_ax, self.__onselect, useblit=True, props=dict(color="red")
-        )
+        self.selector = PolygonSelector(self.plot_ax, self.__onselect, useblit=True, props=dict(color="red"))
 
         # Get auto-detected polygon for fallback
         polygon = image_polygon_detection.calculate_endoscopy_polygon(image)
@@ -194,10 +173,7 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
         restored_polygon = None
 
         # First priority: Check if we have a saved polygon in the final polygon_list
-        if (
-            self.current_image_index < len(self.polygon_list)
-            and self.polygon_list[self.current_image_index] is not None
-        ):
+        if self.current_image_index < len(self.polygon_list) and self.polygon_list[self.current_image_index] is not None:
             restored_polygon = self.polygon_list[self.current_image_index].tolist()
         # Second priority: Check temporary storage
         elif self.current_image_index in self.temp_polygon_storage:
@@ -238,9 +214,7 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
                 pass
 
             # Update temporary storage
-            self.temp_polygon_storage[self.current_image_index] = (
-                restored_polygon.copy()
-            )
+            self.temp_polygon_storage[self.current_image_index] = restored_polygon.copy()
         else:
             # No polygon to restore, start fresh
             self.current_polygon = []
@@ -294,13 +268,9 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
             shapely_poly = Polygon(self.current_polygon)
             if shapely_poly.is_valid:
                 # Save current polygon to the final polygon list at the correct index
-                self.polygon_list[self.current_image_index] = np.array(
-                    self.current_polygon, dtype=int
-                )
+                self.polygon_list[self.current_image_index] = np.array(self.current_polygon, dtype=int)
                 # Also ensure it's saved in temporary storage
-                self.temp_polygon_storage[self.current_image_index] = (
-                    self.current_polygon.copy()
-                )
+                self.temp_polygon_storage[self.current_image_index] = self.current_polygon.copy()
 
                 if self.ui.checkBox.isChecked():
                     self.__save_current_polygon()
@@ -308,9 +278,7 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
                     self.ui.apply_button.setDisabled(True)
 
                     # Validate that all polygons have been defined
-                    missing_polygons = [
-                        i for i, poly in enumerate(self.polygon_list) if poly is None
-                    ]
+                    missing_polygons = [i for i, poly in enumerate(self.polygon_list) if poly is None]
 
                     if missing_polygons:
                         QMessageBox.critical(
@@ -323,14 +291,10 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
 
                     # Update the polygon for all visualization objects in visit
                     for vis in self.visit.visualization_data_list:
-                        vis.endoscopy_polygons = [
-                            poly.copy() for poly in self.polygon_list
-                        ]
+                        vis.endoscopy_polygons = [poly.copy() for poly in self.polygon_list]
 
                     self.patient_data.add_visit(self.visit.name, self.visit)
-                    visualization_window = VisualizationWindow(
-                        self.master_window, self.patient_data
-                    )
+                    visualization_window = VisualizationWindow(self.master_window, self.patient_data)
                     self.master_window.switch_to(visualization_window)
                     self.close()
 
@@ -339,23 +303,15 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
                     self.__load_image(self.endoscopy_images[self.current_image_index])
                     self.__update_button_text()
             else:
-                QMessageBox.critical(
-                    self, "Error", "The selection must not have any intersections."
-                )
+                QMessageBox.critical(self, "Error", "The selection must not have any intersections.")
         else:
-            QMessageBox.critical(
-                self,
-                "Error",
-                "Please draw the cross-section of the esophagus as a polygon.",
-            )
+            QMessageBox.critical(self, "Error", "Please draw the cross-section of the esophagus as a polygon.")
 
     def __save_current_polygon(self):
         """
         Saves the current polygon as a mask image in the specified folder.
         """
-        safe_visit_name = (
-            self.visit.name.replace(":", "_").replace("[", "_").replace("]", "_")
-        )
+        safe_visit_name = self.visit.name.replace(":", "_").replace("[", "_").replace("]", "_")
         base_path = rf"C:\DataAchalasia\{safe_visit_name}"
 
         if not os.path.exists(base_path):
@@ -372,9 +328,7 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
         mask_filename = f"{self.current_image_index}_endoscopy_mask.jpg"
         mask_path = os.path.join(base_path, mask_filename)
 
-        mask_image = np.zeros(
-            self.endoscopy_images[self.current_image_index].shape[:2], dtype=np.uint8
-        )
+        mask_image = np.zeros(self.endoscopy_images[self.current_image_index].shape[:2], dtype=np.uint8)
         cv2.fillPoly(mask_image, [np.array(self.current_polygon, dtype=int)], 255)
         cv2.imwrite(mask_path, mask_image)
 
@@ -423,10 +377,7 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
         # We have unsaved changes if:
         # 1. There's a current polygon selection AND
         # 2. We haven't applied it yet (polygon at current index is None)
-        return (
-            len(self.current_polygon) > 2
-            and self.polygon_list[self.current_image_index] is None
-        )
+        return len(self.current_polygon) > 2 and self.polygon_list[self.current_image_index] is None
 
     def _before_going_back(self):
         """Cleanup before going back"""
@@ -456,13 +407,9 @@ class EndoscopySelectionWindow(BaseWorkflowWindow):
             # Save current state before moving (if there's a valid polygon)
             if len(self.current_polygon) > 2:
                 # Save to both storage locations for consistency
-                self.temp_polygon_storage[self.current_image_index] = (
-                    self.current_polygon.copy()
-                )
+                self.temp_polygon_storage[self.current_image_index] = self.current_polygon.copy()
                 if self.polygon_list[self.current_image_index] is None:
-                    self.polygon_list[self.current_image_index] = np.array(
-                        self.current_polygon, dtype=int
-                    )
+                    self.polygon_list[self.current_image_index] = np.array(self.current_polygon, dtype=int)
 
             # Go back to previous image
             self.current_image_index -= 1

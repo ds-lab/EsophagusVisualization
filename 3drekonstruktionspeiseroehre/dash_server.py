@@ -7,16 +7,7 @@ import plotly.graph_objects as go
 import waitress
 from dash import dash_table
 from dash.exceptions import PreventUpdate
-from dash_extensions.enrich import (
-    DashProxy,
-    Input,
-    MultiplexerTransform,
-    Output,
-    State,
-    dcc,
-    html,
-    no_update,
-)
+from dash_extensions.enrich import DashProxy, Input, MultiplexerTransform, Output, State, dcc, html, no_update
 from kthread import KThread
 
 # from PyQt5.QtWidgets import QMessageBox
@@ -44,7 +35,13 @@ class DashServer:
         self.xray_names = []
         self.selected_figure_index = 0
         for visualization_data in self.visit.visualization_data_list:
-            self.visit_figures.append(visualization_data.figure_creator.get_figure())
+            fig = visualization_data.figure_creator.get_figure()
+            try:
+                # Slightly zoomed-out default camera
+                fig.update_layout(scene_camera=dict(eye=dict(x=2, y=2, z=2)))
+            except Exception:
+                pass
+            self.visit_figures.append(fig)
             self.xray_names.append(visualization_data.xray_minute)
         self.current_figure = self.visit_figures[0]
 
@@ -55,13 +52,8 @@ class DashServer:
                 [
                     dcc.Graph(
                         id="endoflip-table",
-                        figure=self.visit.visualization_data_list[
-                            0
-                        ].figure_creator.get_endoflip_tables()["median"],
-                        config={
-                            "modeBarButtonsToRemove": ["toImage"],
-                            "displaylogo": False,
-                        },
+                        figure=self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()["median"],
+                        config={"modeBarButtonsToRemove": ["toImage"], "displaylogo": False},
                         className="mt-4",
                     ),
                     html.H6(config.select_aggregation_form),
@@ -102,84 +94,46 @@ class DashServer:
                 pass
         if not socket_bound:
             self.server_socket.close()
-            QMessageBox.critical(
-                None,
-                "Error",
-                "None of the ports specified in the configuration are available",
-            )
+            QMessageBox.critical(None, "Error", "None of the ports specified in the configuration are available")
             return
 
         self.dash_app = DashProxy(
-            __name__,
-            prevent_initial_callbacks=True,
-            external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP],
-            transforms=[MultiplexerTransform()],
+            __name__, prevent_initial_callbacks=True, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP], transforms=[MultiplexerTransform()]
         )
         # DEBUG-DASH-SERVER
         # self.dash_app.enable_dev_tools(debug=True)
         self.dash_app.layout = html.Div(
             [
-                dcc.Interval(
-                    id="refresh-graph-interval",
-                    disabled=True,
-                    interval=1000 / config.animation_frames_per_second,
-                ),
-                dcc.Store(
-                    id="color-store",
-                    data=self.visit.visualization_data_list[
-                        self.selected_figure_index
-                    ].figure_creator.get_surfacecolor_list(),
-                ),
+                dcc.Interval(id="refresh-graph-interval", disabled=True, interval=1000 / config.animation_frames_per_second),
+                dcc.Store(id="color-store", data=self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_surfacecolor_list()),
                 dcc.Store(
                     id="metric-store",
                     data=[
-                        self.visit.visualization_data_list[
-                            self.selected_figure_index
-                        ].figure_creator.get_metrics()["metric_tubular"],
-                        self.visit.visualization_data_list[
-                            0
-                        ].figure_creator.get_metrics()["metric_sphincter"],
+                        self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()["metric_tubular"],
+                        self.visit.visualization_data_list[0].figure_creator.get_metrics()["metric_sphincter"],
                     ],
                 ),
                 dcc.Store(
                     id="pressure-store",
                     data=[
-                        self.visit.visualization_data_list[
-                            self.selected_figure_index
-                        ].figure_creator.get_metrics()["pressure_tubular_per_frame"],
-                        self.visit.visualization_data_list[
-                            0
-                        ].figure_creator.get_metrics()["pressure_sphincter_per_frame"],
+                        self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()["pressure_tubular_per_frame"],
+                        self.visit.visualization_data_list[0].figure_creator.get_metrics()["pressure_sphincter_per_frame"],
                     ],
                 ),
                 dcc.Store(
                     id="size-store",
                     data=[
                         [
-                            self.visit.visualization_data_list[
-                                self.selected_figure_index
-                            ].figure_creator.get_metrics()["len_tubular"],
-                            self.visit.visualization_data_list[
-                                0
-                            ].figure_creator.get_metrics()["len_sphincter"],
+                            self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()["len_tubular"],
+                            self.visit.visualization_data_list[0].figure_creator.get_metrics()["len_sphincter"],
                         ],
                         [
-                            self.visit.visualization_data_list[
-                                self.selected_figure_index
-                            ].figure_creator.get_metrics()["volume_sum_tubular"],
-                            self.visit.visualization_data_list[
-                                0
-                            ].figure_creator.get_metrics()["volume_sum_sphincter"],
+                            self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()["volume_sum_tubular"],
+                            self.visit.visualization_data_list[0].figure_creator.get_metrics()["volume_sum_sphincter"],
                         ],
                         [
-                            self.visit.visualization_data_list[
-                                self.selected_figure_index
-                            ]
-                            .figure_creator.get_metrics()
-                            .get("height_tubular_cm", 0),
-                            self.visit.visualization_data_list[0]
-                            .figure_creator.get_metrics()
-                            .get("height_sphincter_cm", 0),
+                            self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics().get("height_tubular_cm", 0),
+                            self.visit.visualization_data_list[0].figure_creator.get_metrics().get("height_sphincter_cm", 0),
                         ],
                     ],
                 ),
@@ -190,16 +144,8 @@ class DashServer:
                         endoflip_element,
                         dcc.Graph(
                             id="3d-figure",
-                            figure=self.visit.visualization_data_list[
-                                0
-                            ].figure_creator.get_figure(),
-                            config={
-                                "modeBarButtonsToRemove": [
-                                    "toImage",
-                                    "resetCameraLastSave3d",
-                                ],
-                                "displaylogo": False,
-                            },
+                            figure=self.visit_figures[0],
+                            config={"modeBarButtonsToRemove": ["toImage", "resetCameraLastSave3d"], "displaylogo": False},
                             style={
                                 "height": "calc(100vh - 160px)",
                                 "width": f"calc(100% - {endoflip_table_width})",
@@ -211,60 +157,31 @@ class DashServer:
                 ),
                 dbc.RadioItems(
                     id="figure-selector",
-                    options=[
-                        {
-                            "label": f"{config.label_barium_swallow} {self.xray_names[i]}  ",
-                            "value": i,
-                        }
-                        for i in range(len(self.visit_figures))
-                    ],
+                    options=[{"label": f"{config.label_barium_swallow} {self.xray_names[i]}  ", "value": i} for i in range(len(self.visit_figures))],
                     value=0,
                     inline=True,
                     className="mb-1",
                 ),
                 html.Div(
                     [
-                        html.Div(
-                            config.label_manometry_data,
-                            style={"float": "left", "padding-left": "10px"},
-                        ),
-                        daq.BooleanSwitch(
-                            id="pressure-or-endoflip", on=False
-                        ),  # False is Manometrie, True is Endoflip
-                        html.Div(
-                            config.label_endoflip_data,
-                            style={"float": "right", "padding-right": "10px"},
-                        ),
+                        html.Div(config.label_manometry_data, style={"float": "left", "padding-left": "10px"}),
+                        daq.BooleanSwitch(id="pressure-or-endoflip", on=False),  # False is Manometrie, True is Endoflip
+                        html.Div(config.label_endoflip_data, style={"float": "right", "padding-right": "10px"}),
                     ],
-                    style={
-                        "display": show_pressure_endoflip_toggle,
-                        "align-items": "center",
-                        "padding-bottom": "5px",
-                    },
+                    style={"display": show_pressure_endoflip_toggle, "align-items": "center", "padding-bottom": "5px"},
                 ),
                 html.Div(
                     [
                         html.Div(
                             [
                                 html.Div(
-                                    dbc.Button(
-                                        config.animation_start,
-                                        id="play-button",
-                                        n_clicks=0,
-                                    ),
-                                    style={
-                                        "min-width": "130px",
-                                        "vertical-align": "top",
-                                        "display": "inline-block",
-                                    },
+                                    dbc.Button(config.animation_start, id="play-button", n_clicks=0),
+                                    style={"min-width": "130px", "vertical-align": "top", "display": "inline-block"},
                                 ),
                                 html.Div(
                                     dcc.Slider(
                                         min=0,
-                                        max=self.visit.visualization_data_list[
-                                            self.selected_figure_index
-                                        ].figure_creator.get_number_of_frames()
-                                        - 1,
+                                        max=self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1,
                                         step=1,
                                         value=0,
                                         marks=None,
@@ -272,50 +189,20 @@ class DashServer:
                                         updatemode="drag",
                                         className="mt-2",
                                     ),
-                                    style={
-                                        "vertical-aling": "middle",
-                                        "align-items": "center",
-                                        "flex": "1 0 auto",
-                                        "display": "inline-block",
-                                    },
+                                    style={"vertical-aling": "middle", "align-items": "center", "flex": "1 0 auto", "display": "inline-block"},
                                 ),
-                                html.Div(
-                                    id="time-field",
-                                    children=config.label_time_0,
-                                    style={
-                                        "min-width": "170px",
-                                        "display": "inline-block",
-                                    },
-                                ),
+                                html.Div(id="time-field", children=config.label_time_0, style={"min-width": "170px", "display": "inline-block"}),
                             ],
-                            style={
-                                "min-height": "30px",
-                                "display": "flex",
-                                "align-items": "center",
-                                "flex-direction": "row",
-                            },
+                            style={"min-height": "30px", "display": "flex", "align-items": "center", "flex-direction": "row"},
                             id="pressure-control",
                         ),
                         html.Div(
                             [
-                                html.Div(
-                                    "30ml",
-                                    style={"float": "left", "padding-left": "10px"},
-                                ),
-                                daq.BooleanSwitch(
-                                    id="30-or-40", on=False
-                                ),  # False is 30, True is 40
-                                html.Div(
-                                    "40ml",
-                                    style={"float": "right", "padding-right": "10px"},
-                                ),
+                                html.Div("30ml", style={"float": "left", "padding-left": "10px"}),
+                                daq.BooleanSwitch(id="30-or-40", on=False),  # False is 30, True is 40
+                                html.Div("40ml", style={"float": "right", "padding-right": "10px"}),
                             ],
-                            style={
-                                "min-height": "30px",
-                                "display": "none",
-                                "align-items": "center",
-                                "padding-bottom": "5px",
-                            },
+                            style={"min-height": "30px", "display": "none", "align-items": "center", "padding-bottom": "5px"},
                             id="endoflip-control",
                         ),
                         html.Div(
@@ -324,168 +211,83 @@ class DashServer:
                                 html.Div(
                                     id="static_values_tubular",
                                     children="Length: "
-                                    + str(
-                                        round(
-                                            self.visit.visualization_data_list[
-                                                0
-                                            ].figure_creator.get_metrics()[
-                                                "len_tubular"
-                                            ],
-                                            4,
-                                        )
-                                    )
+                                    + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()["len_tubular"], 4))
                                     + " cm"
                                     "  //  Volume: "
-                                    + str(
-                                        round(
-                                            self.visit.visualization_data_list[
-                                                0
-                                            ].figure_creator.get_metrics()[
-                                                "volume_sum_tubular"
-                                            ],
-                                            4,
-                                        )
-                                    )
+                                    + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics()["volume_sum_tubular"], 4))
                                     + " cm^3"
                                     "  //  Height: "
-                                    + str(
-                                        round(
-                                            self.visit.visualization_data_list[0]
-                                            .figure_creator.get_metrics()
-                                            .get("height_tubular_cm", 0),
-                                            4,
-                                        )
-                                    )
+                                    + str(round(self.visit.visualization_data_list[0].figure_creator.get_metrics().get("height_tubular_cm", 0), 4))
                                     + " cm",
                                 ),
                                 dash_table.DataTable(
                                     id="data_table_tubular_pres",
                                     columns=[
-                                        {
-                                            "name": "max(tubular pressure from timeframe)",
-                                            "id": "max_tub_press_frame",
-                                        },
-                                        {
-                                            "name": "min(tubular pressure from timeframe)",
-                                            "id": "min_tub_press_frame",
-                                        },
-                                        {
-                                            "name": "mean(tubular pressure from timeframe)",
-                                            "id": "mean_tub_press_frame",
-                                        },
+                                        {"name": "max(tubular pressure from timeframe)", "id": "max_tub_press_frame"},
+                                        {"name": "min(tubular pressure from timeframe)", "id": "min_tub_press_frame"},
+                                        {"name": "mean(tubular pressure from timeframe)", "id": "mean_tub_press_frame"},
                                     ],
                                     data=[
                                         {
                                             "max_tub_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "pressure_tubular_per_frame"
-                                                    ][
-                                                        "max"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["max"][0],
                                                     6,
                                                 )
                                             ),
                                             "min_tub_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "pressure_tubular_per_frame"
-                                                    ][
-                                                        "min"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["min"][0],
                                                     6,
                                                 )
                                             ),
                                             "mean_tub_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "pressure_tubular_per_frame"
-                                                    ][
-                                                        "mean"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["mean"][0],
                                                     6,
                                                 )
                                             ),
                                         }
                                     ],
-                                    style_data_conditional=[
-                                        {
-                                            "if": {"filter_query": "{Column 2} = 1"},
-                                            "backgroundColor": "yellow",
-                                            "color": "black",
-                                        }
-                                    ],
+                                    style_data_conditional=[{"if": {"filter_query": "{Column 2} = 1"}, "backgroundColor": "yellow", "color": "black"}],
                                     style_table={"overflowY": "auto"},
                                 ),
                                 dash_table.DataTable(
                                     id="data_table_tubular_metric",
                                     columns=[
-                                        {
-                                            "name": "Volume * max(tubular pressure from timeframe)",
-                                            "id": "vol_max_tub_press_frame",
-                                        },
-                                        {
-                                            "name": "Volume * min(tubular pressure from timeframe)",
-                                            "id": "vol_min_tub_press_frame",
-                                        },
-                                        {
-                                            "name": "Volume * mean(tubular pressure from timeframe)",
-                                            "id": "vol_mean_tub_press_frame",
-                                        },
+                                        {"name": "Volume * max(tubular pressure from timeframe)", "id": "vol_max_tub_press_frame"},
+                                        {"name": "Volume * min(tubular pressure from timeframe)", "id": "vol_min_tub_press_frame"},
+                                        {"name": "Volume * mean(tubular pressure from timeframe)", "id": "vol_mean_tub_press_frame"},
                                     ],
                                     data=[
                                         {
                                             "vol_max_tub_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "metric_tubular"
-                                                    ][
-                                                        "max"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["max"][0],
                                                     6,
                                                 )
                                             ),
                                             "vol_min_tub_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "metric_tubular"
-                                                    ][
-                                                        "min"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["min"][0],
                                                     6,
                                                 )
                                             ),
                                             "vol_mean_tub_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "metric_tubular"
-                                                    ][
-                                                        "mean"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["mean"][0],
                                                     6,
                                                 )
                                             ),
@@ -502,24 +304,13 @@ class DashServer:
                                     id="static_values_sphincter",
                                     children="Length: "
                                     + str(
-                                        round(
-                                            self.visit.visualization_data_list[
-                                                self.selected_figure_index
-                                            ].figure_creator.get_metrics()[
-                                                "len_sphincter"
-                                            ],
-                                            4,
-                                        )
+                                        round(self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()["len_sphincter"], 4)
                                     )
                                     + " cm"
                                     "  //  Volume: "
                                     + str(
                                         round(
-                                            self.visit.visualization_data_list[
-                                                self.selected_figure_index
-                                            ].figure_creator.get_metrics()[
-                                                "volume_sum_sphincter"
-                                            ],
+                                            self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()["volume_sum_sphincter"],
                                             4,
                                         )
                                     )
@@ -527,9 +318,7 @@ class DashServer:
                                     "  //  Height: "
                                     + str(
                                         round(
-                                            self.visit.visualization_data_list[
-                                                self.selected_figure_index
-                                            ]
+                                            self.visit.visualization_data_list[self.selected_figure_index]
                                             .figure_creator.get_metrics()
                                             .get("height_sphincter_cm", 0),
                                             4,
@@ -540,131 +329,71 @@ class DashServer:
                                 dash_table.DataTable(
                                     id="data_table_sphincter_pres",
                                     columns=[
-                                        {
-                                            "name": "max(sphincter pressure from timeframe)",
-                                            "id": "max_sph_press_frame",
-                                        },
-                                        {
-                                            "name": "min(sphincter pressure from timeframe)",
-                                            "id": "min_sph_press_frame",
-                                        },
-                                        {
-                                            "name": "mean(sphincter pressure from timeframe)",
-                                            "id": "mean_sph_press_frame",
-                                        },
+                                        {"name": "max(sphincter pressure from timeframe)", "id": "max_sph_press_frame"},
+                                        {"name": "min(sphincter pressure from timeframe)", "id": "min_sph_press_frame"},
+                                        {"name": "mean(sphincter pressure from timeframe)", "id": "mean_sph_press_frame"},
                                     ],
                                     data=[
                                         {
                                             "max_sph_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "pressure_sphincter_per_frame"
-                                                    ][
-                                                        "max"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["max"][0],
                                                     6,
                                                 )
                                             ),
                                             "min_sph_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "pressure_sphincter_per_frame"
-                                                    ][
-                                                        "min"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["min"][0],
                                                     6,
                                                 )
                                             ),
                                             "mean_sph_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "pressure_sphincter_per_frame"
-                                                    ][
-                                                        "mean"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["mean"][0],
                                                     6,
                                                 )
                                             ),
                                         }
                                     ],
-                                    style_data_conditional=[
-                                        {
-                                            "if": {"filter_query": "{Column 2} = 1"},
-                                            "backgroundColor": "yellow",
-                                            "color": "black",
-                                        }
-                                    ],
+                                    style_data_conditional=[{"if": {"filter_query": "{Column 2} = 1"}, "backgroundColor": "yellow", "color": "black"}],
                                     style_table={"overflowY": "auto"},
                                 ),
                                 dash_table.DataTable(
                                     id="data_table_sphincter_metric",
                                     columns=[
-                                        {
-                                            "name": "Volume / max(sphincter pressure from timeframe)",
-                                            "id": "vol_max_sph_press_frame",
-                                        },
-                                        {
-                                            "name": "Volume / min(sphincter pressure from timeframe)",
-                                            "id": "vol_min_sph_press_frame",
-                                        },
-                                        {
-                                            "name": "Volume / mean(sphincter pressure from timeframe)",
-                                            "id": "vol_mean_sph_press_frame",
-                                        },
+                                        {"name": "Volume / max(sphincter pressure from timeframe)", "id": "vol_max_sph_press_frame"},
+                                        {"name": "Volume / min(sphincter pressure from timeframe)", "id": "vol_min_sph_press_frame"},
+                                        {"name": "Volume / mean(sphincter pressure from timeframe)", "id": "vol_mean_sph_press_frame"},
                                     ],
                                     data=[
                                         {
                                             "vol_max_sph_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "metric_sphincter"
-                                                    ][
-                                                        "max"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["max"][0],
                                                     6,
                                                 )
                                             ),
                                             "vol_min_sph_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "metric_sphincter"
-                                                    ][
-                                                        "min"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["min"][0],
                                                     6,
                                                 )
                                             ),
                                             "vol_mean_sph_press_frame": str(
                                                 round(
-                                                    self.visit.visualization_data_list[
-                                                        self.selected_figure_index
-                                                    ].figure_creator.get_metrics()[
+                                                    self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_metrics()[
                                                         "metric_sphincter"
-                                                    ][
-                                                        "mean"
-                                                    ][
-                                                        0
-                                                    ],
+                                                    ]["mean"][0],
                                                     6,
                                                 )
                                             ),
@@ -738,11 +467,7 @@ class DashServer:
                 Output("data_table_sphincter_pres", "data"),
                 Output("data_table_sphincter_metric", "data"),
             ],
-            [
-                Input("time-slider", "value"),
-                Input("figure-selector", "value"),
-                Input("3d-figure", "figure"),
-            ],
+            [Input("time-slider", "value"), Input("figure-selector", "value"), Input("3d-figure", "figure")],
             [
                 State("color-store", "data"),
                 State("metric-store", "data"),
@@ -754,44 +479,23 @@ class DashServer:
         )
 
         self.dash_app.callback(
-            [
-                Output("pressure-control", "style"),
-                Output("endoflip-control", "style"),
-                Output("3d-figure", "figure"),
-            ],
-            [
-                Input("pressure-or-endoflip", "on"),
-                Input("endoflip-table-dropdown", "value"),
-                Input("30-or-40", "on"),
-            ],
+            [Output("pressure-control", "style"), Output("endoflip-control", "style"), Output("3d-figure", "figure")],
+            [Input("pressure-or-endoflip", "on"), Input("endoflip-table-dropdown", "value"), Input("30-or-40", "on")],
             [State("3d-figure", "figure"), State("camera-store", "data")],
         )(self.__toggle_pressure_endoflip)
 
-        self.dash_app.callback(
-            [Output("endoflip-table", "figure"), Output("endoflip-table", "style")],
-            Input("endoflip-table-dropdown", "value"),
-        )(self.__update_endoflip_table)
+        self.dash_app.callback([Output("endoflip-table", "figure"), Output("endoflip-table", "style")], Input("endoflip-table-dropdown", "value"))(
+            self.__update_endoflip_table
+        )
 
         self.dash_app.callback(
-            [
-                Output("refresh-graph-interval", "disabled"),
-                Output("play-button", "children"),
-                Output("time-slider", "value"),
-            ],
+            [Output("refresh-graph-interval", "disabled"), Output("play-button", "children"), Output("time-slider", "value")],
             [Input("play-button", "n_clicks")],
-            [
-                State("refresh-graph-interval", "disabled"),
-                State("time-slider", "value"),
-                State("3d-figure", "figure"),
-            ],
+            [State("refresh-graph-interval", "disabled"), State("time-slider", "value"), State("3d-figure", "figure")],
         )(self.__play_button_clicked_callback)
 
         self.dash_app.callback(
-            [
-                Output("time-slider", "value"),
-                Output("play-button", "children"),
-                Output("refresh-graph-interval", "disabled"),
-            ],
+            [Output("time-slider", "value"), Output("play-button", "children"), Output("refresh-graph-interval", "disabled")],
             [Input("refresh-graph-interval", "n_intervals")],
             [State("time-slider", "value")],
         )(self.__interval_action_callback)
@@ -815,13 +519,9 @@ class DashServer:
             State("camera-store", "data"),
         )(self.__update_figure)
 
-        self.dash_app.callback(
-            Output("camera-store", "data"), Input("3d-figure", "relayoutData")
-        )(self.store_camera_position)
+        self.dash_app.callback(Output("camera-store", "data"), Input("3d-figure", "relayoutData"))(self.store_camera_position)
 
-        self.server = waitress.create_server(
-            self.dash_app.server, sockets=[self.server_socket]
-        )
+        self.server = waitress.create_server(self.dash_app.server, sockets=[self.server_socket])
         self.thread = KThread(target=self.server.run)
         self.thread.start()
 
@@ -878,13 +578,7 @@ class DashServer:
             button_text = DashServer.button_text_start
         else:
             button_text = DashServer.button_text_stop
-            if (
-                value
-                == self.visit.visualization_data_list[
-                    self.selected_figure_index
-                ].figure_creator.get_number_of_frames()
-                - 1
-            ):
+            if value == self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1:
                 slider_new_value = 0
         return interval_new_state, button_text, slider_new_value
 
@@ -899,21 +593,10 @@ class DashServer:
         Returns:
             tuple: New slider value, new button text, new slider disabled state.
         """
-        new_value = value + int(
-            config.csv_values_per_second / config.animation_frames_per_second
-        )
-        if (
-            new_value
-            >= self.visit.visualization_data_list[
-                self.selected_figure_index
-            ].figure_creator.get_number_of_frames()
-            - 1
-        ):
+        new_value = value + int(config.csv_values_per_second / config.animation_frames_per_second)
+        if new_value >= self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1:
             return (
-                self.visit.visualization_data_list[
-                    self.selected_figure_index
-                ].figure_creator.get_number_of_frames()
-                - 1,
+                self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_number_of_frames() - 1,
                 DashServer.button_text_start,
                 True,
             )
@@ -940,9 +623,7 @@ class DashServer:
                 new_figure.layout.scene.camera = camera
             # Add uirevision to preserve camera position across mode changes
             new_figure.update_layout(uirevision=True)
-            metrics = self.visit.visualization_data_list[
-                selected_figure
-            ].figure_creator.get_metrics()
+            metrics = self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()
             static_values_tubular = (
                 "Length: "
                 + str(round(metrics["len_tubular"], 4))
@@ -965,110 +646,61 @@ class DashServer:
             )
             data_table_tubular_pres = [
                 {
-                    "max_tub_press_frame": str(
-                        round(metrics["pressure_tubular_per_frame"]["max"][0], 6)
-                    ),
-                    "min_tub_press_frame": str(
-                        round(metrics["pressure_tubular_per_frame"]["min"][0], 6)
-                    ),
-                    "mean_tub_press_frame": str(
-                        round(metrics["pressure_tubular_per_frame"]["mean"][0], 6)
-                    ),
+                    "max_tub_press_frame": str(round(metrics["pressure_tubular_per_frame"]["max"][0], 6)),
+                    "min_tub_press_frame": str(round(metrics["pressure_tubular_per_frame"]["min"][0], 6)),
+                    "mean_tub_press_frame": str(round(metrics["pressure_tubular_per_frame"]["mean"][0], 6)),
                 }
             ]
             data_table_tubular_metrics = [
                 {
-                    "vol_max_tub_press_frame": str(
-                        round(metrics["metric_tubular"]["max"][0], 6)
-                    ),
-                    "vol_min_tub_press_frame": str(
-                        round(metrics["metric_tubular"]["min"][0], 6)
-                    ),
-                    "vol_mean_tub_press_frame": str(
-                        round(metrics["metric_tubular"]["mean"][0], 6)
-                    ),
+                    "vol_max_tub_press_frame": str(round(metrics["metric_tubular"]["max"][0], 6)),
+                    "vol_min_tub_press_frame": str(round(metrics["metric_tubular"]["min"][0], 6)),
+                    "vol_mean_tub_press_frame": str(round(metrics["metric_tubular"]["mean"][0], 6)),
                 }
             ]
             data_table_sphincter_pres = (
                 [
                     {
-                        "max_sph_press_frame": str(
-                            round(metrics["pressure_sphincter_per_frame"]["max"][0], 6)
-                        ),
-                        "min_sph_press_frame": str(
-                            round(metrics["pressure_sphincter_per_frame"]["min"][0], 6)
-                        ),
-                        "mean_sph_press_frame": str(
-                            round(metrics["pressure_sphincter_per_frame"]["mean"][0], 6)
-                        ),
+                        "max_sph_press_frame": str(round(metrics["pressure_sphincter_per_frame"]["max"][0], 6)),
+                        "min_sph_press_frame": str(round(metrics["pressure_sphincter_per_frame"]["min"][0], 6)),
+                        "mean_sph_press_frame": str(round(metrics["pressure_sphincter_per_frame"]["mean"][0], 6)),
                     }
                 ],
             )
             data_table_sphincter_metrics = [
                 {
-                    "vol_max_sph_press_frame": str(
-                        round(metrics["metric_sphincter"]["max"][0], 6)
-                    ),
-                    "vol_min_sph_press_frame": str(
-                        round(metrics["metric_sphincter"]["min"][0], 6)
-                    ),
-                    "vol_mean_sph_press_frame": str(
-                        round(metrics["metric_sphincter"]["mean"][0], 6)
-                    ),
+                    "vol_max_sph_press_frame": str(round(metrics["metric_sphincter"]["max"][0], 6)),
+                    "vol_min_sph_press_frame": str(round(metrics["metric_sphincter"]["min"][0], 6)),
+                    "vol_mean_sph_press_frame": str(round(metrics["metric_sphincter"]["mean"][0], 6)),
                 }
             ]
 
             return [
                 new_figure,
-                self.visit.visualization_data_list[
-                    selected_figure
-                ].figure_creator.get_surfacecolor_list(),
+                self.visit.visualization_data_list[selected_figure].figure_creator.get_surfacecolor_list(),
                 [
-                    self.visit.visualization_data_list[
-                        selected_figure
-                    ].figure_creator.get_metrics()["metric_tubular"],
-                    self.visit.visualization_data_list[
-                        selected_figure
-                    ].figure_creator.get_metrics()["metric_sphincter"],
+                    self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()["metric_tubular"],
+                    self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()["metric_sphincter"],
                 ],
                 [
-                    self.visit.visualization_data_list[
-                        selected_figure
-                    ].figure_creator.get_metrics()["pressure_tubular_per_frame"],
-                    self.visit.visualization_data_list[
-                        selected_figure
-                    ].figure_creator.get_metrics()["pressure_sphincter_per_frame"],
+                    self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()["pressure_tubular_per_frame"],
+                    self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()["pressure_sphincter_per_frame"],
                 ],
                 [
                     [
-                        self.visit.visualization_data_list[
-                            selected_figure
-                        ].figure_creator.get_metrics()["len_tubular"],
-                        self.visit.visualization_data_list[
-                            selected_figure
-                        ].figure_creator.get_metrics()["len_sphincter"],
+                        self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()["len_tubular"],
+                        self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()["len_sphincter"],
                     ],
                     [
-                        self.visit.visualization_data_list[
-                            selected_figure
-                        ].figure_creator.get_metrics()["volume_sum_tubular"],
-                        self.visit.visualization_data_list[
-                            selected_figure
-                        ].figure_creator.get_metrics()["volume_sum_sphincter"],
+                        self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()["volume_sum_tubular"],
+                        self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics()["volume_sum_sphincter"],
                     ],
                     [
-                        self.visit.visualization_data_list[selected_figure]
-                        .figure_creator.get_metrics()
-                        .get("height_tubular_cm", 0),
-                        self.visit.visualization_data_list[selected_figure]
-                        .figure_creator.get_metrics()
-                        .get("height_sphincter_cm", 0),
+                        self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics().get("height_tubular_cm", 0),
+                        self.visit.visualization_data_list[selected_figure].figure_creator.get_metrics().get("height_sphincter_cm", 0),
                     ],
                 ],
-                self.visit.visualization_data_list[
-                    selected_figure
-                ].figure_creator.get_number_of_frames()
-                - 1,
+                self.visit.visualization_data_list[selected_figure].figure_creator.get_number_of_frames() - 1,
                 static_values_tubular,
                 data_table_tubular_pres,
                 data_table_tubular_metrics,
@@ -1079,9 +711,7 @@ class DashServer:
         else:
             raise PreventUpdate
 
-    def __toggle_pressure_endoflip(
-        self, endoflip_selected, aggregate_function, ballon_volume, figure, camera
-    ):
+    def __toggle_pressure_endoflip(self, endoflip_selected, aggregate_function, ballon_volume, figure, camera):
         """
         Callback to toggle between pressure and Endoflip visualization and update aggregate function/ballon volume visualization of EndoFLIP.
 
@@ -1103,15 +733,10 @@ class DashServer:
             )
         else:
             # Get endoflip surfacecolors
-            endoflip_color = self.visit.visualization_data_list[
-                self.selected_figure_index
-            ].figure_creator.get_endoflip_surface_color(
+            endoflip_color = self.visit.visualization_data_list[self.selected_figure_index].figure_creator.get_endoflip_surface_color(
                 "40" if ballon_volume else "30", aggregate_function
             )
-            expandedColors = [
-                [endoflip_color[i] for _ in range(config.figure_number_of_angles)]
-                for i in range(len(endoflip_color))
-            ]
+            expandedColors = [[endoflip_color[i] for _ in range(config.figure_number_of_angles)] for i in range(len(endoflip_color))]
             figure = go.Figure(figure)
             if camera is not None:
                 figure.layout.scene.camera = camera
@@ -1125,17 +750,11 @@ class DashServer:
                 # For Mesh3d, flatten the colors for intensity
                 figure.data[0].intensity = [color[0] for color in expandedColors]
 
-            figure.data[0].colorscale = px.colors.sample_colorscale(
-                "jet", [(30 - (n + 1)) / (30 - 1) for n in range(30)]
-            )
+            figure.data[0].colorscale = px.colors.sample_colorscale("jet", [(30 - (n + 1)) / (30 - 1) for n in range(30)])
             figure.data[0].cmin = 0
             figure.data[0].cmax = 30
             self.current_figure = figure
-            return (
-                {"min-height": "30px", "display": "none", "flex-direction": "row"},
-                {"display": "flex", "align-items": "center"},
-                figure,
-            )
+            return ({"min-height": "30px", "display": "none", "flex-direction": "row"}, {"display": "flex", "align-items": "center"}, figure)
 
     def __update_endoflip_table(self, chosen_agg):
         """
@@ -1148,13 +767,9 @@ class DashServer:
             tuple: Updated Endoflip figure, Endoflip table style.
         """
         if chosen_agg == "off":
-            return self.visit.visualization_data_list[
-                0
-            ].figure_creator.get_endoflip_tables()["median"], {"display": "none"}
+            return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()["median"], {"display": "none"}
         else:
-            return self.visit.visualization_data_list[
-                0
-            ].figure_creator.get_endoflip_tables()[chosen_agg], {"display": "block"}
+            return self.visit.visualization_data_list[0].figure_creator.get_endoflip_tables()[chosen_agg], {"display": "block"}
 
     def store_camera_position(self, relayoutData):
         if relayoutData is not None and "scene.camera" in relayoutData:

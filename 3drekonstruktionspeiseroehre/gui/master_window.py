@@ -29,19 +29,14 @@ class MasterWindow:
         """
         Center the window on the screen
         """
-        # Get the screen geometry
+        # Center using frame geometry to account for window frame/titlebar
         screen = QApplication.primaryScreen()
-        screen_geometry = screen.availableGeometry()
-
-        # Get the window size
-        window_size = self.stacked_widget.size()
-
-        # Calculate center position
-        x = (screen_geometry.width() - window_size.width()) // 2
-        y = (screen_geometry.height() - window_size.height()) // 2
-
-        # Move the window to center
-        self.stacked_widget.move(x, y)
+        if not screen:
+            return
+        screen_center = screen.availableGeometry().center()
+        frame_geom = self.stacked_widget.frameGeometry()
+        frame_geom.moveCenter(screen_center)
+        self.stacked_widget.move(frame_geom.topLeft())
 
     def switch_to(self, window: QWidget, add_to_history: bool = True):
         """
@@ -63,6 +58,8 @@ class MasterWindow:
         self.stacked_widget.setCurrentWidget(window)
         self.stacked_widget.setWindowTitle(window.windowTitle())
         self.current_window = window
+        # Re-center after switching content (size/layout may have changed)
+        self._center_window()
 
     def can_go_back(self) -> bool:
         """

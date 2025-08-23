@@ -15,6 +15,7 @@ class Patient(Base):
     year_first_diagnosis = mapped_column(Integer)
     year_first_symptoms = mapped_column(Integer)
     center = mapped_column(String(20))
+    height_cm = mapped_column(Integer)
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
@@ -23,8 +24,7 @@ class Patient(Base):
 class PreviousTherapy(Base):
     __tablename__ = "previous_therapies"
     previous_therapy_id = mapped_column(Integer, primary_key=True)
-    patient_id = mapped_column(ForeignKey(
-        "patients.patient_id", ondelete="CASCADE"), nullable=False)
+    patient_id = mapped_column(ForeignKey("patients.patient_id", ondelete="CASCADE"), nullable=False)
     therapy = mapped_column(String, nullable=False)
     year = mapped_column(Integer, nullable=True)
     center = mapped_column(String(20), nullable=True)
@@ -36,8 +36,7 @@ class PreviousTherapy(Base):
 class Visit(Base):
     __tablename__ = "visits"
     visit_id = mapped_column(Integer, primary_key=True)
-    patient_id = mapped_column(ForeignKey(
-        "patients.patient_id", ondelete="CASCADE"), nullable=False)
+    patient_id = mapped_column(ForeignKey("patients.patient_id", ondelete="CASCADE"), nullable=False)
     year_of_visit = mapped_column(Integer, nullable=False)
     visit_type = mapped_column(String(50), nullable=False)
     therapy_type = mapped_column(String(50), nullable=True)
@@ -305,4 +304,3 @@ class Reconstruction(Base):
 
     def toDict(self):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
-

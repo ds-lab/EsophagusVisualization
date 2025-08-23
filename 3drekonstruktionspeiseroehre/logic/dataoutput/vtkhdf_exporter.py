@@ -28,7 +28,7 @@ class VTKHDFExporter:
 
     This exporter creates VTKHDF files suitable for ML model validation with:
     - Complete metadata (patient, visit, acquisition parameters)
-    - Per-vertex HRM pressure data
+    - Per-slice or Per-vertex HRM pressure data
     - Per-vertex wall thickness
     - Per-vertex anatomical region classification (LES vs tubular)
     - HDF5 organization for efficient data access
@@ -185,11 +185,6 @@ class VTKHDFExporter:
         if not self._validate_database_connection():
             return metadata
 
-        # Check patient_id
-        if not patient_id:
-            # No patient id: skip metadata
-            return metadata
-
         exported_data_types = []
 
         # Extract Patient data
@@ -203,6 +198,7 @@ class VTKHDFExporter:
                         "patient_gender": patient.gender,
                         "patient_ethnicity": patient.ethnicity,
                         "patient_birth_year": patient.birth_year,
+                        "patient_height": patient.height_cm,
                         "patient_year_first_diagnosis": patient.year_first_diagnosis,
                         "patient_year_first_symptoms": patient.year_first_symptoms,
                         "patient_center": patient.center,
@@ -243,7 +239,7 @@ class VTKHDFExporter:
                     metadata.update(
                         {
                             "manometry_catheter_type": manometry.catheter_type,
-                            "manometry_patient_position": manometry.patient_position,
+                            "manometry_patient_position_angle": int(manometry.patient_position),
                             "manometry_resting_pressure": manometry.resting_pressure,
                             "manometry_ipr4": manometry.ipr4,
                             "manometry_dci": manometry.dci,
@@ -271,19 +267,10 @@ class VTKHDFExporter:
                 egd_service = _EgdFileService(self.db_session)
                 egd_positions = egd_service.get_endoscopy_positions_for_visit(visit_id)
                 if egd_positions:
-                    metadata.update({"egd_positions_cm": [float(p) for p in egd_positions], "egd_images_count": int(len(egd_positions))})
+                    metadata.update({"egd_positions": [int(p) for p in egd_positions], "egd_images_count": int(len(egd_positions))})
                     exported_data_types.append("Endoscopy image positions")
             except Exception as e:
                 print(f"Error extracting EGD positions: {e}")
-
-            # Derive years since first symptoms (visit_year - patient_year_first_symptoms)
-            try:
-                visit_year = metadata.get("visit_year")
-                first_symptoms = metadata.get("patient_year_first_symptoms")
-                if visit_year is not None and first_symptoms is not None:
-                    metadata["years_since_first_symptoms"] = int(visit_year) - int(first_symptoms)
-            except Exception:
-                pass
 
             # Build visit history for the patient (therapy/follow-up only)
             try:
@@ -308,6 +295,32 @@ class VTKHDFExporter:
                         metadata["visit_history"] = history
             except Exception as e:
                 print(f"Error building visit history: {e}")
+
+            # Extract previous therapies (type and year) for the patient
+            try:
+                if "patient_id" in metadata:
+                    from logic.services.previous_therapy_service import PreviousTherapyService as _PrevTherapyService
+
+                    pt_service = _PrevTherapyService(self.db_session)
+                    prev_therapies = pt_service.get_prev_therapies_for_patient(metadata["patient_id"]) or []
+                    pt_history = []
+                    for t in prev_therapies:
+                        t_type = t.get("therapy")
+                        t_year = t.get("year")
+                        if t_type:
+                            try:
+                                t_year_int = int(t_year) if t_year is not None else None
+                            except Exception:
+                                t_year_int = None
+                            pt_history.append({"therapy_type": t_type, "therapy_year": t_year_int})
+                    if pt_history:
+                        # Sort chronologically (None years last)
+                        pt_history = sorted(
+                            pt_history, key=lambda x: (x["therapy_year"] is None, x["therapy_year"] if x["therapy_year"] is not None else 10**9)
+                        )
+                        metadata["patient_previous_therapies"] = pt_history
+            except Exception as e:
+                print(f"Error extracting previous therapies: {e}")
 
         else:
             pass
@@ -376,7 +389,7 @@ class VTKHDFExporter:
                         surface.field_data[key] = [value]
                     elif isinstance(value, dict):
                         sanitized_value = self._sanitize_for_json(value)
-                        surface.field_data[f"{key}_json"] = [json.dumps(sanitized_value)]
+                        surface.field_data[f"{key}"] = [json.dumps(sanitized_value)]
                     elif isinstance(value, (list, tuple)) and len(value) > 0:
                         # Prefer numeric arrays for flat numeric lists; otherwise JSON
                         try:
@@ -387,7 +400,7 @@ class VTKHDFExporter:
                             surface.field_data[key] = arr
                         else:
                             clean_value = self._sanitize_for_json(value)
-                            surface.field_data[f"{key}_json"] = [json.dumps(clean_value)]
+                            surface.field_data[f"{key}"] = [json.dumps(clean_value)]
             except Exception as e:
                 print(f"Warning: Could not add metadata to mesh: {e}")
 
@@ -448,23 +461,30 @@ class VTKHDFExporter:
                     # Full per-vertex mapping
                     pressure_per_frame = self._map_pressure_to_vertices(surfacecolor_list, n_vertices, visualization_data)
                     max_frames = n_frames if self.max_pressure_frames == -1 else min(n_frames, self.max_pressure_frames)
-                    # Record number of exported pressure frames for consumers
-                    surface.field_data["pressure_frames_count"] = [int(max_frames)]
                     for frame_idx in range(max_frames):
                         surface[f"pressure_frame_{frame_idx:03d}"] = pressure_per_frame[frame_idx]
 
+                    # Also export compact per-slice HRM data alongside per-vertex (numeric only)
+                    try:
+                        num_slices = len(surfacecolor_list[0])
+                        # Count values can be derived from shape; do not store redundant counts
+                        slice_matrix = np.array(surfacecolor_list[:max_frames], dtype=float)  # shape (frames, slices)
+                        # Numeric flattened array + shape for efficient parsing
+                        surface.field_data["pressure_slice_matrix_flat"] = slice_matrix.astype(np.float32).ravel(order="C")
+                        surface.field_data["pressure_slice_matrix_shape"] = [int(max_frames), int(num_slices)]
+                    except Exception as e:
+                        print(f"Error exporting per-slice matrix in per-vertex mode: {e}")
+
                 elif self.pressure_export_mode == "per_slice":
-                    # Compact: keep per-slice pressures only, no per-vertex arrays
-                    # Store per-slice arrays in field_data as JSON to keep file small
+                    # Compact: keep per-slice pressures only, no per-vertex arrays (numeric only)
                     max_frames = n_frames if self.max_pressure_frames == -1 else min(n_frames, self.max_pressure_frames)
                     # Use indices to indicate slice positions (0..num_slices-1)
                     num_slices = len(surfacecolor_list[0])
-                    surface.field_data["pressure_slices_count"] = [int(num_slices)]
-                    surface.field_data["pressure_frames_count"] = [int(max_frames)]
 
                     # Per-frame per-slice matrix and aggregate stats
-                    slice_matrix = np.array(surfacecolor_list[:max_frames])  # shape (frames, slices)
-                    surface.field_data["pressure_slice_matrix_json"] = [json.dumps(slice_matrix.tolist())]
+                    slice_matrix = np.array(surfacecolor_list[:max_frames], dtype=float)  # shape (frames, slices)
+                    surface.field_data["pressure_slice_matrix_flat"] = slice_matrix.astype(np.float32).ravel(order="C")
+                    surface.field_data["pressure_slice_matrix_shape"] = [int(max_frames), int(num_slices)]
 
         except Exception as e:
             print(f"Error adding pressure attributes: {e}")
@@ -493,7 +513,7 @@ class VTKHDFExporter:
         """Add wall thickness estimates per vertex, simplified to a uniform value."""
         # Use uniform wall thickness of 0.01cm for simplification, this is a placeholder for now
         wall_thickness = np.full(surface.n_points, 0.001)
-        surface["wall_thickness_cm"] = wall_thickness
+        surface["wall_thickness"] = wall_thickness
 
     def _add_anatomical_region_attributes(self, surface: pv.PolyData, visualization_data: VisualizationData):
         """Add anatomical region classification per vertex."""
@@ -585,16 +605,19 @@ class VTKHDFExporter:
             {
                 "visit_name": visit_name,
                 "reconstruction_index": reconstruction_index,
-                "xray_minute": str(visualization_data.xray_minute),
+                "xray_timepoint": int(visualization_data.xray_minute),
                 "export_timestamp": datetime.now().isoformat(),
                 "exporter_version": "2.0_vtkhdf",
                 "coordinate_system": "right_handed_z_up",
                 "file_format": "VTKHDF",
                 "units": {
                     "length": "centimeters",
-                    "pressure": "mmHg",
+                    "height": "centimeters",
+                    "egd_position": "centimeters",
                     "wall_thickness": "centimeters",
-                    "time": "seconds",
+                    "xray_timepoint": "minutes",
+                    "pressure": "mmHg",
+                    "dci": "mmHg·s·cm",
                     "angle": "degrees",
                     "volume": "cm^3",
                 },
@@ -633,31 +656,30 @@ class VTKHDFExporter:
         except Exception as e:
             print(f"Error preparing metadata: {e}")
 
+        # Could be implemented even more detailed
         attribute_description = {
-            "wall_thickness_cm": "Estimated wall thickness in centimeters",
+            "wall_thickness": "Estimated wall thickness in centimeters",
             "anatomical_region": "1=tubular, 2=LES",
             "pressure_export_mode": "none | per_slice | per_vertex",
             "tbe_contrast_medium_type": "Type of contrast medium used in TBE",
             "tbe_contrast_medium_amount_ml": "Amount of contrast medium in milliliters",
+            "patient_height": "Patient height in centimeters",
+            "patient_previous_therapies_json": "JSON serialized list of objects {therapy_type, therapy_year}",
+            "visit_history_json": "JSON serialized list of objects {visit_type, visit_year}",
+            "pressure_slice_matrix_flat": "Per-frame per-slice pressure values flattened (float32), see pressure_slice_matrix_shape",
+            "pressure_slice_matrix_shape": "Two integers: [frames, slices] for reshaping pressure_slice_matrix_flat",
         }
 
         if getattr(self, "pressure_export_mode", "per_vertex") == "per_vertex" and self.max_pressure_frames != 0:
-            attribute_description.update(
-                {"pressure_frame_XXX": "HRM pressure at frame XXX in mmHg", "pressure_frames_count": "Number of exported pressure frames"}
-            )
+            attribute_description.update({"pressure_frame_XXX": "HRM pressure at frame XXX in mmHg"})
         elif getattr(self, "pressure_export_mode", "per_vertex") == "per_slice":
-            attribute_description.update(
-                {
-                    "pressure_slice_matrix_json": "Per-frame per-slice pressure values (frames x slices) in mmHg",
-                    "pressure_slices_count": "Number of slices (heights) for per-slice pressure",
-                    "pressure_frames_count": "Number of exported pressure frames",
-                }
-            )
+            # Counts can be derived from pressure_slice_matrix_shape; no extra description necessary
+            pass
 
         # Add EGD descriptions only if present in metadata
-        if "egd_positions_cm" in metadata or "egd_images_count" in metadata:
+        if "egd_positions" in metadata or "egd_images_count" in metadata:
             attribute_description.update(
-                {"egd_positions_cm": "Positions (in cm) of EGD images along the esophagus", "egd_images_count": "Number of EGD images provided"}
+                {"egd_positions": "Positions (in cm) of EGD images along the esophagus", "egd_images_count": "Number of EGD images provided"}
             )
 
         metadata.update({"ground_truth": True, "attribute_description": attribute_description})
@@ -677,9 +699,6 @@ class VTKHDFExporter:
                 fc = FigureCreatorWithEndoscopy(visualization_data)
             else:
                 fc = FigureCreatorWithoutEndoscopy(visualization_data)
-
-            # Store on visualization_data for later access if needed
-            visualization_data.figure_creator = fc
 
             # Use exactly the same outputs as visualization for metrics and inputs
             calculated_metrics = fc.get_metrics()
@@ -704,12 +723,12 @@ class VTKHDFExporter:
         # Store in metadata (ensure all values are JSON serializable)
         metadata.update(
             {
-                "volume_tubular_cm3": float(volume_tubular),
-                "volume_sphincter_cm3": float(volume_sphincter),
-                "length_tubular_cm": float(length_tubular),
-                "length_sphincter_cm": float(length_sphincter),
-                "height_tubular_cm": float(height_tubular),
-                "height_sphincter_cm": float(height_sphincter),
+                "volume_tubular": float(volume_tubular),
+                "volume_sphincter": float(volume_sphincter),
+                "length_tubular": float(length_tubular),
+                "length_sphincter": float(length_sphincter),
+                "height_tubular": float(height_tubular),
+                "height_sphincter": float(height_sphincter),
             }
         )
 
@@ -826,7 +845,6 @@ class VTKHDFExporter:
             if validation_data is None:
                 return None
 
-            # Always export JSON (CSV removed)
             base_filename = f"{visit_name}_{visualization_data.xray_minute}_validation_attributes"
             file_path = os.path.join(output_directory, f"{base_filename}.json")
             return self._save_validation_json(validation_data, file_path)
@@ -912,9 +930,9 @@ class VTKHDFExporter:
             # Add volume data
             if calculated_metrics:
                 validation_data["volumes"] = {
-                    "volume_tubular_cm3": float(calculated_metrics.get("volume_sum_tubular", 0)),
-                    "volume_sphincter_cm3": float(calculated_metrics.get("volume_sum_sphincter", 0)),
-                    "total_volume_cm3": float(calculated_metrics.get("volume_sum_tubular", 0) + calculated_metrics.get("volume_sum_sphincter", 0)),
+                    "volume_tubular": float(calculated_metrics.get("volume_sum_tubular", 0)),
+                    "volume_sphincter": float(calculated_metrics.get("volume_sum_sphincter", 0)),
+                    "total_volume": float(calculated_metrics.get("volume_sum_tubular", 0) + calculated_metrics.get("volume_sum_sphincter", 0)),
                     "calculated_metrics": self._sanitize_for_json(calculated_metrics),
                 }
 

@@ -100,7 +100,7 @@ class InfoWindow(QDialog):
         The exact process is described in related papers.<br>
         The calculated center path is shown and adaptable in the next window.<br><br>
         !!! ATTENTION !!! <br>
-        The red path has the problem that the highest and lowest point have a connection line between them in the visualisation. <br>
+        The red path has the problem that the highest and lowest point have a connection line between them in the visualization. <br>
         This line obviously doesn't exist in reality and won't be included in the calculation."""
         self.ui.textEdit.setHtml(text)
 
@@ -122,9 +122,9 @@ class InfoWindow(QDialog):
         Since the sensor path is the shortest path it doesn't estimate the length of the esophagus best. <br>
         But the center path gives a better estimation of the length.<br><br>
         !!! ATTENTION !!! <br>
-        Should the path require mayor changes to be corrected, be aware of possible form errors in the final visualisation. <br><br>
+        Should the path require mayor changes to be corrected, be aware of possible form errors in the final visualization. <br><br>
         !!! ATTENTION !!! <br>
-        The red path has the problem that the highest and lowest point have a connection line between them in the visualisation. <br>
+        The red path has the problem that the highest and lowest point have a connection line between them in the visualization. <br>
         This line obviously doesn't exist in reality and won't be included in the calculation."""
         self.ui.textEdit.setHtml(text)
 
@@ -184,5 +184,5 @@ class InfoWindow(QDialog):
         <p> The main component of this window is the visualization of the esophageal pressure over time. In this plot, the area of interest for the EPI is selected (red rectangle) as well as the position of the lower end of the UES and the upper and lower end of the LES (red lines with respective label). The position of the UES and LES can be adjusted by dragging the respective lines. The area of interest for the EPI can be adjusted by dragging the red rectangle. <br>
         <p> On the right hand of the plot, the sensor positions are displayed. The calculated sensor positions can be adjusted in the right column of the window. The right column also contains other parameters of interest such as the height of the tubular esophagus, the length of the LES, and the EPI. Furthermore, it can be selected whether the threshold for the EPI calculation should be 20 mmHg (standard value) or 0 mmHg (for patients without peristalsis). It is also possible to decouple the EPI selector from the lower UES and upper LES positions. <br>
         <p> To continue with the next step, simply click "Apply selection and proceed". <br>
-        """ 
+        """
         self.ui.textEdit.setHtml(text)

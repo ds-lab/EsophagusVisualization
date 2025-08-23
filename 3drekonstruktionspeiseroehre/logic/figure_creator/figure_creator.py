@@ -909,19 +909,19 @@ class FigureCreator(ABC):
         return tables
 
     @staticmethod
-    def get_endoflip_surface_color(sensor_path, visualisation_data: VisualizationData, esophagus_full_length_cm, esophagus_full_length_px):
+    def get_endoflip_surface_color(sensor_path, visualization_data: VisualizationData, esophagus_full_length_cm, esophagus_full_length_px):
         """
         @param sensor_path: estimated path of the sensor catheter as list of coordinates
-        @param visualisation_data: VisualizationData
+        @param visualization_data: VisualizationData
         @param esophagus_full_length_cm: length of the esophagus in centimeters
         @param esophagus_full_length_px: length of the esophagus in pixels
         @return: surface_color_collect
         """
 
-        distance_cm = visualisation_data.endoflip_screenshot["30"]["distance"]
+        distance_cm = visualization_data.endoflip_screenshot["30"]["distance"]
 
         # Find index of endoflip_pos in sensor_path, matched y/x-axis order of endoflip_pos to sensor_path
-        _, null_pos_index = spatial.KDTree(np.array(sensor_path)).query(np.array((visualisation_data.endoflip_pos[1], visualisation_data.endoflip_pos[0])))
+        _, null_pos_index = spatial.KDTree(np.array(sensor_path)).query(np.array((visualization_data.endoflip_pos[1], visualization_data.endoflip_pos[0])))
 
         # Get stop criterion (endoflip measurement length = number_of_sensors*distance_between_sensors)
         measurement_length_fraction = distance_cm * 16 / esophagus_full_length_cm
@@ -934,11 +934,11 @@ class FigureCreator(ABC):
         surface_color_collect = {}
 
         # Get ballon_volume 30 and 40
-        for ballon_volume in visualisation_data.endoflip_screenshot:
+        for ballon_volume in visualization_data.endoflip_screenshot:
             bv_color_collect = {}
 
             # Iterate over the aggregate rows of the pandas dataframe
-            for agg, row_data in visualisation_data.endoflip_screenshot[ballon_volume]["aggregates"].iterrows():
+            for agg, row_data in visualization_data.endoflip_screenshot[ballon_volume]["aggregates"].iterrows():
                 endoflip_colors = row_data
 
                 # Iterate over sensor_path

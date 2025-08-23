@@ -5,7 +5,8 @@ CREATE TABLE patients (
     birth_year INT,
     year_first_diagnosis INT,
     year_first_symptoms INT,
-    center VARCHAR(20)
+    center VARCHAR(20),
+    height_cm INT
 );
 
 CREATE TABLE previous_therapies (
