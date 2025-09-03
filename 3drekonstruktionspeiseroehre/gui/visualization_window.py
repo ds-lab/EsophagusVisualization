@@ -67,14 +67,15 @@ class VisualizationWindow(BaseWorkflowWindow):
         menu_button_3 = QAction("Download for Display", self)
         menu_button_3.triggered.connect(self.__download_html_file)
         self.ui.menubar.addAction(menu_button_3)
-        menu_button_6 = QAction("CSV Metrics Download", self)
+        menu_button_6 = QAction("Download Metrics as CSV", self)
         menu_button_6.triggered.connect(self.__download_csv_file)
         self.ui.menubar.addAction(menu_button_6)
-        menu_button_7 = QAction("Download for 3d-Printing", self)
-        menu_button_7.triggered.connect(self.__download_stl_file)
-        self.ui.menubar.addAction(menu_button_7)
+        # Replaced by new menu_button_vtkhdf
+        # menu_button_7 = QAction("Download for 3d-Printing", self)
+        # menu_button_7.triggered.connect(self.__download_stl_file)
+        # self.ui.menubar.addAction(menu_button_7)
         # Add VTKHDF export for ML with pressure and anatomical attributes
-        menu_button_vtkhdf = QAction("Download VTKHDF for ML", self)
+        menu_button_vtkhdf = QAction("Download VTKHDF for ML/3d-Printing", self)
         menu_button_vtkhdf.triggered.connect(self.__download_vtkhdf_file)
         self.ui.menubar.addAction(menu_button_vtkhdf)
         menu_button_8 = QAction("Save in Reconstruction in DB", self)
@@ -101,6 +102,11 @@ class VisualizationWindow(BaseWorkflowWindow):
 
         # Thread per visualzation data object
         self.thread = [None] * len(self.visits)
+        # Track thread outcomes to avoid closing the window if at least one succeeded
+        self.total_threads = len(self.visits)
+        self.successful_threads = 0
+        self.failed_threads = 0
+        self._thread_errors = []
         for i, (name, visit_data) in enumerate(self.visits.items()):
             self.thread[i] = FigureCreationThread(visit_data)
             self.thread[i].progress_value.connect(self.__set_progress)
@@ -200,20 +206,41 @@ class VisualizationWindow(BaseWorkflowWindow):
         Args:
             error_message (str): The error message
         """
-        # Close progress dialog
-        if self.progress_dialog:
-            self.progress_dialog.close()
-            self.progress_dialog = None
+        # Count failure
+        try:
+            self.failed_threads += 1
+            self._thread_errors.append(error_message)
+        except Exception:
+            pass
 
-        # Show error message to user
-        QMessageBox.critical(
-            self,
-            "Visualization Error",
-            f"An error occurred while creating the visualization:\n\n{error_message}\n\n" "Please go back and check your segmentation data.",
-        )
+        # Decide what to do only after all threads have reported
+        try:
+            if self.successful_threads + self.failed_threads < self.total_threads:
+                # Wait for other threads – do not show modal yet
+                return
+        except Exception:
+            pass
 
-        # Go back to the previous window
-        self._handle_back_button()
+        if self.successful_threads == 0:
+            # All failed: show one consolidated error and go back
+            if self.progress_dialog:
+                self.progress_dialog.close()
+                self.progress_dialog = None
+            QMessageBox.critical(
+                self,
+                "Visualization Error",
+                f"An error occurred while creating the visualization:\n\n{self._thread_errors[0] if self._thread_errors else error_message}\n\n"
+                "Please go back and check your segmentation data.",
+            )
+            self._handle_back_button()
+        else:
+            # At least one succeeded: keep window open, silently ignore failures
+            if self.progress_dialog:
+                try:
+                    self.progress_dialog.close()
+                except Exception:
+                    pass
+                self.progress_dialog = None
 
     def __start_visualization(self, visit: VisitData):
         """
@@ -222,7 +249,20 @@ class VisualizationWindow(BaseWorkflowWindow):
         Args:
             visit (VisitData): VisitData object
         """
+        # Count success
+        try:
+            self.successful_threads += 1
+        except Exception:
+            pass
+
         dash_server = DashServer(visit)
+        # Close progress dialog on first success
+        if hasattr(self, "progress_dialog") and self.progress_dialog:
+            try:
+                self.progress_dialog.close()
+            except Exception:
+                pass
+            self.progress_dialog = None
         # Use explicit URL string including trailing slash
         url = QUrl(f"http://127.0.0.1:{dash_server.get_port()}/")
 

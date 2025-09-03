@@ -193,16 +193,7 @@ class VTKHDFExporter:
 
             if patient:
                 metadata.update(
-                    {
-                        "patient_id": patient.patient_id,
-                        "patient_gender": patient.gender,
-                        "patient_ethnicity": patient.ethnicity,
-                        "patient_birth_year": patient.birth_year,
-                        "patient_height": patient.height_cm,
-                        "patient_year_first_diagnosis": patient.year_first_diagnosis,
-                        "patient_year_first_symptoms": patient.year_first_symptoms,
-                        "patient_center": patient.center,
-                    }
+                    {"patient_id": patient.patient_id, "patient_height": patient.height_cm, "patient_year_first_symptoms": patient.year_first_symptoms}
                 )
                 exported_data_types.append("Patient data")
 
@@ -220,10 +211,7 @@ class VTKHDFExporter:
                             "visit_id": visit.visit_id,
                             "visit_year": visit.year_of_visit,
                             "visit_type": visit.visit_type,
-                            "therapy_type": visit.therapy_type,
-                            "months_after_initial_therapy": visit.months_after_initial_therapy,
-                            "months_after_last_therapy": visit.months_after_last_therapy,
-                            "months_after_diagnosis": visit.months_after_diagnosis,
+                            "visit_therapy_type": visit.therapy_type,
                         }
                     )
                     exported_data_types.append("Visit data")
@@ -360,27 +348,7 @@ class VTKHDFExporter:
             # Add metadata to mesh field data
             try:
                 # Keys that must not be written to field_data
-                blacklist_keys = {
-                    "boundary_indices",
-                    "esophagus_length_cm",
-                    "les_lower_position",
-                    "les_upper_position",
-                    "metric_sphincter_overall",
-                    "metric_sphincter_per_frame",
-                    "metric_tubular_overall",
-                    "metric_tubular_per_frame",
-                    "n_pressure_frames",
-                    "patient_birth_year",
-                    "patient_center",
-                    "patient_ethnicity",
-                    "patient_gender",
-                    "patient_id",
-                    "pressure_tubular_overall",
-                    "pressure_sphincter_overall",
-                    "reconstruction_index",
-                    "visit_id",
-                    "visit_name",
-                }
+                blacklist_keys = {"patient_id", "reconstruction_index", "visit_id", "visit_name"}
 
                 for key, value in metadata.items():
                     if key in blacklist_keys:
@@ -605,7 +573,7 @@ class VTKHDFExporter:
             {
                 "visit_name": visit_name,
                 "reconstruction_index": reconstruction_index,
-                "xray_timepoint": int(visualization_data.xray_minute),
+                "tbe_timepoint": int(visualization_data.xray_minute),
                 "export_timestamp": datetime.now().isoformat(),
                 "exporter_version": "2.0_vtkhdf",
                 "coordinate_system": "right_handed_z_up",
@@ -615,9 +583,9 @@ class VTKHDFExporter:
                     "height": "centimeters",
                     "egd_position": "centimeters",
                     "wall_thickness": "centimeters",
-                    "xray_timepoint": "minutes",
+                    "tbe_timepoint": "minutes",
                     "pressure": "mmHg",
-                    "dci": "mmHg·s·cm",
+                    "dci": "mmH/s/cm",
                     "angle": "degrees",
                     "volume": "cm^3",
                 },
@@ -626,32 +594,13 @@ class VTKHDFExporter:
 
         # Add esophagus measurements
         try:
-            if hasattr(visualization_data.figure_creator, "get_esophagus_full_length_cm"):
-                metadata["esophagus_length_cm"] = float(visualization_data.figure_creator.get_esophagus_full_length_cm())
-
             # Use the original calculate_metrics function from reconstruction software
             (calculated_metrics, surfacecolor_list, center_path) = self._invoke_figure_creator_metrics(visualization_data)
             if calculated_metrics:
                 self._process_and_store_metrics(calculated_metrics, metadata, visualization_data)
 
-                # Store boundary information for evaluation model to use exact same spatial indices
-                boundary_indices = self._calculate_boundary_indices(visualization_data, surfacecolor_list, center_path)
-                if boundary_indices:
-                    metadata["boundary_indices"] = boundary_indices
-
-            # Add acquisition parameters
-            if hasattr(visualization_data.figure_creator, "get_number_of_frames"):
-                metadata["n_pressure_frames"] = visualization_data.figure_creator.get_number_of_frames()
-
-            metadata["pressure_frame_rate"] = config.csv_values_per_second
-            metadata["sensor_configuration"] = config.coords_sensors.copy()
-
-            # Add anatomical landmarks
-            if hasattr(visualization_data, "sphincter_upper_pos") and visualization_data.sphincter_upper_pos:
-                metadata["les_upper_position"] = list(visualization_data.sphincter_upper_pos)
-
-            if hasattr(visualization_data, "esophagus_exit_pos") and visualization_data.esophagus_exit_pos:
-                metadata["les_lower_position"] = list(visualization_data.esophagus_exit_pos)
+            metadata["manometry_pressure_frame_rate"] = config.csv_values_per_second
+            metadata["manometry_sensor_configuration"] = config.coords_sensors.copy()
 
         except Exception as e:
             print(f"Error preparing metadata: {e}")
@@ -664,8 +613,8 @@ class VTKHDFExporter:
             "tbe_contrast_medium_type": "Type of contrast medium used in TBE",
             "tbe_contrast_medium_amount_ml": "Amount of contrast medium in milliliters",
             "patient_height": "Patient height in centimeters",
-            "patient_previous_therapies_json": "JSON serialized list of objects {therapy_type, therapy_year}",
-            "visit_history_json": "JSON serialized list of objects {visit_type, visit_year}",
+            "patient_previous_therapies": "JSON serialized list of objects {therapy_type, therapy_year}",
+            "visit_history": "JSON serialized list of objects {visit_type, visit_year}",
             "pressure_slice_matrix_flat": "Per-frame per-slice pressure values flattened (float32), see pressure_slice_matrix_shape",
             "pressure_slice_matrix_shape": "Two integers: [frames, slices] for reshaping pressure_slice_matrix_flat",
         }
@@ -723,28 +672,15 @@ class VTKHDFExporter:
         # Store in metadata (ensure all values are JSON serializable)
         metadata.update(
             {
-                "volume_tubular": float(volume_tubular),
-                "volume_sphincter": float(volume_sphincter),
-                "length_tubular": float(length_tubular),
-                "length_sphincter": float(length_sphincter),
-                "height_tubular": float(height_tubular),
-                "height_sphincter": float(height_sphincter),
+                "metric_volume_tubular": float(volume_tubular),
+                "metric_volume_sphincter": float(volume_sphincter),
+                "metric_length_tubular": float(length_tubular),
+                "metric_length_sphincter": float(length_sphincter),
+                "metric_height_tubular": float(height_tubular),
+                "metric_height_sphincter": float(height_sphincter),
             }
         )
 
-        # Store additional overall metrics (convert numpy types to Python types)
-        if "metric_tubular_overall" in calculated_metrics:
-            val = calculated_metrics["metric_tubular_overall"]
-            metadata["metric_tubular_overall"] = float(val) if isinstance(val, (np.number, int, float)) else val
-        if "metric_sphincter_overall" in calculated_metrics:
-            val = calculated_metrics["metric_sphincter_overall"]
-            metadata["metric_sphincter_overall"] = float(val) if isinstance(val, (np.number, int, float)) else val
-        if "pressure_tubular_overall" in calculated_metrics:
-            val = calculated_metrics["pressure_tubular_overall"]
-            metadata["pressure_tubular_overall"] = float(val) if isinstance(val, (np.number, int, float)) else val
-        if "pressure_sphincter_overall" in calculated_metrics:
-            val = calculated_metrics["pressure_sphincter_overall"]
-            metadata["pressure_sphincter_overall"] = float(val) if isinstance(val, (np.number, int, float)) else val
         # Prefer software-derived DCI (esophageal_pressurization_index) to DB value
         if "esophageal_pressurization_index" in calculated_metrics:
             val = calculated_metrics["esophageal_pressurization_index"]
@@ -758,30 +694,18 @@ class VTKHDFExporter:
         visualization_data.sphincter_length_cm = length_sphincter
 
         # Also store the per-frame metrics for comprehensive export (convert numpy arrays to lists)
-        if "metric_tubular" in calculated_metrics:
-            metric_tubular = calculated_metrics["metric_tubular"]
-            if isinstance(metric_tubular, np.ndarray):
-                metadata["metric_tubular_per_frame"] = metric_tubular.tolist()
-            else:
-                metadata["metric_tubular_per_frame"] = metric_tubular
-        if "metric_sphincter" in calculated_metrics:
-            metric_sphincter = calculated_metrics["metric_sphincter"]
-            if isinstance(metric_sphincter, np.ndarray):
-                metadata["metric_sphincter_per_frame"] = metric_sphincter.tolist()
-            else:
-                metadata["metric_sphincter_per_frame"] = metric_sphincter
         if "pressure_tubular_per_frame" in calculated_metrics:
             pressure_tubular = calculated_metrics["pressure_tubular_per_frame"]
             if isinstance(pressure_tubular, np.ndarray):
-                metadata["pressure_tubular_per_frame"] = pressure_tubular.tolist()
+                metadata["metric_pressure_tubular_per_frame"] = pressure_tubular.tolist()
             else:
-                metadata["pressure_tubular_per_frame"] = pressure_tubular
+                metadata["metric_pressure_tubular_per_frame"] = pressure_tubular
         if "pressure_sphincter_per_frame" in calculated_metrics:
             pressure_sphincter = calculated_metrics["pressure_sphincter_per_frame"]
             if isinstance(pressure_sphincter, np.ndarray):
-                metadata["pressure_sphincter_per_frame"] = pressure_sphincter.tolist()
+                metadata["metric_pressure_sphincter_per_frame"] = pressure_sphincter.tolist()
             else:
-                metadata["pressure_sphincter_per_frame"] = pressure_sphincter
+                metadata["metric_pressure_sphincter_per_frame"] = pressure_sphincter
 
     def _calculate_boundary_indices(
         self, visualization_data: "VisualizationData", surfacecolor_list: List[List[float]], center_path: List[List[float]]

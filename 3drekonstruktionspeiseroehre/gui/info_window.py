@@ -32,7 +32,22 @@ class InfoWindow(QDialog):
             </ul>
         </li>
         <li>When a visit with the necessary data is selected, the reconstruction can be created by clicking "Create Visualization for selected Patient and selected Visit". If a reconstruction for this visit has already been saved, you may load this reconstruction or create a new one.</li>
-    </ol>"""
+    </ol>
+
+    <h3>Downloads</h3>
+    <ul>
+        <li><strong>Download Data</strong>: Opens a dialog where you select which database tables to export (always includes <em>patients</em> and <em>visits</em>, plus any checked tables such as manometry, TBE, endoscopy, therapies, etc.).</li>
+        <li><strong>Mass Download VTKHDF for ML/3d-Printing</strong>: Exports <em>all 3D reconstructions saved in the database</em> as <code>.vtkhdf</code> files into a chosen directory.<br style="margin:0; line-height:100%"/>
+            Before export you can choose the pressure data mode:
+            <ul style="margin:0; padding-left:18px;">
+                <li><em>No vertex pressure</em> (geometry + metadata only),</li>
+                <li><em>Per‑slice HRM pressure</em> (compact), or</li>
+                <li><em>All per‑vertex HRM pressure</em> (complete).</li>
+            </ul>
+            Every file always includes the 3D geometry and rich metadata suitable for ML pipelines.
+        </li>
+    </ul>
+    """
         self.ui.textEdit.setHtml(text)
 
     def show_xray_region_selection_info(self):
@@ -159,20 +174,24 @@ class InfoWindow(QDialog):
     </ul>
     <p class="note">Note: EndoFLIP data processing has not been extensively tested. Always verify the results with the manufacturer’s visualization.</p>
 
-    <h3>Compare Multiple 3D Reconstructions</h3>
+    <h3>Compare and Manage Multiple Reconstructions</h3>
     <ul>
-        <li>You can visualize multiple reconstructions by clicking Insert "Add Reconstruction(s)".</li>
-        <li>If you have multiple reconstructions you can <strong>rearrange them</strong> by holding down the left mouse button and dragging them to the desired position.</li>
+        <li><strong>Add Reconstruction(s)</strong>: Opens the main data window so you can pick additional data for the same patient/visit or another visit. The new reconstruction(s) will be added alongside the existing ones in this view.</li>
+        <li><strong>Rearrange</strong>: Drag a visualization by its header to change the order.</li>
+        <li><strong>Trash icon</strong>: Removes the selected reconstruction tile from this view (does not delete anything in the database).</li>
     </ul>
 
-    <h3>Download Options</h3>
-    <ol>
-        <li><strong>Download for Display</strong>: Export <em>currently displayed</em> 3D visualizations as <strong>HTML files</strong>, which can be viewed in a web browser or embedded in PowerPoint presentations.</li>
-        <li><strong>CSV Metrics Download</strong>: Exports the metrics as a CSV file.</li>
-        <li><strong>Download for 3D Printing</strong>: Downloads <code>.stl</code> files <em>of all 3D reconstructions in the viewer</em> for <strong>3D printing</strong>. Note that downloading may take a few minutes.</li>
-        <li><strong>Save Reconstruction in DB</strong>: Saves the reconstruction(s) to the database, allowing you to load and view it again later, unchanged. If a reconstruction already exists for that visit, the program will prompt you to confirm if you want to update the existing reconstruction.</li>
-    </ol>
+    <h3>Download and Save</h3>
+    <ul>
+        <li><strong>Download for Display</strong>: Exports the <em>currently shown</em> reconstruction(s) as HTML file(s) for viewing in a browser or embedding in slides.</li>
+        <li><strong>CSV Metrics Download</strong>: Exports time‑dependent and overall metrics to CSV.</li>
+        <li><strong>Download VTKHDF for ML/3d‑Printing</strong>: Exports the reconstruction(s) as <code>.vtkhdf</code> including geometry, metadata and optional HRM pressure attributes, suitable for ML pipelines and 3D printing tools that support VTKHDF.</li>
+        <li><strong>Save Reconstruction in DB</strong>: Persists the current reconstruction(s) to the database. If a reconstruction for the visit already exists, you will be asked whether it should be updated.</li>
+    </ul>
     <p>Once the download is complete, the program will provide confirmation for each download format.</p>
+
+    <h3>Adjust Reconstructions</h3>
+    <p>Use the menu entry <strong>"Adjust current Reconstruction(s)"</strong> to reopen the HRM (DCI) step and subsequently the X‑ray segmentation with the previously saved settings preloaded. This enables quick refinements without redoing the entire workflow. The current visualization window remains open.</p>
 
     <h3>Reset the Visualization Window</h3>
     <p>Use the <strong>Reset</strong> button to clear the input fields and load new files, allowing you to create a new visualization.</p>

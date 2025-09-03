@@ -130,7 +130,7 @@ class DataWindow(QMainWindow):
         self.ui.menubar.addAction(menu_button)
 
         # Add Mass VTKHDF Export Button to UI (both menu and visible button)
-        mass_export_button = QAction("Mass Export VTKHDF for ML", self)
+        mass_export_button = QAction("Mass Download VTKHDF for ML/3d-Printing", self)
         mass_export_button.triggered.connect(self.__mass_export_vtkhdf)
         self.ui.menubar.addAction(mass_export_button)
 
@@ -230,7 +230,8 @@ class DataWindow(QMainWindow):
 
         menu_button = QAction("Info", self)
         menu_button.triggered.connect(self.__menu_button_clicked)
-        self.ui.menubar.addAction(menu_button)
+        actions = self.ui.menubar.actions()
+        self.ui.menubar.insertAction(actions[0], menu_button)
 
         self.__init_ui()
 
