@@ -34,7 +34,12 @@ class VTKHDFExporter:
     - HDF5 organization for efficient data access
     """
 
-    def __init__(self, db_session: Optional[Session] = None, max_pressure_frames: int = -1, pressure_export_mode: str = "per_vertex"):
+    def __init__(
+        self,
+        db_session: Optional[Session] = None,
+        max_pressure_frames: int = -1,
+        pressure_export_mode: str = "per_vertex",
+    ):
         """
         Initialize the VTKHDF Exporter.
 
@@ -71,7 +76,9 @@ class VTKHDFExporter:
             return bool(data)
         elif isinstance(data, np.generic):  # Catch any numpy scalar types
             return data.item()  # Convert numpy scalar to Python scalar
-        elif hasattr(data, "tolist") and callable(getattr(data, "tolist")):  # Handle numpy-like objects
+        elif hasattr(data, "tolist") and callable(
+            getattr(data, "tolist")
+        ):  # Handle numpy-like objects
             return data.tolist()
         elif isinstance(data, datetime):
             return data.isoformat()
@@ -120,13 +127,19 @@ class VTKHDFExporter:
                 file_name = f"{visit_name}_{visualization_data.xray_minute}.vtkhdf"
                 file_path = os.path.join(output_directory, file_name)
 
-                success = self._export_single_reconstruction(visualization_data, file_path, metadata, visit_name, i)
+                success = self._export_single_reconstruction(
+                    visualization_data, file_path, metadata, visit_name, i
+                )
 
                 if success:
                     created_mesh_files.append(file_path)
                     if export_validation_attributes:
                         validation_file_path = self._export_validation_attributes(
-                            visualization_data, visit_name, output_directory, metadata, validation_attributes_format
+                            visualization_data,
+                            visit_name,
+                            output_directory,
+                            metadata,
+                            validation_attributes_format,
                         )
                         if validation_file_path:
                             created_validation_files.append(validation_file_path)
@@ -165,11 +178,15 @@ class VTKHDFExporter:
             return True
         except Exception as e:
             print(f"Database connection test failed: {e}")
-            print("This may be due to SQLAlchemy version compatibility or database connectivity issues")
+            print(
+                "This may be due to SQLAlchemy version compatibility or database connectivity issues"
+            )
             print("Patient and clinical data will not be exported")
             return False
 
-    def _log_export_parameters(self, patient_id: Optional[str], visit_id: Optional[int], visit_name: str):
+    def _log_export_parameters(
+        self, patient_id: Optional[str], visit_id: Optional[int], visit_name: str
+    ):
         """Log export parameters for debugging."""
         print("Export Parameters:")
         print(f"  Patient ID: {patient_id if patient_id else 'None'}")
@@ -177,7 +194,9 @@ class VTKHDFExporter:
         print(f"  Visit Name: {visit_name}")
         print(f"  Database Session: {'Available' if self.db_session else 'None'}")
 
-    def _extract_database_metadata(self, patient_id: Optional[str], visit_id: Optional[int]) -> Dict[str, Any]:
+    def _extract_database_metadata(
+        self, patient_id: Optional[str], visit_id: Optional[int]
+    ) -> Dict[str, Any]:
         """Extract comprehensive metadata from database with enhanced error handling."""
         metadata = {}
 
@@ -189,11 +208,17 @@ class VTKHDFExporter:
 
         # Extract Patient data
         try:
-            patient = self.db_session.query(Patient).filter(Patient.patient_id == patient_id).first()
+            patient = (
+                self.db_session.query(Patient).filter(Patient.patient_id == patient_id).first()
+            )
 
             if patient:
                 metadata.update(
-                    {"patient_id": patient.patient_id, "patient_height": patient.height_cm, "patient_year_first_symptoms": patient.year_first_symptoms}
+                    {
+                        "patient_id": patient.patient_id,
+                        "patient_height": patient.height_cm,
+                        "patient_year_first_symptoms": patient.year_first_symptoms,
+                    }
                 )
                 exported_data_types.append("Patient data")
 
@@ -221,7 +246,9 @@ class VTKHDFExporter:
 
             # Extract Manometry data
             try:
-                manometry = self.db_session.query(Manometry).filter(Manometry.visit_id == visit_id).first()
+                manometry = (
+                    self.db_session.query(Manometry).filter(Manometry.visit_id == visit_id).first()
+                )
 
                 if manometry:
                     metadata.update(
@@ -241,9 +268,18 @@ class VTKHDFExporter:
 
             # Extract TBE (Barium Swallow) contrast information
             try:
-                tbe = self.db_session.query(BariumSwallow).filter(BariumSwallow.visit_id == visit_id).first()
+                tbe = (
+                    self.db_session.query(BariumSwallow)
+                    .filter(BariumSwallow.visit_id == visit_id)
+                    .first()
+                )
                 if tbe:
-                    metadata.update({"tbe_contrast_medium_type": tbe.type_contrast_medium, "tbe_contrast_medium_amount_ml": tbe.amount_contrast_medium})
+                    metadata.update(
+                        {
+                            "tbe_contrast_medium_type": tbe.type_contrast_medium,
+                            "tbe_contrast_medium_amount_ml": tbe.amount_contrast_medium,
+                        }
+                    )
                     exported_data_types.append("Barium Swallow data")
             except Exception as e:
                 print(f"Error extracting Barium Swallow data: {e}")
@@ -255,7 +291,12 @@ class VTKHDFExporter:
                 egd_service = _EgdFileService(self.db_session)
                 egd_positions = egd_service.get_endoscopy_positions_for_visit(visit_id)
                 if egd_positions:
-                    metadata.update({"egd_positions": [int(p) for p in egd_positions], "egd_images_count": int(len(egd_positions))})
+                    metadata.update(
+                        {
+                            "egd_positions": [int(p) for p in egd_positions],
+                            "egd_images_count": int(len(egd_positions)),
+                        }
+                    )
                     exported_data_types.append("Endoscopy image positions")
             except Exception as e:
                 print(f"Error extracting EGD positions: {e}")
@@ -272,7 +313,9 @@ class VTKHDFExporter:
                         if isinstance(v_year, dict):
                             v_year = v_year.get("year")
                         # Keep only therapy or follow-up
-                        if v_type and ("Therapy" in v_type or "Follow-Up" in v_type or "Follow" in v_type):
+                        if v_type and (
+                            "Therapy" in v_type or "Follow-Up" in v_type or "Follow" in v_type
+                        ):
                             try:
                                 history.append({"visit_type": v_type, "visit_year": int(v_year)})
                             except Exception:
@@ -287,10 +330,14 @@ class VTKHDFExporter:
             # Extract previous therapies (type and year) for the patient
             try:
                 if "patient_id" in metadata:
-                    from logic.services.previous_therapy_service import PreviousTherapyService as _PrevTherapyService
+                    from logic.services.previous_therapy_service import (
+                        PreviousTherapyService as _PrevTherapyService,
+                    )
 
                     pt_service = _PrevTherapyService(self.db_session)
-                    prev_therapies = pt_service.get_prev_therapies_for_patient(metadata["patient_id"]) or []
+                    prev_therapies = (
+                        pt_service.get_prev_therapies_for_patient(metadata["patient_id"]) or []
+                    )
                     pt_history = []
                     for t in prev_therapies:
                         t_type = t.get("therapy")
@@ -304,7 +351,11 @@ class VTKHDFExporter:
                     if pt_history:
                         # Sort chronologically (None years last)
                         pt_history = sorted(
-                            pt_history, key=lambda x: (x["therapy_year"] is None, x["therapy_year"] if x["therapy_year"] is not None else 10**9)
+                            pt_history,
+                            key=lambda x: (
+                                x["therapy_year"] is None,
+                                x["therapy_year"] if x["therapy_year"] is not None else 10**9,
+                            ),
                         )
                         metadata["patient_previous_therapies"] = pt_history
             except Exception as e:
@@ -316,7 +367,12 @@ class VTKHDFExporter:
         return metadata
 
     def _export_single_reconstruction(
-        self, visualization_data: VisualizationData, file_path: str, base_metadata: Dict[str, Any], visit_name: str, reconstruction_index: int
+        self,
+        visualization_data: VisualizationData,
+        file_path: str,
+        base_metadata: Dict[str, Any],
+        visit_name: str,
+        reconstruction_index: int,
     ) -> bool:
         """
         Export a single 3D reconstruction to VTKHDF with comprehensive attributes.
@@ -343,7 +399,9 @@ class VTKHDFExporter:
             surface = self._add_geometric_attributes(surface, visualization_data)
 
             # Prepare comprehensive metadata
-            metadata = self._prepare_comprehensive_metadata(base_metadata, visualization_data, visit_name, reconstruction_index)
+            metadata = self._prepare_comprehensive_metadata(
+                base_metadata, visualization_data, visit_name, reconstruction_index
+            )
 
             # Add metadata to mesh field data
             try:
@@ -364,7 +422,11 @@ class VTKHDFExporter:
                             arr = np.asarray(value, dtype=float)
                         except Exception:
                             arr = None
-                        if arr is not None and np.issubdtype(arr.dtype, np.number) and arr.ndim == 1:
+                        if (
+                            arr is not None
+                            and np.issubdtype(arr.dtype, np.number)
+                            and arr.ndim == 1
+                        ):
                             surface.field_data[key] = arr
                         else:
                             clean_value = self._sanitize_for_json(value)
@@ -388,7 +450,9 @@ class VTKHDFExporter:
             print(f"Error in single reconstruction export: {e}")
             return False
 
-    def _create_mesh_from_coords(self, figure_x: np.ndarray, figure_y: np.ndarray, figure_z: np.ndarray) -> Optional[pv.PolyData]:
+    def _create_mesh_from_coords(
+        self, figure_x: np.ndarray, figure_y: np.ndarray, figure_z: np.ndarray
+    ) -> Optional[pv.PolyData]:
         """Create a mesh from figure data."""
         try:
             # Create structured grid preserving topology
@@ -417,7 +481,9 @@ class VTKHDFExporter:
             n_vertices = surface.n_points
 
             # Get pressure data from figure creator
-            if hasattr(visualization_data, "figure_creator") and hasattr(visualization_data.figure_creator, "get_surfacecolor_list"):
+            if hasattr(visualization_data, "figure_creator") and hasattr(
+                visualization_data.figure_creator, "get_surfacecolor_list"
+            ):
                 surfacecolor_list = visualization_data.figure_creator.get_surfacecolor_list()
             else:
                 surfacecolor_list = None
@@ -427,8 +493,14 @@ class VTKHDFExporter:
 
                 if self.pressure_export_mode == "per_vertex":
                     # Full per-vertex mapping
-                    pressure_per_frame = self._map_pressure_to_vertices(surfacecolor_list, n_vertices, visualization_data)
-                    max_frames = n_frames if self.max_pressure_frames == -1 else min(n_frames, self.max_pressure_frames)
+                    pressure_per_frame = self._map_pressure_to_vertices(
+                        surfacecolor_list, n_vertices, visualization_data
+                    )
+                    max_frames = (
+                        n_frames
+                        if self.max_pressure_frames == -1
+                        else min(n_frames, self.max_pressure_frames)
+                    )
                     for frame_idx in range(max_frames):
                         surface[f"pressure_frame_{frame_idx:03d}"] = pressure_per_frame[frame_idx]
 
@@ -436,28 +508,51 @@ class VTKHDFExporter:
                     try:
                         num_slices = len(surfacecolor_list[0])
                         # Count values can be derived from shape; do not store redundant counts
-                        slice_matrix = np.array(surfacecolor_list[:max_frames], dtype=float)  # shape (frames, slices)
+                        slice_matrix = np.array(
+                            surfacecolor_list[:max_frames], dtype=float
+                        )  # shape (frames, slices)
                         # Numeric flattened array + shape for efficient parsing
-                        surface.field_data["pressure_slice_matrix_flat"] = slice_matrix.astype(np.float32).ravel(order="C")
-                        surface.field_data["pressure_slice_matrix_shape"] = [int(max_frames), int(num_slices)]
+                        surface.field_data["pressure_slice_matrix_flat"] = slice_matrix.astype(
+                            np.float32
+                        ).ravel(order="C")
+                        surface.field_data["pressure_slice_matrix_shape"] = [
+                            int(max_frames),
+                            int(num_slices),
+                        ]
                     except Exception as e:
                         print(f"Error exporting per-slice matrix in per-vertex mode: {e}")
 
                 elif self.pressure_export_mode == "per_slice":
                     # Compact: keep per-slice pressures only, no per-vertex arrays (numeric only)
-                    max_frames = n_frames if self.max_pressure_frames == -1 else min(n_frames, self.max_pressure_frames)
+                    max_frames = (
+                        n_frames
+                        if self.max_pressure_frames == -1
+                        else min(n_frames, self.max_pressure_frames)
+                    )
                     # Use indices to indicate slice positions (0..num_slices-1)
                     num_slices = len(surfacecolor_list[0])
 
                     # Per-frame per-slice matrix and aggregate stats
-                    slice_matrix = np.array(surfacecolor_list[:max_frames], dtype=float)  # shape (frames, slices)
-                    surface.field_data["pressure_slice_matrix_flat"] = slice_matrix.astype(np.float32).ravel(order="C")
-                    surface.field_data["pressure_slice_matrix_shape"] = [int(max_frames), int(num_slices)]
+                    slice_matrix = np.array(
+                        surfacecolor_list[:max_frames], dtype=float
+                    )  # shape (frames, slices)
+                    surface.field_data["pressure_slice_matrix_flat"] = slice_matrix.astype(
+                        np.float32
+                    ).ravel(order="C")
+                    surface.field_data["pressure_slice_matrix_shape"] = [
+                        int(max_frames),
+                        int(num_slices),
+                    ]
 
         except Exception as e:
             print(f"Error adding pressure attributes: {e}")
 
-    def _map_pressure_to_vertices(self, surfacecolor_list: List[List[float]], n_vertices: int, visualization_data: VisualizationData) -> np.ndarray:
+    def _map_pressure_to_vertices(
+        self,
+        surfacecolor_list: List[List[float]],
+        n_vertices: int,
+        visualization_data: VisualizationData,
+    ) -> np.ndarray:
         """Map pressure data from esophagus path to mesh vertices."""
         n_frames = len(surfacecolor_list)
         pressure_per_frame = np.zeros((n_frames, n_vertices))
@@ -470,20 +565,28 @@ class VTKHDFExporter:
                     pressure_per_frame[frame_idx] = pressure_values
                 elif len(pressure_values) > 0:
                     # Interpolate to match vertex count
-                    pressure_per_frame[frame_idx] = np.interp(np.linspace(0, 1, n_vertices), np.linspace(0, 1, len(pressure_values)), pressure_values)
+                    pressure_per_frame[frame_idx] = np.interp(
+                        np.linspace(0, 1, n_vertices),
+                        np.linspace(0, 1, len(pressure_values)),
+                        pressure_values,
+                    )
 
         except Exception as e:
             print(f"Error in pressure mapping: {e}")
 
         return pressure_per_frame
 
-    def _add_wall_thickness_attributes(self, surface: pv.PolyData, visualization_data: VisualizationData):
+    def _add_wall_thickness_attributes(
+        self, surface: pv.PolyData, visualization_data: VisualizationData
+    ):
         """Add wall thickness estimates per vertex, simplified to a uniform value."""
         # Use uniform wall thickness of 0.01cm for simplification, this is a placeholder for now
         wall_thickness = np.full(surface.n_points, 0.001)
         surface["wall_thickness"] = wall_thickness
 
-    def _add_anatomical_region_attributes(self, surface: pv.PolyData, visualization_data: VisualizationData):
+    def _add_anatomical_region_attributes(
+        self, surface: pv.PolyData, visualization_data: VisualizationData
+    ):
         """Add anatomical region classification per vertex."""
         try:
             regions = self._classify_anatomical_regions(surface, visualization_data)
@@ -494,57 +597,74 @@ class VTKHDFExporter:
         except Exception as e:
             print(f"Error adding anatomical regions: {e}")
 
-    def _classify_anatomical_regions(self, surface: pv.PolyData, visualization_data: VisualizationData) -> np.ndarray:
+    def _classify_anatomical_regions(
+        self, surface: pv.PolyData, visualization_data: VisualizationData
+    ) -> np.ndarray:
         """
-        Classify vertices into anatomical regions following the reconstruction software logic.
+        Classify vertices into anatomical regions using axial (Z) boundaries.
 
         Only creates TWO regions:
-        - Region 1: Tubular esophagus
-        - Region 2: Sphincter
+        - 1: Tubular esophagus
+        - 2: Lower esophageal sphincter (LES)
 
-        This matches the original calculate_metrics function in figure_creator.py
+        Implementation details:
+        - Uses the same boundary logic as the original reconstruction metrics by computing the
+          sphincter start/end indices along the center path, and classifies vertices by nearest
+          3D centerline index (no axial or heuristic fallbacks).
         """
         n_vertices = surface.n_points
-        regions = np.ones(n_vertices, dtype=int)  # Default to tubular
+        regions = np.ones(n_vertices, dtype=int)  # default tubular
 
         try:
-            # Get boundary positions (same as in calculate_metrics)
-            ls_upper_pos = visualization_data.sphincter_upper_pos  # [x, y]
-            ls_lower_pos = visualization_data.esophagus_exit_pos  # [x, y]
+            # Prefer Z-axis as the axial direction (right_handed_z_up)
+            z_coords_vertices = surface.points[:, 2]
 
-            # Get mesh coordinate bounds
-            points = surface.points
-            y_coords = points[:, 1]  # Y coordinates
-            y_min, y_max = np.min(y_coords), np.max(y_coords)
-            mesh_y_range = y_max - y_min
+            # Try to derive precise sphincter Z-bounds from center-path indices
+            calculated_metrics, surfacecolor_list, center_path = (
+                self._invoke_figure_creator_metrics(visualization_data)
+            )
+            boundary_indices = self._calculate_boundary_indices(
+                visualization_data, surfacecolor_list, center_path
+            )
 
-            # Calculate sphincter region boundaries in mesh coordinates
-            # The sphincter is typically in the lower portion of the esophagus
-            if ls_upper_pos[1] < ls_lower_pos[1]:  # Normal case: upper pos has lower Y pixel
-                # Sphincter is at the bottom of the mesh (higher Y values)
-                sphincter_start_ratio = 0.75  # Start at 75% along the esophagus
-                sphincter_end_ratio = 0.95  # End at 95% along the esophagus
-            else:  # Inverted case
-                sphincter_start_ratio = 0.05  # Start at 5% along the esophagus
-                sphincter_end_ratio = 0.25  # End at 25% along the esophagus
+            # 1) Prepare centerline in mesh (x,y,z) using existing transform
+            center_3d = self._transform_center_path_to_mesh_coordinates(
+                center_path,
+                visualization_data.figure_x,
+                visualization_data.figure_y,
+                visualization_data.figure_z,
+                visualization_data,
+            )
 
-            sphincter_y_start = y_min + (sphincter_start_ratio * mesh_y_range)
-            sphincter_y_end = y_min + (sphincter_end_ratio * mesh_y_range)
+            import numpy as _np
+            from scipy.spatial import cKDTree
 
-            # Ensure proper ordering
-            sphincter_y_min = min(sphincter_y_start, sphincter_y_end)
-            sphincter_y_max = max(sphincter_y_start, sphincter_y_end)
+            center_3d_arr = _np.asarray(center_3d, dtype=float)
+            n_slices = center_3d_arr.shape[0]
 
-            # Classify vertices: tubular (1) and sphincter (2)
-            sphincter_mask = (y_coords >= sphincter_y_min) & (y_coords <= sphincter_y_max)
-            regions[sphincter_mask] = 2  # Sphincter region
+            # Clamp boundaries
+            s_start = int(
+                max(0, min(n_slices - 1, int(boundary_indices.get("sphincter_start", 0))))
+            )
+            s_end_raw = int(boundary_indices.get("sphincter_end", n_slices - 1))
+            s_end = int(max(0, min(n_slices - 1, s_end_raw + 1)))  # include the bottom-most ring
+            s_lo, s_hi = (s_start, s_end) if s_start <= s_end else (s_end, s_start)
+
+            # 2) KDTree in 3D between vertices and centerline points
+            tree = cKDTree(center_3d_arr)
+            _, nearest_idx = tree.query(surface.points, k=1)
+
+            sphincter_mask = (nearest_idx >= s_lo) & (nearest_idx <= s_hi)
+            regions[sphincter_mask] = 2
 
         except Exception as e:
             print(f"Error in region classification: {e}")
 
         return regions.astype(int)
 
-    def _add_geometric_attributes(self, surface: pv.PolyData, visualization_data: VisualizationData) -> pv.PolyData:
+    def _add_geometric_attributes(
+        self, surface: pv.PolyData, visualization_data: VisualizationData
+    ) -> pv.PolyData:
         """Add geometric attributes for enhanced ML features."""
         try:
             # Calculate vertex normals
@@ -563,7 +683,11 @@ class VTKHDFExporter:
         return surface
 
     def _prepare_comprehensive_metadata(
-        self, base_metadata: Dict[str, Any], visualization_data: VisualizationData, visit_name: str, reconstruction_index: int
+        self,
+        base_metadata: Dict[str, Any],
+        visualization_data: VisualizationData,
+        visit_name: str,
+        reconstruction_index: int,
     ) -> Dict[str, Any]:
         """Prepare comprehensive metadata for the VTKHDF file."""
         metadata = base_metadata.copy()
@@ -595,7 +719,9 @@ class VTKHDFExporter:
         # Add esophagus measurements
         try:
             # Use the original calculate_metrics function from reconstruction software
-            (calculated_metrics, surfacecolor_list, center_path) = self._invoke_figure_creator_metrics(visualization_data)
+            (calculated_metrics, surfacecolor_list, center_path) = (
+                self._invoke_figure_creator_metrics(visualization_data)
+            )
             if calculated_metrics:
                 self._process_and_store_metrics(calculated_metrics, metadata, visualization_data)
 
@@ -619,8 +745,13 @@ class VTKHDFExporter:
             "pressure_slice_matrix_shape": "Two integers: [frames, slices] for reshaping pressure_slice_matrix_flat",
         }
 
-        if getattr(self, "pressure_export_mode", "per_vertex") == "per_vertex" and self.max_pressure_frames != 0:
-            attribute_description.update({"pressure_frame_XXX": "HRM pressure at frame XXX in mmHg"})
+        if (
+            getattr(self, "pressure_export_mode", "per_vertex") == "per_vertex"
+            and self.max_pressure_frames != 0
+        ):
+            attribute_description.update(
+                {"pressure_frame_XXX": "HRM pressure at frame XXX in mmHg"}
+            )
         elif getattr(self, "pressure_export_mode", "per_vertex") == "per_slice":
             # Counts can be derived from pressure_slice_matrix_shape; no extra description necessary
             pass
@@ -628,7 +759,10 @@ class VTKHDFExporter:
         # Add EGD descriptions only if present in metadata
         if "egd_positions" in metadata or "egd_images_count" in metadata:
             attribute_description.update(
-                {"egd_positions": "Positions (in cm) of EGD images along the esophagus", "egd_images_count": "Number of EGD images provided"}
+                {
+                    "egd_positions": "Positions (in cm) of EGD images along the esophagus",
+                    "egd_images_count": "Number of EGD images provided",
+                }
             )
 
         metadata.update({"ground_truth": True, "attribute_description": attribute_description})
@@ -637,12 +771,18 @@ class VTKHDFExporter:
         metadata["pressure_export_mode"] = getattr(self, "pressure_export_mode", "per_vertex")
         return metadata
 
-    def _invoke_figure_creator_metrics(self, visualization_data: "VisualizationData") -> Tuple[Optional[Dict[str, Any]], Optional[List], Optional[List]]:
+    def _invoke_figure_creator_metrics(
+        self, visualization_data: "VisualizationData"
+    ) -> Tuple[Optional[Dict[str, Any]], Optional[List], Optional[List]]:
         """Gather parameters and invoke the static calculate_metrics from FigureCreator."""
         try:
             # Import and instantiate the same FigureCreator as the visualization flow
-            from logic.figure_creator.figure_creator_with_endoscopy import FigureCreatorWithEndoscopy
-            from logic.figure_creator.figure_creator_without_endoscopy import FigureCreatorWithoutEndoscopy
+            from logic.figure_creator.figure_creator_with_endoscopy import (
+                FigureCreatorWithEndoscopy,
+            )
+            from logic.figure_creator.figure_creator_without_endoscopy import (
+                FigureCreatorWithoutEndoscopy,
+            )
 
             if getattr(visualization_data, "endoscopy_polygons", None):
                 fc = FigureCreatorWithEndoscopy(visualization_data)
@@ -659,7 +799,12 @@ class VTKHDFExporter:
             print(f"Error invoking FigureCreator.calculate_metrics: {e}")
             return None, None, None
 
-    def _process_and_store_metrics(self, calculated_metrics: Dict[str, Any], metadata: Dict[str, Any], visualization_data: "VisualizationData"):
+    def _process_and_store_metrics(
+        self,
+        calculated_metrics: Dict[str, Any],
+        metadata: Dict[str, Any],
+        visualization_data: "VisualizationData",
+    ):
         """Process the metrics dictionary and update metadata and visualization data."""
         # Extract metrics directly from the returned dictionary
         volume_tubular = float(calculated_metrics.get("volume_sum_tubular", 0))
@@ -685,7 +830,9 @@ class VTKHDFExporter:
         if "esophageal_pressurization_index" in calculated_metrics:
             val = calculated_metrics["esophageal_pressurization_index"]
             try:
-                metadata["manometry_dci"] = float(val) if isinstance(val, (np.number, int, float)) else val
+                metadata["manometry_dci"] = (
+                    float(val) if isinstance(val, (np.number, int, float)) else val
+                )
             except Exception:
                 metadata["manometry_dci"] = val
 
@@ -708,7 +855,10 @@ class VTKHDFExporter:
                 metadata["metric_pressure_sphincter_per_frame"] = pressure_sphincter
 
     def _calculate_boundary_indices(
-        self, visualization_data: "VisualizationData", surfacecolor_list: List[List[float]], center_path: List[List[float]]
+        self,
+        visualization_data: "VisualizationData",
+        surfacecolor_list: List[List[float]],
+        center_path: List[List[float]],
     ) -> Optional[Dict[str, int]]:
         """Calculate spatial boundary indices from the original reconstruction."""
         try:
@@ -719,13 +869,25 @@ class VTKHDFExporter:
                 ls_upper_pos = visualization_data.sphincter_upper_pos
                 ls_lower_pos = visualization_data.esophagus_exit_pos
 
-                if ls_upper_pos is not None and ls_lower_pos is not None and center_path is not None and len(center_path) > 0:
+                if (
+                    ls_upper_pos is not None
+                    and ls_lower_pos is not None
+                    and center_path is not None
+                    and len(center_path) > 0
+                ):
                     # Use KDTree to find closest points (same as calculate_metrics)
-                    ls_upper_pos_yx = [ls_upper_pos[1], ls_upper_pos[0]]  # Switch to y,x for center_path
+                    ls_upper_pos_yx = [
+                        ls_upper_pos[1],
+                        ls_upper_pos[0],
+                    ]  # Switch to y,x for center_path
                     ls_lower_pos_yx = [ls_lower_pos[1], ls_lower_pos[0]]
 
-                    _, ls_index_upper = spatial.KDTree(np.array(center_path)).query(np.array(ls_upper_pos_yx))
-                    _, ls_index_lower = spatial.KDTree(np.array(center_path)).query(np.array(ls_lower_pos_yx))
+                    _, ls_index_upper = spatial.KDTree(np.array(center_path)).query(
+                        np.array(ls_upper_pos_yx)
+                    )
+                    _, ls_index_lower = spatial.KDTree(np.array(center_path)).query(
+                        np.array(ls_lower_pos_yx)
+                    )
 
                     # Convert numpy integers to Python integers for JSON serialization
                     ls_index_upper = int(ls_index_upper)
@@ -748,7 +910,12 @@ class VTKHDFExporter:
         return None
 
     def _export_validation_attributes(
-        self, visualization_data: VisualizationData, visit_name: str, output_directory: str, base_metadata: Dict[str, Any], format_type: str = "json"
+        self,
+        visualization_data: VisualizationData,
+        visit_name: str,
+        output_directory: str,
+        base_metadata: Dict[str, Any],
+        format_type: str = "json",
     ) -> Optional[str]:
         """
         Export validation attributes for validation framework consumption.
@@ -776,7 +943,9 @@ class VTKHDFExporter:
         except Exception:
             return None
 
-    def _extract_validation_data(self, visualization_data: VisualizationData, base_metadata: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def _extract_validation_data(
+        self, visualization_data: VisualizationData, base_metadata: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
         """
         Extract validation-specific data from VisualizationData.
 
@@ -805,7 +974,9 @@ class VTKHDFExporter:
                 center_path = visualization_data.center_path
 
             # Get computed metrics using the existing function
-            calculated_metrics, surfacecolor_list, _ = self._invoke_figure_creator_metrics(visualization_data)
+            calculated_metrics, surfacecolor_list, _ = self._invoke_figure_creator_metrics(
+                visualization_data
+            )
 
             # Create validation data structure
             validation_data = {
@@ -813,25 +984,43 @@ class VTKHDFExporter:
                     "export_timestamp": datetime.now().isoformat(),
                     "reconstruction_name": f"{base_metadata.get('visit_name', 'Unknown')}_{visualization_data.xray_minute}",
                     "coordinate_system": "right_handed_z_up",
-                    "units": {"length": "centimeters", "pressure": "mmHg", "wall_thickness": "centimeters", "volume": "cubic_centimeters"},
+                    "units": {
+                        "length": "centimeters",
+                        "pressure": "mmHg",
+                        "wall_thickness": "centimeters",
+                        "volume": "cubic_centimeters",
+                    },
                 }
             }
 
             # Add center path data - TRANSFORM TO MATCH MESH COORDINATES
             if center_path is not None:
                 # Transform center path to match mesh coordinate system
-                transformed_center_path = self._transform_center_path_to_mesh_coordinates(center_path, figure_x, figure_y, figure_z, visualization_data)
+                transformed_center_path = self._transform_center_path_to_mesh_coordinates(
+                    center_path, figure_x, figure_y, figure_z, visualization_data
+                )
 
                 validation_data["center_path"] = {
                     "points": transformed_center_path,
                     "original_pixel_points": center_path,
-                    "length_cm": (float(calculated_metrics.get("len_tubular", 0) + calculated_metrics.get("len_sphincter", 0)) if calculated_metrics else 0.0),
+                    "length_cm": (
+                        float(
+                            calculated_metrics.get("len_tubular", 0)
+                            + calculated_metrics.get("len_sphincter", 0)
+                        )
+                        if calculated_metrics
+                        else 0.0
+                    ),
                     "description": "Center path transformed to mesh coordinate system",
                 }
 
             # Add vertices data
             points = np.column_stack((figure_x.flatten(), figure_y.flatten(), figure_z.flatten()))
-            validation_data["vertices"] = {"points": points.tolist(), "count": len(points), "description": "Original mesh vertices"}
+            validation_data["vertices"] = {
+                "points": points.tolist(),
+                "count": len(points),
+                "description": "Original mesh vertices",
+            }
 
             # Add original figure coordinate bounds for consistent center path transformations
             # This ensures the same pixel coordinates always map to identical world coordinates
@@ -847,7 +1036,9 @@ class VTKHDFExporter:
             }
 
             # Add boundary indices for anatomical regions
-            boundary_indices = self._calculate_boundary_indices(visualization_data, surfacecolor_list, center_path)
+            boundary_indices = self._calculate_boundary_indices(
+                visualization_data, surfacecolor_list, center_path
+            )
             if boundary_indices:
                 validation_data["anatomical_boundaries"] = boundary_indices
 
@@ -856,20 +1047,37 @@ class VTKHDFExporter:
                 validation_data["volumes"] = {
                     "volume_tubular": float(calculated_metrics.get("volume_sum_tubular", 0)),
                     "volume_sphincter": float(calculated_metrics.get("volume_sum_sphincter", 0)),
-                    "total_volume": float(calculated_metrics.get("volume_sum_tubular", 0) + calculated_metrics.get("volume_sum_sphincter", 0)),
+                    "total_volume": float(
+                        calculated_metrics.get("volume_sum_tubular", 0)
+                        + calculated_metrics.get("volume_sum_sphincter", 0)
+                    ),
                     "calculated_metrics": self._sanitize_for_json(calculated_metrics),
                 }
 
             # Add validation config with default thresholds
             validation_data["validation_config"] = {
-                "thresholds": {"center_path_chamfer_threshold_mm": 2.0, "vertex_distance_threshold_mm": 0.1, "volume_error_threshold_percent": 10.0}
+                "thresholds": {
+                    "center_path_chamfer_threshold_mm": 2.0,
+                    "vertex_distance_threshold_mm": 0.1,
+                    "volume_error_threshold_percent": 10.0,
+                }
             }
 
             # Add anatomical landmarks
-            if hasattr(visualization_data, "sphincter_upper_pos") and visualization_data.sphincter_upper_pos:
-                validation_data["anatomical_landmarks"] = {"les_upper_position": list(visualization_data.sphincter_upper_pos)}
-                if hasattr(visualization_data, "esophagus_exit_pos") and visualization_data.esophagus_exit_pos:
-                    validation_data["anatomical_landmarks"]["les_lower_position"] = list(visualization_data.esophagus_exit_pos)
+            if (
+                hasattr(visualization_data, "sphincter_upper_pos")
+                and visualization_data.sphincter_upper_pos
+            ):
+                validation_data["anatomical_landmarks"] = {
+                    "les_upper_position": list(visualization_data.sphincter_upper_pos)
+                }
+                if (
+                    hasattr(visualization_data, "esophagus_exit_pos")
+                    and visualization_data.esophagus_exit_pos
+                ):
+                    validation_data["anatomical_landmarks"]["les_lower_position"] = list(
+                        visualization_data.esophagus_exit_pos
+                    )
 
             return validation_data
 
@@ -877,7 +1085,9 @@ class VTKHDFExporter:
             print(f"Error extracting validation data: {e}")
             return None
 
-    def _save_validation_json(self, validation_data: Dict[str, Any], file_path: str) -> Optional[str]:
+    def _save_validation_json(
+        self, validation_data: Dict[str, Any], file_path: str
+    ) -> Optional[str]:
         """Save validation data as JSON file."""
         try:
             sanitized_data = self._sanitize_for_json(validation_data)
@@ -888,7 +1098,12 @@ class VTKHDFExporter:
             return None
 
     def _transform_center_path_to_mesh_coordinates(
-        self, center_path: List[List[float]], figure_x: np.ndarray, figure_y: np.ndarray, figure_z: np.ndarray, visualization_data: VisualizationData
+        self,
+        center_path: List[List[float]],
+        figure_x: np.ndarray,
+        figure_y: np.ndarray,
+        figure_z: np.ndarray,
+        visualization_data: VisualizationData,
     ) -> List[List[float]]:
         """
         Transform center path coordinates to match the mesh coordinate system.
@@ -910,13 +1125,19 @@ class VTKHDFExporter:
 
             # Compute scale
             sensor_path = visualization_data.sensor_path
-            esophagus_full_length_px = self._calculate_esophagus_length_px(sensor_path, visualization_data.esophagus_exit_pos)
-            esophagus_full_length_cm = self._calculate_esophagus_full_length_cm(sensor_path, esophagus_full_length_px, visualization_data)
+            esophagus_full_length_px = self._calculate_esophagus_length_px(
+                sensor_path, visualization_data.esophagus_exit_pos
+            )
+            esophagus_full_length_cm = self._calculate_esophagus_full_length_cm(
+                sensor_path, esophagus_full_length_px, visualization_data
+            )
             px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
 
             # Map center_path (pixel) to mesh coordinate axes (robust for lists/ndarrays)
             cp = np.asarray(center_path)
-            transformed_points = np.column_stack((cp[:, 1], np.zeros(cp.shape[0]), cp[:, 0])).astype(float)
+            transformed_points = np.column_stack(
+                (cp[:, 1], np.zeros(cp.shape[0]), cp[:, 0])
+            ).astype(float)
 
             # Mesh bounds and centers
             mesh_x_min, mesh_x_max = float(figure_x.min()), float(figure_x.max())
@@ -953,12 +1174,20 @@ class VTKHDFExporter:
         """Calculate esophagus length in pixels (helper method)."""
         path_length_px = 0
         for i in range(1, len(sensor_path)):
-            path_length_px += np.sqrt((sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
-            if sensor_path[i][1] == esophagus_exit_pos[1] and sensor_path[i][0] == esophagus_exit_pos[0]:
+            path_length_px += np.sqrt(
+                (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2
+                + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2
+            )
+            if (
+                sensor_path[i][1] == esophagus_exit_pos[1]
+                and sensor_path[i][0] == esophagus_exit_pos[0]
+            ):
                 break
         return path_length_px
 
-    def _calculate_esophagus_full_length_cm(self, sensor_path, esophagus_full_length_px, visualization_data):
+    def _calculate_esophagus_full_length_cm(
+        self, sensor_path, esophagus_full_length_px, visualization_data
+    ):
         """Calculate esophagus length in cm (helper method)."""
         from scipy import spatial
 
@@ -967,17 +1196,30 @@ class VTKHDFExporter:
         second_sensor_cm = config.coords_sensors[visualization_data.second_sensor_index]
 
         # sensor_pos are coordinates (x, y) and sensor_path is a list of coordinates (y, x)
-        first_sensor_pos_switched = (visualization_data.first_sensor_pos[1], visualization_data.first_sensor_pos[0])
-        second_sensor_pos_switched = (visualization_data.second_sensor_pos[1], visualization_data.second_sensor_pos[0])
+        first_sensor_pos_switched = (
+            visualization_data.first_sensor_pos[1],
+            visualization_data.first_sensor_pos[0],
+        )
+        second_sensor_pos_switched = (
+            visualization_data.second_sensor_pos[1],
+            visualization_data.second_sensor_pos[0],
+        )
 
         # KDTree to find nearest points on the sensor_path
-        _, index_first = spatial.KDTree(np.array(sensor_path)).query(np.array(first_sensor_pos_switched))
-        _, index_second = spatial.KDTree(np.array(sensor_path)).query(np.array(second_sensor_pos_switched))
+        _, index_first = spatial.KDTree(np.array(sensor_path)).query(
+            np.array(first_sensor_pos_switched)
+        )
+        _, index_second = spatial.KDTree(np.array(sensor_path)).query(
+            np.array(second_sensor_pos_switched)
+        )
 
         path_length_px = 0
         for i in range(index_second, index_first + 1):
             if i > index_second:
-                path_length_px += np.sqrt((sensor_path[i][0] - sensor_path[i - 1][0]) ** 2 + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2)
+                path_length_px += np.sqrt(
+                    (sensor_path[i][0] - sensor_path[i - 1][0]) ** 2
+                    + (sensor_path[i][1] - sensor_path[i - 1][1]) ** 2
+                )
 
         length_cm = first_sensor_cm - second_sensor_cm
         return length_cm * (esophagus_full_length_px / path_length_px)
@@ -1017,7 +1259,11 @@ class VTKHDFExporter:
 
 
 def export_single_visit_vtkhdf(
-    visit_id: int, output_directory: str, db_session: Session, visit_name_override: Optional[str] = None, max_pressure_frames: int = -1
+    visit_id: int,
+    output_directory: str,
+    db_session: Session,
+    visit_name_override: Optional[str] = None,
+    max_pressure_frames: int = -1,
 ) -> List[str]:
     """
     Export a single visit's reconstructions to VTKHDF format.
@@ -1053,7 +1299,14 @@ def export_single_visit_vtkhdf(
         patient = patient_service.get_patient(visit.patient_id)
 
         # Reconstruct visit data
-        visit_data = _reconstruct_visit_data_from_db(reconstruction, visit, barium_service, manometry_service, endoscopy_service, endoflip_service)
+        visit_data = _reconstruct_visit_data_from_db(
+            reconstruction,
+            visit,
+            barium_service,
+            manometry_service,
+            endoscopy_service,
+            endoflip_service,
+        )
 
         if visit_data is None:
             return []
@@ -1062,11 +1315,20 @@ def export_single_visit_vtkhdf(
         if visit_name_override:
             visit_name = visit_name_override
         else:
-            visit_name = f"Visit_{visit.visit_id}_{patient.patient_id}_" f"{visit.visit_type.replace(' ', '')}_{visit.year_of_visit}"
+            visit_name = (
+                f"Visit_{visit.visit_id}_{patient.patient_id}_"
+                f"{visit.visit_type.replace(' ', '')}_{visit.year_of_visit}"
+            )
 
         # Export using enhanced exporter
         exporter = VTKHDFExporter(db_session, max_pressure_frames)
-        export_result = exporter.export_visit_reconstructions(visit_data, visit_name, output_directory, patient_id=patient.patient_id, visit_id=visit.visit_id)
+        export_result = exporter.export_visit_reconstructions(
+            visit_data,
+            visit_name,
+            output_directory,
+            patient_id=patient.patient_id,
+            visit_id=visit.visit_id,
+        )
 
         # Extract mesh files for backward compatibility
         created_files = export_result.get("mesh_files", [])
@@ -1109,7 +1371,14 @@ def _reconstruct_visit_data_from_db(
             return None
 
         # Enhance with additional database information if needed
-        _enhance_visit_data_with_db_info(visit_data, visit, barium_service, manometry_service, endoscopy_service, endoflip_service)
+        _enhance_visit_data_with_db_info(
+            visit_data,
+            visit,
+            barium_service,
+            manometry_service,
+            endoscopy_service,
+            endoflip_service,
+        )
 
         return visit_data
 
@@ -1152,7 +1421,9 @@ def _enhance_visit_data_with_db_info(
                         break
 
             # Ensure endoscopy data is available
-            if endoscopy_files and (not hasattr(viz_data, "endoscopy_files") or not viz_data.endoscopy_files):
+            if endoscopy_files and (
+                not hasattr(viz_data, "endoscopy_files") or not viz_data.endoscopy_files
+            ):
                 endoscopy_image_positions_cm = []
                 endoscopy_images = []
                 for endoscopy_file in endoscopy_files:
@@ -1163,7 +1434,9 @@ def _enhance_visit_data_with_db_info(
                 viz_data.endoscopy_files = endoscopy_images
 
             # Ensure endoflip data is available
-            if endoflip_files and (not hasattr(viz_data, "endoflip_screenshot") or not viz_data.endoflip_screenshot):
+            if endoflip_files and (
+                not hasattr(viz_data, "endoflip_screenshot") or not viz_data.endoflip_screenshot
+            ):
                 viz_data.endoflip_screenshot = pickle.loads(endoflip_files[0].screenshot)
 
     except Exception as e:
@@ -1171,7 +1444,11 @@ def _enhance_visit_data_with_db_info(
 
 
 def run_mass_export_with_progress(
-    db_session: Session, output_directory: str, parent_widget=None, max_pressure_frames: int = -1, pressure_export_mode: str = "per_vertex"
+    db_session: Session,
+    output_directory: str,
+    parent_widget=None,
+    max_pressure_frames: int = -1,
+    pressure_export_mode: str = "per_vertex",
 ) -> Dict[str, any]:
     """
     Export all reconstructions with progress tracking.
@@ -1203,13 +1480,21 @@ def run_mass_export_with_progress(
     endoflip_service = EndoflipFileService(db_session)
 
     # Initialize one exporter for the entire run
-    exporter = VTKHDFExporter(db_session, max_pressure_frames, pressure_export_mode=pressure_export_mode)
+    exporter = VTKHDFExporter(
+        db_session, max_pressure_frames, pressure_export_mode=pressure_export_mode
+    )
 
     # Get all reconstructions
     all_reconstructions = reconstruction_service.get_all_reconstructions()
 
     if not all_reconstructions:
-        return {"success": False, "message": "No reconstructions found in database", "total_files": 0, "successful_files": 0, "file_paths": []}
+        return {
+            "success": False,
+            "message": "No reconstructions found in database",
+            "total_files": 0,
+            "successful_files": 0,
+            "file_paths": [],
+        }
 
     all_created_files = []
     successful_exports = 0
@@ -1221,7 +1506,9 @@ def run_mass_export_with_progress(
             from PyQt6.QtWidgets import QProgressDialog
             from PyQt6.QtCore import Qt
 
-            progress_dialog = QProgressDialog("Exporting VTKHDF files...", "Cancel", 0, len(all_reconstructions), parent_widget)
+            progress_dialog = QProgressDialog(
+                "Exporting VTKHDF files...", "Cancel", 0, len(all_reconstructions), parent_widget
+            )
             progress_dialog.setWindowModality(Qt.WindowModality.WindowModal)
             progress_dialog.setMinimumDuration(0)
             progress_dialog.show()
@@ -1233,27 +1520,47 @@ def run_mass_export_with_progress(
             # Update progress
             if progress_dialog:
                 progress_dialog.setValue(idx)
-                progress_dialog.setLabelText(f"Exporting Patient reconstruction(s) {idx + 1}/{len(all_reconstructions)}...")
+                progress_dialog.setLabelText(
+                    f"Exporting Patient reconstruction(s) {idx + 1}/{len(all_reconstructions)}..."
+                )
                 if progress_dialog.wasCanceled():
                     break
 
             # Get visit and patient info
-            visit_id = reconstruction["visit_id"] if isinstance(reconstruction, dict) else reconstruction.visit_id
+            visit_id = (
+                reconstruction["visit_id"]
+                if isinstance(reconstruction, dict)
+                else reconstruction.visit_id
+            )
             visit = visit_service.get_visit(visit_id)
             patient = patient_service.get_patient(visit.patient_id)
 
             # Reconstruct visit data
-            visit_data = _reconstruct_visit_data_from_db(reconstruction, visit, barium_service, manometry_service, endoscopy_service, endoflip_service)
+            visit_data = _reconstruct_visit_data_from_db(
+                reconstruction,
+                visit,
+                barium_service,
+                manometry_service,
+                endoscopy_service,
+                endoflip_service,
+            )
 
             if visit_data is None:
                 continue
 
             # Create visit name
-            visit_name = f"Visit_{visit.visit_id}_{patient.patient_id}_" f"{visit.visit_type.replace(' ', '')}_{visit.year_of_visit}"
+            visit_name = (
+                f"Visit_{visit.visit_id}_{patient.patient_id}_"
+                f"{visit.visit_type.replace(' ', '')}_{visit.year_of_visit}"
+            )
 
             # Export using the single enhanced exporter instance
             export_result = exporter.export_visit_reconstructions(
-                visit_data, visit_name, output_directory, patient_id=patient.patient_id, visit_id=visit.visit_id
+                visit_data,
+                visit_name,
+                output_directory,
+                patient_id=patient.patient_id,
+                visit_id=visit.visit_id,
             )
 
             # Extract mesh files and extend the list
@@ -1263,7 +1570,11 @@ def run_mass_export_with_progress(
                 successful_exports += 1
 
         except Exception as e:
-            reconstruction_id = reconstruction["reconstruction_id"] if isinstance(reconstruction, dict) else reconstruction.reconstruction_id
+            reconstruction_id = (
+                reconstruction["reconstruction_id"]
+                if isinstance(reconstruction, dict)
+                else reconstruction.reconstruction_id
+            )
             print(f"Error exporting reconstruction {reconstruction_id}: {e}")
             continue
 
