@@ -38,7 +38,7 @@ The visualization window shows the 3D reconstructions you created.
 
 1. **Download for Display**: Export *currently displayed* the 3D visualizations as **HTML files**, which can be viewed in a web browser or embedded in PowerPoint presentations.
 2. **CSV Metrics Download**: Exports the metrics as a CSV file.
-3. **Download for 3D Printing**: Downloads `.stl` files *of all 3D reconstructions in the viewer* for **3D printing**. Note that downloading may take a few minutes.
+3. **Download VTKHDF for ML/3D Printing**: Exports the reconstruction(s) as `.vtkhdf` files complete with geometry, metadata, and the pressure export mode you select (no pressure, per-slice, or full per-vertex). Optional validation JSON files can be generated alongside the meshes. See `download_ground_truth_data.md` for the detailed export workflow.
 4. **Save Reconstruction in DB**: Saves the reconstruction(s) to the database, allowing you to load and view it again later, unchanged.  If a reconstruction already exists for that visit, the program will prompt you to confirm if you want to update the existing reconstruction.
 
 Once the download is complete, the program will provide confirmation for each download format.

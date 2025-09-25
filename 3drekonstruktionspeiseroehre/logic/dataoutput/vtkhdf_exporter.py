@@ -1123,12 +1123,15 @@ class VTKHDFExporter:
             if center_path is None or len(center_path) == 0:
                 return []
 
-            # Compute scale
+            # Compute scale using the SAME logic as figure creation to ensure consistency
+            # This avoids any drift between mesh scaling and center-path scaling
+            from logic.figure_creator.figure_creator import FigureCreator
+
             sensor_path = visualization_data.sensor_path
-            esophagus_full_length_px = self._calculate_esophagus_length_px(
-                sensor_path, visualization_data.esophagus_exit_pos
+            esophagus_full_length_px = FigureCreator.calculate_esophagus_length_px(
+                sensor_path, 0, visualization_data.esophagus_exit_pos
             )
-            esophagus_full_length_cm = self._calculate_esophagus_full_length_cm(
+            esophagus_full_length_cm = FigureCreator.calculate_esophagus_full_length_cm(
                 sensor_path, esophagus_full_length_px, visualization_data
             )
             px_to_cm_factor = esophagus_full_length_cm / esophagus_full_length_px
@@ -1144,26 +1147,27 @@ class VTKHDFExporter:
             mesh_y_min, mesh_y_max = float(figure_y.min()), float(figure_y.max())
             mesh_z_min, mesh_z_max = float(figure_z.min()), float(figure_z.max())
             mesh_x_center = (mesh_x_min + mesh_x_max) / 2.0
-            mesh_z_center = (mesh_z_min + mesh_z_max) / 2.0
 
             # Pixel mins for figure-creator style normalization
             pixel_x = transformed_points[:, 0]
             pixel_z = transformed_points[:, 2]
-            pixel_x_min, pixel_y_min = float(pixel_x.min()), float(pixel_z.min())
+            pixel_x_min, pixel_z_min = float(pixel_x.min()), float(pixel_z.min())
 
             # Scale using px->cm factor
             scaled_x = (pixel_x - pixel_x_min) * px_to_cm_factor
-            scaled_z = (pixel_z - pixel_y_min) * px_to_cm_factor
+            scaled_z = (pixel_z - pixel_z_min) * px_to_cm_factor
 
-            # Center-align with mesh
+            # Align X by center; align Z by minimum to ensure esophagus starts at mesh Z-min
             path_x_center = (scaled_x.min() + scaled_x.max()) / 2.0
-            path_z_center = (scaled_z.min() + scaled_z.max()) / 2.0
             x_offset = mesh_x_center - path_x_center
-            z_offset = mesh_z_center - path_z_center
+            z_offset = mesh_z_min - scaled_z.min()
 
             final_x = scaled_x + x_offset
             final_y = np.full_like(final_x, (mesh_y_min + mesh_y_max) / 2.0)
             final_z = scaled_z + z_offset
+
+            # Numerical guard: clamp tiny negatives due to FP error
+            final_z[final_z < mesh_z_min] = np.maximum(final_z[final_z < mesh_z_min], mesh_z_min)
 
             return np.column_stack((final_x, final_y, final_z)).tolist()
 

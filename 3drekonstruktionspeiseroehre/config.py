@@ -85,11 +85,19 @@ window_start_size_height = 350
 
 # figure creation
 # (these values may be modified in later version of the program)
-num_points_for_polyfit_smooth = 80  # points for polyfit in parts of the sensor-paths where there is no sharp edge
-num_points_for_polyfit_sharp = 40  # points for polyfit in parts of the sensor-paths where there IS a sharp edge
-point_distance_in_polyfit = 10  # distance of the points on the sensor-paths that are used for the polyfit
+num_points_for_polyfit_smooth = (
+    80  # points for polyfit in parts of the sensor-paths where there is no sharp edge
+)
+num_points_for_polyfit_sharp = (
+    40  # points for polyfit in parts of the sensor-paths where there IS a sharp edge
+)
+point_distance_in_polyfit = (
+    10  # distance of the points on the sensor-paths that are used for the polyfit
+)
 points_for_smoothing_in_sharp_edges = 20  # number of points after a detected sharp edge for which num_points_for_polyfit_sharp is used
-px_threshold_for_straight_line = 10  # pixel threshold for detecting the upper most horizontal line in shorted paths calculation
+px_threshold_for_straight_line = (
+    10  # pixel threshold for detecting the upper most horizontal line in shorted paths calculation
+)
 cardinal_cost = 2  # costs for shortest path calculation
 diagonal_cost = 3  # costs for shortest path calculation
 distance_to_border = 10  # number of pixels the sensor path is away form the border

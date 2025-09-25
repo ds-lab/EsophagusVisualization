@@ -16,8 +16,10 @@ It is developed in the context of higher education at the chair for software met
   - **Metrics**: Calculate metrics for the tubular region (volume x pressure) and the sphincter region (volume / pressure).
   - **Side-by-Side Comparison**: Display multiple 3d visualizations side-by-side for comparisons (e.g., pre/post-therapy, different patients).
 - **Data Export**:
-  - **3D Reconstructions**: Export metrics as .csv, the 3D reconstruction as .html for external display, and the reconstruction as .stl file for 3D printing.
+  - **3D Reconstructions**: Export metrics as .csv, the 3D reconstruction as .html for external display, and the reconstruction as .vtkhdf ground truth package with geometry, metadata, configurable HRM pressure data (none/per-slice/per-vertex), and optional validation JSON for ML pipelines or 3D printing.
   - **Database Exports**: Download data about patients, their visits, and their therapies for statistical analysis.
+
+Detailed workflow guides live in the `manual/` folder.
 
 ## Supported File Types
 
